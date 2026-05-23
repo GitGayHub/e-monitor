@@ -1,4 +1,4 @@
-name: eBay Monitor
+name: E Monitor
 
 on:
   schedule:
@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ebay-monitor
+  group: e-monitor
   cancel-in-progress: false
 
 jobs:
-  check_ebay:
+  check_e:
     runs-on: ubuntu-latest
     timeout-minutes: 4
 
@@ -122,7 +122,7 @@ jobs:
           CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
         run: |
           set -e
-          git config --global user.name "eBay Bot"
+          git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           backup_dir="$(mktemp -d)"
           for f in seen_ids.json config.json config.json.enc price_history.db run_log.json; do
@@ -169,6 +169,6 @@ jobs:
           curl -s -X POST \
             -H "Authorization: token $GH_PAT" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/ebay-monitor.yml/dispatches" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/e-monitor.yml/dispatches" \
             -d '{"ref":"main"}'
           echo "Next run triggered"
