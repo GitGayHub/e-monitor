@@ -8,11 +8,49 @@ import atexit
 REPO = os.path.dirname(os.path.abspath(__file__))
 MONITOR = os.path.join(REPO, "monitor.py")
 LOCK_FILE = os.path.join(REPO, ".bot.lock")
-STATE_SYNC = ["seen_ids.json", "config.json", "price_history.db"]
-STATE_PROTECTED = STATE_SYNC + ["price_history.db-shm", "price_history.db-wal"]
+STATE_SYNC = ["seen_ids.json", "config.json.enc", "price_history.db"]
+STATE_PROTECTED = STATE_SYNC + ["price_history.db-shm", "price_history.db-wal", "config.json"]
 STATE_SET = {p.replace("\\", "/") for p in STATE_PROTECTED}
 STATE_COMMIT_PREFIXES = ("Sync state after run", "Update monitor state")
 TEXT_KW = {"text": True, "encoding": "utf-8", "errors": "replace"}
+
+def decrypt_config_in_launcher():
+    passphrase = os.environ.get("CONFIG_PASSPHRASE")
+    if not passphrase:
+        print("WARNING: CONFIG_PASSPHRASE not set; skipping config.json decryption.")
+        return
+    enc_path = os.path.join(REPO, "config.json.enc")
+    dec_path = os.path.join(REPO, "config.json")
+    if os.path.exists(enc_path):
+        try:
+            import config_crypt
+            with open(enc_path, "rb") as f:
+                data = f.read()
+            dec_data = config_crypt.decrypt(data, passphrase)
+            with open(dec_path, "wb") as f:
+                f.write(dec_data)
+            print("INFO: config.json decrypted successfully.")
+        except Exception as e:
+            print(f"WARNING: config decryption failed: {e}")
+
+def encrypt_config_in_launcher():
+    passphrase = os.environ.get("CONFIG_PASSPHRASE")
+    if not passphrase:
+        print("WARNING: CONFIG_PASSPHRASE not set; skipping config.json encryption.")
+        return
+    enc_path = os.path.join(REPO, "config.json.enc")
+    dec_path = os.path.join(REPO, "config.json")
+    if os.path.exists(dec_path):
+        try:
+            import config_crypt
+            with open(dec_path, "rb") as f:
+                data = f.read()
+            enc_data = config_crypt.encrypt(data, passphrase)
+            with open(enc_path, "wb") as f:
+                f.write(enc_data)
+            print("INFO: config.json encrypted successfully.")
+        except Exception as e:
+            print(f"WARNING: config encryption failed: {e}")
 
 # `-c safe.directory=...` neutralises Git's "dubious ownership" error that
 # happens when the repo folder is owned by a different user (e.g. created by
@@ -287,6 +325,7 @@ def sync_from_remote():
         if state_snapshot:
             restore_files(state_snapshot)
             print("INFO: local state restored after git sync.")
+        decrypt_config_in_launcher()
 
 
 acquire_lock()
@@ -311,6 +350,7 @@ try:
 finally:
     print("\n=== [3/3] Pushing state updates to GitHub ===")
     try:
+        encrypt_config_in_launcher()
         git("add", *STATE_SYNC)
         if git_has_staged(STATE_SYNC):
             commit = git("commit", "-m", "Sync state after run", "--", *STATE_SYNC, visible=True)
