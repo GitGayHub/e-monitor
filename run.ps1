@@ -22,5 +22,4 @@ if (Test-Path ".\set_env.bat") {
     Write-Error "set_env.bat not found. Copy set_env.example.bat to set_env.bat and fill in tokens."
     exit 1
 }
-
-python "$PSScriptRoot\run_launcher.py"
+& "$PSScriptRoot\.venv\Scripts\python.exe" "$PSScriptRoot\run_launcher.py"
