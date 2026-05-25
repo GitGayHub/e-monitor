@@ -115,6 +115,16 @@ jobs:
           "
           rm -f run_output.log
 
+      - name: Build Android sync manifest
+        if: steps.cooldown.outputs.skip != 'true'
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EBAY_MARKETPLACE_ID: EBAY_DE
+          EBAY_SOURCE: api_first
+        run: |
+          python mobile/build_app_sync.py
+
       - name: Commit runtime state
         if: steps.cooldown.outputs.skip != 'true'
         shell: bash
@@ -125,7 +135,7 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           backup_dir="$(mktemp -d)"
-          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json; do
+          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json; do
             if [ -f "$f" ]; then
               mkdir -p "$backup_dir/$(dirname "$f")"
               cp "$f" "$backup_dir/$f"
@@ -136,14 +146,14 @@ jobs:
           if ! git rebase origin/main; then
             git rebase --abort || true
           fi
-          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json; do
+          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json; do
             if [ -f "$backup_dir/$f" ]; then
               cp "$backup_dir/$f" "$f"
             fi
           done
           # Re-encrypt config before committing
           python config_crypt.py encrypt config.json config.json.enc
-          git add seen_ids.json config.json.enc price_history.db run_log.json || true
+          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json || true
           if git diff --cached --quiet; then
             echo "No runtime state changes"
             exit 0
