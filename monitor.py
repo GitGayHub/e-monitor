@@ -208,6 +208,7 @@ PHONE_HARD_PART_WORDS = (
     "back cover", "housing", "spare part", "spare parts",
     "motherboard", "mainboard", "logic board", "flex cable", "flexkabel",
     "hauptplatine", "basisplatine", "earpiece", "vibrator", "sim tray",
+    "ersatzteil", "ersatzteile", "modul", "module", "platine",
     "sim kartenfach", "kartenfach", "ringer", "buzzer",
     "signalkabel", "klingelton", "summer", "rückkamera", "rueckkamera",
     "kamera linse", "kartenleser", "mikrofonanschluss", "rückabdeckung",
@@ -755,6 +756,16 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         return True
     if re.search(r"\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b.*\b(?:screen|display|backcover|glass|glas|rueckseite)\b", title_norm):
         return True
+    # Check for non-negated cracks/breakage/damage (e.g. "Glasbruch", "Riss", "gesprungen", "kaputt", "Bildschirmbruch")
+    # Matches words ending in riss, risse, sprung, sprünge, bruch, brüche (like displayriss, glasbruch)
+    # as long as they are not preceded by a negation (ohne, kein, no, etc.) and not kaufabbruch (ab)
+    defect_pattern = re.compile(
+        r"\b(?<!ohne\s)(?<!kein\s)(?<!keine\s)(?<!nicht\s)(?<!no\s)(?<!without\s)"
+        r"(?:[a-z]*(?<!ab)(?:riss|risse|sprung|spruenge|sprünge|bruch|brüche|brueche)|gebrochen|gesprungen|kaputt)\b",
+        re.IGNORECASE
+    )
+    if defect_pattern.search(title_norm):
+        return True
     if _is_for_accessory_title(title_norm, query_norm, category):
         return True
     acc_words = CATEGORY_ACCESSORY_WORDS.get(category, ())
@@ -1135,6 +1146,7 @@ def parse_ebay_results(html):
 
             price_el = card.select_one("span.s-card__price")
             price_text = price_el.get_text(strip=True) if price_el else ""
+            is_multivariation = "bis" in price_text.lower() or "to" in price_text.lower()
             price = _parse_price(price_text)
             if price is None:
                 continue
@@ -1267,6 +1279,7 @@ def parse_ebay_results(html):
                 "top_rated": top_rated,
                 "location": location,
                 "time_left": time_left,
+                "is_multivariation": is_multivariation,
             })
         except Exception as e:
             logger.debug("parse card error: %s", e)
@@ -1529,6 +1542,7 @@ def parse_ebay_api_results(data):
             feedback_score = 0
         image = summary.get("image") or {}
         shipping_cost = _api_shipping_cost(summary)
+        is_multivariation = summary.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS"
         items.append({
             "item_id": _api_item_id(summary),
             "title": title,
@@ -1548,6 +1562,7 @@ def parse_ebay_api_results(data):
             "top_rated": bool(summary.get("topRatedBuyingExperience")),
             "location": _api_location(summary),
             "time_left": "",
+            "is_multivariation": is_multivariation,
         })
     return items
 
@@ -1739,6 +1754,8 @@ def filter_results(items, search, config_obj, skip_seen=False):
     filtered = []
     seen_batch_ids = set()
     for item in items:
+        if item.get("is_multivariation"):
+            continue
         item_id = item["item_id"]
         if item_id in seen_batch_ids:
             continue
