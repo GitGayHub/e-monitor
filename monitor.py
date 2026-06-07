@@ -754,6 +754,59 @@ def _is_console_device_title(title_norm, query_norm):
     return False
 
 
+def _build_smart_search_query(search):
+    """Natively appends standard category-specific negative keywords to exclude defects and parts."""
+    query = search.get("query", "").strip()
+    if query.startswith("-") or " -" in query:
+        return query
+    
+    filters = search.get("filters", {}) or {}
+    category = filters.get("category", "all")
+    
+    # Common defect exclusions useful for all searches
+    excludes = [
+        "defekt", "teildefekt", "ersatzteil", "reparatur",
+        "broken", "cracked", "damage", "damaged", "defect", "defective",
+        "repair", "spares", "parts", "wasserschaden"
+    ]
+    
+    # Category-specific exclusions
+    if category == "phones":
+        excludes.extend([
+            "displayschaden", "icloud", "sperre", "gesperrt",
+            "verpackung", "karton", "ovp", "box", "hülle", "huelle", "case",
+            "folie", "panzerglas"
+        ])
+    elif category == "mice":
+        excludes.extend([
+            "tasten", "taste", "taster", "button", "buttons",
+            "kabel", "cable", "scrollrad", "wheel", "case", "tasche", "ersatz",
+            "grip", "grips", "glide", "glides", "skates", "polster"
+        ])
+    elif category == "headphones":
+        excludes.extend([
+            "polster", "pad", "pads", "earpads", "kabel", "cable",
+            "bügel", "buegel", "tasche", "case", "ersatz", "scharnier", "hinge"
+        ])
+    elif category == "vr_headsets":
+        excludes.extend([
+            "strap", "kabel", "cable", "tasche", "case", "controller",
+            "halterung", "mount", "polster"
+        ])
+    elif category == "consoles":
+        excludes.extend([
+            "controller", "tasche", "case", "ständer", "stand", "kabel", "cable"
+        ])
+    elif category == "laptops":
+        excludes.extend([
+            "netzteil", "ladegerät", "charger", "tastatur", "keyboard",
+            "akku", "battery", "display", "bildschirm", "screen"
+        ])
+        
+    exclude_str = " ".join(f"-{w}" for w in excludes)
+    return f"{query} {exclude_str}"
+
+
 def _build_url_with_host(host, search, sub="www"):
     """Build search URL on a specific host, mapping LH_PrefLoc semantics.
 
@@ -763,7 +816,7 @@ def _build_url_with_host(host, search, sub="www"):
     after the challenge has set its bm_sv cookie on the session.
     """
     filters = search.get("filters", {})
-    params = {"_nkw": search["query"]}
+    params = {"_nkw": _build_smart_search_query(search)}
     sort_code = _sort_code(filters)
     if sort_code:
         params["_sop"] = str(sort_code)
@@ -897,7 +950,7 @@ def save_seen_ids():
 
 def build_ebay_url(search):
     filters = search.get("filters", {})
-    params = {"_nkw": search["query"]}
+    params = {"_nkw": _build_smart_search_query(search)}
     sort_code = _sort_code(filters)
     if sort_code:
         params["_sop"] = str(sort_code)
@@ -1287,7 +1340,7 @@ def _api_item_id(summary):
 def _build_ebay_api_params(search):
     filters = search.get("filters", {}) or {}
     params = {
-        "q": search.get("query", ""),
+        "q": _build_smart_search_query(search),
         "limit": "100",
         "sort": "newlyListed",
     }
