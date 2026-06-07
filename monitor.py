@@ -1880,6 +1880,7 @@ async def send_notification(bot, item, search, stats_7d=None):
         import re as _re
         img = _re.sub(r"/s-l\d+\.(jpg|jpeg|png|webp)", r"/s-l800.\1", img, flags=_re.IGNORECASE)
 
+    logger.info("send_notification: %s", caption.replace("\n", " | "))
     try:
         if img:
             await bot.send_photo(
