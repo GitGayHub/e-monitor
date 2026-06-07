@@ -163,7 +163,7 @@ EBAY_CATEGORY_IDS = {
     "computers": "58058",
     "laptops": "175672",
     "monitors": "80053",
-    "mice": "23160",
+    "mice": "3676",
     "headphones": "112529",
     "vr": "183067",
     "vr_headsets": "183068",
@@ -1163,15 +1163,22 @@ def parse_ebay_results(html):
             all_spans = card.select("span")
             all_texts = [s.get_text(strip=True).lower() for s in all_spans]
 
+            is_pickup_only = False
+            for txt in all_texts:
+                if any(marker in txt for marker in ("nur abholung", "nur selbstabholung", "abholung: nur abholung", "kein versand", "no shipping", "collection in person", "local pickup only", "pickup only")):
+                    is_pickup_only = True
+                    break
+
             shipping_cost = 0.0
-            for s in all_spans:
-                txt = s.get_text(strip=True)
-                if "Lieferung" in txt or "Versand" in txt or "shipping" in txt.lower():
-                    shipping_cost = _parse_shipping(txt)
-                    break
-                if "kostenlos" in txt.lower() or "gratis" in txt.lower():
-                    shipping_cost = 0.0
-                    break
+            if not is_pickup_only:
+                for s in all_spans:
+                    txt = s.get_text(strip=True)
+                    if "Lieferung" in txt or "Versand" in txt or "shipping" in txt.lower():
+                        shipping_cost = _parse_shipping(txt)
+                        break
+                    if "kostenlos" in txt.lower() or "gratis" in txt.lower():
+                        shipping_cost = 0.0
+                        break
 
             buy_now = True
             best_offer = False
@@ -1273,6 +1280,7 @@ def parse_ebay_results(html):
                 "best_offer": best_offer,
                 "auction": auction,
                 "bids_count": bids_count,
+                "is_pickup_only": is_pickup_only,
                 "condition": condition,
                 "seller_name": seller_name,
                 "seller_rating_count": rating_count,
@@ -1446,8 +1454,11 @@ def _api_shipping_cost(summary):
 def _api_location(summary):
     loc = summary.get("itemLocation") or {}
     parts = []
+    pc = loc.get("postalCode")
     city = loc.get("city")
     country = loc.get("country")
+    if pc:
+        parts.append(str(pc))
     if city:
         parts.append(str(city))
     if country:
@@ -1545,6 +1556,21 @@ def parse_ebay_api_results(data):
         image = summary.get("image") or {}
         shipping_cost = _api_shipping_cost(summary)
         is_multivariation = summary.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS"
+        
+        is_pickup_only = False
+        pickup_opts = summary.get("pickupOptions") or []
+        shipping_opts = summary.get("shippingOptions") or []
+        if pickup_opts or summary.get("localPickup") == True:
+            has_delivery = False
+            for opt in shipping_opts:
+                stype = opt.get("shippingType", "").upper()
+                scode = opt.get("shippingServiceCode", "").lower()
+                if stype != "LOCAL_PICKUP" and "pickup" not in scode and "local" not in scode:
+                    has_delivery = True
+                    break
+            if not has_delivery:
+                is_pickup_only = True
+
         items.append({
             "item_id": _api_item_id(summary),
             "title": title,
@@ -1565,6 +1591,7 @@ def parse_ebay_api_results(data):
             "location": _api_location(summary),
             "time_left": "",
             "is_multivariation": is_multivariation,
+            "is_pickup_only": is_pickup_only,
         })
     return items
 
@@ -1772,6 +1799,15 @@ def filter_results(items, search, config_obj, skip_seen=False):
         max_price = filters.get("max_price")
         if max_price is not None and item.get("total_price", 0) > max_price:
             continue
+            
+        if item.get("is_pickup_only"):
+            nearby = False
+            if item.get("location"):
+                from plz_distance import is_nearby
+                nearby, _ = is_nearby(item["location"], max_km=100)
+            if not nearby:
+                continue
+
         listing_type = filters.get("listing_type", "all")
         if listing_type == "auction" and not item.get("auction"):
             continue
@@ -2160,11 +2196,18 @@ async def send_notification(bot, item, search, stats_7d=None):
         else:
             location_flag = "🇪🇺 "
 
-    shipping_str = "Бесплатная доставка" if item["shipping_cost"] == 0 else f"+{item['shipping_cost']:.0f}€ доставка"
+    if item.get("is_pickup_only"):
+        shipping_str = "Nur Abholung (Без доставки)"
+    else:
+        shipping_str = "Бесплатная доставка" if item["shipping_cost"] == 0 else f"+{item['shipping_cost']:.0f}€ доставка"
 
     outlier = is_outlier(item["price"], search["id"])
 
     lines = []
+    if item.get("is_pickup_only"):
+        lines.append("⚠️ NUR ABHOLUNG ⚠️")
+        lines.append("")
+
     if outlier:
         lines.append(f"🚨 {item['title']}")
     else:
