@@ -191,6 +191,10 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "wie besehen", "psn servern ausgeschlossen", "schaltgetriebe",
     "kabel", "cable", "ladekabel", "linse", "lens", "kameralinse",
     "glas", "glass", "deckel",
+    "ladegerät", "ladegeraet", "lader", "netzteil", "netzlader", "schnellladegerät", "schnellladegeraet",
+    "gürteltasche", "guerteltasche", "gürtelclip", "guertelclip", "handytasche", "handy-tasche", "schlaufe",
+    "panzerglasfolie", "panzer-glasfolie", "schutz-folie", "schutzfolien", "panzerglasfolien",
+    "kopfhörer", "kopfhoerer", "earphones", "headphones", "headset", "in-ear", "inear"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -215,6 +219,9 @@ PHONE_HARD_PART_WORDS = (
     "hybridglass", "grizzglass", "paperscreen", "hydrofilm",
     "display kamera", "display+kamera", "tpu", "imak",
     "rueckcover", "rückcover",
+    "box only", "empty box", "leere box", "nur box", "nur verpackung",
+    "leerverpackung", "leere verpackung", "nur die box", "nur die verpackung",
+    "nur ovp", "nur die ovp"
 )
 
 # SOFT ACCESSORY WORDS — these often appear in accessory listings but CAN also
