@@ -414,6 +414,11 @@ CATEGORY_ACCESSORY_WORDS = {
         "faceplates", "faceplate", "cover plate",
         "thumb grip", "thumbstick", "analog stick",
         "lenkrad", "steering wheel", "racing wheel",
+        "lüfter", "luefter", "fan", "cooling fan", "cooler", "kühler", "kuehler", "cooling system",
+        "staubschutz", "dust plug", "dust cover", "dustproof", "schmutzschutz",
+        "tasche", "case", "bag", "tragetasche", "carrying case", "travel bag",
+        "wandhalterung", "wall mount", "halterung", "mount", "bracket",
+        "netzkabel", "stromkabel", "netzteil", "power cable", "power cord", "power supply",
     ),
     "laptops": (
         "parts", "ersatzteil", "ersatzteile", "displayschaden", "netzteil",
@@ -543,23 +548,50 @@ def _is_phone_device_title(title_norm):
     return False
 
 
+def _check_separator(sep):
+    s = sep.lower()
+    if "+" in s or "&" in s:
+        return False
+    words = re.findall(r"\b\w+\b", s)
+    forbidden = {"mit", "with", "and", "und", "plus", "inkl", "inklusive", "including"}
+    if any(w in forbidden for w in words):
+        return False
+    return True
+
+
 def _matches_console_query_model(title_norm, query_norm):
     if "ps5" in query_norm and "pro" in query_norm:
         patterns = [
-            r"\b(?:ps5|playstation\s*5|ps\s*5)\s*pro\b",
-            r"\bpro\s+(?:konsole|console|system)\b",
-            r"\b(?:konsole|console|system)\s+pro\b"
+            r"\b(?:ps5|playstation\s*5|ps\s*5)([^a-z0-9]{0,10})pro\b",
+            r"\bpro([^a-z0-9]{0,10})(?:konsole|console|system)\b",
+            r"\b(?:konsole|console|system)([^a-z0-9]{0,10})pro\b"
         ]
-        if not any(re.search(p, title_norm) for p in patterns):
-            return False
+        accessory_pattern = re.compile(
+            r"^(?:\s+|-)(?:wireless\s+|wired\s+|dualsense\s+|edge\s+|concept\s+)*(?:controller|gamepad|pad|lenkrad|wheel|joystick|headset|kopfhörer|kopfhoerer|tasche|case|hülle|huelle|skin|cover|stick|zubehör|zubehoer|halterung|mount|stand|ständer|staender)\b",
+            re.IGNORECASE
+        )
+        for p in patterns:
+            for match in re.finditer(p, title_norm):
+                if _check_separator(match.group(1)):
+                    pro_match = re.search(r"\bpro\b", match.group(0))
+                    if pro_match:
+                        pro_end_in_title = match.start() + pro_match.end()
+                        remaining = title_norm[pro_end_in_title:]
+                        if accessory_pattern.match(remaining):
+                            continue
+                    return True
+        return False
     if "ps5" in query_norm and "slim" in query_norm:
         patterns = [
-            r"\b(?:ps5|playstation\s*5|ps\s*5)\s*slim\b",
-            r"\bslim\s+(?:konsole|console|system)\b",
-            r"\b(?:konsole|console|system)\s+slim\b"
+            r"\b(?:ps5|playstation\s*5|ps\s*5)([^a-z0-9]{0,10})slim\b",
+            r"\bslim([^a-z0-9]{0,10})(?:konsole|console|system)\b",
+            r"\b(?:konsole|console|system)([^a-z0-9]{0,10})slim\b"
         ]
-        if not any(re.search(p, title_norm) for p in patterns):
-            return False
+        for p in patterns:
+            for match in re.finditer(p, title_norm):
+                if _check_separator(match.group(1)):
+                    return True
+        return False
     return True
 
 
@@ -679,7 +711,7 @@ def _is_category_blocked_title(title_norm, category):
         if re.match(r"^(?:fuer|für|for|geeignet|fits)\s+", title_norm):
             return True
         # Check if this is a bundle (main device + accessory)
-        is_bundle = any(b in title_norm for b in ("mit", "+", "and", "&", "inkl", "with", "bundle"))
+        is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|\+|&", title_norm) is not None
         if is_bundle:
             device_patterns = r"\b(?:sony|playstation|ps5|xbox|nintendo|switch|meta|quest|pico|oculus|logitech|razer|superlight|g pro|iphone|samsung|pixel|redmagic|nubia|laptop|notebook|macbook|vivobook|zenbook|asus|hp|lenovo|dell)\b"
             if re.search(device_patterns, title_norm):
