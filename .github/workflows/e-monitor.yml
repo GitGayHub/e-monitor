@@ -141,7 +141,7 @@ jobs:
               cp "$f" "$backup_dir/$f"
             fi
           done
-          git checkout -- seen_ids.json config.json.enc price_history.db run_log.json 2>/dev/null || true
+          git checkout -- seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json 2>/dev/null || true
           git fetch origin main || true
           if ! git rebase origin/main; then
             git rebase --abort || true
