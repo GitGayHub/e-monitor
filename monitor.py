@@ -304,6 +304,8 @@ BAD_CONDITION_WORDS = (
     "psn servern ausgeschlossen", "von psn servern ausgeschlossen",
     "banned from psn servers", "nur ersatzteile", "ersatzteile reparatur",
     "for parts", "parts only", "spares repair",
+    "icloud lock", "icloud locked", "icloud bypass", "activation lock",
+    "activationlock", "aktivierungssperre", "icloudsperre"
 )
 
 CATEGORY_ACCESSORY_WORDS = {
@@ -437,9 +439,10 @@ def _host_chain_for_search(search):
 
 
 def _has_term(title_norm, term):
-    if " " in term or not re.fullmatch(r"\w+", term):
-        return term in title_norm
-    return re.search(rf"\b{re.escape(term)}\b", title_norm) is not None
+    term_norm = _normalize(term)
+    if " " in term_norm or not re.fullmatch(r"[a-z0-9]+", term_norm):
+        return term_norm in title_norm
+    return re.search(rf"\b{re.escape(term_norm)}\b", title_norm) is not None
 
 
 def _is_phone_device_title(title_norm):
@@ -773,8 +776,10 @@ EU_COUNTRIES = {
 def _normalize(text):
     t = text.lower()
     t = t.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+    t = t.replace("-", " ")  # Treat hyphens as spaces
     t = re.sub(r"\b(\d+)\s+(gb|go|tb)\b", r"\1\2", t)
-    return t
+    t = re.sub(r"\s+", " ", t)
+    return t.strip()
 
 
 def _item_hash(seller, title, price):
