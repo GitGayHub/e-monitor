@@ -543,6 +543,26 @@ def _is_phone_device_title(title_norm):
     return False
 
 
+def _matches_console_query_model(title_norm, query_norm):
+    if "ps5" in query_norm and "pro" in query_norm:
+        patterns = [
+            r"\b(?:ps5|playstation\s*5|ps\s*5)\s*pro\b",
+            r"\bpro\s+(?:konsole|console|system)\b",
+            r"\b(?:konsole|console|system)\s+pro\b"
+        ]
+        if not any(re.search(p, title_norm) for p in patterns):
+            return False
+    if "ps5" in query_norm and "slim" in query_norm:
+        patterns = [
+            r"\b(?:ps5|playstation\s*5|ps\s*5)\s*slim\b",
+            r"\bslim\s+(?:konsole|console|system)\b",
+            r"\b(?:konsole|console|system)\s+slim\b"
+        ]
+        if not any(re.search(p, title_norm) for p in patterns):
+            return False
+    return True
+
+
 def _matches_phone_query_model(title_norm, query_norm):
     if "nubia" in query_norm and "ultra" in query_norm:
         return re.search(r"\bnubia\s+(?:z\s*\d+|z\d+|focus(?:\s*\d+)?|red\s*magic)\b.*\bultra\b", title_norm) is not None
@@ -1696,6 +1716,9 @@ def filter_results(items, search, config_obj, skip_seen=False):
             if _is_phone_accessory_title(title_norm):
                 continue
             if not _is_phone_device_title(title_norm):
+                continue
+        if category == "consoles":
+            if not _matches_console_query_model(title_norm, query_norm):
                 continue
         if any(w in title_norm for w in exclude_words):
             continue
