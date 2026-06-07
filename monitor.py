@@ -696,13 +696,66 @@ def _is_phone_accessory_title(title_norm):
     return False
 
 
-def _is_category_blocked_title(title_norm, category):
+def _is_for_accessory_title(title_norm, query_norm, category):
+    # Detect if listing is for an accessory by checking for target compatibility phrases (e.g. "for PS5")
+    # if the main device keyword/model only appears after the "for" term (or not at all).
+    for_patterns = re.compile(
+        r"\b(?:fuer|für|for|geeignet\s+fuer|geeignet\s+für|compatible\s+(?:with|to)?|kompatibel\s+(?:mit|zu)?)\b",
+        re.IGNORECASE
+    )
+    for_match = for_patterns.search(title_norm)
+    if not for_match:
+        return False
+
+    for_start = for_match.start()
+    before_part = title_norm[:for_start]
+
+    if query_norm:
+        if category == "consoles":
+            if _matches_console_query_model(before_part, query_norm):
+                return False
+        elif category == "phones" or _is_phone_search_query(query_norm):
+            if _matches_phone_query_model(before_part, query_norm):
+                return False
+        else:
+            q_words = _query_words(query_norm)
+            if q_words and all(_has_query_word(before_part, w) for w in q_words):
+                return False
+    else:
+        # Fallback when query_norm is not provided (e.g. in some unit tests)
+        if category == "consoles":
+            if any(w in before_part for w in CONSOLE_DEVICE_HINTS):
+                return False
+            if re.search(r"\b(?:500|825|1000|1024)\s*(?:gb|go)\b", before_part):
+                return False
+            if re.search(r"\b[12]\s*tb\b", before_part):
+                return False
+            if re.search(r"\bcfi-\d", before_part) or re.search(r"\bcuh-\d", before_part):
+                return False
+        elif category == "phones":
+            if any(w in before_part for w in PHONE_DEVICE_HINTS):
+                return False
+            if _has_phone_storage(before_part):
+                return False
+        elif category == "laptops":
+            if any(w in before_part for w in ("laptop", "notebook", "macbook", "zenbook", "vivobook")):
+                return False
+        elif category == "headphones":
+            if any(w in before_part for w in ("kopfhoerer", "kopfhörer", "headphones", "headset")):
+                return False
+
+    return True
+
+
+def _is_category_blocked_title(title_norm, category, query_norm=None):
     if any(_has_term(title_norm, w) for w in BAD_CONDITION_WORDS):
         return True
     # Check for screen/backcover lifting/loose/separation
     if re.search(r"\b(?:screen|display|backcover|glass|glas|rueckseite)\b.*\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b", title_norm):
         return True
     if re.search(r"\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b.*\b(?:screen|display|backcover|glass|glas|rueckseite)\b", title_norm):
+        return True
+    if _is_for_accessory_title(title_norm, query_norm, category):
         return True
     acc_words = CATEGORY_ACCESSORY_WORDS.get(category, ())
     has_acc = any(_has_accessory_term(title_norm, w) for w in acc_words)
@@ -793,7 +846,7 @@ def _matches_category_query(title_norm, category, query_norm):
         return True
 
     if "playstation 5 pro" in query_norm:
-        return ("playstation 5 pro" in title_norm or "ps5 pro" in title_norm) and not _is_category_blocked_title(title_norm, category)
+        return ("playstation 5 pro" in title_norm or "ps5 pro" in title_norm) and not _is_category_blocked_title(title_norm, category, query_norm)
 
     if category == "consoles":
         return _is_console_device_title(title_norm, query_norm)
@@ -1740,7 +1793,7 @@ def filter_results(items, search, config_obj, skip_seen=False):
         effective_category = _effective_category(category, query_norm)
         if not _matches_category_query(title_norm, effective_category, query_norm):
             continue
-        if _is_category_blocked_title(title_norm, effective_category):
+        if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
         if category == "phones" or _is_phone_search_query(query_norm):
             if not _matches_phone_query_model(title_norm, query_norm):
