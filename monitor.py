@@ -1461,11 +1461,12 @@ def filter_results(items, search, config_obj, skip_seen=False):
             continue
         if item_id in banned_ids:
             continue
+        item = _calculate_total(item, settings)
         min_price = filters.get("min_price")
-        if min_price is not None and item.get("price", 0) < min_price:
+        if min_price is not None and item.get("total_price", 0) < min_price:
             continue
         max_price = filters.get("max_price")
-        if max_price is not None and item.get("price", 0) > max_price:
+        if max_price is not None and item.get("total_price", 0) > max_price:
             continue
         listing_type = filters.get("listing_type", "all")
         if listing_type == "auction" and not item.get("auction"):
@@ -1525,7 +1526,6 @@ def filter_results(items, search, config_obj, skip_seen=False):
             h = _item_hash(item["seller_name"], item["title"], item["price"])
             if not item.get("auction") and h in item_hashes:
                 continue
-        item = _calculate_total(item, settings)
         filtered.append(item)
         seen_batch_ids.add(item_id)
     return filtered
