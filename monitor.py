@@ -173,6 +173,19 @@ EBAY_CATEGORY_IDS = {
     "smart_watches": "15032",
 }
 
+ALLOWED_SUBCATEGORIES = {
+    "phones": {"9355", "178893"},      # Handys & Smartphones, Smartwatches
+    "consoles": {"139971"},             # Videospiel-Konsolen
+    "laptops": {"177"},                # Notebooks & Netbooks
+    "tablets": {"171485"},              # Tablets & eReader
+    "computers": {"179"},              # PC Desktops & All-in-Ones
+    "mice": {"23160", "3676"},         # Mäuse, Tastaturen/Mäuse/Pointings
+    "headphones": {"112529"},          # Kopfhörer & Headsets
+    "monitors": {"80182"},             # Monitore, Projektoren & Zubehör
+    "vr": {"190066"},                  # VR-Headsets
+    "vr_headsets": {"190066"},         # VR-Headsets
+}
+
 PHONE_HARD_ACCESSORY_WORDS = (
     "case", "cover", "protector", "tempered glass", "bumper", "magsafe",
     "shell case", "skin case", "lens film", "camera lens",
@@ -2497,6 +2510,18 @@ async def process_searches(bot, once=False):
                 
                 desc = ""
                 if details:
+                    # Block incorrect subcategories (accessories/parts) to prevent false positives
+                    cat_id = details.get("categoryId")
+                    search_cat = search.get("filters", {}).get("category", "all")
+                    if search_cat in ALLOWED_SUBCATEGORIES:
+                        allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
+                        if cat_id and cat_id not in allowed_set:
+                            cat_path_ids = details.get("categoryIdPath", "").split("|")
+                            if not any(cid in allowed_set for cid in cat_path_ids):
+                                logger.info("Skipping notification for item %s: category %s not allowed for search %s", item["item_id"], cat_id, search_cat)
+                                seen_ids.add(item["item_id"])
+                                continue
+
                     # Block SELLER_DEFINED_VARIATIONS
                     if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
                         logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
@@ -2564,6 +2589,18 @@ async def process_searches(bot, once=False):
                     
                     desc = ""
                     if details:
+                        # Block incorrect subcategories (accessories/parts) to prevent false positives
+                        cat_id = details.get("categoryId")
+                        search_cat = search.get("filters", {}).get("category", "all")
+                        if search_cat in ALLOWED_SUBCATEGORIES:
+                            allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
+                            if cat_id and cat_id not in allowed_set:
+                                cat_path_ids = details.get("categoryIdPath", "").split("|")
+                                if not any(cid in allowed_set for cid in cat_path_ids):
+                                    logger.info("Skipping notification for item %s: category %s not allowed for search %s", item["item_id"], cat_id, search_cat)
+                                    seen_ids.add(item["item_id"])
+                                    continue
+
                         # Block SELLER_DEFINED_VARIATIONS
                         if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
                             logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
