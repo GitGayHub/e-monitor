@@ -189,6 +189,8 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "silverprotection", "silky matt", "3mk", "original display",
     "display defekt", "display gewechselt", "teildefekt", "icloud sperre",
     "wie besehen", "psn servern ausgeschlossen", "schaltgetriebe",
+    "kabel", "cable", "ladekabel", "linse", "lens", "kameralinse",
+    "glas", "glass", "deckel",
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -212,6 +214,7 @@ PHONE_HARD_PART_WORDS = (
     "ladebuchse", "ladeanschluss",
     "hybridglass", "grizzglass", "paperscreen", "hydrofilm",
     "display kamera", "display+kamera", "tpu", "imak",
+    "rueckcover", "rückcover",
 )
 
 # SOFT ACCESSORY WORDS — these often appear in accessory listings but CAN also
@@ -223,7 +226,7 @@ PHONE_SOFT_ACCESSORY_WORDS = (
     "zubehör", "zubehoer",
     "etui", "wallet", "magnetic case", "stoßschutz",
     "stosschutz", "stoβfest", "stoßfest", "stossfest", "transparent",
-    "kratzfest", "battery",
+    "kratzfest", "battery", "akku",
     "lautsprecher", "kameraobjektiv",
     "usb port", "usb anschluss",
 )
@@ -502,6 +505,23 @@ def _is_phone_search_query(query_norm):
     return re.search(r"\b(?:samsung\s+)?s\d{2}\s+ultra\b", query_norm) is not None
 
 
+def _has_accessory_term(title_norm, term):
+    term_norm = _normalize(term)
+    if " " in term_norm or not re.fullmatch(r"[a-z0-9]+", term_norm):
+        return term_norm in title_norm
+    
+    words = re.findall(r'[a-z0-9]+', title_norm)
+    for w in words:
+        if w == term_norm:
+            return True
+        if len(w) > len(term_norm):
+            if w.endswith(term_norm):
+                return True
+            if w.startswith(term_norm):
+                return True
+    return False
+
+
 def _is_phone_accessory_title(title_norm):
     """Detect titles that are clearly accessories or spare parts.
 
@@ -520,13 +540,13 @@ def _is_phone_accessory_title(title_norm):
         return True
     
     # Hard parts — always accessory, no override possible
-    has_hard_part = any(_has_term(title_norm, w) for w in PHONE_HARD_PART_WORDS)
+    has_hard_part = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_PART_WORDS)
     if has_hard_part:
         return True
     
     # Soft part/accessory words — overridden by strong device hints OR storage capacity
     # OR if the title LEADS with a phone model (not "Hülle für Galaxy..." but "Galaxy S24... mit Zubehör")
-    has_soft_part = any(_has_term(title_norm, w) for w in PHONE_SOFT_ACCESSORY_WORDS)
+    has_soft_part = any(_has_accessory_term(title_norm, w) for w in PHONE_SOFT_ACCESSORY_WORDS)
     if has_soft_part:
         has_strong_device = (
             any(_has_term(title_norm, w) for w in PHONE_STRONG_DEVICE_HINTS)
@@ -537,7 +557,7 @@ def _is_phone_accessory_title(title_norm):
             return True
     
     # Hard accessory words (case/cover/protector) — overridden by strong device hints OR storage
-    has_acc_word = any(_has_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS)
+    has_acc_word = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS)
     if has_acc_word:
         has_strong_device = (
             any(_has_term(title_norm, w) for w in PHONE_STRONG_DEVICE_HINTS)
@@ -551,7 +571,7 @@ def _is_phone_accessory_title(title_norm):
 def _is_category_blocked_title(title_norm, category):
     if any(_has_term(title_norm, w) for w in BAD_CONDITION_WORDS):
         return True
-    return any(_has_term(title_norm, w) for w in CATEGORY_ACCESSORY_WORDS.get(category, ()))
+    return any(_has_accessory_term(title_norm, w) for w in CATEGORY_ACCESSORY_WORDS.get(category, ()))
 
 
 def _effective_category(category, query_norm):
