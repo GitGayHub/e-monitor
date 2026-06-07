@@ -70,6 +70,24 @@ def record_snapshot(search_id, sofort_prices, pv_prices, auction_prices, total_r
                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                 (search_id, now, min_s, min_p, min_a, med_s, med_a, total_results),
             )
+    cleanup_old_data()
+
+
+def cleanup_old_data():
+    cutoff_snapshots = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d %H:%M")
+    cutoff_sellers = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d %H:%M")
+    with _DB_LOCK:
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            conn.execute("DELETE FROM price_snapshots WHERE recorded_at < ?", (cutoff_snapshots,))
+            conn.execute("DELETE FROM seller_prices WHERE recorded_at < ?", (cutoff_sellers,))
+            conn.commit()
+            
+            conn.isolation_level = None
+            conn.execute("VACUUM")
+            conn.close()
+        except Exception:
+            pass
 
 
 def record_seller_price(search_id, seller_name, price, item_id=None):
