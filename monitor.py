@@ -303,14 +303,44 @@ BAD_CONDITION_WORDS = (
     "funktioniert nicht", "nur box", "verpackung", "tauschen", "tausch",
     "psn servern ausgeschlossen", "von psn servern ausgeschlossen",
     "banned from psn servers", "nur ersatzteile", "ersatzteile reparatur",
-    "for parts", "parts only", "spares repair",
+    "als ersatzteile", "fuer ersatzteile",
+    "for parts", "parts only", "spares repair", "not working",
     "icloud lock", "icloud locked", "icloud bypass", "activation lock",
-    "activationlock", "aktivierungssperre", "icloudsperre"
+    "activationlock", "aktivierungssperre", "icloudsperre",
+    # Broken / cracked screen
+    "display riss", "displaybruch", "display gebrochen", "display gesprungen",
+    "gesprungenes display", "gebrochenes display", "gerissenes display",
+    "bildschirmbruch", "bildschirm gebrochen", "bildschirm gesprungen",
+    "bildschirm riss", "cracked screen", "broken screen", "screen cracked",
+    "cracked display", "broken display", "screen broken",
+    "glas gebrochen", "glas gesprungen", "glas riss",
+    "back glass broken", "glass cracked", "glass broken",
+    "display defekt", "bildschirm defekt", "screen defect",
+    "riss im display", "riss im bildschirm", "riss im glas",
+    "sprung im display", "sprung im glas", "sprung im bildschirm",
+    "mit riss", "mit sprung",
+    # Water damage
+    "wasserschaden", "water damage", "water damaged",
+    "feuchtigkeitsschaden", "nass geworden",
 )
+
+# Conditions parsed from eBay's condition badge that should always be blocked.
+# These are the lowercased condition strings from the HTML / API.
+BAD_CONDITIONS = {
+    "defekt", "als ersatzteile", "fuer ersatzteile", "for parts or not working",
+    "for parts", "not working", "for parts / not working",
+    "als ersatzteile oder nicht funktionsfaehig",
+    "ersatzteile", "parts only",
+    "salvage",
+}
 
 CATEGORY_ACCESSORY_WORDS = {
     "computers": (
         "grafikkarte", "graphics card",
+        "konfigurator", "configurator", "konfigurierbar", "configurable",
+        "zusammenstellen", "configure your", "wunsch pc", "wunschpc",
+        "build to order", "bto", "selbst zusammenstellen",
+        "waehle deine", "waehlbar", "individuell",
     ),
     "monitors": (
         "wandhalterung", "halterung", "halterungen", "adapter", "netzteil",
@@ -1001,7 +1031,11 @@ def parse_ebay_results(html):
                 if "secondary" in cls and "default" in cls:
                     txt_lower = txt.lower().rstrip(" |")
                     txt_clean = txt_lower.replace("·", "").strip()
-                    if txt_clean in ("gebraucht", "neu", "new", "used", "brand new", "pre-owned", "new other"):
+                    if txt_clean in ("gebraucht", "neu", "new", "used", "brand new", "pre-owned", "new other",
+                                     "defekt", "als ersatzteile",
+                                     "für ersatzteile", "for parts or not working",
+                                     "for parts", "not working", "parts only",
+                                     "als ersatzteile oder nicht funktionsfähig"):
                         condition = txt.rstrip(" |").strip()
                     elif txt_lower == "privat":
                         seller_type = "private"
@@ -1464,6 +1498,10 @@ def filter_results(items, search, config_obj, skip_seen=False):
         if seller_lower in exclude_sellers:
             continue
         title_norm = _normalize(item["title"])
+        # Block items with bad conditions (Defekt, Als Ersatzteile, etc.)
+        cond_norm = _normalize(item.get("condition", ""))
+        if cond_norm and cond_norm in BAD_CONDITIONS:
+            continue
         if query_words and not all(_has_query_word(title_norm, w) for w in query_words):
             continue
         query_norm = _normalize(search.get("query", ""))
