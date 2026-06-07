@@ -198,11 +198,14 @@ PHONE_HARD_ACCESSORY_WORDS = (
     # Accessory stands / pads / mounts
     "anti rutsch", "pad", "pads", "halterung", "holder", "stand", "mount", "handyhalterung",
     "car mount", "car holder", "unterlage",
-    # Additional case / custom descriptors
+    # Additional case / custom descriptors / brands
     "transparent", "tasche", "ledertasche", "gürteltasche", "gurteltasche", "schale",
     "ledercase", "lederhülle", "lederhuelle", "silikonhülle", "silikonhuelle",
     "silicon case", "schutzhüllen", "schutzhuellen", "handyhüllen", "handyhuellen",
-    "panzerfolie", "schutzglas", "glasfolie", "motiv", "design", "muster", "print"
+    "panzerfolie", "schutzglas", "glasfolie", "motiv", "design", "muster", "print",
+    "displayschutz", "kameraschutz", "linsenschutz", "displayschutzfolie", "kameraschutzfolie",
+    "displayschutzglas", "kameraschutzglas", "dexnor", "spigen", "otterbox", "torras",
+    "rhinoshield", "esr", "jetech", "elago", "ringke", "caseology", "ugreen", "anker", "belkin"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -239,7 +242,9 @@ PHONE_HARD_PART_WORDS = (
     "photo kit", "fotografie-kit", "camera kit", "photography-kit",
     # Additional replacements / parts
     "ersatz", "abdeckung", "rückseitige", "rueckseitige", "schrauben",
-    "halterung", "kleber", "klebestreifen", "klebepad"
+    "halterung", "kleber", "klebestreifen", "klebepad",
+    # Batteries / battery parts
+    "akku", "battery", "batterie", "batteries"
 )
 
 # SOFT ACCESSORY WORDS — these often appear in accessory listings but CAN also
@@ -251,7 +256,7 @@ PHONE_SOFT_ACCESSORY_WORDS = (
     "zubehör", "zubehoer",
     "etui", "wallet", "magnetic case", "stoßschutz",
     "stosschutz", "stoβfest", "stoßfest", "stossfest",
-    "kratzfest", "battery", "akku",
+    "kratzfest",
     "lautsprecher", "kameraobjektiv",
     "usb port", "usb anschluss",
 )
@@ -803,8 +808,17 @@ def _is_for_accessory_title(title_norm, query_norm, category):
     return True
 
 
+def _is_display_replacement(text_norm):
+    """Detect display/screen/oled/glass/backglass replacements in title or description."""
+    p1 = r"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b.*\b(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|bekommen|erneuert|reparatur)\b"
+    p2 = r"\b(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|neues|neuer|getauschtes|gewechseltes|repariertes|ersetztes|erneuertes|frisches)\b.*\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
+    return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
+
+
 def _is_category_blocked_title(title_norm, category, query_norm=None):
     if any(_has_term(title_norm, w) for w in BAD_CONDITION_WORDS):
+        return True
+    if _is_display_replacement(title_norm):
         return True
     # Check for screen/backcover lifting/loose/separation
     if re.search(r"\b(?:screen|display|backcover|glass|glas|rueckseite)\b.*\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b", title_norm):
@@ -1745,6 +1759,10 @@ def _is_description_blocked(desc_html, category):
         return False
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+
+    if _is_display_replacement(desc_norm):
+        logger.info("Description blocked due to display/screen replacement pattern")
+        return True
 
     # 1. Check for bad condition words/phrases
     for w in BAD_CONDITION_WORDS:
