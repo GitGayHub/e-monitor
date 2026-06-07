@@ -197,7 +197,12 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "kopfhörer", "kopfhoerer", "earphones", "headphones", "headset", "in-ear", "inear",
     # Accessory stands / pads / mounts
     "anti rutsch", "pad", "pads", "halterung", "holder", "stand", "mount", "handyhalterung",
-    "car mount", "car holder", "unterlage"
+    "car mount", "car holder", "unterlage",
+    # Additional case / custom descriptors
+    "transparent", "tasche", "ledertasche", "gürteltasche", "gurteltasche", "schale",
+    "ledercase", "lederhülle", "lederhuelle", "silikonhülle", "silikonhuelle",
+    "silicon case", "schutzhüllen", "schutzhuellen", "handyhüllen", "handyhuellen",
+    "panzerfolie", "schutzglas", "glasfolie", "motiv", "design", "muster", "print"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -231,7 +236,10 @@ PHONE_HARD_PART_WORDS = (
     # Middle frame, bezel, photography kits
     "middle frame", "mittelrahmen", "mitte rahmen", "bezel", "frame bezel",
     "replacement bezel", "displayrahmen", "rahmen", "photography kit",
-    "photo kit", "fotografie-kit", "camera kit", "photography-kit"
+    "photo kit", "fotografie-kit", "camera kit", "photography-kit",
+    # Additional replacements / parts
+    "ersatz", "abdeckung", "rückseitige", "rueckseitige", "schrauben",
+    "halterung", "kleber", "klebestreifen", "klebepad"
 )
 
 # SOFT ACCESSORY WORDS — these often appear in accessory listings but CAN also
@@ -242,7 +250,7 @@ PHONE_SOFT_ACCESSORY_WORDS = (
     "schutzhülle", "schutzhuelle", "schutz folie", "folie",
     "zubehör", "zubehoer",
     "etui", "wallet", "magnetic case", "stoßschutz",
-    "stosschutz", "stoβfest", "stoßfest", "stossfest", "transparent",
+    "stosschutz", "stoβfest", "stoßfest", "stossfest",
     "kratzfest", "battery", "akku",
     "lautsprecher", "kameraobjektiv",
     "usb port", "usb anschluss",
@@ -252,7 +260,6 @@ PHONE_SOFT_ACCESSORY_WORDS = (
 # Used to override soft accessory words like 'case'/'cover'/'transparent' in titles such as
 # 'Phone with case included Snapdragon 256GB' or 'RedMagic Transparent Edition'.
 PHONE_STRONG_DEVICE_HINTS = (
-    "smartphone", "cell phone", "mobile phone",
     "unlocked", "snapdragon", "qualcomm",
     "imei", "phone only", "fully working",
     "gaming phone", "gaming-smartphone",
@@ -439,6 +446,52 @@ CATEGORY_ACCESSORY_WORDS = {
         "reparatur", "tasche", "case", "box", "mod", "3d print", "3d gedruckt", "gewicht", "weight",
         "ladekabel", "cover", "hülle", "huelle", "tastenfeld", "tastenkappe", "tastenkappen",
         "taste", "panel", "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten"
+    ),
+}
+
+CATEGORY_HARD_PART_WORDS = {
+    "headphones": (
+        "scharnier", "halterung", "kopfbuegel", "kopfbügel", "speaker horn",
+        "driver part", "abdeckung", "ersatzteil", "ersatzteile", "ersatz teile", "part",
+        "ohrpolster", "kopfband", "hinge", "lautsprecher", "replacement earpads", "earpads",
+        "lautsprechertreiber", "kopfhoererbuegel", "kabelanschluss", "drahtanschluss", "12-pin",
+        "kopfbügel abdeckung", "kopfbuegel abdeckung", "stirnband abdeckung",
+        "schaumstoff", "einlagen", "polster paar", "nur ohrpolster",
+        "foam earpad", "ear cushions", "pads pair", "schrauben",
+    ),
+    "vr_headsets": (
+        "lens protector", "gurte", "strap", "controllergriffe", "aufsatz", "lentes",
+        "graduadas", "facial interface", "myopie", "kurzsichtig", "controller links",
+        "controller rechts", "wireless dongle", "dongle", "trackstraps", "trackstrap",
+        "ersatzteile", "reparatur", "spi/iic", "spi5253",
+    ),
+    "consoles": (
+        "skin", "aufkleber", "sticker", "decal", "standfuss", "standfuß", "stand",
+        "vertical stand", "kamera", "camera", "tastatur", "keyboard", "maus", "mouse",
+        "hdmi kabel", "hdmi cable", "usb kabel", "ssd", "festplatte", "hard drive", "m.2",
+        "faceplates", "faceplate", "cover plate", "thumb grip", "thumbstick", "analog stick",
+        "lenkrad", "steering wheel", "racing wheel", "lüfter", "luefter", "fan",
+        "cooling fan", "cooler", "kühler", "kuehler", "cooling system", "staubschutz",
+        "dust plug", "dust cover", "dustproof", "schmutzschutz", "wandhalterung",
+        "wall mount", "halterung", "mount", "bracket", "netzkabel", "stromkabel",
+        "netzteil", "power cable", "power cord", "power supply",
+    ),
+    "laptops": (
+        "parts", "ersatzteil", "ersatzteile", "netzteil", "ladegerät", "charger",
+        "tastatur", "keyboard", "akku", "battery", "display", "bildschirm", "screen",
+    ),
+    "mice": (
+        "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button",
+        "clicker", "ladedock", "dock", "charging dock", "lade-dock", "charger", "kabel",
+        "cable", "scroll rad", "scroll-rad", "scrollrad", "mausrad", "wheel",
+        "scroll wheel", "mouse wheel", "pcb", "motherboard", "mainboard", "platine",
+        "switch", "switches", "taster", "microswitch", "micro-switch", "grip", "grips",
+        "griptape", "tape", "anti-slip", "skates", "feet", "glides", "mausfüße",
+        "mausfuesse", "mouse skates", "mouse feet", "receiver", "dongle", "adapter",
+        "akku", "battery", "ersatzteil", "ersatzteile", "spare part", "spare parts",
+        "reparatur", "mod", "3d print", "3d gedruckt", "gewicht", "weight", "ladekabel",
+        "cover", "tastenfeld", "tastenkappe", "tastenkappen", "taste", "panel",
+        "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten",
     ),
 }
 
@@ -770,6 +823,11 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         return True
     if _is_for_accessory_title(title_norm, query_norm, category):
         return True
+    # Hard parts - always block, no bundle override
+    hard_parts = CATEGORY_HARD_PART_WORDS.get(category, ())
+    if any(_has_accessory_term(title_norm, w) for w in hard_parts):
+        return True
+
     acc_words = CATEGORY_ACCESSORY_WORDS.get(category, ())
     has_acc = any(_has_accessory_term(title_norm, w) for w in acc_words)
     if has_acc:
