@@ -1418,6 +1418,78 @@ def fetch_ebay_api_ex(search):
         return [], "api_network"
 
 
+def _fetch_item_description(item_id):
+    """Fetches the item description via the eBay Browse API."""
+    token, err = _get_ebay_api_token()
+    if err:
+        logger.warning("_fetch_item_description: token error: %s", err)
+        return ""
+    # Browse API item ID format is v1|{legacyItemId}|0
+    browse_id = f"v1|{item_id}|0"
+    url = f"https://api.ebay.com/buy/browse/v1/item/{urllib.parse.quote(browse_id)}"
+    country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "DE")
+    try:
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json",
+                "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                "X-EBAY-C-MARKETPLACE-ID": EBAY_MARKETPLACE_ID,
+                "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="replace"))
+        return data.get("description", "")
+    except urllib.error.HTTPError as e:
+        try:
+            body = e.read().decode("utf-8", errors="replace")
+            logger.warning("_fetch_item_description: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
+        except Exception:
+            pass
+        return ""
+    except Exception as e:
+        logger.warning("_fetch_item_description: eBay API network error for item %s: %s", item_id, e)
+        return ""
+
+
+def _clean_description(html_text):
+    """Strips HTML tags and unescapes HTML entities from the description."""
+    if not html_text:
+        return ""
+    # Strip HTML tags
+    text = re.sub(r'<[^>]+>', ' ', html_text)
+    # Unescape HTML entities (like &amp;, &nbsp;)
+    import html
+    text = html.unescape(text)
+    return text
+
+
+def _is_description_blocked(desc_html, category):
+    """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
+    if not desc_html:
+        return False
+    clean_desc = _clean_description(desc_html)
+    desc_norm = _normalize(clean_desc)
+
+    # 1. Check for bad condition words/phrases
+    for w in BAD_CONDITION_WORDS:
+        if _has_term(desc_norm, w):
+            logger.info("Description blocked due to bad condition word/phrase: '%s'", w)
+            return True
+
+    # 2. Check for screen/backcover lifting/loose/separation patterns
+    if re.search(r"\b(?:screen|display|backcover|glass|glas|rueckseite)\b.*\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b", desc_norm):
+        logger.info("Description blocked due to screen/backcover lifting pattern 1")
+        return True
+    if re.search(r"\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b.*\b(?:screen|display|backcover|glass|glas|rueckseite)\b", desc_norm):
+        logger.info("Description blocked due to screen/backcover lifting pattern 2")
+        return True
+
+    return False
+
+
 def _seller_trust(rating_count, rating_percent, top_rated=False):
     if top_rated and rating_count >= 3:
         return "trusted"
@@ -2105,6 +2177,11 @@ async def process_searches(bot, once=False):
 
             for item in sorted(new_items, key=lambda x: x["total_price"]):
                 h = _item_hash(item["seller_name"], item["title"], item["price"])
+                desc = await asyncio.to_thread(_fetch_item_description, item["item_id"])
+                if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
+                    logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
+                    seen_ids.add(item["item_id"])
+                    continue
                 sent = await send_notification(bot, item, search, stats_7d)
                 if sent:
                     total_new += 1
@@ -2141,6 +2218,11 @@ async def process_searches(bot, once=False):
 
                 for item in sorted(new_items, key=lambda x: x["total_price"]):
                     h = _item_hash(item["seller_name"], item["title"], item["price"])
+                    desc = await asyncio.to_thread(_fetch_item_description, item["item_id"])
+                    if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
+                        logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
+                        seen_ids.add(item["item_id"])
+                        continue
                     sent = await send_notification(bot, item, search, stats_7d)
                     if sent:
                         total_new += 1
