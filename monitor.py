@@ -194,7 +194,10 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "ladegerät", "ladegeraet", "lader", "netzteil", "netzlader", "schnellladegerät", "schnellladegeraet",
     "gürteltasche", "guerteltasche", "gürtelclip", "guertelclip", "handytasche", "handy-tasche", "schlaufe",
     "panzerglasfolie", "panzer-glasfolie", "schutz-folie", "schutzfolien", "panzerglasfolien",
-    "kopfhörer", "kopfhoerer", "earphones", "headphones", "headset", "in-ear", "inear"
+    "kopfhörer", "kopfhoerer", "earphones", "headphones", "headset", "in-ear", "inear",
+    # Accessory stands / pads / mounts
+    "anti rutsch", "pad", "pads", "halterung", "holder", "stand", "mount", "handyhalterung",
+    "car mount", "car holder", "unterlage"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -221,7 +224,11 @@ PHONE_HARD_PART_WORDS = (
     "rueckcover", "rückcover",
     "box only", "empty box", "leere box", "nur box", "nur verpackung",
     "leerverpackung", "leere verpackung", "nur die box", "nur die verpackung",
-    "nur ovp", "nur die ovp"
+    "nur ovp", "nur die ovp",
+    # Middle frame, bezel, photography kits
+    "middle frame", "mittelrahmen", "mitte rahmen", "bezel", "frame bezel",
+    "replacement bezel", "displayrahmen", "rahmen", "photography kit",
+    "photo kit", "fotografie-kit", "camera kit", "photography-kit"
 )
 
 # SOFT ACCESSORY WORDS — these often appear in accessory listings but CAN also
@@ -308,6 +315,8 @@ PHONE_DEVICE_HINTS = PHONE_STRONG_DEVICE_HINTS + PHONE_WEAK_DEVICE_HINTS
 BAD_CONDITION_WORDS = (
     "defekt", "teildefekt", "displayschaden", "display gewechselt", "icloud sperre", "gesperrt",
     "funktioniert nicht", "nur box", "verpackung", "tauschen", "tausch",
+    "leerbox", "leerhuelle", "leerhülle", "empty box", "empty case", "nur ovp",
+    "nur karton", "leerer karton", "schachtel leer", "leere schachtel",
     "psn servern ausgeschlossen", "von psn servern ausgeschlossen",
     "banned from psn servers", "nur ersatzteile", "ersatzteile reparatur",
     "als ersatzteile", "fuer ersatzteile",
@@ -335,7 +344,13 @@ BAD_CONDITION_WORDS = (
     "loose screen", "lose display", "display geloest",
     "backcover geloest", "back cover loose", "backcover loose",
     "rueckseite geloest", "display steht ab", "steht ab",
-    "abstehendes display", "abstehend"
+    "abstehendes display", "abstehend",
+    # Display errors / lines / spots
+    "displayfehler", "bildschirmfehler", "pixelfehler", "green line",
+    "gruene linie", "grüne linie", "pink line", "white line", "streifen im display",
+    "linien im display", "display streifen", "fleck im display", "flecken im display",
+    "burn in", "burn-in", "eingebranntes display", "eingebrannt", "schatten im display",
+    "whitespot", "whitespots", "flecken", "fleck", "streifen", "linien"
 )
 
 # Conditions parsed from eBay's condition badge that should always be blocked.
@@ -401,7 +416,9 @@ CATEGORY_ACCESSORY_WORDS = {
         "lenkrad", "steering wheel", "racing wheel",
     ),
     "laptops": (
-        "parts", "ersatzteil", "ersatzteile", "displayschaden",
+        "parts", "ersatzteil", "ersatzteile", "displayschaden", "netzteil",
+        "ladegerät", "charger", "tastatur", "keyboard", "akku", "battery",
+        "tasche", "hülle", "huelle", "case", "display", "bildschirm", "screen",
     ),
     "mice": (
         "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button", "clicker",
@@ -635,7 +652,24 @@ def _is_category_blocked_title(title_norm, category):
         return True
     if re.search(r"\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b.*\b(?:screen|display|backcover|glass|glas|rueckseite)\b", title_norm):
         return True
-    return any(_has_accessory_term(title_norm, w) for w in CATEGORY_ACCESSORY_WORDS.get(category, ()))
+    acc_words = CATEGORY_ACCESSORY_WORDS.get(category, ())
+    has_acc = any(_has_accessory_term(title_norm, w) for w in acc_words)
+    if has_acc:
+        # Check if the title starts with "fuer", "für", "for", "geeignet" -> always block
+        if re.match(r"^(?:fuer|für|for|geeignet|fits)\s+", title_norm):
+            return True
+        # Check if this is a bundle (main device + accessory)
+        is_bundle = any(b in title_norm for b in ("mit", "+", "and", "&", "inkl", "with", "bundle"))
+        if is_bundle:
+            device_patterns = r"\b(?:sony|playstation|ps5|xbox|nintendo|switch|meta|quest|pico|oculus|logitech|razer|superlight|g pro|iphone|samsung|pixel|redmagic|nubia|laptop|notebook|macbook|vivobook|zenbook|asus|hp|lenovo|dell)\b"
+            if re.search(device_patterns, title_norm):
+                # Ensure no "for/fuer/etc" precedes the device name (which indicates it's an accessory for that device)
+                if re.search(r"\b(?:fuer|für|for|compatibel|kompatibel|zu|to)\b.*\b(?:sony|playstation|ps5|xbox|nintendo|switch|meta|quest|pico|oculus|logitech|razer|superlight|g pro|iphone|samsung|pixel|redmagic|nubia|laptop|notebook|macbook|vivobook|zenbook|asus|hp|lenovo|dell)\b", title_norm):
+                    return True  # Block!
+                return False  # Do NOT block (it's a bundle)
+        return True  # Block accessory-only listings
+
+    return False
 
 
 def _effective_category(category, query_norm):
@@ -748,6 +782,12 @@ def _is_console_device_title(title_norm, query_norm):
     # Check for accessory words that confirm it's NOT a console
     for word in CATEGORY_ACCESSORY_WORDS.get("consoles", ()):
         if _has_term(title_norm, word):
+            is_bundle = (
+                any(b in title_norm for b in ("mit", "+", "and", "&", "inkl", "with", "bundle"))
+                and re.match(r"^(?:sony\s+)?(?:playstation|ps5|xbox|nintendo|switch)\b", title_norm)
+            )
+            if is_bundle:
+                return True
             return False
     
     # No device hint and no accessory word — likely a game or irrelevant
@@ -763,45 +803,16 @@ def _build_smart_search_query(search):
     filters = search.get("filters", {}) or {}
     category = filters.get("category", "all")
     
-    # Common defect exclusions useful for all searches
+    # Common defect exclusions useful for all searches (100% safe, no bundles can have these)
     excludes = [
         "defekt", "teildefekt", "ersatzteil", "reparatur",
         "broken", "cracked", "damage", "damaged", "defect", "defective",
         "repair", "spares", "parts", "wasserschaden"
     ]
     
-    # Category-specific exclusions
+    # Category-specific safe defect/parts exclusions
     if category == "phones":
-        excludes.extend([
-            "displayschaden", "icloud", "sperre", "gesperrt",
-            "verpackung", "karton", "ovp", "box", "hülle", "huelle", "case",
-            "folie", "panzerglas"
-        ])
-    elif category == "mice":
-        excludes.extend([
-            "tasten", "taste", "taster", "button", "buttons",
-            "kabel", "cable", "scrollrad", "wheel", "case", "tasche", "ersatz",
-            "grip", "grips", "glide", "glides", "skates", "polster"
-        ])
-    elif category == "headphones":
-        excludes.extend([
-            "polster", "pad", "pads", "earpads", "kabel", "cable",
-            "bügel", "buegel", "tasche", "case", "ersatz", "scharnier", "hinge"
-        ])
-    elif category == "vr_headsets":
-        excludes.extend([
-            "strap", "kabel", "cable", "tasche", "case", "controller",
-            "halterung", "mount", "polster"
-        ])
-    elif category == "consoles":
-        excludes.extend([
-            "controller", "tasche", "case", "ständer", "stand", "kabel", "cable"
-        ])
-    elif category == "laptops":
-        excludes.extend([
-            "netzteil", "ladegerät", "charger", "tastatur", "keyboard",
-            "akku", "battery", "display", "bildschirm", "screen"
-        ])
+        excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
         
     exclude_str = " ".join(f"-{w}" for w in excludes)
     return f"{query} {exclude_str}"
