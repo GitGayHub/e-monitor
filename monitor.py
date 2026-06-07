@@ -998,7 +998,7 @@ def parse_ebay_results(html):
             for txt in all_texts:
                 if "preisvorschlag" in txt or "best offer" in txt:
                     best_offer = True
-                if "gebot" in txt or "bid" in txt or "ставк" in txt:
+                if ("gebot" in txt and "angebot" not in txt) or "bid" in txt or "ставк" in txt:
                     auction = True
                     buy_now = False
                     m_bids = re.search(r"(\d+)\s*(?:gebot|bid|ставк)", txt)
@@ -1518,12 +1518,12 @@ def _is_eu(location_text):
               "indien", "india", "australien", "australia", "kanada", "canada")
     if any(n in loc for n in non_eu):
         return False
-    # Only match full words or long country names (avoid "ie" matching inside "großbritannien")
+    # Only match full words or long country names
     for country in EU_COUNTRIES:
         if len(country) <= 2:
-            # Short codes: must be exact word boundary
-            if f" {country}" in f" {loc}" and country not in ("ie",):
-                continue  # skip short codes, too error-prone
+            # Short codes: must be exact word boundary to avoid false matches (like "ie" in "grossbritannien")
+            if re.search(rf"\b{re.escape(country)}\b", loc):
+                return True
         else:
             if country in loc:
                 return True
