@@ -1703,12 +1703,12 @@ def fetch_ebay_api_ex(search):
         return [], "api_network"
 
 
-def _fetch_item_description(item_id):
-    """Fetches the item description via the eBay Browse API."""
+def _fetch_item_details(item_id):
+    """Fetches the item details via the eBay Browse API."""
     token, err = _get_ebay_api_token()
     if err:
-        logger.warning("_fetch_item_description: token error: %s", err)
-        return ""
+        logger.warning("_fetch_item_details: token error: %s", err)
+        return None
     # Browse API item ID format is v1|{legacyItemId}|0
     browse_id = f"v1|{item_id}|0"
     url = f"https://api.ebay.com/buy/browse/v1/item/{urllib.parse.quote(browse_id)}"
@@ -1726,19 +1726,19 @@ def _fetch_item_description(item_id):
         )
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
-        return data.get("description", "")
+        return data
     except urllib.error.HTTPError as e:
         try:
             body = e.read().decode("utf-8", errors="replace")
-            logger.warning("_fetch_item_description: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
+            logger.warning("_fetch_item_details: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
             if e.code == 404:
                 return "__BLOCKED_404__"
         except Exception:
             pass
-        return ""
+        return None
     except Exception as e:
-        logger.warning("_fetch_item_description: eBay API network error for item %s: %s", item_id, e)
-        return ""
+        logger.warning("_fetch_item_details: eBay API network error for item %s: %s", item_id, e)
+        return None
 
 
 def _clean_description(html_text):
@@ -2489,11 +2489,33 @@ async def process_searches(bot, once=False):
 
             for item in sorted(new_items, key=lambda x: x["total_price"]):
                 h = _item_hash(item["seller_name"], item["title"], item["price"])
-                desc = await asyncio.to_thread(_fetch_item_description, item["item_id"])
-                if desc == "__BLOCKED_404__":
+                details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
+                if details == "__BLOCKED_404__":
                     logger.info("Skipping notification for item %s: blocked due to API 404 (sold out or variation parent)", item["item_id"])
                     seen_ids.add(item["item_id"])
                     continue
+                
+                desc = ""
+                if details:
+                    # Block SELLER_DEFINED_VARIATIONS
+                    if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
+                        logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
+                        seen_ids.add(item["item_id"])
+                        continue
+                    # Block constructor/bait listings (price mismatch between search results and API details)
+                    api_price_val = details.get("price", {}).get("value")
+                    if api_price_val:
+                        try:
+                            api_price = float(api_price_val)
+                            scraped_price = float(item["price"])
+                            if abs(api_price - scraped_price) > 1.0:
+                                logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
+                                seen_ids.add(item["item_id"])
+                                continue
+                        except Exception as pe:
+                            logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
+                    desc = details.get("description", "")
+
                 if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                     logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                     seen_ids.add(item["item_id"])
@@ -2534,11 +2556,33 @@ async def process_searches(bot, once=False):
 
                 for item in sorted(new_items, key=lambda x: x["total_price"]):
                     h = _item_hash(item["seller_name"], item["title"], item["price"])
-                    desc = await asyncio.to_thread(_fetch_item_description, item["item_id"])
-                    if desc == "__BLOCKED_404__":
+                    details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
+                    if details == "__BLOCKED_404__":
                         logger.info("Skipping notification for item %s: blocked due to API 404 (sold out or variation parent)", item["item_id"])
                         seen_ids.add(item["item_id"])
                         continue
+                    
+                    desc = ""
+                    if details:
+                        # Block SELLER_DEFINED_VARIATIONS
+                        if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
+                            logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
+                            seen_ids.add(item["item_id"])
+                            continue
+                        # Block constructor/bait listings (price mismatch between search results and API details)
+                        api_price_val = details.get("price", {}).get("value")
+                        if api_price_val:
+                            try:
+                                api_price = float(api_price_val)
+                                scraped_price = float(item["price"])
+                                if abs(api_price - scraped_price) > 1.0:
+                                    logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
+                                    seen_ids.add(item["item_id"])
+                                    continue
+                            except Exception as pe:
+                                logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
+                        desc = details.get("description", "")
+
                     if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                         logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                         seen_ids.add(item["item_id"])
