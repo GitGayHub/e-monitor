@@ -412,7 +412,8 @@ CATEGORY_ACCESSORY_WORDS = {
         "glides", "mausfüße", "mausfuesse", "mouse skates", "mouse feet", "receiver", "dongle",
         "adapter", "akku", "battery", "ersatzteil", "ersatzteile", "spare part", "spare parts",
         "reparatur", "tasche", "case", "box", "mod", "3d print", "3d gedruckt", "gewicht", "weight",
-        "ladekabel", "cover", "hülle", "huelle", "tastenfeld", "tastenkappe", "tastenkappen"
+        "ladekabel", "cover", "hülle", "huelle", "tastenfeld", "tastenkappe", "tastenkappen",
+        "taste", "panel", "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten"
     ),
 }
 
@@ -1128,6 +1129,14 @@ def _parse_price(text):
     if "bis" in text.lower() or "to" in text.lower():
         parts = re.split(r"bis|to", text, flags=re.IGNORECASE)
         text = parts[0].strip()
+    # Extract only the first price block to avoid commercial net price suffix (exkl. MwSt.)
+    match = re.search(r'([\d.,\s]+)(?:EUR|USD|€|\$)', text, re.IGNORECASE)
+    if match:
+        text = match.group(1).strip()
+    else:
+        match = re.search(r'(?:EUR|USD|€|\$)\s*([\d.,\s]+)', text, re.IGNORECASE)
+        if match:
+            text = match.group(1).strip()
     text = _normalize_price_number(text)
     try:
         return float(text)
