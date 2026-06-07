@@ -779,11 +779,13 @@ def _build_url_with_host(host, search, sub="www"):
     cond = filters.get("condition", "any")
     if cond_code:
         params["LH_ItemCondition"] = str(cond_code)
-    elif host == "ebay.de":
+    else:
         if cond == "new":
-            params["LH_ItemCondition"] = "1000"
+            params["LH_ItemCondition"] = "1000|1500"
         elif cond == "used":
             params["LH_ItemCondition"] = "3000"
+        elif cond == "any":
+            params["LH_ItemCondition"] = "1000|1500|2000|2500|3000"
     lt = filters.get("listing_type", "all")
     if lt in ("buy_now", "buy_now_offer"):
         params["LH_BIN"] = "1"
@@ -911,10 +913,13 @@ def build_ebay_url(search):
     cond = filters.get("condition", "any")
     if cond_code:
         params["LH_ItemCondition"] = str(cond_code)
-    elif cond == "new":
-        params["LH_ItemCondition"] = "1000"
-    elif cond == "used":
-        params["LH_ItemCondition"] = "3000"
+    else:
+        if cond == "new":
+            params["LH_ItemCondition"] = "1000|1500"
+        elif cond == "used":
+            params["LH_ItemCondition"] = "3000"
+        elif cond == "any":
+            params["LH_ItemCondition"] = "1000|1500|2000|2500|3000"
     lt = filters.get("listing_type", "all")
     if lt in ("buy_now", "buy_now_offer"):
         params["LH_BIN"] = "1"
@@ -1296,6 +1301,8 @@ def _build_ebay_api_params(search):
         filter_parts.append("conditions:{NEW}")
     elif cond == "used":
         filter_parts.append("conditions:{USED}")
+    elif cond == "any":
+        filter_parts.append("conditions:{NEW|USED|REFURBISHED}")
 
     lt = filters.get("listing_type", "all")
     buying_map = {
