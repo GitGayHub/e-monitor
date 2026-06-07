@@ -210,6 +210,8 @@ PHONE_HARD_PART_WORDS = (
     "hauptplatine", "basisplatine", "earpiece", "vibrator", "sim tray",
     "ersatzteil", "ersatzteile", "modul", "module", "platine",
     "sim kartenfach", "kartenfach", "ringer", "buzzer",
+    "replacement", "replacements", "sensor", "sensoren",
+    "fingerprint", "fingerabdrucksensor",
     "signalkabel", "klingelton", "summer", "rückkamera", "rueckkamera",
     "kamera linse", "kartenleser", "mikrofonanschluss", "rückabdeckung",
     "rueckabdeckung", "anschlussplatine", "objektivabdeckung",
@@ -1630,6 +1632,8 @@ def _fetch_item_description(item_id):
         try:
             body = e.read().decode("utf-8", errors="replace")
             logger.warning("_fetch_item_description: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
+            if e.code == 404:
+                return "__BLOCKED_404__"
         except Exception:
             pass
         return ""
@@ -2367,6 +2371,10 @@ async def process_searches(bot, once=False):
             for item in sorted(new_items, key=lambda x: x["total_price"]):
                 h = _item_hash(item["seller_name"], item["title"], item["price"])
                 desc = await asyncio.to_thread(_fetch_item_description, item["item_id"])
+                if desc == "__BLOCKED_404__":
+                    logger.info("Skipping notification for item %s: blocked due to API 404 (sold out or variation parent)", item["item_id"])
+                    seen_ids.add(item["item_id"])
+                    continue
                 if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                     logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                     seen_ids.add(item["item_id"])
@@ -2408,6 +2416,10 @@ async def process_searches(bot, once=False):
                 for item in sorted(new_items, key=lambda x: x["total_price"]):
                     h = _item_hash(item["seller_name"], item["title"], item["price"])
                     desc = await asyncio.to_thread(_fetch_item_description, item["item_id"])
+                    if desc == "__BLOCKED_404__":
+                        logger.info("Skipping notification for item %s: blocked due to API 404 (sold out or variation parent)", item["item_id"])
+                        seen_ids.add(item["item_id"])
+                        continue
                     if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                         logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                         seen_ids.add(item["item_id"])
