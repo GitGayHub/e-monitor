@@ -329,6 +329,13 @@ BAD_CONDITION_WORDS = (
     # Water damage
     "wasserschaden", "water damage", "water damaged",
     "feuchtigkeitsschaden", "nass geworden",
+    # Screen/Backcover lifted/loose
+    "lifted screen", "screen lifted", "display lifted", "lifted display",
+    "screen lifting", "display lifting", "screen loose", "display lose",
+    "loose screen", "lose display", "display geloest",
+    "backcover geloest", "back cover loose", "backcover loose",
+    "rueckseite geloest", "display steht ab", "steht ab",
+    "abstehendes display", "abstehend"
 )
 
 # Conditions parsed from eBay's condition badge that should always be blocked.
@@ -621,6 +628,11 @@ def _is_phone_accessory_title(title_norm):
 
 def _is_category_blocked_title(title_norm, category):
     if any(_has_term(title_norm, w) for w in BAD_CONDITION_WORDS):
+        return True
+    # Check for screen/backcover lifting/loose/separation
+    if re.search(r"\b(?:screen|display|backcover|glass|glas|rueckseite)\b.*\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b", title_norm):
+        return True
+    if re.search(r"\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b.*\b(?:screen|display|backcover|glass|glas|rueckseite)\b", title_norm):
         return True
     return any(_has_accessory_term(title_norm, w) for w in CATEGORY_ACCESSORY_WORDS.get(category, ()))
 
@@ -1038,15 +1050,22 @@ def parse_ebay_results(html):
                 if "secondary" in cls and "default" in cls:
                     txt_lower = txt.lower().rstrip(" |")
                     txt_clean = txt_lower.replace("·", "").strip()
-                    if txt_clean in ("gebraucht", "neu", "new", "used", "brand new", "pre-owned", "new other",
-                                     "defekt", "als ersatzteile",
-                                     "für ersatzteile", "for parts or not working",
-                                     "for parts", "not working", "parts only",
-                                     "als ersatzteile oder nicht funktionsfähig"):
+                    txt_norm = _normalize(txt_clean)
+                    is_condition = False
+                    for cond_word in ("gebraucht", "neu", "new", "used", "refurbished", "generaluberholt", "pre owned"):
+                        if cond_word in txt_norm:
+                            is_condition = True
+                            break
+                    for defect_word in ("defekt", "ersatzteil", "parts", "not working", "salvage", "reparatur"):
+                        if defect_word in txt_norm:
+                            is_condition = True
+                            condition = "defekt"
+                            break
+                    if is_condition and not condition:
                         condition = txt.rstrip(" |").strip()
-                    elif txt_lower == "privat":
+                    elif txt_clean == "privat":
                         seller_type = "private"
-                    elif txt_lower == "gewerblich":
+                    elif txt_clean == "gewerblich":
                         seller_type = "commercial"
                 if "aus " in txt.lower() and len(txt) < 40:
                     location = re.sub(r"^aus\s+", "", txt, flags=re.IGNORECASE).strip()
@@ -1508,8 +1527,9 @@ def filter_results(items, search, config_obj, skip_seen=False):
         title_norm = _normalize(item["title"])
         # Block items with bad conditions (Defekt, Als Ersatzteile, etc.)
         cond_norm = _normalize(item.get("condition", ""))
-        if cond_norm and cond_norm in BAD_CONDITIONS:
-            continue
+        if cond_norm:
+            if cond_norm in BAD_CONDITIONS or any(w in cond_norm for w in ("defekt", "ersatzteil", "parts", "not working", "salvage", "reparatur", "broken")):
+                continue
         if query_words and not all(_has_query_word(title_norm, w) for w in query_words):
             continue
         query_norm = _normalize(search.get("query", ""))
