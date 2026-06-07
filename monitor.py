@@ -359,6 +359,17 @@ CATEGORY_ACCESSORY_WORDS = {
     "laptops": (
         "parts", "ersatzteil", "ersatzteile", "displayschaden",
     ),
+    "mice": (
+        "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button", "clicker",
+        "ladedock", "dock", "charging dock", "lade-dock", "charger", "kabel", "cable",
+        "scroll rad", "scroll-rad", "scrollrad", "mausrad", "wheel", "scroll wheel", "mouse wheel",
+        "pcb", "motherboard", "mainboard", "platine", "switch", "switches", "taster", "microswitch",
+        "micro-switch", "grip", "grips", "griptape", "tape", "anti-slip", "skates", "feet",
+        "glides", "mausfüße", "mausfuesse", "mouse skates", "mouse feet", "receiver", "dongle",
+        "adapter", "akku", "battery", "ersatzteil", "ersatzteile", "spare part", "spare parts",
+        "reparatur", "tasche", "case", "box", "mod", "3d print", "3d gedruckt", "gewicht", "weight",
+        "ladekabel", "cover", "hülle", "huelle", "tastenfeld", "tastenkappe", "tastenkappen"
+    ),
 }
 
 # Words that indicate a listing is a GAME, not a console.
