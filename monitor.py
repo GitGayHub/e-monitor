@@ -773,6 +773,32 @@ EU_COUNTRIES = {
 }
 
 
+def _parse_time_left_to_minutes(time_left_str):
+    t = time_left_str.lower().strip()
+    
+    days = 0
+    m_days = re.search(r"(\d+)\s*(?:tag|d)", t)
+    if m_days:
+        days = int(m_days.group(1))
+        
+    hours = 0
+    m_hours = re.search(r"(\d+)\s*(?:std|h)", t)
+    if m_hours:
+        hours = int(m_hours.group(1))
+        
+    minutes = 0
+    m_minutes = re.search(r"(\d+)\s*(?:min|m\b)", t)
+    if m_minutes:
+        minutes = int(m_minutes.group(1))
+        
+    if days == 0 and hours == 0 and minutes == 0:
+        if "sek" in t or "s" in t or "sec" in t:
+            return 1  # 1 minute or less
+            
+    total_minutes = days * 1440 + hours * 60 + minutes
+    return total_minutes
+
+
 def _normalize(text):
     t = text.lower()
     t = t.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
@@ -902,12 +928,19 @@ def parse_ebay_results(html):
             best_offer = False
             auction = False
             time_left = ""
+            bids_count = None
             for txt in all_texts:
                 if "preisvorschlag" in txt or "best offer" in txt:
                     best_offer = True
                 if "gebot" in txt or "bid" in txt or "ставк" in txt:
                     auction = True
                     buy_now = False
+                    m_bids = re.search(r"(\d+)\s*(?:gebot|bid|ставк)", txt)
+                    if m_bids:
+                        try:
+                            bids_count = int(m_bids.group(1))
+                        except ValueError:
+                            pass
 
             for s in all_spans:
                 txt = s.get_text(strip=True)
@@ -979,6 +1012,7 @@ def parse_ebay_results(html):
                 "buy_now": buy_now,
                 "best_offer": best_offer,
                 "auction": auction,
+                "bids_count": bids_count,
                 "condition": condition,
                 "seller_name": seller_name,
                 "seller_rating_count": rating_count,
@@ -1397,6 +1431,22 @@ def filter_results(items, search, config_obj, skip_seen=False):
             continue
         if filters.get("best_offer") and not item.get("best_offer"):
             continue
+            
+        # User requirement: For auction listings (unless they have Buy It Now),
+        # only send if:
+        # A) They accept Best Offer and have 0 bids.
+        # B) They are ending in 1 hour or less.
+        if item.get("auction") and not item.get("buy_now"):
+            is_new_best_offer = item.get("best_offer") and item.get("bids_count") == 0
+            is_ending_soon = False
+            time_left_str = item.get("time_left", "")
+            if time_left_str:
+                minutes = _parse_time_left_to_minutes(time_left_str)
+                if minutes is not None and minutes <= 60:
+                    is_ending_soon = True
+            if not (is_new_best_offer or is_ending_soon):
+                continue
+                
         seller_lower = item["seller_name"].lower()
         if seller_lower in [s.lower() for s in global_banned]:
             continue
