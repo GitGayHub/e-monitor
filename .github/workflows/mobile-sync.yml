@@ -9,7 +9,9 @@ on:
       - "config_manager.py"
       - "settings_handlers.py"
       - "config.json.enc"
+      - "mobile/app_sync.json"
       - "mobile/build_app_sync.py"
+      - "mobile/merge_app_sync_to_config.py"
       - ".github/workflows/mobile-sync.yml"
       - ".github/workflows/e-monitor.yml"
   workflow_dispatch:
@@ -52,13 +54,21 @@ jobs:
           EBAY_MARKETPLACE_ID: EBAY_DE
           EBAY_SOURCE: api_first
         run: |
+          if [ -f config.json ]; then
+            python mobile/merge_app_sync_to_config.py
+          fi
           python mobile/build_app_sync.py
 
-      - name: Commit manifest
+      - name: Commit config and manifest
+        env:
+          CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
         run: |
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
-          git add mobile/app_sync.json
+          if [ -n "$CONFIG_PASSPHRASE" ] && [ -f config.json ]; then
+            python config_crypt.py encrypt config.json config.json.enc
+          fi
+          git add config.json.enc mobile/app_sync.json
           if git diff --cached --quiet; then
             echo "No Android sync manifest changes"
             exit 0
