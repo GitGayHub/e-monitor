@@ -594,6 +594,33 @@ def register_settings_handlers(app: Application, config):
         elif data == "m:settings":
             await _show_settings(msg, context)
 
+        elif data == "m:toggle_mode":
+            from monitor import _is_statistics_mode, _sync_mode_to_github
+            current = _is_statistics_mode(config)
+            new_val = not current
+            config.update_settings({"test_summary_mode": new_val})
+            
+            # Write to mode.txt
+            try:
+                mode_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mode.txt')
+                with open(mode_file, 'w', encoding='utf-8') as f:
+                    f.write('statistics' if new_val else 'normal')
+            except Exception as e:
+                logger.error(f"Failed to write mode.txt: {e}")
+                
+            mode_str = "Статистика" if new_val else "Обычный"
+            await query.answer(f"⚙️ Режим изменен на: {mode_str} (сохранение в GitHub...)", show_alert=False)
+            
+            # Run sync in background task
+            async def do_sync_bg():
+                try:
+                    await asyncio.to_thread(_sync_mode_to_github)
+                except Exception as e:
+                    logger.error(f"Auto-sync failed on toggle: {e}")
+            asyncio.create_task(do_sync_bg())
+            
+            await _show_settings(msg, context)
+
         elif data == "m:filters":
             await _show_filters_menu(msg, context)
 
@@ -1297,15 +1324,24 @@ def register_settings_handlers(app: Application, config):
         lines.append(f"📍 ZIP: <b>{st.get('user_zip') or 'не задан'}</b>")
         lines.append(f"🌍 Страна: {st.get('user_country', 'de')}")
         lines.append(f"💶 НДС не-ЕС: {st.get('non_eu_tax_rate', 0.19)*100:.0f}%")
+        
+        from monitor import _is_statistics_mode
+        test_summary_mode = _is_statistics_mode(config)
+        mode_str = "Статистика" if test_summary_mode else "Обычный"
+        lines.append(f"📊 Автомониторинг: <b>{mode_str}</b>")
+
         if banned:
             lines.append(f"\n🚫 <b>Забаненные продавцы</b> ({len(banned)})")
             for b in banned[:10]:
                 lines.append(f"  · {html.escape(b)}")
             if len(banned) > 10:
                 lines.append(f"  … ещё {len(banned)-10}")
+
+        mode_label = "📊 Автомониторинг: Статистика" if test_summary_mode else "🔄 Автомониторинг: Обычный"
         keyboard = InlineKeyboardMarkup([
             [InlineKeyboardButton("📍 ZIP", callback_data="set:zip"),
              InlineKeyboardButton("💶 НДС", callback_data="set:tax")],
+            [InlineKeyboardButton(mode_label, callback_data="m:toggle_mode")],
             [InlineKeyboardButton("🔙 Назад", callback_data="m:main")],
         ])
         await msg.edit_text("\n".join(lines), parse_mode="HTML", reply_markup=keyboard)

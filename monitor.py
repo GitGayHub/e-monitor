@@ -16,6 +16,7 @@ import sys
 import argparse
 import asyncio
 import json
+import html
 import hashlib
 import subprocess
 import urllib.request
@@ -1160,6 +1161,161 @@ def save_seen_ids():
         lst = lst[-10000:]
     with open(SEEN_IDS_FILE, "w") as f:
         json.dump(lst, f)
+
+
+def _is_statistics_mode(config_obj):
+    mode_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mode.txt')
+    if os.path.exists(mode_file):
+        try:
+            with open(mode_file, 'r', encoding='utf-8') as f:
+                return f.read().strip().lower() == 'statistics'
+        except Exception:
+            pass
+    return config_obj.get_settings().get('test_summary_mode', False)
+
+
+def clear_monitoring_state():
+    global seen_ids
+    seen_ids.clear()
+    save_seen_ids()
+    logger.info("🧹 Сброс мониторинга: seen_ids очищен")
+
+
+def _git_commit_and_push(files_to_sync, commit_msg):
+    repo_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_dir_safe = repo_dir.replace("\\", "/")
+    git_base = ["git", "-c", f"safe.directory={repo_dir_safe}"]
+    
+    def git_run(*args):
+        env = os.environ.copy()
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        try:
+            return subprocess.run(
+                git_base + list(args),
+                cwd=repo_dir,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env
+            )
+        except FileNotFoundError:
+            class DummyResult:
+                returncode = 127
+                stdout = ""
+                stderr = "Git executable not found in PATH"
+            return DummyResult()
+
+    gh_token = GITHUB_TOKEN
+    if gh_token:
+        r_url = git_run("remote", "get-url", "origin")
+        r_str = (r_url.stdout or "").strip()
+        if r_str:
+            fixed = re.sub(r'https://(?:[^@]+@)?github\.com', f'https://{gh_token}@github.com', r_str)
+            if fixed != r_str:
+                git_run("remote", "set-url", "origin", fixed)
+
+    git_run("add", *files_to_sync)
+
+    diff = git_run("diff", "--cached", "--quiet")
+    if diff.returncode != 0:
+        commit = git_run("commit", "-m", commit_msg, "--", *files_to_sync)
+        if commit.returncode != 0:
+            raise Exception(f"Git commit failed: {commit.stderr.strip()}")
+        
+        push = git_run("push")
+        if push.returncode == 0:
+            logger.info(f"Git push successful for: {files_to_sync}")
+            return True
+        else:
+            logger.info(f"First git push failed, trying to pull & rebase... Error: {push.stderr.strip()}")
+            pull = git_run("pull", "--rebase", "--autostash")
+            if pull.returncode != 0:
+                resolved = True
+                for attempt in range(10):
+                    status = git_run("status", "--porcelain")
+                    unmerged = []
+                    for line in (status.stdout or "").splitlines():
+                        if len(line) >= 2 and line[:2] in ("UU", "AA", "DD", "AU", "UA", "DU", "UD"):
+                            unmerged.append(line[3:].strip().strip('"'))
+                    if not unmerged:
+                        break
+                    
+                    for f in unmerged:
+                        pick = git_run("checkout", "--theirs", "--", f)
+                        if pick.returncode != 0:
+                            git_run("checkout", "--ours", "--", f)
+                        git_run("add", "--", f)
+                    
+                    env = os.environ.copy()
+                    env["GIT_EDITOR"] = "true"
+                    env["GIT_TERMINAL_PROMPT"] = "0"
+                    cont = subprocess.run(git_base + ["rebase", "--continue"], cwd=repo_dir, capture_output=True, text=True, env=env)
+                    if cont.returncode == 0:
+                        break
+                else:
+                    resolved = False
+                
+                if not resolved:
+                    git_run("rebase", "--abort")
+                    raise Exception(f"Git rebase conflict could not be resolved automatically. Pull error: {pull.stderr.strip()}")
+
+            push = git_run("push")
+            if push.returncode == 0:
+                logger.info(f"Git push successful after rebase for: {files_to_sync}")
+                return True
+            else:
+                raise Exception(f"Git push failed after rebase: {push.stderr.strip()}")
+    else:
+        logger.info(f"No changes staged for: {files_to_sync}")
+        return False
+
+
+def _sync_mode_to_github():
+    mode_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mode.txt')
+    if os.path.exists(mode_file):
+        with open(mode_file, 'r', encoding='utf-8') as f:
+            content = f.read().strip()
+    else:
+        content = 'normal'
+
+    if os.environ.get("BOT_RUNNING_UNDER_LAUNCHER") == "1":
+        logger.info("Бот запущен под лаунчером. Выполняю прямую синхронизацию mode.txt через Git...")
+        return _git_commit_and_push(["mode.txt"], f"Toggle auto-monitoring mode to {content}")
+
+    if not GITHUB_TOKEN or not GITHUB_REPO:
+        return False
+    
+    api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/mode.txt"
+    headers = {
+        'Authorization': f'token {GITHUB_TOKEN}',
+        'Accept': 'application/vnd.github.v3+json',
+    }
+
+    sha = None
+    try:
+        resp = requests.get(api_url, headers=headers, timeout=15)
+        if resp.status_code == 200:
+            sha = resp.json().get('sha')
+        elif resp.status_code != 404:
+            raise Exception(f"GitHub API ошибка ({resp.status_code}): {resp.text[:200]}")
+    except Exception as e:
+        logger.warning(f"Error fetching mode.txt SHA from GitHub API: {e}")
+
+    encoded = base64.b64encode(content.encode('utf-8')).decode('ascii')
+
+    payload = {
+        'message': f'🔄 Toggle auto-monitoring mode to {content}',
+        'content': encoded,
+    }
+    if sha:
+        payload['sha'] = sha
+
+    resp = requests.put(api_url, headers=headers, json=payload, timeout=15)
+    if resp.status_code in (200, 201):
+        return True
+    else:
+        raise Exception(f"GitHub PUT ошибка ({resp.status_code}): {resp.text[:200]}")
 
 
 def build_ebay_url(search):
@@ -2449,11 +2605,126 @@ async def _refresh_sticky_menu(bot):
         logger.debug("sticky menu send error: %s", e)
 
 
+async def _validate_candidate(item, search):
+    details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
+    if details == "__BLOCKED_404__":
+        return False, None
+    
+    if details:
+        # Block incorrect subcategories (accessories/parts) to prevent false positives
+        cat_id = details.get("categoryId")
+        search_cat = search.get("filters", {}).get("category", "all")
+        if search_cat in ALLOWED_SUBCATEGORIES:
+            allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
+            if cat_id and cat_id not in allowed_set:
+                cat_path_ids = details.get("categoryIdPath", "").split("|")
+                if not any(cid in allowed_set for cid in cat_path_ids):
+                    return False, details
+
+        # Block SELLER_DEFINED_VARIATIONS
+        if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
+            return False, details
+            
+        # Block constructor/bait listings
+        api_price_val = details.get("price", {}).get("value")
+        if api_price_val:
+            try:
+                api_price = float(api_price_val)
+                scraped_price = float(item["price"])
+                if abs(api_price - scraped_price) > 1.0:
+                    return False, details
+            except Exception:
+                pass
+                
+        desc = details.get("description", "")
+        if desc and _is_description_blocked(desc, search_cat):
+            return False, details
+            
+    return True, details
+
+
 async def process_searches(bot, once=False):
     async with process_lock:
         searches = config.get_searches()
         if not searches:
             logger.info("No searches configured")
+            return
+
+        test_summary_mode = _is_statistics_mode(config)
+
+        if test_summary_mode:
+            logger.info("🔍 Statistics/Diagnostic mode active...")
+            report_lines = [
+                f"📋 <b>Диагностический отчет (eBay)</b>"
+            ]
+            
+            for search in searches:
+                results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, search)
+                
+                # API retry if blocked
+                if (fetch_err in ("blocked", "rate_limit", "cooldown")) and _ebay_api_configured():
+                    api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
+                    if not api_err and api_items:
+                        results = api_items
+                
+                # Try auction sweep if configured
+                sweep = _auction_sweep_search(search)
+                if sweep:
+                    auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep)
+                    if not auction_err:
+                        results = _merge_items_by_id(results, auction_results)
+                        
+                # Filter results (ignoring seen hashes)
+                filtered = filter_results(results, search, config, skip_seen=True)
+                
+                # Find the cheapest valid item
+                best_item = None
+                if filtered:
+                    sorted_filtered = sorted(filtered, key=lambda x: x["total_price"])
+                    # Validate up to 5 cheapest candidates
+                    for item in sorted_filtered[:5]:
+                        is_valid, details = await _validate_candidate(item, search)
+                        if is_valid:
+                            best_item = item
+                            break
+                
+                # Generate report line
+                limit = search["filters"].get("max_price")
+                limit_str = f"{limit}€" if limit else "без лимита"
+                query_esc = html.escape(search["query"])
+                
+                item_lines = [f"• <b>{query_esc}</b> (лимит {limit_str})"]
+                if best_item:
+                    p = best_item["total_price"]
+                    h = best_item["url"]
+                    verdict = "✅ Подходит"
+                    if limit and p > limit:
+                        verdict = "❌ Слишком дорого"
+                    item_lines.append(f"  ↳ Цена: {p}€ <a href='{h}'>🔗</a> | {verdict}")
+                else:
+                    item_lines.append("  ↳ Цена: ❌ Не найдено")
+                
+                report_lines.append("\n".join(item_lines))
+                
+                # Small delay between searches
+                if not once:
+                    import random
+                    await asyncio.sleep(random.uniform(2, 5))
+            
+            report_msg = "\n\n───────────────────\n\n".join(report_lines)
+            logger.info("📊 Отправляю диагностический отчет в Telegram...")
+            
+            try:
+                await bot.send_message(
+                    chat_id=TELEGRAM_CHAT_ID,
+                    text=report_msg,
+                    parse_mode="HTML",
+                    disable_web_page_preview=True
+                )
+            except Exception as e:
+                logger.error(f"Ошибка отправки диагностического отчета: {e}")
+                
+            clear_monitoring_state()
             return
 
         total_new = 0

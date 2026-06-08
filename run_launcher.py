@@ -8,7 +8,7 @@ import atexit
 REPO = os.path.dirname(os.path.abspath(__file__))
 MONITOR = os.path.join(REPO, "monitor.py")
 LOCK_FILE = os.path.join(REPO, ".bot.lock")
-STATE_SYNC = ["seen_ids.json", "config.json.enc", "price_history.db"]
+STATE_SYNC = ["seen_ids.json", "config.json.enc", "price_history.db", "mode.txt"]
 STATE_PROTECTED = STATE_SYNC + ["price_history.db-shm", "price_history.db-wal", "config.json"]
 STATE_SET = {p.replace("\\", "/") for p in STATE_PROTECTED}
 STATE_COMMIT_PREFIXES = ("Sync state after run", "Update monitor state")
@@ -343,6 +343,14 @@ git("config", "rebase.autoStash", "true")
 sync_from_remote()
 
 print("\n=== [2/3] Starting bot (Ctrl+C to exit) ===\n")
+
+# Ensure mode.txt exists
+mode_txt_path = os.path.join(REPO, "mode.txt")
+if not os.path.exists(mode_txt_path):
+    with open(mode_txt_path, "w", encoding="utf-8") as f:
+        f.write("normal")
+
+os.environ["BOT_RUNNING_UNDER_LAUNCHER"] = "1"
 
 signal.signal(signal.SIGINT, signal.SIG_IGN)
 try:
