@@ -180,7 +180,7 @@ ALLOWED_SUBCATEGORIES = {
     "laptops": {"177"},                # Notebooks & Netbooks
     "tablets": {"171485"},              # Tablets & eReader
     "computers": {"179"},              # PC Desktops & All-in-Ones
-    "mice": {"23160", "3676"},         # Mäuse, Tastaturen/Mäuse/Pointings
+    "mice": {"23160", "3676", "11195"}, # Mäuse, Tastaturen/Mäuse/Pointings, parent category
     "headphones": {"112529"},          # Kopfhörer & Headsets
     "monitors": {"80182"},             # Monitore, Projektoren & Zubehör
     "vr": {"190066"},                  # VR-Headsets
