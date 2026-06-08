@@ -28,7 +28,7 @@ def merge_json_lists(path_origin, path_local):
     if not isinstance(local, list): local = []
     
     # Merge and deduplicate
-    merged = list(set(origin) | set(local))
+    merged = sorted(list(set(origin) | set(local)))
     return merged
 
 def merge_run_logs(path_origin, path_local):
@@ -103,7 +103,7 @@ def merge_configs(path_origin, path_local):
         if not isinstance(origin_val, list): origin_val = []
         if not isinstance(local_val, list): local_val = []
         
-        merged_list = list(set(origin_val) | set(local_val))
+        merged_list = sorted(list(set(origin_val) | set(local_val)))
         origin[list_key] = merged_list
 
     return origin

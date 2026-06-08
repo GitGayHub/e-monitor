@@ -44,6 +44,8 @@ jobs:
       - name: Checkout code
         if: steps.cooldown.outputs.skip != 'true'
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Set up Python
         if: steps.cooldown.outputs.skip != 'true'
@@ -146,11 +148,10 @@ jobs:
           if ! git rebase origin/main; then
             git rebase --abort || true
           fi
-          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json; do
-            if [ -f "$backup_dir/$f" ]; then
-              cp "$backup_dir/$f" "$f"
-            fi
-          done
+          # Decrypt the rebased config from origin/main so merge_state.py can merge it
+          python config_crypt.py decrypt config.json.enc config.json
+          # Run merge_state.py to merge state from this run into the rebased files
+          python merge_state.py "$backup_dir" "."
           # Re-encrypt config before committing
           python config_crypt.py encrypt config.json config.json.enc
           git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json || true
