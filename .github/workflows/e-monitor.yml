@@ -72,6 +72,7 @@ jobs:
         if: steps.cooldown.outputs.skip != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_BOT_TOKEN_BACKUP: ${{ secrets.TELEGRAM_BOT_TOKEN_BACKUP }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}

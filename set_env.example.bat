@@ -1,6 +1,7 @@
 @echo off
 REM === Fill in your values and save as set_env.bat ===
 set TELEGRAM_BOT_TOKEN=your_bot_token_here
+set TELEGRAM_BOT_TOKEN_BACKUP=your_backup_bot_token_here
 set TELEGRAM_CHAT_ID=5326338543
 set GITHUB_TOKEN=your_github_pat_here
 set GITHUB_REPO=GitGayHub/e-monitor

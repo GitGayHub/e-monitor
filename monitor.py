@@ -2527,34 +2527,18 @@ async def send_notification(bot, item, search, stats_7d=None):
 
     logger.info("send_notification: %s", caption.replace("\n", " | "))
     try:
-        if img:
-            await bot.send_photo(
-                chat_id=TELEGRAM_CHAT_ID,
-                photo=img,
-                caption=caption,
-                reply_markup=keyboard,
-                parse_mode=None,
-            )
-        else:
-            await bot.send_message(
-                chat_id=TELEGRAM_CHAT_ID,
-                text=caption,
-                reply_markup=keyboard,
-                disable_web_page_preview=False,
-            )
-        return True
+        sent = await safe_send_telegram(
+            bot,
+            TELEGRAM_CHAT_ID,
+            caption,
+            img=img,
+            keyboard=keyboard,
+            parse_mode=None
+        )
+        return sent
     except Exception as e:
         logger.error("send_notification error: %s", e)
-        try:
-            await bot.send_message(
-                chat_id=TELEGRAM_CHAT_ID,
-                text=caption,
-                reply_markup=keyboard,
-            )
-            return True
-        except Exception as e2:
-            logger.error("send_notification fallback error: %s", e2)
-            return False
+        return False
 
 
 # Sticky menu: message ID of the last "menu" message at the bottom of the chat.
@@ -2603,6 +2587,51 @@ async def _refresh_sticky_menu(bot):
         _sticky_menu_msg_id = msg.message_id
     except Exception as e:
         logger.debug("sticky menu send error: %s", e)
+
+
+async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_mode="HTML", force_backup=False):
+    backup_token = os.environ.get("TELEGRAM_BOT_TOKEN_BACKUP")
+    
+    bots_to_try = []
+    if force_backup and backup_token:
+        try:
+            from telegram import Bot as TelegramBot
+            bots_to_try.append(TelegramBot(token=backup_token))
+        except Exception as eb:
+            logger.error("Failed to initialize backup bot: %s", eb)
+            
+    bots_to_try.append(bot)
+    
+    if not force_backup and backup_token:
+        try:
+            from telegram import Bot as TelegramBot
+            bots_to_try.append(TelegramBot(token=backup_token))
+        except Exception:
+            pass
+
+    for active_bot in bots_to_try:
+        try:
+            if img and not img.startswith("data:"):
+                await active_bot.send_photo(
+                    chat_id=chat_id,
+                    photo=img,
+                    caption=text,
+                    reply_markup=keyboard,
+                    parse_mode=parse_mode,
+                )
+            else:
+                await active_bot.send_message(
+                    chat_id=chat_id,
+                    text=text,
+                    reply_markup=keyboard,
+                    parse_mode=parse_mode,
+                    disable_web_page_preview=True,
+                )
+            return True
+        except Exception as e:
+            logger.warning("Failed to send message via bot: %s. Trying next...", e)
+            
+    return False
 
 
 async def _validate_candidate(item, search):
@@ -2657,15 +2686,22 @@ async def process_searches(bot, once=False):
             report_lines = [
                 f"📋 <b>Диагностический отчет (eBay)</b>"
             ]
+            blocked_searches = []
             
             for search in searches:
                 results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, search)
                 
                 # API retry if blocked
-                if (fetch_err in ("blocked", "rate_limit", "cooldown")) and _ebay_api_configured():
-                    api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
-                    if not api_err and api_items:
-                        results = api_items
+                if fetch_err in ("blocked", "rate_limit", "cooldown"):
+                    if _ebay_api_configured():
+                        api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
+                        if not api_err and api_items:
+                            results = api_items
+                            fetch_err = None
+                        else:
+                            blocked_searches.append(search)
+                    else:
+                        blocked_searches.append(search)
                 
                 # Try auction sweep if configured
                 sweep = _auction_sweep_search(search)
@@ -2714,15 +2750,17 @@ async def process_searches(bot, once=False):
             report_msg = "\n\n───────────────────\n\n".join(report_lines)
             logger.info("📊 Отправляю диагностический отчет в Telegram...")
             
-            try:
-                await bot.send_message(
-                    chat_id=TELEGRAM_CHAT_ID,
-                    text=report_msg,
-                    parse_mode="HTML",
-                    disable_web_page_preview=True
-                )
-            except Exception as e:
-                logger.error(f"Ошибка отправки диагностического отчета: {e}")
+            force_backup = len(blocked_searches) > 0
+            sent = await safe_send_telegram(
+                bot,
+                TELEGRAM_CHAT_ID,
+                report_msg,
+                keyboard=None,
+                parse_mode="HTML",
+                force_backup=force_backup
+            )
+            if not sent:
+                logger.error("Ошибка отправки диагностического отчета")
                 
             clear_monitoring_state()
             return
