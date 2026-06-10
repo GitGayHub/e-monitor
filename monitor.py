@@ -1040,10 +1040,17 @@ def _build_url_with_host(host, search, sub="www"):
         base = f"https://{sub}.{host}/sch/{category_id}/i.html"
     else:
         base = f"https://{sub}.{host}/sch/i.html"
-    if filters.get("min_price"):
-        params["_udlo"] = str(filters["min_price"])
-    if filters.get("max_price"):
-        params["_udhi"] = str(filters["max_price"])
+    min_p = filters.get("min_price")
+    max_p = filters.get("max_price")
+    if (min_p is None or min_p == 0) and max_p and max_p > 100:
+        cat = filters.get("category", "all")
+        if cat in ("phones", "consoles", "laptops", "computers", "tablets"):
+            min_p = max(30, min(50, int(max_p * 0.15)))
+
+    if min_p:
+        params["_udlo"] = str(min_p)
+    if max_p:
+        params["_udhi"] = str(max_p)
     cond_code = filters.get("condition_code")
     cond = filters.get("condition", "any")
     if cond_code:
@@ -2015,7 +2022,7 @@ def _calculate_total(item, settings):
     return item
 
 
-def filter_results(items, search, config_obj, skip_seen=False):
+def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False):
     global_banned = config_obj.get_global_banned_sellers()
     banned_ids = config_obj.get_banned_item_ids()
     item_hashes = config_obj.get_item_hashes()
@@ -2067,16 +2074,17 @@ def filter_results(items, search, config_obj, skip_seen=False):
         # only send if:
         # A) They accept Best Offer and have 0 bids.
         # B) They are ending in 1 hour or less.
-        if item.get("auction") and not item.get("buy_now"):
-            is_new_best_offer = item.get("best_offer") and item.get("bids_count") == 0
-            is_ending_soon = False
-            time_left_str = item.get("time_left", "")
-            if time_left_str:
-                minutes = _parse_time_left_to_minutes(time_left_str)
-                if minutes is not None and minutes <= 60:
-                    is_ending_soon = True
-            if not (is_new_best_offer or is_ending_soon):
-                continue
+        if not is_statistics:
+            if item.get("auction") and not item.get("buy_now"):
+                is_new_best_offer = item.get("best_offer") and item.get("bids_count") == 0
+                is_ending_soon = False
+                time_left_str = item.get("time_left", "")
+                if time_left_str:
+                    minutes = _parse_time_left_to_minutes(time_left_str)
+                    if minutes is not None and minutes <= 60:
+                        is_ending_soon = True
+                if not (is_new_best_offer or is_ending_soon):
+                    continue
                 
         seller_lower = item["seller_name"].lower()
         if seller_lower in [s.lower() for s in global_banned]:
@@ -2688,79 +2696,198 @@ async def process_searches(bot, once=False):
             ]
             blocked_searches = []
             
+            # Group searches by (query, max_price)
+            grouped = {}
             for search in searches:
-                results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, search)
+                q = search.get("query", "").strip()
+                limit = search.get("filters", {}).get("max_price")
+                key = (q, limit)
+                if key not in grouped:
+                    grouped[key] = []
+                grouped[key].append(search)
+            
+            for (q_name, limit_val), group_searches in grouped.items():
+                base_search = group_searches[0]
+                relaxed_search = copy.deepcopy(base_search)
+                
+                # Combine exclude and include words from all searches in this group
+                exclude_set = set()
+                include_set = set()
+                for gs in group_searches:
+                    exclude_set.update(gs.get("exclude_words", []))
+                    include_set.update(gs.get("include_words", []))
+                relaxed_search["exclude_words"] = list(exclude_set)
+                relaxed_search["include_words"] = list(include_set)
+                
+                orig_max_price = limit_val
+                orig_min_price = base_search.get("filters", {}).get("min_price")
+                
+                if "filters" in relaxed_search:
+                    relaxed_search["filters"].pop("max_price", None)
+                    relaxed_search["filters"].pop("best_offer", None)
+                    if (orig_min_price is None or orig_min_price == 0) and orig_max_price and orig_max_price > 100:
+                        cat = base_search["filters"].get("category", "all")
+                        if cat in ("phones", "consoles", "laptops", "computers", "tablets"):
+                            relaxed_search["filters"]["min_price"] = max(30, min(50, int(orig_max_price * 0.15)))
+                    else:
+                        relaxed_search["filters"].pop("min_price", None)
+                    
+                    relaxed_search["filters"]["listing_type"] = "all"
+                    relaxed_search["filters"]["sort"] = "price_asc"
+
+                results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, relaxed_search)
                 
                 # API retry if blocked
                 if fetch_err in ("blocked", "rate_limit", "cooldown"):
                     if _ebay_api_configured():
-                        api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
+                        api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, relaxed_search)
                         if not api_err and api_items:
                             results = api_items
                             fetch_err = None
                         else:
-                            blocked_searches.append(search)
+                            blocked_searches.append(base_search)
                     else:
-                        blocked_searches.append(search)
+                        blocked_searches.append(base_search)
                 
-                # Try auction sweep if configured
-                sweep = _auction_sweep_search(search)
+                sweep = _auction_sweep_search(relaxed_search)
                 if sweep:
                     auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep)
                     if not auction_err:
                         results = _merge_items_by_id(results, auction_results)
-                        
-                # Filter results (ignoring seen hashes)
-                filtered = filter_results(results, search, config, skip_seen=True)
                 
-                # Find the cheapest valid item
-                best_item = None
-                if filtered:
-                    sorted_filtered = sorted(filtered, key=lambda x: x["total_price"])
-                    # Validate up to 5 cheapest candidates
-                    for item in sorted_filtered[:5]:
-                        is_valid, details = await _validate_candidate(item, search)
+                # Filter results passing is_statistics=True to bypass auction time/bid filters
+                filtered = filter_results(results, relaxed_search, config, skip_seen=True, is_statistics=True)
+                
+                # Group filtered items into Buy It Now and Auction
+                bin_filtered = [item for item in filtered if item.get("buy_now")]
+                auc_filtered = [item for item in filtered if item.get("auction")]
+                
+                # Helper to find the cheapest validated candidate
+                async def find_cheapest_valid(items, search_cfg):
+                    for item in items[:5]:
+                        is_valid, _ = await _validate_candidate(item, search_cfg)
                         if is_valid:
-                            best_item = item
-                            break
+                            return item
+                    return None
                 
-                # Generate report line
-                limit = search["filters"].get("max_price")
-                limit_str = f"{limit}€" if limit else "без лимита"
-                query_esc = html.escape(search["query"])
+                # Find cheapest BIN item(s)
+                sorted_bin = sorted(bin_filtered, key=lambda x: x["total_price"])
+                cheapest_bin = await find_cheapest_valid(sorted_bin, base_search)
+                cheapest_bin_bo = None
+                if cheapest_bin and not cheapest_bin.get("best_offer"):
+                    sorted_bin_bo = sorted([x for x in bin_filtered if x.get("best_offer")], key=lambda x: x["total_price"])
+                    cheapest_bin_bo = await find_cheapest_valid(sorted_bin_bo, base_search)
                 
-                item_lines = [f"• <b>{query_esc}</b> (лимит {limit_str})"]
-                if best_item:
-                    p = best_item["total_price"]
-                    h = best_item["url"]
-                    verdict = "✅ Подходит"
-                    if limit and p > limit:
-                        verdict = "❌ Слишком дорого"
-                    item_lines.append(f"  ↳ Цена: {p}€ <a href='{h}'>🔗</a> | {verdict}")
+                # Find cheapest Auction item(s)
+                sorted_auc = sorted(auc_filtered, key=lambda x: x["total_price"])
+                cheapest_auc = await find_cheapest_valid(sorted_auc, base_search)
+                cheapest_auc_bo = None
+                if cheapest_auc and not cheapest_auc.get("best_offer"):
+                    sorted_auc_bo = sorted([x for x in auc_filtered if x.get("best_offer")], key=lambda x: x["total_price"])
+                    cheapest_auc_bo = await find_cheapest_valid(sorted_auc_bo, base_search)
+                
+                # Emojis and verdict helper
+                def get_verdict_str(price_val):
+                    if orig_max_price and price_val > orig_max_price:
+                        return "💸 Слишком дорого"
+                    elif orig_min_price and price_val < orig_min_price:
+                        return "🔴 Слишком дешево"
+                    else:
+                        return "🟢 Подходит"
+                
+                def get_short_url(item_id):
+                    return f"https://www.ebay.de/itm/{item_id}"
+                
+                # Build report block
+                limit_str = f"{orig_max_price}€" if orig_max_price else "без лимита"
+                query_esc = html.escape(q_name)
+                block_lines = [f"• <b>{query_esc}</b> (лимит {limit_str})"]
+                
+                # 1. Format Sofort-Kauf (BIN) status
+                if cheapest_bin:
+                    p_bin = cheapest_bin["total_price"]
+                    url_bin = get_short_url(cheapest_bin["item_id"])
+                    v_bin = get_verdict_str(p_bin)
+                    
+                    if cheapest_bin_bo and cheapest_bin_bo["item_id"] != cheapest_bin["item_id"]:
+                        p_bo = cheapest_bin_bo["total_price"]
+                        url_bo = get_short_url(cheapest_bin_bo["item_id"])
+                        v_bo = get_verdict_str(p_bo)
+                        block_lines.append(f"  ↳ Sofort-Kauf: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
+                        block_lines.append(f"  ↳ Sofort-Kauf (Preisvorschlag): {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
+                    else:
+                        bo_suffix = " (Preisvorschlag)" if cheapest_bin.get("best_offer") else ""
+                        block_lines.append(f"  ↳ Sofort-Kauf: {p_bin}€ <a href='{url_bin}'>🔗</a>{bo_suffix} | {v_bin}")
                 else:
-                    item_lines.append("  ↳ Цена: ❌ Не найдено")
+                    if fetch_err:
+                        reason = f"❌ Ошибка запроса ({fetch_err})"
+                    elif not any(x.get("buy_now") for x in results):
+                        reason = "❌ Нет объявлений на eBay"
+                    else:
+                        reason = "❌ Отсеяно фильтрами (слова/категория/состояние)"
+                    block_lines.append(f"  ↳ Sofort-Kauf: {reason}")
                 
-                report_lines.append("\n".join(item_lines))
+                # 2. Format Auction status
+                if cheapest_auc:
+                    p_auc = cheapest_auc["total_price"]
+                    url_auc = get_short_url(cheapest_auc["item_id"])
+                    v_auc = get_verdict_str(p_auc)
+                    
+                    if cheapest_auc_bo and cheapest_auc_bo["item_id"] != cheapest_auc["item_id"]:
+                        p_bo = cheapest_auc_bo["total_price"]
+                        url_bo = get_short_url(cheapest_auc_bo["item_id"])
+                        v_bo = get_verdict_str(p_bo)
+                        block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a> | {v_auc}")
+                        block_lines.append(f"  ↳ Auction (Preisvorschlag): {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
+                    else:
+                        bo_suffix = " (Preisvorschlag)" if cheapest_auc.get("best_offer") else ""
+                        block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a>{bo_suffix} | {v_auc}")
+                else:
+                    if fetch_err:
+                        reason = f"❌ Ошибка запроса ({fetch_err})"
+                    elif not any(x.get("auction") for x in results):
+                        reason = "❌ Нет объявлений на eBay"
+                    else:
+                        reason = "❌ Отсеяно фильтрами (слова/категория/состояние)"
+                    block_lines.append(f"  ↳ Auction: {reason}")
                 
-                # Small delay between searches
+                report_lines.append("\n".join(block_lines))
+                
                 if not once:
-                    import random
                     await asyncio.sleep(random.uniform(2, 5))
             
-            report_msg = "\n\n───────────────────\n\n".join(report_lines)
-            logger.info("📊 Отправляю диагностический отчет в Telegram...")
+            # Split report_lines into chunks of at most 3500 characters to avoid Telegram length limit
+            chunks = []
+            current_chunk = [report_lines[0]]  # Header line
+            current_len = len(report_lines[0])
+            
+            for line in report_lines[1:]:
+                if current_len + len(line) + 2 > 3500:
+                    chunks.append("\n\n───────────────────\n\n".join(current_chunk))
+                    current_chunk = [f"📋 <b>Диагностический отчет (eBay, продолжение)</b>", line]
+                    current_len = len(current_chunk[0]) + len(line) + 2
+                else:
+                    current_chunk.append(line)
+                    current_len += len(line) + 2
+            
+            if current_chunk:
+                chunks.append("\n\n───────────────────\n\n".join(current_chunk))
+            
+            logger.info(f"📊 Отправляю диагностический отчет в Telegram ({len(chunks)} частей)...")
             
             force_backup = len(blocked_searches) > 0
-            sent = await safe_send_telegram(
-                bot,
-                TELEGRAM_CHAT_ID,
-                report_msg,
-                keyboard=None,
-                parse_mode="HTML",
-                force_backup=force_backup
-            )
-            if not sent:
-                logger.error("Ошибка отправки диагностического отчета")
+            for i, chunk_text in enumerate(chunks):
+                sent = await safe_send_telegram(
+                    bot,
+                    TELEGRAM_CHAT_ID,
+                    chunk_text,
+                    keyboard=None,
+                    parse_mode="HTML",
+                    force_backup=force_backup
+                )
+                if not sent:
+                    logger.error(f"Ошибка отправки части {i+1} диагностического отчета")
+                await asyncio.sleep(1.0)
                 
             clear_monitoring_state()
             return
