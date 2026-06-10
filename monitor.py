@@ -157,21 +157,21 @@ _ebay_active_host = None  # remembered after a successful fetch
 EBAY_CATEGORY_IDS = {
     "all": "",
     "electronics": "293",
-    "phones": "9355",          # Handys & Smartphones (was 15032 Handys & Zubehör)
+    "phones": "15032",
     "phone_parts": "15032",
     "phone_accessories": "15032",
-    "tablets": "171485",       # Tablets & eReader (was 58058)
-    "computers": "179",        # PC Desktops & All-in-Ones (was 58058)
-    "laptops": "177",          # Notebooks & Netbooks (was 58058)
-    "monitors": "80182",       # Monitore (was 58058)
-    "mice": "23160",           # Mäuse (was 58058)
-    "headphones": "112529",    # Kopfhörer (was 293)
-    "vr": "190066",            # VR-Headsets (was 293)
-    "vr_headsets": "190066",   # VR-Headsets (was 293)
+    "tablets": "58058",
+    "computers": "58058",
+    "laptops": "58058",
+    "monitors": "58058",
+    "mice": "58058",
+    "headphones": "293",
+    "vr": "293",
+    "vr_headsets": "293",
     "cameras": "625",
     "video_games": "1249",
-    "consoles": "139971",      # Videospiel-Konsolen (was 1249)
-    "smart_watches": "178893", # Smartwatches (was 15032)
+    "consoles": "1249",
+    "smart_watches": "15032",
 }
 
 ALLOWED_SUBCATEGORIES = {
@@ -1035,11 +1035,9 @@ def _build_url_with_host(host, search, sub="www"):
     sort_code = _sort_code(filters)
     if sort_code:
         params["_sop"] = str(sort_code)
-    category_id = _category_id(filters.get("category"))
-    if category_id:
-        base = f"https://{sub}.{host}/sch/{category_id}/i.html"
-    else:
-        base = f"https://{sub}.{host}/sch/i.html"
+    # Search across ALL categories to catch items listed in wrong/parent categories.
+    # Programmatic title-based filtering handles irrelevant results.
+    base = f"https://{sub}.{host}/sch/i.html"
     min_p = filters.get("min_price")
     max_p = filters.get("max_price")
 
@@ -1329,11 +1327,8 @@ def build_ebay_url(search):
     sort_code = _sort_code(filters)
     if sort_code:
         params["_sop"] = str(sort_code)
-    category_id = _category_id(filters.get("category"))
-    if category_id:
-        base = f"https://www.ebay.de/sch/{category_id}/i.html"
-    else:
-        base = "https://www.ebay.de/sch/i.html"
+    # Search across ALL categories — programmatic filtering handles relevance.
+    base = "https://www.ebay.de/sch/i.html"
     if filters.get("min_price"):
         params["_udlo"] = str(filters["min_price"])
     if filters.get("max_price"):
@@ -1734,9 +1729,8 @@ def _build_ebay_api_params(search):
         "limit": "100",
         "sort": "newlyListed",
     }
-    category_id = _category_id(filters.get("category"))
-    if category_id:
-        params["category_ids"] = category_id
+    # Don't filter by category_id in API — search all categories.
+    # Programmatic title-based filters handle relevance.
 
     filter_parts = []
     currency = EBAY_API_CURRENCY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "EUR")
@@ -2648,7 +2642,7 @@ async def _validate_candidate(item, search):
         return False, None
     
     if details:
-        # Block incorrect subcategories (accessories/parts) to prevent false positives
+        # Log subcategory mismatch but do NOT block — sellers often list in wrong categories.
         cat_id = details.get("categoryId")
         search_cat = search.get("filters", {}).get("category", "all")
         if search_cat in ALLOWED_SUBCATEGORIES:
@@ -2656,7 +2650,8 @@ async def _validate_candidate(item, search):
             if cat_id and cat_id not in allowed_set:
                 cat_path_ids = details.get("categoryIdPath", "").split("|")
                 if not any(cid in allowed_set for cid in cat_path_ids):
-                    return False, details
+                    logger.debug("Item %s in unexpected category %s (allowed: %s) — passing anyway",
+                                 item.get("item_id"), cat_id, allowed_set)
 
         # Block SELLER_DEFINED_VARIATIONS
         if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
@@ -2793,11 +2788,38 @@ async def process_searches(bot, once=False):
                 
                 def get_short_url(item_id):
                     return f"https://www.ebay.de/itm/{item_id}"
+
+                def get_category_emoji(cat_name):
+                    cat_name = (cat_name or "").strip().lower()
+                    mapping = {
+                        "phones": "📱",
+                        "phone_parts": "⚙️",
+                        "phone_accessories": "🔌",
+                        "tablets": "📟",
+                        "laptops": "💻",
+                        "computers": "🖥️",
+                        "monitors": "🖥️",
+                        "mice": "🖱️",
+                        "headphones": "🎧",
+                        "vr": "🥽",
+                        "vr_headsets": "🥽",
+                        "cameras": "📷",
+                        "video_games": "🎮",
+                        "consoles": "🎮",
+                        "smart_watches": "⌚",
+                        "electronics": "🔌",
+                    }
+                    return mapping.get(cat_name, "📦")
                 
                 # Build report block
                 limit_str = f"{orig_max_price}€" if orig_max_price else "без лимита"
                 query_esc = html.escape(q_name)
-                block_lines = [f"• <b>{query_esc}</b> (лимит {limit_str})"]
+                category_name = base_search.get("filters", {}).get("category")
+                cat_emoji = get_category_emoji(category_name)
+                block_lines = [
+                    f"{cat_emoji} <b>{query_esc}</b>",
+                    f"💸 Лимит: {limit_str}"
+                ]
                 
                 # 1. Format Sofort-Kauf (BIN) status
                 if cheapest_bin:
@@ -2809,13 +2831,15 @@ async def process_searches(bot, once=False):
                         p_bo = cheapest_bin_bo["total_price"]
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
-                        block_lines.append(f"  ↳ Sofort-Kauf: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
-                        block_lines.append(f"  ↳ Sofort-Kauf 💶: {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
+                        block_lines.append(f"🛒 Sofortkauf: <a href='{url_bin}'>{p_bin}€</a> <a href='{url_bin}'>🔗</a> | {v_bin}")
+                        block_lines.append(f"🛒🤝 Sofortkauf + PV: <a href='{url_bo}'>{p_bo}€</a> <a href='{url_bo}'>🔗</a> | {v_bo}")
                     else:
-                        title_label = "Sofort-Kauf 💶" if cheapest_bin.get("best_offer") else "Sofort-Kauf"
-                        block_lines.append(f"  ↳ {title_label}: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
+                        if cheapest_bin.get("best_offer"):
+                            block_lines.append(f"🛒🤝 Sofortkauf + PV: <a href='{url_bin}'>{p_bin}€</a> <a href='{url_bin}'>🔗</a> | {v_bin}")
+                        else:
+                            block_lines.append(f"🛒 Sofortkauf: <a href='{url_bin}'>{p_bin}€</a> <a href='{url_bin}'>🔗</a> | {v_bin}")
                 else:
-                    block_lines.append(f"  ↳ Sofort-Kauf: ❌ Не найдено")
+                    block_lines.append(f"🛒 Sofortkauf: ❌ Не найдено")
                 
                 # 2. Format Auction status
                 if cheapest_auc:
@@ -2833,15 +2857,17 @@ async def process_searches(bot, once=False):
                         t_bo = cheapest_auc_bo.get("time_left", "")
                         t_bo_str = f" ({t_bo})" if t_bo else ""
                         
-                        block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
-                        block_lines.append(f"  ↳ Auction 💶: {p_bo}€ <a href='{url_bo}'>🔗</a>{t_bo_str} | {v_bo}")
+                        block_lines.append(f"🔨 Auction: <a href='{url_auc}'>{p_auc}€</a> <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
+                        block_lines.append(f"🔨🤝 Auction + PV: <a href='{url_bo}'>{p_bo}€</a> <a href='{url_bo}'>🔗</a>{t_bo_str} | {v_bo}")
                     else:
-                        title_label = "Auction 💶" if cheapest_auc.get("best_offer") else "Auction"
                         t_auc = cheapest_auc.get("time_left", "")
                         t_auc_str = f" ({t_auc})" if t_auc else ""
-                        block_lines.append(f"  ↳ {title_label}: {p_auc}€ <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
+                        if cheapest_auc.get("best_offer"):
+                            block_lines.append(f"🔨🤝 Auction + PV: <a href='{url_auc}'>{p_auc}€</a> <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
+                        else:
+                            block_lines.append(f"🔨 Auction: <a href='{url_auc}'>{p_auc}€</a> <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
                 else:
-                    block_lines.append(f"  ↳ Auction: ❌ Не найдено")
+                    block_lines.append(f"🔨 Auction: ❌ Не найдено")
                 
                 report_lines.append("\n".join(block_lines))
                 
@@ -2850,20 +2876,33 @@ async def process_searches(bot, once=False):
             
             # Split report_lines into chunks of at most 3500 characters to avoid Telegram length limit
             chunks = []
-            current_chunk = [report_lines[0]]  # Header line
-            current_len = len(report_lines[0])
+            current_blocks = []
+            current_len = 0
+            header_str = f"📋 <b>Диагностический отчет (eBay, {source_str})</b>"
             
             for line in report_lines[1:]:
-                if current_len + len(line) + 2 > 3500:
-                    chunks.append("\n\n───────────────────\n\n".join(current_chunk))
-                    current_chunk = [f"📋 <b>Диагностический отчет (eBay, {source_str}, продолжение)</b>", line]
-                    current_len = len(current_chunk[0]) + len(line) + 2
+                added_len = len(line)
+                if not current_blocks:
+                    potential_len = len(header_str) + 2 + added_len
                 else:
-                    current_chunk.append(line)
-                    current_len += len(line) + 2
+                    potential_len = current_len + len("\n───────────────────\n") + added_len
+                
+                if potential_len > 3500 and current_blocks:
+                    chunk_text = header_str + "\n\n" + "\n───────────────────\n".join(current_blocks)
+                    chunks.append(chunk_text)
+                    header_str = f"📋 <b>Диагностический отчет (eBay, {source_str}, продолжение)</b>"
+                    current_blocks = [line]
+                    current_len = len(header_str) + 2 + len(line)
+                else:
+                    current_blocks.append(line)
+                    if len(current_blocks) == 1:
+                        current_len = len(header_str) + 2 + len(line)
+                    else:
+                        current_len += len("\n───────────────────\n") + len(line)
             
-            if current_chunk:
-                chunks.append("\n\n───────────────────\n\n".join(current_chunk))
+            if current_blocks:
+                chunk_text = header_str + "\n\n" + "\n───────────────────\n".join(current_blocks)
+                chunks.append(chunk_text)
             
             logger.info(f"📊 Отправляю диагностический отчет в Telegram ({len(chunks)} частей)...")
             
