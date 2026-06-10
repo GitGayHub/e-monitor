@@ -1042,10 +1042,6 @@ def _build_url_with_host(host, search, sub="www"):
         base = f"https://{sub}.{host}/sch/i.html"
     min_p = filters.get("min_price")
     max_p = filters.get("max_price")
-    if (min_p is None or min_p == 0) and max_p and max_p > 100:
-        cat = filters.get("category", "all")
-        if cat in ("phones", "consoles", "laptops", "computers", "tablets"):
-            min_p = max(30, min(50, int(max_p * 0.15)))
 
     if min_p:
         params["_udlo"] = str(min_p)
@@ -2727,12 +2723,7 @@ async def process_searches(bot, once=False):
                 if "filters" in relaxed_search:
                     relaxed_search["filters"].pop("max_price", None)
                     relaxed_search["filters"].pop("best_offer", None)
-                    if (orig_min_price is None or orig_min_price == 0) and orig_max_price and orig_max_price > 100:
-                        cat = base_search["filters"].get("category", "all")
-                        if cat in ("phones", "consoles", "laptops", "computers", "tablets"):
-                            relaxed_search["filters"]["min_price"] = max(30, min(50, int(orig_max_price * 0.15)))
-                    else:
-                        relaxed_search["filters"].pop("min_price", None)
+                    relaxed_search["filters"].pop("min_price", None)
                     
                     relaxed_search["filters"]["listing_type"] = "all"
                     relaxed_search["filters"]["sort"] = "price_asc"
