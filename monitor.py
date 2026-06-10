@@ -189,6 +189,13 @@ ALLOWED_SUBCATEGORIES = {
 
 PHONE_HARD_ACCESSORY_WORDS = (
     "case", "cover", "protector", "tempered glass", "bumper", "magsafe",
+    "funda", "fundas", "coque", "coques", "custodia", "custodie",
+    "hoes", "hoesje", "hoesjes", "riemhoes", "riemhoesje",
+    "etui", "étui", "tasche", "funda de cinturon", "etui ceinture",
+    "carcasa", "carcasas", "protector de pantalla", "protecteur d'ecran",
+    "pellicola protettiva", "schermprotector", "screenprotector",
+    "cristal templado", "verre trempe", "vetro temprato",
+    "pellicola vetro", "protection ecran",
     "shell case", "skin case", "lens film", "camera lens",
     "camera protector", "holster", "wallet case", "armor case",
     "armour case", "shockproof case", "hydrogel film", "privacy filter",
@@ -738,8 +745,8 @@ def _is_phone_accessory_title(title_norm):
     
     Titles starting with "für" / "fuer" / "for" are always accessories.
     """
-    # Titles starting with "für/fuer/for" are always accessories
-    if re.match(r"^(?:fuer|für|for)\s+", title_norm):
+    # Titles starting with "für/fuer/for/voor/para/pour/per" are always accessories
+    if re.match(r"^(?:fuer|für|for|voor|para|pour|per)\s+", title_norm):
         return True
     
     # Hard parts — always accessory, no override possible
@@ -775,7 +782,7 @@ def _is_for_accessory_title(title_norm, query_norm, category):
     # Detect if listing is for an accessory by checking for target compatibility phrases (e.g. "for PS5")
     # if the main device keyword/model only appears after the "for" term (or not at all).
     for_patterns = re.compile(
-        r"\b(?:fuer|für|for|geeignet\s+fuer|geeignet\s+für|compatible\s+(?:with|to)?|kompatibel\s+(?:mit|zu)?)\b",
+        r"\b(?:fuer|für|for|voor|para|pour|per|geeignet\s+fuer|geeignet\s+für|compatible\s+(?:with|to|con|avec)?|kompatibel\s+(?:mit|zu)?|compatibile\s+(?:con)?)\b",
         re.IGNORECASE
     )
     for_match = for_patterns.search(title_norm)
@@ -859,8 +866,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     acc_words = CATEGORY_ACCESSORY_WORDS.get(category, ())
     has_acc = any(_has_accessory_term(title_norm, w) for w in acc_words)
     if has_acc:
-        # Check if the title starts with "fuer", "für", "for", "geeignet" -> always block
-        if re.match(r"^(?:fuer|für|for|geeignet|fits)\s+", title_norm):
+        # Check if the title starts with "fuer", "für", "for", "voor", "para", "pour", "per", "geeignet", "fits" -> always block
+        if re.match(r"^(?:fuer|für|for|voor|para|pour|per|geeignet|fits)\s+", title_norm):
             return True
         # Check if this is a bundle (main device + accessory)
         is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|\+|&", title_norm) is not None
