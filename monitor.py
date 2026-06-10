@@ -2690,9 +2690,11 @@ async def process_searches(bot, once=False):
         test_summary_mode = _is_statistics_mode(config)
 
         if test_summary_mode:
-            logger.info("🔍 Statistics/Diagnostic mode active...")
+            is_github = os.environ.get("GITHUB_ACTIONS") == "true"
+            source_str = "GitHub Автомониторинг" if is_github else "Локальный"
+            logger.info(f"🔍 Statistics/Diagnostic mode active ({source_str})...")
             report_lines = [
-                f"📋 <b>Диагностический отчет (eBay)</b>"
+                f"📋 <b>Диагностический отчет (eBay, {source_str})</b>"
             ]
             blocked_searches = []
             
@@ -2789,9 +2791,7 @@ async def process_searches(bot, once=False):
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
                     if orig_max_price and price_val > orig_max_price:
-                        return "💸 Слишком дорого"
-                    elif orig_min_price and price_val < orig_min_price:
-                        return "🔴 Слишком дешево"
+                        return "🔴 Слишком дорого"
                     else:
                         return "🟢 Подходит"
                 
@@ -2864,7 +2864,7 @@ async def process_searches(bot, once=False):
             for line in report_lines[1:]:
                 if current_len + len(line) + 2 > 3500:
                     chunks.append("\n\n───────────────────\n\n".join(current_chunk))
-                    current_chunk = [f"📋 <b>Диагностический отчет (eBay, продолжение)</b>", line]
+                    current_chunk = [f"📋 <b>Диагностический отчет (eBay, {source_str}, продолжение)</b>", line]
                     current_len = len(current_chunk[0]) + len(line) + 2
                 else:
                     current_chunk.append(line)
