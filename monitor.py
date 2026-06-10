@@ -2782,7 +2782,7 @@ async def process_searches(bot, once=False):
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
                     if orig_max_price and price_val > orig_max_price:
-                        return "🔴 Слишком дорого"
+                        return "🟣 Слишком дорого"
                     else:
                         return "🟢 Подходит"
                 
@@ -2805,18 +2805,12 @@ async def process_searches(bot, once=False):
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
                         block_lines.append(f"  ↳ Sofort-Kauf: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
-                        block_lines.append(f"  ↳ Sofort-Kauf (Preisvorschlag): {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
+                        block_lines.append(f"  ↳ Sofort-Kauf 💵: {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
                     else:
-                        bo_suffix = " (Preisvorschlag)" if cheapest_bin.get("best_offer") else ""
-                        block_lines.append(f"  ↳ Sofort-Kauf: {p_bin}€ <a href='{url_bin}'>🔗</a>{bo_suffix} | {v_bin}")
+                        title_label = "Sofort-Kauf 💵" if cheapest_bin.get("best_offer") else "Sofort-Kauf"
+                        block_lines.append(f"  ↳ {title_label}: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
                 else:
-                    if fetch_err:
-                        reason = f"❌ Ошибка запроса ({fetch_err})"
-                    elif not any(x.get("buy_now") for x in results):
-                        reason = "❌ Нет объявлений на eBay"
-                    else:
-                        reason = "❌ Отсеяно фильтрами (слова/категория/состояние)"
-                    block_lines.append(f"  ↳ Sofort-Kauf: {reason}")
+                    block_lines.append(f"  ↳ Sofort-Kauf: ❌ Не найдено")
                 
                 # 2. Format Auction status
                 if cheapest_auc:
@@ -2828,19 +2822,21 @@ async def process_searches(bot, once=False):
                         p_bo = cheapest_auc_bo["total_price"]
                         url_bo = get_short_url(cheapest_auc_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
-                        block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a> | {v_auc}")
-                        block_lines.append(f"  ↳ Auction (Preisvorschlag): {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
+                        
+                        t_auc = cheapest_auc.get("time_left", "")
+                        t_auc_str = f" ({t_auc})" if t_auc else ""
+                        t_bo = cheapest_auc_bo.get("time_left", "")
+                        t_bo_str = f" ({t_bo})" if t_bo else ""
+                        
+                        block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
+                        block_lines.append(f"  ↳ Auction 💵: {p_bo}€ <a href='{url_bo}'>🔗</a>{t_bo_str} | {v_bo}")
                     else:
-                        bo_suffix = " (Preisvorschlag)" if cheapest_auc.get("best_offer") else ""
-                        block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a>{bo_suffix} | {v_auc}")
+                        title_label = "Auction 💵" if cheapest_auc.get("best_offer") else "Auction"
+                        t_auc = cheapest_auc.get("time_left", "")
+                        t_auc_str = f" ({t_auc})" if t_auc else ""
+                        block_lines.append(f"  ↳ {title_label}: {p_auc}€ <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
                 else:
-                    if fetch_err:
-                        reason = f"❌ Ошибка запроса ({fetch_err})"
-                    elif not any(x.get("auction") for x in results):
-                        reason = "❌ Нет объявлений на eBay"
-                    else:
-                        reason = "❌ Отсеяно фильтрами (слова/категория/состояние)"
-                    block_lines.append(f"  ↳ Auction: {reason}")
+                    block_lines.append(f"  ↳ Auction: ❌ Не найдено")
                 
                 report_lines.append("\n".join(block_lines))
                 
