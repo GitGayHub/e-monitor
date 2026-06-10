@@ -157,21 +157,21 @@ _ebay_active_host = None  # remembered after a successful fetch
 EBAY_CATEGORY_IDS = {
     "all": "",
     "electronics": "293",
-    "phones": "15032",
+    "phones": "9355",          # Handys & Smartphones (was 15032 Handys & Zubehör)
     "phone_parts": "15032",
     "phone_accessories": "15032",
-    "tablets": "58058",
-    "computers": "58058",
-    "laptops": "58058",
-    "monitors": "58058",
-    "mice": "58058",
-    "headphones": "293",
-    "vr": "293",
-    "vr_headsets": "293",
+    "tablets": "171485",       # Tablets & eReader (was 58058)
+    "computers": "179",        # PC Desktops & All-in-Ones (was 58058)
+    "laptops": "177",          # Notebooks & Netbooks (was 58058)
+    "monitors": "80182",       # Monitore (was 58058)
+    "mice": "23160",           # Mäuse (was 58058)
+    "headphones": "112529",    # Kopfhörer (was 293)
+    "vr": "190066",            # VR-Headsets (was 293)
+    "vr_headsets": "190066",   # VR-Headsets (was 293)
     "cameras": "625",
     "video_games": "1249",
-    "consoles": "1249",
-    "smart_watches": "15032",
+    "consoles": "139971",      # Videospiel-Konsolen (was 1249)
+    "smart_watches": "178893", # Smartwatches (was 15032)
 }
 
 ALLOWED_SUBCATEGORIES = {
@@ -824,8 +824,8 @@ def _is_for_accessory_title(title_norm, query_norm, category):
 
 def _is_display_replacement(text_norm):
     """Detect display/screen/oled/glass/backglass replacements in title or description."""
-    p1 = r"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b.*\b(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|bekommen|erneuert|reparatur)\b"
-    p2 = r"\b(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|neues|neuer|getauschtes|gewechseltes|repariertes|ersetztes|erneuertes|frisches)\b.*\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
+    p1 = r"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b.*\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|bekommen|erneuert|reparatur)\b"
+    p2 = r"\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|neues|neuer|getauschtes|gewechseltes|repariertes|ersetztes|erneuertes|frisches)\b.*\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
     return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
 
 
