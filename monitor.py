@@ -1072,13 +1072,17 @@ def _build_url_with_host(host, search, sub="www"):
         params["LH_SellerType"] = "1"
     loc = filters.get("location", "de")
     if host == "ebay.de":
-        # On .de: LH_PrefLoc=1 = "Aus Deutschland", 2 = "EU"
+        # On .de: LH_PrefLoc=1 = "Aus Deutschland", 2 = "EU", 3 = "Weltweit"
         if loc == "de":
             params["LH_PrefLoc"] = "1"
         elif loc == "eu":
             params["LH_PrefLoc"] = "2"
+        elif loc == "worldwide":
+            params["LH_PrefLoc"] = "3"
     else:  # ebay.com
         if loc == "eu":
+            params["LH_PrefLoc"] = "2"
+        elif loc == "worldwide":
             params["LH_PrefLoc"] = "2"
     qstr = "&".join(f"{k}={requests.utils.quote(str(v))}" for k, v in params.items())
     return f"{base}?{qstr}"
@@ -1363,6 +1367,8 @@ def build_ebay_url(search):
         params["LH_PrefLoc"] = "1"
     elif loc == "eu":
         params["LH_PrefLoc"] = "2"
+    elif loc == "worldwide":
+        params["LH_PrefLoc"] = "3"
     qstr = "&".join(f"{k}={requests.utils.quote(str(v))}" for k, v in params.items())
     return f"{base}?{qstr}"
 
@@ -1724,10 +1730,13 @@ def _api_item_id(summary):
 
 def _build_ebay_api_params(search):
     filters = search.get("filters", {}) or {}
+    sort_param = "newlyListed"
+    if filters.get("sort") == "price_asc":
+        sort_param = "price"
     params = {
         "q": _build_smart_search_query(search),
         "limit": "100",
-        "sort": "newlyListed",
+        "sort": sort_param,
     }
     # Don't filter by category_id in API — search all categories.
     # Programmatic title-based filters handle relevance.
@@ -1813,6 +1822,35 @@ def parse_ebay_api_results(data):
             if not has_delivery:
                 is_pickup_only = True
 
+        try:
+            bids_count = int(summary.get("bidCount") or 0)
+        except (TypeError, ValueError):
+            bids_count = 0
+
+        time_left_str = ""
+        end_date_str = summary.get("itemEndDate")
+        if end_date_str:
+            try:
+                clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
+                from datetime import datetime
+                end_dt = datetime.fromisoformat(clean_date)
+                now_dt = datetime.utcnow()
+                diff = end_dt - now_dt
+                if diff.total_seconds() > 0:
+                    days = diff.days
+                    hours = diff.seconds // 3600
+                    minutes = (diff.seconds % 3600) // 60
+                    parts = []
+                    if days > 0:
+                        parts.append(f"{days}d")
+                    if hours > 0:
+                        parts.append(f"{hours}h")
+                    if minutes > 0 or not parts:
+                        parts.append(f"{minutes}m")
+                    time_left_str = " ".join(parts)
+            except Exception as e:
+                logger.warning("Error parsing itemEndDate '%s': %s", end_date_str, e)
+
         items.append({
             "item_id": _api_item_id(summary),
             "title": title,
@@ -1824,6 +1862,7 @@ def parse_ebay_api_results(data):
             "buy_now": "FIXED_PRICE" in opts,
             "best_offer": "BEST_OFFER" in opts,
             "auction": "AUCTION" in opts,
+            "bids_count": bids_count,
             "condition": summary.get("condition", ""),
             "seller_name": seller.get("username", ""),
             "seller_rating_count": feedback_score,
@@ -1831,7 +1870,7 @@ def parse_ebay_api_results(data):
             "seller_type": "unknown",
             "top_rated": bool(summary.get("topRatedBuyingExperience")),
             "location": _api_location(summary),
-            "time_left": "",
+            "time_left": time_left_str,
             "is_multivariation": is_multivariation,
             "is_pickup_only": is_pickup_only,
         })
@@ -2688,9 +2727,7 @@ async def process_searches(bot, once=False):
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             source_str = "GitHub Автомониторинг" if is_github else "Локальный"
             logger.info(f"🔍 Statistics/Diagnostic mode active ({source_str})...")
-            report_lines = [
-                f"📋 <b>Диагностический отчет (eBay, {source_str})</b>"
-            ]
+            report_lines = []
             blocked_searches = []
             
             # Group searches by (query, max_price)
@@ -2818,7 +2855,9 @@ async def process_searches(bot, once=False):
                 cat_emoji = get_category_emoji(category_name)
                 block_lines = [
                     f"{cat_emoji} <b>{query_esc}</b>",
-                    f"💸 Лимит: {limit_str}"
+                    "",
+                    f"💸 Лимит: {limit_str}",
+                    ""
                 ]
                 
                 # 1. Format Sofort-Kauf (BIN) status
@@ -2831,15 +2870,15 @@ async def process_searches(bot, once=False):
                         p_bo = cheapest_bin_bo["total_price"]
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
-                        block_lines.append(f"🛒 Sofortkauf: <a href='{url_bin}'>{p_bin}€</a> <a href='{url_bin}'>🔗</a> | {v_bin}")
-                        block_lines.append(f"🛒🤝 Sofortkauf + PV: <a href='{url_bo}'>{p_bo}€</a> <a href='{url_bo}'>🔗</a> | {v_bo}")
+                        block_lines.append(f"🛒 Sofortkauf  <a href='{url_bin}'>{p_bin}€</a><a href='{url_bin}'>🔗</a>  | {v_bin}")
+                        block_lines.append(f"🛒🤝 Sofortkauf + PV  <a href='{url_bo}'>{p_bo}€</a><a href='{url_bo}'>🔗</a>  | {v_bo}")
                     else:
                         if cheapest_bin.get("best_offer"):
-                            block_lines.append(f"🛒🤝 Sofortkauf + PV: <a href='{url_bin}'>{p_bin}€</a> <a href='{url_bin}'>🔗</a> | {v_bin}")
+                            block_lines.append(f"🛒🤝 Sofortkauf + PV  <a href='{url_bin}'>{p_bin}€</a><a href='{url_bin}'>🔗</a>  | {v_bin}")
                         else:
-                            block_lines.append(f"🛒 Sofortkauf: <a href='{url_bin}'>{p_bin}€</a> <a href='{url_bin}'>🔗</a> | {v_bin}")
+                            block_lines.append(f"🛒 Sofortkauf  <a href='{url_bin}'>{p_bin}€</a><a href='{url_bin}'>🔗</a>  | {v_bin}")
                 else:
-                    block_lines.append(f"🛒 Sofortkauf: ❌ Не найдено")
+                    block_lines.append(f"🛒 Sofortkauf  Не найдено  | ❌")
                 
                 # 2. Format Auction status
                 if cheapest_auc:
@@ -2857,17 +2896,17 @@ async def process_searches(bot, once=False):
                         t_bo = cheapest_auc_bo.get("time_left", "")
                         t_bo_str = f" ({t_bo})" if t_bo else ""
                         
-                        block_lines.append(f"🔨 Auction: <a href='{url_auc}'>{p_auc}€</a> <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
-                        block_lines.append(f"🔨🤝 Auction + PV: <a href='{url_bo}'>{p_bo}€</a> <a href='{url_bo}'>🔗</a>{t_bo_str} | {v_bo}")
+                        block_lines.append(f"🔨 Auktion  <a href='{url_auc}'>{p_auc}€</a><a href='{url_auc}'>🔗</a>{t_auc_str}  | {v_auc}")
+                        block_lines.append(f"🔨🤝 Auktion + PV  <a href='{url_bo}'>{p_bo}€</a><a href='{url_bo}'>🔗</a>{t_bo_str}  | {v_bo}")
                     else:
                         t_auc = cheapest_auc.get("time_left", "")
                         t_auc_str = f" ({t_auc})" if t_auc else ""
                         if cheapest_auc.get("best_offer"):
-                            block_lines.append(f"🔨🤝 Auction + PV: <a href='{url_auc}'>{p_auc}€</a> <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
+                            block_lines.append(f"🔨🤝 Auktion + PV  <a href='{url_auc}'>{p_auc}€</a><a href='{url_auc}'>🔗</a>{t_auc_str}  | {v_auc}")
                         else:
-                            block_lines.append(f"🔨 Auction: <a href='{url_auc}'>{p_auc}€</a> <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
+                            block_lines.append(f"🔨 Auktion  <a href='{url_auc}'>{p_auc}€</a><a href='{url_auc}'>🔗</a>{t_auc_str}  | {v_auc}")
                 else:
-                    block_lines.append(f"🔨 Auction: ❌ Не найдено")
+                    block_lines.append(f"🔨 Auktion  Не найдено  | ❌")
                 
                 report_lines.append("\n".join(block_lines))
                 
@@ -2878,30 +2917,37 @@ async def process_searches(bot, once=False):
             chunks = []
             current_blocks = []
             current_len = 0
-            header_str = f"📋 <b>Диагностический отчет (eBay, {source_str})</b>"
             
-            for line in report_lines[1:]:
+            is_github = os.environ.get("GITHUB_ACTIONS") == "true"
+            footer_str = "📋 Автомониторинг: Git 🤖" if is_github else "📋 Автомониторинг: Локальный 💻"
+            
+            for i, line in enumerate(report_lines):
                 added_len = len(line)
+                is_last = (i == len(report_lines) - 1)
+                
                 if not current_blocks:
-                    potential_len = len(header_str) + 2 + added_len
+                    potential_len = added_len
                 else:
-                    potential_len = current_len + len("\n───────────────────\n") + added_len
+                    potential_len = current_len + len("\n\n───────────────────\n\n") + added_len
+                
+                if is_last:
+                    potential_len += len("\n\n───────────────────\n\n") + len(footer_str)
                 
                 if potential_len > 3500 and current_blocks:
-                    chunk_text = header_str + "\n\n" + "\n───────────────────\n".join(current_blocks)
+                    chunk_text = "\n\n───────────────────\n\n".join(current_blocks)
                     chunks.append(chunk_text)
-                    header_str = f"📋 <b>Диагностический отчет (eBay, {source_str}, продолжение)</b>"
                     current_blocks = [line]
-                    current_len = len(header_str) + 2 + len(line)
+                    current_len = len(line)
                 else:
                     current_blocks.append(line)
                     if len(current_blocks) == 1:
-                        current_len = len(header_str) + 2 + len(line)
+                        current_len = len(line)
                     else:
-                        current_len += len("\n───────────────────\n") + len(line)
+                        current_len += len("\n\n───────────────────\n\n") + len(line)
             
             if current_blocks:
-                chunk_text = header_str + "\n\n" + "\n───────────────────\n".join(current_blocks)
+                chunk_text = "\n\n───────────────────\n\n".join(current_blocks)
+                chunk_text += "\n\n───────────────────\n\n" + footer_str
                 chunks.append(chunk_text)
             
             logger.info(f"📊 Отправляю диагностический отчет в Telegram ({len(chunks)} частей)...")
