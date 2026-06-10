@@ -2805,9 +2805,9 @@ async def process_searches(bot, once=False):
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
                         block_lines.append(f"  ↳ Sofort-Kauf: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
-                        block_lines.append(f"  ↳ Sofort-Kauf 💵: {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
+                        block_lines.append(f"  ↳ Sofort-Kauf 💶: {p_bo}€ <a href='{url_bo}'>🔗</a> | {v_bo}")
                     else:
-                        title_label = "Sofort-Kauf 💵" if cheapest_bin.get("best_offer") else "Sofort-Kauf"
+                        title_label = "Sofort-Kauf 💶" if cheapest_bin.get("best_offer") else "Sofort-Kauf"
                         block_lines.append(f"  ↳ {title_label}: {p_bin}€ <a href='{url_bin}'>🔗</a> | {v_bin}")
                 else:
                     block_lines.append(f"  ↳ Sofort-Kauf: ❌ Не найдено")
@@ -2829,9 +2829,9 @@ async def process_searches(bot, once=False):
                         t_bo_str = f" ({t_bo})" if t_bo else ""
                         
                         block_lines.append(f"  ↳ Auction: {p_auc}€ <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
-                        block_lines.append(f"  ↳ Auction 💵: {p_bo}€ <a href='{url_bo}'>🔗</a>{t_bo_str} | {v_bo}")
+                        block_lines.append(f"  ↳ Auction 💶: {p_bo}€ <a href='{url_bo}'>🔗</a>{t_bo_str} | {v_bo}")
                     else:
-                        title_label = "Auction 💵" if cheapest_auc.get("best_offer") else "Auction"
+                        title_label = "Auction 💶" if cheapest_auc.get("best_offer") else "Auction"
                         t_auc = cheapest_auc.get("time_left", "")
                         t_auc_str = f" ({t_auc})" if t_auc else ""
                         block_lines.append(f"  ↳ {title_label}: {p_auc}€ <a href='{url_auc}'>🔗</a>{t_auc_str} | {v_auc}")
