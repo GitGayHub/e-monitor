@@ -1047,6 +1047,8 @@ def _build_url_with_host(host, search, sub="www"):
         params["_udlo"] = str(min_p)
     if max_p:
         params["_udhi"] = str(max_p)
+    if filters.get("_ipg"):
+        params["_ipg"] = str(filters["_ipg"])
     cond_code = filters.get("condition_code")
     cond = filters.get("condition", "any")
     if cond_code:
@@ -1336,6 +1338,8 @@ def build_ebay_url(search):
         params["_udlo"] = str(filters["min_price"])
     if filters.get("max_price"):
         params["_udhi"] = str(filters["max_price"])
+    if filters.get("_ipg"):
+        params["_ipg"] = str(filters["_ipg"])
     cond_code = filters.get("condition_code")
     cond = filters.get("condition", "any")
     if cond_code:
@@ -2727,6 +2731,7 @@ async def process_searches(bot, once=False):
                     
                     relaxed_search["filters"]["listing_type"] = "all"
                     relaxed_search["filters"]["sort"] = "price_asc"
+                    relaxed_search["filters"]["_ipg"] = "240"
 
                 results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, relaxed_search)
                 
