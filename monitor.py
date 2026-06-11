@@ -2114,10 +2114,12 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         item = _calculate_total(item, settings)
         min_price = filters.get("min_price")
         if min_price is not None and item.get("total_price", 0) < min_price:
-            continue
+            if not skip_seen:
+                continue
         max_price = filters.get("max_price")
         if max_price is not None and item.get("total_price", 0) > max_price:
-            continue
+            if not skip_seen:
+                continue
             
         if item.get("is_pickup_only"):
             nearby = False
@@ -2825,22 +2827,16 @@ async def process_searches(bot, once=False):
             blocked_searches = []
             
             for search in searches:
-                relaxed_search = copy.deepcopy(search)
-                orig_max_price = relaxed_search.get("filters", {}).get("max_price")
-                orig_min_price = relaxed_search.get("filters", {}).get("min_price")
-                
-                # Pop price limits to allow showing expensive items as "🟣 Дорого"
-                if "filters" in relaxed_search:
-                    relaxed_search["filters"].pop("max_price", None)
-                    relaxed_search["filters"].pop("min_price", None)
+                orig_max_price = search.get("filters", {}).get("max_price")
+                orig_min_price = search.get("filters", {}).get("min_price")
                 
                 # Fetch exactly like in normal mode
-                results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, relaxed_search)
+                results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, search)
                 
                 # API retry if blocked
                 if fetch_err in ("blocked", "rate_limit", "cooldown"):
                     if _ebay_api_configured():
-                        api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, relaxed_search)
+                        api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
                         if not api_err and api_items:
                             results = api_items
                             fetch_err = None
@@ -2849,15 +2845,15 @@ async def process_searches(bot, once=False):
                     else:
                         blocked_searches.append(search)
                 
-                sweep = _auction_sweep_search(relaxed_search)
+                sweep = _auction_sweep_search(search)
                 if sweep:
                     auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep)
                     if not auction_err:
                         results = _merge_items_by_id(results, auction_results)
                 
                 # Filter results with skip_seen=True (to show already notified items)
-                # and is_statistics=False (to match normal mode rules)
-                filtered = filter_results(results, relaxed_search, config, skip_seen=True, is_statistics=False)
+                # and is_statistics=True (to bypass auction time/bid filters)
+                filtered = filter_results(results, search, config, skip_seen=True, is_statistics=True)
                 
                 # Group filtered items into Buy It Now and Auction
                 bin_no_bo = [item for item in filtered if item.get("buy_now") and not item.get("best_offer")]
@@ -2991,6 +2987,7 @@ async def process_searches(bot, once=False):
                 ]
                 
                 report_lines.append("\n".join(block_lines))
+                logger.info(f"Generated statistics block for '{search.get('query')}':\n" + "\n".join(block_lines))
                 
                 if not once:
                     await asyncio.sleep(random.uniform(2, 5))
