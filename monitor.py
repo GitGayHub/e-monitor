@@ -2824,41 +2824,17 @@ async def process_searches(bot, once=False):
             report_lines = []
             blocked_searches = []
             
-            # Group searches by (query, max_price)
-            grouped = {}
             for search in searches:
-                q = search.get("query", "").strip()
-                limit = search.get("filters", {}).get("max_price")
-                key = (q, limit)
-                if key not in grouped:
-                    grouped[key] = []
-                grouped[key].append(search)
-            
-            for (q_name, limit_val), group_searches in grouped.items():
-                base_search = group_searches[0]
-                relaxed_search = copy.deepcopy(base_search)
+                relaxed_search = copy.deepcopy(search)
+                orig_max_price = relaxed_search.get("filters", {}).get("max_price")
+                orig_min_price = relaxed_search.get("filters", {}).get("min_price")
                 
-                # Combine exclude and include words from all searches in this group
-                exclude_set = set()
-                include_set = set()
-                for gs in group_searches:
-                    exclude_set.update(gs.get("exclude_words", []))
-                    include_set.update(gs.get("include_words", []))
-                relaxed_search["exclude_words"] = list(exclude_set)
-                relaxed_search["include_words"] = list(include_set)
-                
-                orig_max_price = limit_val
-                orig_min_price = base_search.get("filters", {}).get("min_price")
-                
+                # Pop price limits to allow showing expensive items as "🟣 Дорого"
                 if "filters" in relaxed_search:
                     relaxed_search["filters"].pop("max_price", None)
-                    relaxed_search["filters"].pop("best_offer", None)
                     relaxed_search["filters"].pop("min_price", None)
-                    
-                    relaxed_search["filters"]["listing_type"] = "all"
-                    relaxed_search["filters"]["sort"] = "price_asc"
-                    relaxed_search["filters"]["_ipg"] = "240"
-
+                
+                # Fetch exactly like in normal mode
                 results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, relaxed_search)
                 
                 # API retry if blocked
@@ -2869,9 +2845,9 @@ async def process_searches(bot, once=False):
                             results = api_items
                             fetch_err = None
                         else:
-                            blocked_searches.append(base_search)
+                            blocked_searches.append(search)
                     else:
-                        blocked_searches.append(base_search)
+                        blocked_searches.append(search)
                 
                 sweep = _auction_sweep_search(relaxed_search)
                 if sweep:
@@ -2879,8 +2855,9 @@ async def process_searches(bot, once=False):
                     if not auction_err:
                         results = _merge_items_by_id(results, auction_results)
                 
-                # Filter results passing is_statistics=True to bypass auction time/bid filters
-                filtered = filter_results(results, relaxed_search, config, skip_seen=False, is_statistics=True)
+                # Filter results with skip_seen=True (to show already notified items)
+                # and is_statistics=False (to match normal mode rules)
+                filtered = filter_results(results, relaxed_search, config, skip_seen=True, is_statistics=False)
                 
                 # Group filtered items into Buy It Now and Auction
                 bin_no_bo = [item for item in filtered if item.get("buy_now") and not item.get("best_offer")]
@@ -2896,10 +2873,10 @@ async def process_searches(bot, once=False):
                             return item
                     return None
                 
-                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=lambda x: x["total_price"]), base_search)
-                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=lambda x: x["total_price"]), base_search)
-                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=lambda x: x["total_price"]), base_search)
-                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=lambda x: x["total_price"]), base_search)
+                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=lambda x: x["total_price"]), search)
+                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=lambda x: x["total_price"]), search)
+                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=lambda x: x["total_price"]), search)
+                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=lambda x: x["total_price"]), search)
                 
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
@@ -2910,7 +2887,7 @@ async def process_searches(bot, once=False):
                 
                 def get_short_url(item_id):
                     return f"https://www.ebay.de/itm/{item_id}"
-
+                
                 def get_category_emoji(cat_name):
                     cat_name = (cat_name or "").strip().lower()
                     mapping = {
@@ -2932,14 +2909,14 @@ async def process_searches(bot, once=False):
                         "electronics": "🔌",
                     }
                     return mapping.get(cat_name, "📦")
-
+                
                 def get_price_str(item):
                     p = item["price"]
                     ship = item.get("shipping_cost", 0.0)
                     if ship > 0.0:
                         return f"{p:.0f}€+{ship:.0f}€"
                     return f"{p:.0f}€"
-
+                
                 def get_item_price_display(item, is_auction=False):
                     if not item:
                         return None
@@ -2949,28 +2926,28 @@ async def process_searches(bot, once=False):
                         if t_left:
                             p_str += f" ({t_left})"
                     return p_str
-
+                
                 p1 = get_item_price_display(cheapest_bin_no_bo, is_auction=False)
                 p2 = get_item_price_display(cheapest_bin_bo, is_auction=False)
                 p3 = get_item_price_display(cheapest_auc_no_bo, is_auction=True)
                 p4 = get_item_price_display(cheapest_auc_bo, is_auction=True)
-
+                
                 # Determine max length of the price strings
                 lengths = [len(p) for p in [p1, p2, p3, p4] if p is not None]
                 max_len = max(lengths) if lengths else 3
                 if max_len < 3:
                     max_len = 3
-
+                
                 # Dashes for missing items matching max_len
                 dashes = "-" * max_len
-
+                
                 # Prefix labels (all exactly 10 characters long)
                 lbl_bin = "🛒 Sofort  "
                 lbl_bin_bo = "🛒🤝 +PV   "
                 lbl_auc = "🔨 Auktion "
                 lbl_auc_bo = "🔨🤝 +PV   "
                 lbl_link = "🔗         "
-
+                
                 def make_aligned_row(label, item, price_display, is_auction=False):
                     row_lines = []
                     if item:
@@ -2984,23 +2961,23 @@ async def process_searches(bot, once=False):
                     else:
                         row_lines.append(f"<code>{label}{dashes}  │ </code>❌ Не найдено")
                     return row_lines
-
+                
                 # Build Sofortkauf block
                 bin_lines = []
                 bin_lines.extend(make_aligned_row(lbl_bin, cheapest_bin_no_bo, p1, is_auction=False))
                 bin_lines.append(f"<code>{' ' * (10 + max_len + 2)}│</code>")
                 bin_lines.extend(make_aligned_row(lbl_bin_bo, cheapest_bin_bo, p2, is_auction=False))
-
+                
                 # Build Auction block
                 auc_lines = []
                 auc_lines.extend(make_aligned_row(lbl_auc, cheapest_auc_no_bo, p3, is_auction=True))
                 auc_lines.append(f"<code>{' ' * (10 + max_len + 2)}│</code>")
                 auc_lines.extend(make_aligned_row(lbl_auc_bo, cheapest_auc_bo, p4, is_auction=True))
-
+                
                 # Build report block
                 limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
-                query_esc = html.escape(q_name)
-                category_name = base_search.get("filters", {}).get("category")
+                query_esc = html.escape(search.get("query", ""))
+                category_name = search.get("filters", {}).get("category")
                 cat_emoji = get_category_emoji(category_name)
                 
                 block_lines = [
