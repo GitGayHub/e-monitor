@@ -2842,8 +2842,10 @@ async def process_searches(bot, once=False):
                 filtered = filter_results(results, relaxed_search, config, skip_seen=False, is_statistics=True)
                 
                 # Group filtered items into Buy It Now and Auction
-                bin_filtered = [item for item in filtered if item.get("buy_now")]
-                auc_filtered = [item for item in filtered if item.get("auction")]
+                bin_no_bo = [item for item in filtered if item.get("buy_now") and not item.get("best_offer")]
+                bin_bo = [item for item in filtered if item.get("buy_now") and item.get("best_offer")]
+                auc_no_bo = [item for item in filtered if item.get("auction") and not item.get("best_offer")]
+                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer")]
                 
                 # Helper to find the cheapest validated candidate
                 async def find_cheapest_valid(items, search_cfg):
@@ -2853,21 +2855,10 @@ async def process_searches(bot, once=False):
                             return item
                     return None
                 
-                # Find cheapest BIN item(s)
-                sorted_bin = sorted(bin_filtered, key=lambda x: x["total_price"])
-                cheapest_bin = await find_cheapest_valid(sorted_bin, base_search)
-                cheapest_bin_bo = None
-                if cheapest_bin and not cheapest_bin.get("best_offer"):
-                    sorted_bin_bo = sorted([x for x in bin_filtered if x.get("best_offer")], key=lambda x: x["total_price"])
-                    cheapest_bin_bo = await find_cheapest_valid(sorted_bin_bo, base_search)
-                
-                # Find cheapest Auction item(s)
-                sorted_auc = sorted(auc_filtered, key=lambda x: x["total_price"])
-                cheapest_auc = await find_cheapest_valid(sorted_auc, base_search)
-                cheapest_auc_bo = None
-                if cheapest_auc and not cheapest_auc.get("best_offer"):
-                    sorted_auc_bo = sorted([x for x in auc_filtered if x.get("best_offer")], key=lambda x: x["total_price"])
-                    cheapest_auc_bo = await find_cheapest_valid(sorted_auc_bo, base_search)
+                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=lambda x: x["total_price"]), base_search)
+                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=lambda x: x["total_price"]), base_search)
+                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=lambda x: x["total_price"]), base_search)
+                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=lambda x: x["total_price"]), base_search)
                 
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
@@ -2901,94 +2892,85 @@ async def process_searches(bot, once=False):
                     }
                     return mapping.get(cat_name, "📦")
 
-                def format_line(label, price_str, url=None, verdict=None, time_left=""):
-                    t_str = f" ({time_left})" if time_left else ""
-                    raw_main = f"{label}  {price_str}{t_str}"
-                    target_width = 30
-                    if price_str == "Не найдено":
-                        html_main = raw_main
-                    else:
-                        label_part = f"{label}  "
-                        price_part = f"<a href='{url}'>{price_str}</a>" if url else price_str
-                        visible_len = len(label) + 2 + len(price_str) + len(t_str)
-                        if visible_len < target_width:
-                            padding = " " * (target_width - visible_len)
-                        else:
-                            padding = " "
-                        html_main = f"{label_part}{price_part}{t_str}{padding}"
-                    
-                    if verdict:
-                        line = f"<code>{html_main}</code>  {verdict}"
-                    else:
-                        line = f"<code>{html_main}</code>"
-                    return line
-
                 def get_price_str(item):
                     p = item["price"]
                     ship = item.get("shipping_cost", 0.0)
                     if ship > 0.0:
                         return f"{p:.0f}€+{ship:.0f}€"
                     return f"{p:.0f}€"
-                
+
+                def get_item_price_display(item, is_auction=False):
+                    if not item:
+                        return None
+                    p_str = get_price_str(item)
+                    if is_auction:
+                        t_left = item.get("time_left", "")
+                        if t_left:
+                            p_str += f" ({t_left})"
+                    return p_str
+
+                p1 = get_item_price_display(cheapest_bin_no_bo, is_auction=False)
+                p2 = get_item_price_display(cheapest_bin_bo, is_auction=False)
+                p3 = get_item_price_display(cheapest_auc_no_bo, is_auction=True)
+                p4 = get_item_price_display(cheapest_auc_bo, is_auction=True)
+
+                # Determine max length of the price strings
+                lengths = [len(p) for p in [p1, p2, p3, p4] if p is not None]
+                max_len = max(lengths) if lengths else 3
+                if max_len < 3:
+                    max_len = 3
+
+                # Dashes for missing items matching max_len
+                dashes = "-" * max_len
+
+                # Prefix labels (all exactly 10 characters long)
+                lbl_bin = "🛒 Sofort  "
+                lbl_bin_bo = "🛒🤝 +PV   "
+                lbl_auc = "🔨 Auktion "
+                lbl_auc_bo = "🔨🤝 +PV   "
+                lbl_link = "🔗         "
+
+                def make_aligned_row(label, item, price_display, is_auction=False):
+                    row_lines = []
+                    if item:
+                        p_val = item["total_price"]
+                        url = get_short_url(item["item_id"])
+                        verdict = get_verdict_str(p_val)
+                        
+                        padded_price = price_display.ljust(max_len)
+                        row_lines.append(f"<code>{label}{padded_price}  │ </code>{verdict}")
+                        row_lines.append(f"<code>{lbl_link}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
+                    else:
+                        row_lines.append(f"<code>{label}{dashes}  │ </code>❌ Не найдено")
+                    return row_lines
+
+                # Build Sofortkauf block
+                bin_lines = []
+                bin_lines.extend(make_aligned_row(lbl_bin, cheapest_bin_no_bo, p1, is_auction=False))
+                bin_lines.append(f"<code>{' ' * (10 + max_len + 2)}│</code>")
+                bin_lines.extend(make_aligned_row(lbl_bin_bo, cheapest_bin_bo, p2, is_auction=False))
+
+                # Build Auction block
+                auc_lines = []
+                auc_lines.extend(make_aligned_row(lbl_auc, cheapest_auc_no_bo, p3, is_auction=True))
+                auc_lines.append(f"<code>{' ' * (10 + max_len + 2)}│</code>")
+                auc_lines.extend(make_aligned_row(lbl_auc_bo, cheapest_auc_bo, p4, is_auction=True))
+
                 # Build report block
-                limit_str = f"{orig_max_price}€" if orig_max_price else "без лимита"
+                limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
                 query_esc = html.escape(q_name)
                 category_name = base_search.get("filters", {}).get("category")
                 cat_emoji = get_category_emoji(category_name)
+                
                 block_lines = [
                     f"{cat_emoji} <b>{query_esc}</b>",
                     "",
                     f"💸 Лимит: {limit_str}",
-                    ""
+                    "",
+                    "\n".join(bin_lines),
+                    f"<code>{' ' * (10 + max_len + 2)}│</code>",
+                    "\n".join(auc_lines)
                 ]
-                
-                # 1. Format Sofort-Kauf (BIN) status
-                if cheapest_bin:
-                    p_bin_val = cheapest_bin["total_price"]
-                    url_bin = get_short_url(cheapest_bin["item_id"])
-                    v_bin = get_verdict_str(p_bin_val)
-                    
-                    if cheapest_bin_bo and cheapest_bin_bo["item_id"] != cheapest_bin["item_id"]:
-                        p_bo_val = cheapest_bin_bo["total_price"]
-                        url_bo = get_short_url(cheapest_bin_bo["item_id"])
-                        v_bo = get_verdict_str(p_bo_val)
-                        block_lines.append(format_line("🛒 Sofortkauf", get_price_str(cheapest_bin), url_bin, v_bin))
-                        block_lines.append(format_line("🛒🤝 Sofortkauf + PV", get_price_str(cheapest_bin_bo), url_bo, v_bo))
-                    else:
-                        if cheapest_bin.get("best_offer"):
-                            block_lines.append(format_line("🛒🤝 Sofortkauf + PV", get_price_str(cheapest_bin), url_bin, v_bin))
-                        else:
-                            block_lines.append(format_line("🛒 Sofortkauf", get_price_str(cheapest_bin), url_bin, v_bin))
-                else:
-                    block_lines.append(format_line("🛒 Sofortkauf", "Не найдено", verdict="❌"))
-                
-                # 2. Format Auction status
-                if cheapest_auc:
-                    p_auc_val = cheapest_auc["total_price"]
-                    url_auc = get_short_url(cheapest_auc["item_id"])
-                    v_auc = get_verdict_str(p_auc_val)
-                    
-                    if cheapest_auc_bo and cheapest_auc_bo["item_id"] != cheapest_auc["item_id"]:
-                        p_bo_val = cheapest_auc_bo["total_price"]
-                        url_bo = get_short_url(cheapest_auc_bo["item_id"])
-                        v_bo = get_verdict_str(p_bo_val)
-                        
-                        t_auc = cheapest_auc.get("time_left", "")
-                        t_auc_str = f"{t_auc}" if t_auc else ""
-                        t_bo = cheapest_auc_bo.get("time_left", "")
-                        t_bo_str = f"{t_bo}" if t_bo else ""
-                        
-                        block_lines.append(format_line("🔨 Auktion", get_price_str(cheapest_auc), url_auc, v_auc, time_left=t_auc_str))
-                        block_lines.append(format_line("🔨🤝 Auktion + PV", get_price_str(cheapest_auc_bo), url_bo, v_bo, time_left=t_bo_str))
-                    else:
-                        t_auc = cheapest_auc.get("time_left", "")
-                        t_auc_str = f"{t_auc}" if t_auc else ""
-                        if cheapest_auc.get("best_offer"):
-                            block_lines.append(format_line("🔨🤝 Auktion + PV", get_price_str(cheapest_auc), url_auc, v_auc, time_left=t_auc_str))
-                        else:
-                            block_lines.append(format_line("🔨 Auktion", get_price_str(cheapest_auc), url_auc, v_auc, time_left=t_auc_str))
-                else:
-                    block_lines.append(format_line("🔨 Auktion", "Не найдено", verdict="❌"))
                 
                 report_lines.append("\n".join(block_lines))
                 
