@@ -2786,15 +2786,22 @@ async def process_searches(bot, once=False):
                 if filters.get("category") != "all":
                     filters["category"] = "all"
                     modified = True
-                if "min_price" in filters:
-                    filters.pop("min_price", None)
-                    modified = True
-                if "max_price" in filters:
-                    filters.pop("max_price", None)
-                    modified = True
                 if filters.get("location") != "eu":
                     filters["location"] = "eu"
                     modified = True
+                if filters.get("max_price") is None:
+                    if "z80" in q_lower:
+                        filters["max_price"] = 750
+                        modified = True
+                    elif "z70" in q_lower:
+                        filters["max_price"] = 650
+                        modified = True
+                    elif "11s" in q_lower:
+                        filters["max_price"] = 900
+                        modified = True
+                    elif "11" in q_lower:
+                        filters["max_price"] = 800
+                        modified = True
                 
                 excludes = s.setdefault("exclude_words", [])
                 for ex_word in accessory_excludes:
