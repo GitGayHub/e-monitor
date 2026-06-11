@@ -2523,33 +2523,39 @@ async def send_notification(bot, item, search, stats_7d=None):
 
     outlier = is_outlier(item["price"], search["id"])
 
-    lines = []
+    header = "🚨 <b>Подозрительно дешевое предложение!</b>" if outlier else "🔔 <b>Найдено предложение!</b>"
     if item.get("is_pickup_only"):
-        lines.append("⚠️ NUR ABHOLUNG ⚠️")
-        lines.append("")
+        header = "⚠️ <b>NUR ABHOLUNG (Без доставки)</b> ⚠️\n\n" + header
 
-    if outlier:
-        lines.append(f"🚨 {item['title']}")
+    # Price display: distinguish "buy now" from "auction"
+    if item["auction"] and not item["buy_now"]:
+        time_info = f" · {item['time_left']}" if item.get("time_left") else ""
+        price_val_str = f"🔨 Ставка {item['price']:.0f}€{time_info}"
+    elif item["buy_now"]:
+        offer = " 🤝" if item["best_offer"] else ""
+        price_val_str = f"🛒 {item['price']:.0f}€{offer}"
     else:
-        lines.append(f"🆕 {item['title']}")
-    lines.append("")
-    lines.append(price_line)
-    lines.append(type_line)
+        price_val_str = f"{item['price']:.0f}€"
 
-    seller_info = f"{emoji} {item['seller_name']}"
-    if item["seller_rating_count"] > 0:
-        seller_info += f" ({item['seller_rating_count']} отзывов)"
-    else:
-        seller_info += " (0 отзывов)"
-    lines.append(f"👤 {seller_info}")
+    rating_count = item.get("seller_rating_count", 0)
+    rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
+
+    lines = [
+        header,
+        "",
+        f"📌 <b>Товар:</b> <a href=\"{item['url']}\">{html.escape(item['title'])}</a>",
+        f"💰 <b>Цена:</b> {price_val_str} ({shipping_str})",
+        f"🏷 <b>Тип:</b> {type_str}",
+        f"👤 <b>Продавец:</b> {emoji} {html.escape(item['seller_name'])}{rating_str}",
+    ]
 
     if item["condition"] or item["location"]:
-        parts = []
+        cond_loc_parts = []
         if item["condition"]:
-            parts.append(item["condition"])
+            cond_loc_parts.append(html.escape(item["condition"]))
         if item["location"]:
-            parts.append(f"{location_flag}{item['location']}")
-        lines.append(f"📦 {' | '.join(parts)}")
+            cond_loc_parts.append(f"{location_flag}{html.escape(item['location'])}")
+        lines.append(f"📦 <b>Состояние & Локация:</b> {' | '.join(cond_loc_parts)}")
     
     # Abholung hint: check if item is within ~100km using PLZ coordinates
     if item["location"]:
@@ -2559,26 +2565,29 @@ async def send_notification(bot, item, search, stats_7d=None):
             if dist_km is not None:
                 if dist_km > 120:
                     # Berlin exception — far but reachable
-                    lines.append(f"📍 Abholung ~{dist_km:.0f}km (Berlin)")
+                    lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km (Berlin)")
                 else:
-                    lines.append(f"📍 Abholung ~{dist_km:.0f}km")
+                    lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km")
             else:
-                lines.append(f"📍 Abholung möglich")
-    lines.append(f"🚚 {shipping_str}")
+                lines.append(f"📍 <b>Дистанция:</b> Abholung möglich")
+    
     if item["total_price"] != item["price"] + item["shipping_cost"]:
         import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
-        lines.append(f"⚠️ +{import_extra:.0f}€ пошлина → итого ~{item['total_price']:.0f}€")
+        lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.0f}€ пошлина → итого ~{item['total_price']:.0f}€")
 
     if outlier:
         median = get_median_7d(search["id"])
         if median:
-            lines.append(f"\n⚠️ Подозрительно низкая цена (медиана: {median:.0f}€)")
-            lines.append("Не учтено в статистике")
+            lines.append(f"\n⚠️ <b>Подозрительно низкая цена</b> (медиана: {median:.0f}€)\nНе учтено в статистике")
     elif stats_7d and stats_7d.get("median"):
         median = stats_7d["median"]
         diff_pct = ((median - item["price"]) / median) * 100
         if diff_pct > 5:
-            lines.append(f"\n🔥 {item['price']:.0f}€ — на {diff_pct:.0f}% ниже медианы! ({stats_7d['first_date']}–{stats_7d['last_date']})")
+            lines.append(f"\n🔥 <b>Скидка:</b> {item['price']:.0f}€ — на {diff_pct:.0f}% ниже медианы! ({stats_7d['first_date']}–{stats_7d['last_date']})")
+
+    is_github = os.environ.get("GITHUB_ACTIONS") == "true"
+    source_line = "\n📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "\n📋 <b>Автомониторинг: Локальный 💻</b>"
+    lines.append(source_line)
 
     caption = "\n".join(lines)
     if len(caption) > 1024:
@@ -2608,7 +2617,7 @@ async def send_notification(bot, item, search, stats_7d=None):
             caption,
             img=img,
             keyboard=keyboard,
-            parse_mode=None
+            parse_mode="HTML"
         )
         return sent
     except Exception as e:
@@ -2748,7 +2757,7 @@ async def _validate_candidate(item, search):
 async def process_searches(bot, once=False):
     async with process_lock:
         searches = config.get_searches()
-        # Programmatic migration for Redmagic searches to category "all" and remove min_price
+        # Programmatic migration for Redmagic/Nubia searches: category "all", no price limits, add accessory excludes
         modified = False
         accessory_excludes = [
             "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
@@ -2759,13 +2768,16 @@ async def process_searches(bot, once=False):
         ]
         for s in searches:
             q_lower = s.get("query", "").lower()
-            if "redmagic" in q_lower or "red magic" in q_lower:
+            if any(w in q_lower for w in ("redmagic", "red magic", "nubia")):
                 filters = s.setdefault("filters", {})
                 if filters.get("category") != "all":
                     filters["category"] = "all"
                     modified = True
                 if "min_price" in filters:
                     filters.pop("min_price", None)
+                    modified = True
+                if "max_price" in filters:
+                    filters.pop("max_price", None)
                     modified = True
                 if filters.get("location") != "eu":
                     filters["location"] = "eu"
@@ -2778,7 +2790,7 @@ async def process_searches(bot, once=False):
                         modified = True
         if modified:
             config.save()
-            logger.info("Programmatically migrated redmagic searches: category='all', location='eu', no min_price, added accessory excludes")
+            logger.info("Programmatically migrated redmagic/nubia searches: category='all', location='eu', no price limits, added accessory excludes")
         if not searches:
             logger.info("No searches configured")
             return
