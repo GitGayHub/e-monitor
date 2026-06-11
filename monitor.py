@@ -2826,7 +2826,7 @@ async def process_searches(bot, once=False):
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
                     if orig_max_price and price_val > orig_max_price:
-                        return "🟣 Слишком дорого"
+                        return "🟣 Дорого"
                     else:
                         return "🟢 Подходит"
                 
@@ -2854,6 +2854,26 @@ async def process_searches(bot, once=False):
                         "electronics": "🔌",
                     }
                     return mapping.get(cat_name, "📦")
+
+                def format_line(label, price_str, url=None, verdict=None, time_left=""):
+                    t_str = f" ({time_left})" if time_left else ""
+                    main_part = f"{label}  {price_str}{t_str}"
+                    if price_str == "Не найдено":
+                        padded_main = main_part
+                    else:
+                        target_width = 30
+                        if len(main_part) < target_width:
+                            padded_main = main_part + " " * (target_width - len(main_part))
+                        else:
+                            padded_main = main_part + " "
+                    
+                    if verdict:
+                        line = f"<code>{padded_main}</code>  {verdict}"
+                    else:
+                        line = f"<code>{padded_main}</code>"
+                    if url:
+                        line += f"\n   🔗 <a href='{url}'>Открыть</a>"
+                    return line
                 
                 # Build report block
                 limit_str = f"{orig_max_price}€" if orig_max_price else "без лимита"
@@ -2877,15 +2897,15 @@ async def process_searches(bot, once=False):
                         p_bo = cheapest_bin_bo["total_price"]
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
-                        block_lines.append(f"<code>🛒 Sofortkauf  {p_bin}€</code>  {v_bin}\n   🔗 <a href='{url_bin}'>Открыть</a>")
-                        block_lines.append(f"<code>🛒🤝 Sofortkauf + PV  {p_bo}€</code>  {v_bo}\n   🔗 <a href='{url_bo}'>Открыть</a>")
+                        block_lines.append(format_line("🛒 Sofortkauf", f"{p_bin}€", url_bin, v_bin))
+                        block_lines.append(format_line("🛒🤝 Sofortkauf + PV", f"{p_bo}€", url_bo, v_bo))
                     else:
                         if cheapest_bin.get("best_offer"):
-                            block_lines.append(f"<code>🛒🤝 Sofortkauf + PV  {p_bin}€</code>  {v_bin}\n   🔗 <a href='{url_bin}'>Открыть</a>")
+                            block_lines.append(format_line("🛒🤝 Sofortkauf + PV", f"{p_bin}€", url_bin, v_bin))
                         else:
-                            block_lines.append(f"<code>🛒 Sofortkauf  {p_bin}€</code>  {v_bin}\n   🔗 <a href='{url_bin}'>Открыть</a>")
+                            block_lines.append(format_line("🛒 Sofortkauf", f"{p_bin}€", url_bin, v_bin))
                 else:
-                    block_lines.append(f"<code>🛒 Sofortkauf  Не найдено</code>  ❌")
+                    block_lines.append(format_line("🛒 Sofortkauf", "Не найдено", verdict="❌"))
                 
                 # 2. Format Auction status
                 if cheapest_auc:
@@ -2899,21 +2919,21 @@ async def process_searches(bot, once=False):
                         v_bo = get_verdict_str(p_bo)
                         
                         t_auc = cheapest_auc.get("time_left", "")
-                        t_auc_str = f" ({t_auc})" if t_auc else ""
+                        t_auc_str = f"{t_auc}" if t_auc else ""
                         t_bo = cheapest_auc_bo.get("time_left", "")
-                        t_bo_str = f" ({t_bo})" if t_bo else ""
+                        t_bo_str = f"{t_bo}" if t_bo else ""
                         
-                        block_lines.append(f"<code>🔨 Auktion  {p_auc}€{t_auc_str}</code>  {v_auc}\n   🔗 <a href='{url_auc}'>Открыть</a>")
-                        block_lines.append(f"<code>🔨🤝 Auktion + PV  {p_bo}€{t_bo_str}</code>  {v_bo}\n   🔗 <a href='{url_bo}'>Открыть</a>")
+                        block_lines.append(format_line("🔨 Auktion", f"{p_auc}€", url_auc, v_auc, time_left=t_auc_str))
+                        block_lines.append(format_line("🔨🤝 Auktion + PV", f"{p_bo}€", url_bo, v_bo, time_left=t_bo_str))
                     else:
                         t_auc = cheapest_auc.get("time_left", "")
-                        t_auc_str = f" ({t_auc})" if t_auc else ""
+                        t_auc_str = f"{t_auc}" if t_auc else ""
                         if cheapest_auc.get("best_offer"):
-                            block_lines.append(f"<code>🔨🤝 Auktion + PV  {p_auc}€{t_auc_str}</code>  {v_auc}\n   🔗 <a href='{url_auc}'>Открыть</a>")
+                            block_lines.append(format_line("🔨🤝 Auktion + PV", f"{p_auc}€", url_auc, v_auc, time_left=t_auc_str))
                         else:
-                            block_lines.append(f"<code>🔨 Auktion  {p_auc}€{t_auc_str}</code>  {v_auc}\n   🔗 <a href='{url_auc}'>Открыть</a>")
+                            block_lines.append(format_line("🔨 Auktion", f"{p_auc}€", url_auc, v_auc, time_left=t_auc_str))
                 else:
-                    block_lines.append(f"<code>🔨 Auktion  Не найдено</code>  ❌")
+                    block_lines.append(format_line("🔨 Auktion", "Не найдено", verdict="❌"))
                 
                 report_lines.append("\n".join(block_lines))
                 
@@ -2972,6 +2992,21 @@ async def process_searches(bot, once=False):
                 if not sent:
                     logger.error(f"Ошибка отправки части {i+1} диагностического отчета")
                 await asyncio.sleep(1.0)
+                
+            # Reset mode to normal to prevent loop-spamming
+            config.update_settings({"test_summary_mode": False})
+            try:
+                mode_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mode.txt')
+                with open(mode_file, 'w', encoding='utf-8') as f:
+                    f.write('normal')
+            except Exception as e:
+                logger.error(f"Failed to reset mode.txt locally: {e}")
+            
+            try:
+                await asyncio.to_thread(_sync_mode_to_github)
+                logger.info("🔄 Mode successfully reset to normal on GitHub")
+            except Exception as e:
+                logger.error(f"Failed to sync mode reset to GitHub: {e}")
                 
             clear_monitoring_state()
             return
