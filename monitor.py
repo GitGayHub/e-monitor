@@ -226,7 +226,8 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "panzerfolie", "schutzglas", "glasfolie", "motiv", "design", "muster", "print",
     "displayschutz", "kameraschutz", "linsenschutz", "displayschutzfolie", "kameraschutzfolie",
     "displayschutzglas", "kameraschutzglas", "dexnor", "spigen", "otterbox", "torras",
-    "rhinoshield", "esr", "jetech", "elago", "ringke", "caseology", "ugreen", "anker", "belkin"
+    "rhinoshield", "esr", "jetech", "elago", "ringke", "caseology", "ugreen", "anker", "belkin",
+    "guscio", "sleeve", "pellicola", "pellicole"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -329,8 +330,8 @@ def _title_leads_with_phone_model(title_norm):
         r"^(?:samsung\s+)?(?:galaxy\s+)?s\d{2}",
         r"^oneplus\s+(?:\d{1,2}|ace)",
         r"^(?:google\s+)?pixel\s+\d",
-        r"^(?:nubia\s+)?(?:red\s*magic|redmagic)\s*\d{1,2}",
-        r"^(?:zte\s+)?nubia\s+z\d+",
+        r"^(?:zte\s+)?(?:nubia\s+)?(?:red\s*magic|redmagic)\s*\d{1,2}",
+        r"^(?:zte\s+)?nubia\s+(?:z\d+|focus)",
         r"^(?:neu|new)[\s!]*(?:zte\s+)?nubia",
         r"^(?:neu|new)[\s!]*(?:samsung|apple|oneplus|google)",
     )
@@ -710,7 +711,11 @@ def _matches_phone_query_model(title_norm, query_norm):
 
 
 def _is_phone_search_query(query_norm):
-    if any(term in query_norm for term in ("iphone", "galaxy", "oneplus", "nubia", "red magic", "redmagic", "pixel")):
+    phone_terms = (
+        "iphone", "galaxy", "oneplus", "nubia", "red magic", "redmagic", "pixel",
+        "samsung", "xiaomi", "motorola", "realme", "huawei", "oppo", "xperia", "smartwatch"
+    )
+    if any(term in query_norm for term in phone_terms):
         return True
     return re.search(r"\b(?:samsung\s+)?s\d{2}\s+ultra\b", query_norm) is not None
 
@@ -749,32 +754,23 @@ def _is_phone_accessory_title(title_norm):
     if re.match(r"^(?:fuer|für|for|voor|para|pour|per)\s+", title_norm):
         return True
     
+    # Standalone bundle indicator checks
+    is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
+
     # Hard parts — always accessory, no override possible
     has_hard_part = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_PART_WORDS)
     if has_hard_part:
+        if is_bundle and _title_leads_with_phone_model(title_norm):
+            return False
         return True
     
-    # Soft part/accessory words — overridden by strong device hints OR storage capacity
-    # OR if the title LEADS with a phone model (not "Hülle für Galaxy..." but "Galaxy S24... mit Zubehör")
-    has_soft_part = any(_has_accessory_term(title_norm, w) for w in PHONE_SOFT_ACCESSORY_WORDS)
-    if has_soft_part:
-        has_strong_device = (
-            any(_has_term(title_norm, w) for w in PHONE_STRONG_DEVICE_HINTS)
-            or _has_phone_storage(title_norm)
-            or _title_leads_with_phone_model(title_norm)
-        )
-        if not has_strong_device:
-            return True
+    # Soft part/accessory words and hard accessory words
+    has_acc = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS)
+    if has_acc:
+        if is_bundle and _title_leads_with_phone_model(title_norm):
+            return False
+        return True
     
-    # Hard accessory words (case/cover/protector) — overridden by strong device hints OR storage
-    has_acc_word = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS)
-    if has_acc_word:
-        has_strong_device = (
-            any(_has_term(title_norm, w) for w in PHONE_STRONG_DEVICE_HINTS)
-            or _has_phone_storage(title_norm)
-        )
-        if not has_strong_device:
-            return True
     return False
 
 
@@ -791,6 +787,22 @@ def _is_for_accessory_title(title_norm, query_norm, category):
 
     for_start = for_match.start()
     before_part = title_norm[:for_start]
+
+    # If before_part contains any known accessory/part word, and there is no bundle indicator,
+    # then the model name in before_part was just part of the accessory description, so it IS an accessory.
+    if category == "phones":
+        has_acc = any(_has_accessory_term(before_part, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS + PHONE_HARD_PART_WORDS)
+        if has_acc:
+            is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
+            if not is_bundle:
+                return True
+    elif category == "consoles":
+        console_words = CATEGORY_ACCESSORY_WORDS.get("consoles", ()) + CATEGORY_HARD_PART_WORDS.get("consoles", ())
+        has_acc = any(_has_accessory_term(before_part, w) for w in console_words)
+        if has_acc:
+            is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
+            if not is_bundle:
+                return True
 
     if query_norm:
         if category == "consoles":
@@ -870,7 +882,7 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         if re.match(r"^(?:fuer|für|for|voor|para|pour|per|geeignet|fits)\s+", title_norm):
             return True
         # Check if this is a bundle (main device + accessory)
-        is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|\+|&", title_norm) is not None
+        is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
         if is_bundle:
             device_patterns = r"\b(?:sony|playstation|ps5|xbox|nintendo|switch|meta|quest|pico|oculus|logitech|razer|superlight|g pro|iphone|samsung|pixel|redmagic|nubia|laptop|notebook|macbook|vivobook|zenbook|asus|hp|lenovo|dell)\b"
             if re.search(device_patterns, title_norm):
@@ -892,6 +904,8 @@ def _effective_category(category, query_norm):
         return "vr_headsets"
     if _has_term(query_norm, "pc"):
         return "computers"
+    if _is_phone_search_query(query_norm):
+        return "phones"
     return category
 
 
@@ -1013,6 +1027,7 @@ def _build_smart_search_query(search):
     
     filters = search.get("filters", {}) or {}
     category = filters.get("category", "all")
+    eff_category = _effective_category(category, _normalize(query))
     
     # Common defect exclusions useful for all searches (100% safe, no bundles can have these)
     excludes = [
@@ -1022,7 +1037,7 @@ def _build_smart_search_query(search):
     ]
     
     # Category-specific safe defect/parts exclusions
-    if category == "phones":
+    if eff_category == "phones":
         excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
         
     exclude_str = " ".join(f"-{w}" for w in excludes)
@@ -2145,14 +2160,14 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
-        if category == "phones":
+        if effective_category == "phones":
             if not _matches_phone_query_model(title_norm, query_norm):
                 continue
             if _is_phone_accessory_title(title_norm):
                 continue
             if not _is_phone_device_title(title_norm):
                 continue
-        if category == "consoles":
+        if effective_category == "consoles":
             if not _matches_console_query_model(title_norm, query_norm):
                 continue
         if any(w in title_norm for w in exclude_words):
@@ -2888,23 +2903,32 @@ async def process_searches(bot, once=False):
 
                 def format_line(label, price_str, url=None, verdict=None, time_left=""):
                     t_str = f" ({time_left})" if time_left else ""
-                    main_part = f"{label}  {price_str}{t_str}"
+                    raw_main = f"{label}  {price_str}{t_str}"
+                    target_width = 30
                     if price_str == "Не найдено":
-                        padded_main = main_part
+                        html_main = raw_main
                     else:
-                        target_width = 30
-                        if len(main_part) < target_width:
-                            padded_main = main_part + " " * (target_width - len(main_part))
+                        label_part = f"{label}  "
+                        price_part = f"<a href='{url}'>{price_str}</a>" if url else price_str
+                        visible_len = len(label) + 2 + len(price_str) + len(t_str)
+                        if visible_len < target_width:
+                            padding = " " * (target_width - visible_len)
                         else:
-                            padded_main = main_part + " "
+                            padding = " "
+                        html_main = f"{label_part}{price_part}{t_str}{padding}"
                     
                     if verdict:
-                        line = f"<code>{padded_main}</code>  {verdict}"
+                        line = f"<code>{html_main}</code>  {verdict}"
                     else:
-                        line = f"<code>{padded_main}</code>"
-                    if url:
-                        line += f"\n   🔗 <a href='{url}'>Открыть</a>"
+                        line = f"<code>{html_main}</code>"
                     return line
+
+                def get_price_str(item):
+                    p = item["price"]
+                    ship = item.get("shipping_cost", 0.0)
+                    if ship > 0.0:
+                        return f"{p:.0f}€+{ship:.0f}€"
+                    return f"{p:.0f}€"
                 
                 # Build report block
                 limit_str = f"{orig_max_price}€" if orig_max_price else "без лимита"
@@ -2920,49 +2944,49 @@ async def process_searches(bot, once=False):
                 
                 # 1. Format Sofort-Kauf (BIN) status
                 if cheapest_bin:
-                    p_bin = cheapest_bin["total_price"]
+                    p_bin_val = cheapest_bin["total_price"]
                     url_bin = get_short_url(cheapest_bin["item_id"])
-                    v_bin = get_verdict_str(p_bin)
+                    v_bin = get_verdict_str(p_bin_val)
                     
                     if cheapest_bin_bo and cheapest_bin_bo["item_id"] != cheapest_bin["item_id"]:
-                        p_bo = cheapest_bin_bo["total_price"]
+                        p_bo_val = cheapest_bin_bo["total_price"]
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
-                        v_bo = get_verdict_str(p_bo)
-                        block_lines.append(format_line("🛒 Sofortkauf", f"{p_bin}€", url_bin, v_bin))
-                        block_lines.append(format_line("🛒🤝 Sofortkauf + PV", f"{p_bo}€", url_bo, v_bo))
+                        v_bo = get_verdict_str(p_bo_val)
+                        block_lines.append(format_line("🛒 Sofortkauf", get_price_str(cheapest_bin), url_bin, v_bin))
+                        block_lines.append(format_line("🛒🤝 Sofortkauf + PV", get_price_str(cheapest_bin_bo), url_bo, v_bo))
                     else:
                         if cheapest_bin.get("best_offer"):
-                            block_lines.append(format_line("🛒🤝 Sofortkauf + PV", f"{p_bin}€", url_bin, v_bin))
+                            block_lines.append(format_line("🛒🤝 Sofortkauf + PV", get_price_str(cheapest_bin), url_bin, v_bin))
                         else:
-                            block_lines.append(format_line("🛒 Sofortkauf", f"{p_bin}€", url_bin, v_bin))
+                            block_lines.append(format_line("🛒 Sofortkauf", get_price_str(cheapest_bin), url_bin, v_bin))
                 else:
                     block_lines.append(format_line("🛒 Sofortkauf", "Не найдено", verdict="❌"))
                 
                 # 2. Format Auction status
                 if cheapest_auc:
-                    p_auc = cheapest_auc["total_price"]
+                    p_auc_val = cheapest_auc["total_price"]
                     url_auc = get_short_url(cheapest_auc["item_id"])
-                    v_auc = get_verdict_str(p_auc)
+                    v_auc = get_verdict_str(p_auc_val)
                     
                     if cheapest_auc_bo and cheapest_auc_bo["item_id"] != cheapest_auc["item_id"]:
-                        p_bo = cheapest_auc_bo["total_price"]
+                        p_bo_val = cheapest_auc_bo["total_price"]
                         url_bo = get_short_url(cheapest_auc_bo["item_id"])
-                        v_bo = get_verdict_str(p_bo)
+                        v_bo = get_verdict_str(p_bo_val)
                         
                         t_auc = cheapest_auc.get("time_left", "")
                         t_auc_str = f"{t_auc}" if t_auc else ""
                         t_bo = cheapest_auc_bo.get("time_left", "")
                         t_bo_str = f"{t_bo}" if t_bo else ""
                         
-                        block_lines.append(format_line("🔨 Auktion", f"{p_auc}€", url_auc, v_auc, time_left=t_auc_str))
-                        block_lines.append(format_line("🔨🤝 Auktion + PV", f"{p_bo}€", url_bo, v_bo, time_left=t_bo_str))
+                        block_lines.append(format_line("🔨 Auktion", get_price_str(cheapest_auc), url_auc, v_auc, time_left=t_auc_str))
+                        block_lines.append(format_line("🔨🤝 Auktion + PV", get_price_str(cheapest_auc_bo), url_bo, v_bo, time_left=t_bo_str))
                     else:
                         t_auc = cheapest_auc.get("time_left", "")
                         t_auc_str = f"{t_auc}" if t_auc else ""
                         if cheapest_auc.get("best_offer"):
-                            block_lines.append(format_line("🔨🤝 Auktion + PV", f"{p_auc}€", url_auc, v_auc, time_left=t_auc_str))
+                            block_lines.append(format_line("🔨🤝 Auktion + PV", get_price_str(cheapest_auc), url_auc, v_auc, time_left=t_auc_str))
                         else:
-                            block_lines.append(format_line("🔨 Auktion", f"{p_auc}€", url_auc, v_auc, time_left=t_auc_str))
+                            block_lines.append(format_line("🔨 Auktion", get_price_str(cheapest_auc), url_auc, v_auc, time_left=t_auc_str))
                 else:
                     block_lines.append(format_line("🔨 Auktion", "Не найдено", verdict="❌"))
                 
