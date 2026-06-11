@@ -570,7 +570,7 @@ def _has_query_word(title_norm, word):
     if word == "redmagic":
         return _has_term(title_norm, "redmagic") or "red magic" in title_norm
     if word.isdigit():
-        return re.search(rf"\b{re.escape(word)}(?:gb|go|tb)?\b", title_norm) is not None
+        return re.search(rf"\b{re.escape(word)}(?:[a-zA-Z]+)?(?:gb|go|tb)?\b", title_norm) is not None
     return _has_term(title_norm, word)
 
 
@@ -761,6 +761,13 @@ def _is_phone_accessory_title(title_norm):
     has_hard_part = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_PART_WORDS)
     if has_hard_part:
         if is_bundle and _title_leads_with_phone_model(title_norm):
+            sep_pattern = re.compile(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
+            m = sep_pattern.search(title_norm)
+            if m:
+                before_sep = title_norm[:m.start()]
+                before_has_hard = any(_has_accessory_term(before_sep, w) for w in PHONE_HARD_PART_WORDS)
+                if before_has_hard:
+                    return True
             return False
         return True
     
@@ -768,6 +775,13 @@ def _is_phone_accessory_title(title_norm):
     has_acc = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS)
     if has_acc:
         if is_bundle and _title_leads_with_phone_model(title_norm):
+            sep_pattern = re.compile(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
+            m = sep_pattern.search(title_norm)
+            if m:
+                before_sep = title_norm[:m.start()]
+                before_has_acc = any(_has_accessory_term(before_sep, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS + PHONE_HARD_PART_WORDS)
+                if before_has_acc:
+                    return True
             return False
         return True
     
@@ -1962,8 +1976,6 @@ def _fetch_item_details(item_id):
         try:
             body = e.read().decode("utf-8", errors="replace")
             logger.warning("_fetch_item_details: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
-            if e.code == 404:
-                return "__BLOCKED_404__"
         except Exception:
             pass
         return None
@@ -2699,9 +2711,6 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
 
 async def _validate_candidate(item, search):
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
-    if details == "__BLOCKED_404__":
-        return False, None
-    
     if details:
         # Log subcategory mismatch but do NOT block — sellers often list in wrong categories.
         cat_id = details.get("categoryId")
@@ -3095,11 +3104,6 @@ async def process_searches(bot, once=False):
             for item in sorted(new_items, key=lambda x: x["total_price"]):
                 h = _item_hash(item["seller_name"], item["title"], item["price"])
                 details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
-                if details == "__BLOCKED_404__":
-                    logger.info("Skipping notification for item %s: blocked due to API 404 (sold out or variation parent)", item["item_id"])
-                    seen_ids.add(item["item_id"])
-                    continue
-                
                 desc = ""
                 if details:
                     # Block incorrect subcategories (accessories/parts) to prevent false positives
@@ -3174,11 +3178,6 @@ async def process_searches(bot, once=False):
                 for item in sorted(new_items, key=lambda x: x["total_price"]):
                     h = _item_hash(item["seller_name"], item["title"], item["price"])
                     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
-                    if details == "__BLOCKED_404__":
-                        logger.info("Skipping notification for item %s: blocked due to API 404 (sold out or variation parent)", item["item_id"])
-                        seen_ids.add(item["item_id"])
-                        continue
-                    
                     desc = ""
                     if details:
                         # Block incorrect subcategories (accessories/parts) to prevent false positives
