@@ -2475,6 +2475,19 @@ def fetch_ebay_ex(search):
 
 
 async def send_notification(bot, item, search, stats_7d=None):
+    item_url = item.get("url") or ""
+    item_id = item.get("item_id")
+    if item_id:
+        if "ebay.de" in item_url:
+            item_url = f"https://www.ebay.de/itm/{item_id}"
+        elif "ebay" in item_url:
+            from urllib.parse import urlparse
+            try:
+                p = urlparse(item_url)
+                item_url = f"https://{p.netloc}/itm/{item_id}"
+            except Exception:
+                pass
+
     trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
     emoji = _trust_emoji(trust)
 
@@ -2543,7 +2556,7 @@ async def send_notification(bot, item, search, stats_7d=None):
     lines = [
         header,
         "",
-        f"📌 <b>Товар:</b> <a href=\"{item['url']}\">{html.escape(item['title'])}</a>",
+        f"📌 <b>Товар:</b> <a href=\"{html.escape(item_url)}\">{html.escape(item['title'])}</a>",
         f"💰 <b>Цена:</b> {price_val_str} ({shipping_str})",
         f"🏷 <b>Тип:</b> {type_str}",
         f"👤 <b>Продавец:</b> {emoji} {html.escape(item['seller_name'])}{rating_str}",
@@ -2595,7 +2608,7 @@ async def send_notification(bot, item, search, stats_7d=None):
 
     keyboard = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("🔗 Открыть", url=item["url"]),
+            InlineKeyboardButton("🔗 Открыть", url=item_url),
             InlineKeyboardButton("❌ Скрыть", callback_data=f"hide:{item['item_id']}"),
             InlineKeyboardButton("🚫 Бан", callback_data=f"ban:{item['seller_name']}"),
         ]
