@@ -796,7 +796,7 @@ def _is_for_accessory_title(title_norm, query_norm, category):
         if category == "consoles":
             if _matches_console_query_model(before_part, query_norm):
                 return False
-        elif category == "phones" or _is_phone_search_query(query_norm):
+        elif category == "phones":
             if _matches_phone_query_model(before_part, query_norm):
                 return False
         else:
@@ -2145,7 +2145,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
-        if category == "phones" or _is_phone_search_query(query_norm):
+        if category == "phones":
             if not _matches_phone_query_model(title_norm, query_norm):
                 continue
             if _is_phone_accessory_title(title_norm):
@@ -2724,6 +2724,37 @@ async def _validate_candidate(item, search):
 async def process_searches(bot, once=False):
     async with process_lock:
         searches = config.get_searches()
+        # Programmatic migration for Redmagic searches to category "all" and remove min_price
+        modified = False
+        accessory_excludes = [
+            "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
+            "folie", "folien", "charger", "ladegerät", "kabel", "tasche", 
+            "schutzhülle", "film", "glass", "glas", "cable", "cables", 
+            "netzteil", "netzteile", "panzerfolie", "displayfolie", "glasfolie",
+            "mats", "ibwind", "skin", "sticker", "adapter", "dock"
+        ]
+        for s in searches:
+            q_lower = s.get("query", "").lower()
+            if "redmagic" in q_lower or "red magic" in q_lower:
+                filters = s.setdefault("filters", {})
+                if filters.get("category") != "all":
+                    filters["category"] = "all"
+                    modified = True
+                if "min_price" in filters:
+                    filters.pop("min_price", None)
+                    modified = True
+                if filters.get("location") != "eu":
+                    filters["location"] = "eu"
+                    modified = True
+                
+                excludes = s.setdefault("exclude_words", [])
+                for ex_word in accessory_excludes:
+                    if ex_word not in excludes:
+                        excludes.append(ex_word)
+                        modified = True
+        if modified:
+            config.save()
+            logger.info("Programmatically migrated redmagic searches: category='all', location='eu', no min_price, added accessory excludes")
         if not searches:
             logger.info("No searches configured")
             return
@@ -2793,7 +2824,7 @@ async def process_searches(bot, once=False):
                         results = _merge_items_by_id(results, auction_results)
                 
                 # Filter results passing is_statistics=True to bypass auction time/bid filters
-                filtered = filter_results(results, relaxed_search, config, skip_seen=True, is_statistics=True)
+                filtered = filter_results(results, relaxed_search, config, skip_seen=False, is_statistics=True)
                 
                 # Group filtered items into Buy It Now and Auction
                 bin_filtered = [item for item in filtered if item.get("buy_now")]
