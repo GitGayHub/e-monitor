@@ -2877,15 +2877,15 @@ async def process_searches(bot, once=False):
                         p_bo = cheapest_bin_bo["total_price"]
                         url_bo = get_short_url(cheapest_bin_bo["item_id"])
                         v_bo = get_verdict_str(p_bo)
-                        block_lines.append(f"🛒 Sofortkauf  <a href='{url_bin}'>{p_bin}€</a>  {v_bin}")
-                        block_lines.append(f"🛒🤝 Sofortkauf + PV  <a href='{url_bo}'>{p_bo}€</a>  {v_bo}")
+                        block_lines.append(f"<code>🛒 Sofortkauf  {p_bin}€</code>  {v_bin}\n   🔗 <a href='{url_bin}'>Открыть</a>")
+                        block_lines.append(f"<code>🛒🤝 Sofortkauf + PV  {p_bo}€</code>  {v_bo}\n   🔗 <a href='{url_bo}'>Открыть</a>")
                     else:
                         if cheapest_bin.get("best_offer"):
-                            block_lines.append(f"🛒🤝 Sofortkauf + PV  <a href='{url_bin}'>{p_bin}€</a>  {v_bin}")
+                            block_lines.append(f"<code>🛒🤝 Sofortkauf + PV  {p_bin}€</code>  {v_bin}\n   🔗 <a href='{url_bin}'>Открыть</a>")
                         else:
-                            block_lines.append(f"🛒 Sofortkauf  <a href='{url_bin}'>{p_bin}€</a>  {v_bin}")
+                            block_lines.append(f"<code>🛒 Sofortkauf  {p_bin}€</code>  {v_bin}\n   🔗 <a href='{url_bin}'>Открыть</a>")
                 else:
-                    block_lines.append(f"🛒 Sofortkauf  Не найдено  ❌")
+                    block_lines.append(f"<code>🛒 Sofortkauf  Не найдено</code>  ❌")
                 
                 # 2. Format Auction status
                 if cheapest_auc:
@@ -2903,17 +2903,17 @@ async def process_searches(bot, once=False):
                         t_bo = cheapest_auc_bo.get("time_left", "")
                         t_bo_str = f" ({t_bo})" if t_bo else ""
                         
-                        block_lines.append(f"🔨 Auktion  <a href='{url_auc}'>{p_auc}€</a>{t_auc_str}  {v_auc}")
-                        block_lines.append(f"🔨🤝 Auktion + PV  <a href='{url_bo}'>{p_bo}€</a>{t_bo_str}  {v_bo}")
+                        block_lines.append(f"<code>🔨 Auktion  {p_auc}€{t_auc_str}</code>  {v_auc}\n   🔗 <a href='{url_auc}'>Открыть</a>")
+                        block_lines.append(f"<code>🔨🤝 Auktion + PV  {p_bo}€{t_bo_str}</code>  {v_bo}\n   🔗 <a href='{url_bo}'>Открыть</a>")
                     else:
                         t_auc = cheapest_auc.get("time_left", "")
                         t_auc_str = f" ({t_auc})" if t_auc else ""
                         if cheapest_auc.get("best_offer"):
-                            block_lines.append(f"🔨🤝 Auktion + PV  <a href='{url_auc}'>{p_auc}€</a>{t_auc_str}  {v_auc}")
+                            block_lines.append(f"<code>🔨🤝 Auktion + PV  {p_auc}€{t_auc_str}</code>  {v_auc}\n   🔗 <a href='{url_auc}'>Открыть</a>")
                         else:
-                            block_lines.append(f"🔨 Auktion  <a href='{url_auc}'>{p_auc}€</a>{t_auc_str}  {v_auc}")
+                            block_lines.append(f"<code>🔨 Auktion  {p_auc}€{t_auc_str}</code>  {v_auc}\n   🔗 <a href='{url_auc}'>Открыть</a>")
                 else:
-                    block_lines.append(f"🔨 Auktion  Не найдено  ❌")
+                    block_lines.append(f"<code>🔨 Auktion  Не найдено</code>  ❌")
                 
                 report_lines.append("\n".join(block_lines))
                 
