@@ -2938,38 +2938,45 @@ async def process_searches(bot, once=False):
                 # Dashes for missing items matching max_len
                 dashes = "-" * max_len
                 
-                # Prefix labels (all exactly 10 characters long)
-                lbl_bin = "🛒 Sofort  "
-                lbl_bin_bo = "🛒🤝 +PV   "
-                lbl_auc = "🔨 Auktion "
-                lbl_auc_bo = "🔨🤝 +PV   "
-                lbl_link = "🔗         "
+                # Prefix labels and emojis (one emoji and one space outside <code>)
+                lbl_bin_emoji = "🛒"
+                lbl_bin_bo_emoji = "🤝"
+                lbl_auc_emoji = "🔨"
+                lbl_auc_bo_emoji = "⏳"
                 
-                def make_aligned_row(label, item, price_display, is_auction=False):
+                lbl_bin = "Sofort   "
+                lbl_bin_bo = "Sofort+PV"
+                lbl_auc = "Auktion  "
+                lbl_auc_bo = "Aukt.+PV "
+                
+                def make_aligned_row(emoji, label, item, price_display, is_auction=False):
                     row_lines = []
                     if item:
                         p_val = item["total_price"]
                         url = get_short_url(item["item_id"])
                         verdict = get_verdict_str(p_val)
                         
-                        padded_price = price_display.ljust(max_len)
-                        row_lines.append(f"<code>{label}{padded_price}  │ </code>{verdict}")
-                        row_lines.append(f"<code>{lbl_link}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
+                        padded_price = price_display.rjust(max_len)
+                        row_lines.append(f"{emoji} <code>{label} {padded_price}  │ </code>{verdict}")
+                        
+                        spaces_str = " " * 10
+                        row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
-                        row_lines.append(f"<code>{label}{dashes}  │ </code>❌ Не найдено")
+                        padded_dashes = dashes.rjust(max_len)
+                        row_lines.append(f"{emoji} <code>{label} {padded_dashes}  │ </code>❌ Не найдено")
                     return row_lines
                 
-                # Build Sofortkauf block
+                # Build Sofortkauf block with blank lines in between
                 bin_lines = []
-                bin_lines.extend(make_aligned_row(lbl_bin, cheapest_bin_no_bo, p1, is_auction=False))
-                bin_lines.append(f"<code>{' ' * (10 + max_len + 2)}│</code>")
-                bin_lines.extend(make_aligned_row(lbl_bin_bo, cheapest_bin_bo, p2, is_auction=False))
+                bin_lines.extend(make_aligned_row(lbl_bin_emoji, lbl_bin, cheapest_bin_no_bo, p1, is_auction=False))
+                bin_lines.append("")
+                bin_lines.extend(make_aligned_row(lbl_bin_bo_emoji, lbl_bin_bo, cheapest_bin_bo, p2, is_auction=False))
                 
-                # Build Auction block
+                # Build Auction block with blank lines in between
                 auc_lines = []
-                auc_lines.extend(make_aligned_row(lbl_auc, cheapest_auc_no_bo, p3, is_auction=True))
-                auc_lines.append(f"<code>{' ' * (10 + max_len + 2)}│</code>")
-                auc_lines.extend(make_aligned_row(lbl_auc_bo, cheapest_auc_bo, p4, is_auction=True))
+                auc_lines.extend(make_aligned_row(lbl_auc_emoji, lbl_auc, cheapest_auc_no_bo, p3, is_auction=True))
+                auc_lines.append("")
+                auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4, is_auction=True))
                 
                 # Build report block
                 limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
@@ -2983,7 +2990,7 @@ async def process_searches(bot, once=False):
                     f"💸 Лимит: {limit_str}",
                     "",
                     "\n".join(bin_lines),
-                    f"<code>{' ' * (10 + max_len + 2)}│</code>",
+                    "",
                     "\n".join(auc_lines)
                 ]
                 
@@ -2993,44 +3000,26 @@ async def process_searches(bot, once=False):
                 if not once:
                     await asyncio.sleep(random.uniform(2, 5))
             
-            # Split report_lines into chunks of at most 3500 characters to avoid Telegram length limit
+            # Split report_lines into chunks of at most 8 items to avoid Telegram's 100 HTML entities limit
             chunks = []
-            current_blocks = []
-            current_len = 0
+            chunk_size = 8
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
-            footer_str = "📋 Автомониторинг: Git 🤖" if is_github else "📋 Автомониторинг: Локальный 💻"
+            footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
             
-            for i, line in enumerate(report_lines):
-                added_len = len(line)
-                is_last = (i == len(report_lines) - 1)
+            for idx in range(0, len(report_lines), chunk_size):
+                chunk_items = report_lines[idx : idx + chunk_size]
                 
-                if not current_blocks:
-                    potential_len = added_len
-                else:
-                    potential_len = current_len + len("\n\n───────────────────\n\n") + added_len
+                # Join the items in the chunk using the 31-dash code-wrapped separator
+                chunk_text = "\n\n<code>───────────────────────────────</code>\n\n".join(chunk_items)
                 
-                if is_last:
-                    potential_len += len("\n\n───────────────────\n\n") + len(footer_str)
+                # If this is the last chunk, append the footer
+                if idx + chunk_size >= len(report_lines):
+                    chunk_text += f"\n\n<code>───────────────────────────────</code>\n\n{footer_str}"
                 
-                if potential_len > 3500 and current_blocks:
-                    chunk_text = "\n\n───────────────────\n\n".join(current_blocks)
-                    chunks.append(chunk_text)
-                    current_blocks = [line]
-                    current_len = len(line)
-                else:
-                    current_blocks.append(line)
-                    if len(current_blocks) == 1:
-                        current_len = len(line)
-                    else:
-                        current_len += len("\n\n───────────────────\n\n") + len(line)
-            
-            if current_blocks:
-                chunk_text = "\n\n───────────────────\n\n".join(current_blocks)
-                chunk_text += "\n\n───────────────────\n\n" + footer_str
                 chunks.append(chunk_text)
             
-            logger.info(f"📊 Отправляю диагностический отчет в Telegram ({len(chunks)} частей)...")
+            logger.info(f"📊 Отправляю diagnostic report в Telegram ({len(chunks)} частей)...")
             
             force_backup = len(blocked_searches) > 0
             for i, chunk_text in enumerate(chunks):
