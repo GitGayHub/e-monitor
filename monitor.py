@@ -2797,7 +2797,7 @@ async def process_searches(bot, once=False):
                         filters["max_price"] = 750
                         modified = True
                     elif "z70" in q_lower:
-                        filters["max_price"] = 650
+                        filters["max_price"] = 320
                         modified = True
                     elif "11s" in q_lower:
                         filters["max_price"] = 900
