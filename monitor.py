@@ -24,6 +24,7 @@ import urllib.error
 import urllib.parse
 import base64
 import copy
+import random
 
 from config_manager import ConfigManager
 from price_history import (
