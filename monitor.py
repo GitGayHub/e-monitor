@@ -3046,23 +3046,9 @@ async def process_searches(bot, once=False):
                     logger.error(f"Ошибка отправки части {i+1} диагностического отчета")
                 await asyncio.sleep(1.0)
                 
-            # Reset mode to normal to prevent loop-spamming
-            config.update_settings({"test_summary_mode": False})
-            try:
-                mode_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'mode.txt')
-                with open(mode_file, 'w', encoding='utf-8') as f:
-                    f.write('normal')
-            except Exception as e:
-                logger.error(f"Failed to reset mode.txt locally: {e}")
-            
-            try:
-                await asyncio.to_thread(_sync_mode_to_github)
-                logger.info("🔄 Mode successfully reset to normal on GitHub")
-            except Exception as e:
-                logger.error(f"Failed to sync mode reset to GitHub: {e}")
-                
             clear_monitoring_state()
             return
+
 
         total_new = 0
         blocked_searches = []  # Searches that failed due to block/rate_limit/cooldown
