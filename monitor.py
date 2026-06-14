@@ -1200,6 +1200,21 @@ def _parse_time_left_to_minutes(time_left_str):
     return total_minutes
 
 
+def _format_time_left_from_seconds(total_seconds):
+    if total_seconds >= 86400:
+        days = int(total_seconds // 86400)
+        return f"{days} days+"
+    else:
+        hours = int(total_seconds // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+        parts = []
+        if hours > 0:
+            parts.append(f"{hours}h")
+        if minutes > 0 or not parts:
+            parts.append(f"{minutes}m")
+        return "".join(parts)
+
+
 def _normalize(text):
     t = text.lower()
     t = t.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
@@ -1448,6 +1463,9 @@ def _clean_time_left(txt):
         if t.lower().startswith("noch "):
             t = t[5:]
         t = re.sub(r"\s*\(.*?\)", "", t)
+        minutes = _parse_time_left_to_minutes(t)
+        if minutes > 0:
+            return _format_time_left_from_seconds(minutes * 60)
         return t.strip()
         
     # Check for DayOfWeek, HH:MM format (e.g. "Mo, 09:18" or "Mo,09:18")
@@ -1469,19 +1487,7 @@ def _clean_time_left(txt):
             
         target_date += timedelta(days=days_ahead)
         diff = target_date - now
-        
-        days = diff.days
-        hours = diff.seconds // 3600
-        minutes = (diff.seconds % 3600) // 60
-        
-        parts = []
-        if days > 0:
-            parts.append(f"{days} Tag{'e' if days > 1 else ''}")
-        if hours > 0:
-            parts.append(f"{hours} Std")
-        if minutes > 0 or not parts:
-            parts.append(f"{minutes} Min")
-        return " ".join(parts)
+        return _format_time_left_from_seconds(max(0.0, diff.total_seconds()))
         
     # Check for DD. MMM. HH:MM format (e.g. "27. Apr. 09:17" or "15. Jun. 09:18")
     m_date = re.search(r"\b(\d{1,2})\.\s*(Jan|Feb|Mär|Maer|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s*(\d{2}):(\d{2})\b", t, re.IGNORECASE)
@@ -1512,18 +1518,7 @@ def _clean_time_left(txt):
             return t
             
         diff = target_date - now
-        days = diff.days
-        hours = diff.seconds // 3600
-        minutes = (diff.seconds % 3600) // 60
-        
-        parts = []
-        if days > 0:
-            parts.append(f"{days} Tag{'e' if days > 1 else ''}")
-        if hours > 0:
-            parts.append(f"{hours} Std")
-        if minutes > 0 or not parts:
-            parts.append(f"{minutes} Min")
-        return " ".join(parts)
+        return _format_time_left_from_seconds(max(0.0, diff.total_seconds()))
         
     return t
 
@@ -1993,17 +1988,7 @@ def parse_ebay_api_results(data):
                 now_dt = datetime.utcnow()
                 diff = end_dt - now_dt
                 if diff.total_seconds() > 0:
-                    days = diff.days
-                    hours = diff.seconds // 3600
-                    minutes = (diff.seconds % 3600) // 60
-                    parts = []
-                    if days > 0:
-                        parts.append(f"{days}d")
-                    if hours > 0:
-                        parts.append(f"{hours}h")
-                    if minutes > 0 or not parts:
-                        parts.append(f"{minutes}m")
-                    time_left_str = "".join(parts)
+                    time_left_str = _format_time_left_from_seconds(diff.total_seconds())
             except Exception as e:
                 logger.warning("Error parsing itemEndDate '%s': %s", end_date_str, e)
 
@@ -2860,17 +2845,7 @@ async def _validate_candidate(item, search):
                 now_dt = datetime.utcnow()
                 diff = end_dt - now_dt
                 if diff.total_seconds() > 0:
-                    days = diff.days
-                    hours = diff.seconds // 3600
-                    minutes = (diff.seconds % 3600) // 60
-                    parts = []
-                    if days > 0:
-                        parts.append(f"{days}d")
-                    if hours > 0:
-                        parts.append(f"{hours}h")
-                    if minutes > 0 or not parts:
-                        parts.append(f"{minutes}m")
-                    item["time_left"] = "".join(parts)
+                    item["time_left"] = _format_time_left_from_seconds(diff.total_seconds())
             except Exception:
                 pass
 
@@ -2931,16 +2906,16 @@ async def process_searches(bot, once=False):
                     modified = True
                 if filters.get("max_price") is None:
                     if "z80" in q_lower:
-                        filters["max_price"] = 750
+                        filters["max_price"] = 500 if "leading" in q_lower else 450
                         modified = True
                     elif "z70" in q_lower:
-                        filters["max_price"] = 320
+                        filters["max_price"] = 350
                         modified = True
                     elif "11s" in q_lower:
-                        filters["max_price"] = 900
+                        filters["max_price"] = 500
                         modified = True
                     elif "11" in q_lower:
-                        filters["max_price"] = 800
+                        filters["max_price"] = 450
                         modified = True
                 
                 excludes = s.setdefault("exclude_words", [])
@@ -3273,17 +3248,7 @@ async def process_searches(bot, once=False):
                             now_dt = datetime.utcnow()
                             diff = end_dt - now_dt
                             if diff.total_seconds() > 0:
-                                days = diff.days
-                                hours = diff.seconds // 3600
-                                minutes = (diff.seconds % 3600) // 60
-                                parts = []
-                                if days > 0:
-                                    parts.append(f"{days}d")
-                                if hours > 0:
-                                    parts.append(f"{hours}h")
-                                if minutes > 0 or not parts:
-                                    parts.append(f"{minutes}m")
-                                item["time_left"] = "".join(parts)
+                                item["time_left"] = _format_time_left_from_seconds(diff.total_seconds())
                         except Exception:
                             pass
                     # Block incorrect subcategories (accessories/parts) to prevent false positives
@@ -3371,17 +3336,7 @@ async def process_searches(bot, once=False):
                                 now_dt = datetime.utcnow()
                                 diff = end_dt - now_dt
                                 if diff.total_seconds() > 0:
-                                    days = diff.days
-                                    hours = diff.seconds // 3600
-                                    minutes = (diff.seconds % 3600) // 60
-                                    parts = []
-                                    if days > 0:
-                                        parts.append(f"{days}d")
-                                    if hours > 0:
-                                        parts.append(f"{hours}h")
-                                    if minutes > 0 or not parts:
-                                        parts.append(f"{minutes}m")
-                                    item["time_left"] = "".join(parts)
+                                    item["time_left"] = _format_time_left_from_seconds(diff.total_seconds())
                             except Exception:
                                 pass
                         # Block incorrect subcategories (accessories/parts) to prevent false positives
