@@ -1998,12 +1998,12 @@ def parse_ebay_api_results(data):
                     minutes = (diff.seconds % 3600) // 60
                     parts = []
                     if days > 0:
-                        parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                        parts.append(f"{days}d")
                     if hours > 0:
-                        parts.append(f"{hours} Std")
+                        parts.append(f"{hours}h")
                     if minutes > 0 or not parts:
-                        parts.append(f"{minutes} Min")
-                    time_left_str = " ".join(parts)
+                        parts.append(f"{minutes}m")
+                    time_left_str = "".join(parts)
             except Exception as e:
                 logger.warning("Error parsing itemEndDate '%s': %s", end_date_str, e)
 
@@ -2865,12 +2865,12 @@ async def _validate_candidate(item, search):
                     minutes = (diff.seconds % 3600) // 60
                     parts = []
                     if days > 0:
-                        parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                        parts.append(f"{days}d")
                     if hours > 0:
-                        parts.append(f"{hours} Std")
+                        parts.append(f"{hours}h")
                     if minutes > 0 or not parts:
-                        parts.append(f"{minutes} Min")
-                    item["time_left"] = " ".join(parts)
+                        parts.append(f"{minutes}m")
+                    item["time_left"] = "".join(parts)
             except Exception:
                 pass
 
@@ -3041,7 +3041,7 @@ async def process_searches(bot, once=False):
                     if orig_max_price and price_val > orig_max_price:
                         return "🟣 Дорого"
                     else:
-                        return "🟢 Подходит"
+                        return "✅ Подходит"
                 
                 def get_short_url(item_id):
                     return f"https://www.ebay.de/itm/{item_id}"
@@ -3126,7 +3126,7 @@ async def process_searches(bot, once=False):
                         if is_auction:
                             t_left = item.get("time_left", "")
                             if t_left:
-                                time_emoji = "✅" if is_under_one_hour(t_left) else "🟠"
+                                time_emoji = "🟢" if is_under_one_hour(t_left) else "🟠"
                                 time_info = f" {time_emoji} ({_shorten_time_left(t_left)})"
                         
                         # Emoji is outside <code>, followed by a single space
@@ -3278,12 +3278,12 @@ async def process_searches(bot, once=False):
                                 minutes = (diff.seconds % 3600) // 60
                                 parts = []
                                 if days > 0:
-                                    parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                                    parts.append(f"{days}d")
                                 if hours > 0:
-                                    parts.append(f"{hours} Std")
+                                    parts.append(f"{hours}h")
                                 if minutes > 0 or not parts:
-                                    parts.append(f"{minutes} Min")
-                                item["time_left"] = " ".join(parts)
+                                    parts.append(f"{minutes}m")
+                                item["time_left"] = "".join(parts)
                         except Exception:
                             pass
                     # Block incorrect subcategories (accessories/parts) to prevent false positives
@@ -3376,12 +3376,12 @@ async def process_searches(bot, once=False):
                                     minutes = (diff.seconds % 3600) // 60
                                     parts = []
                                     if days > 0:
-                                        parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                                        parts.append(f"{days}d")
                                     if hours > 0:
-                                        parts.append(f"{hours} Std")
+                                        parts.append(f"{hours}h")
                                     if minutes > 0 or not parts:
-                                        parts.append(f"{minutes} Min")
-                                    item["time_left"] = " ".join(parts)
+                                        parts.append(f"{minutes}m")
+                                    item["time_left"] = "".join(parts)
                             except Exception:
                                 pass
                         # Block incorrect subcategories (accessories/parts) to prevent false positives
