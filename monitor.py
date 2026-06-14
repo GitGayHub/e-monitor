@@ -618,11 +618,11 @@ def _is_phone_device_title(title_norm):
         return True
     if re.search(r"\b(?:oneplus\s+(?:\d{1,2}|ace)|google\s+pixel\s+\d|pixel\s+\d)\b", title_norm):
         return True
-    if re.search(r"\b(?:red\s*magic|redmagic)\s*\d{1,2}[a-z]?\b", title_norm):
+    if re.search(r"\b(?:red\s*magic|redmagic)\b.*\b\d{1,2}[a-z]?\b", title_norm):
         return bool(
             re.search(r"\b\d+\s*(?:gb|go|tb)\b", title_norm)
             or re.search(r"\b\d+\s*/\s*\d+\s*(?:gb|go|tb)\b", title_norm)
-            or re.search(r"\b(?:red\s*magic|redmagic)\s*\d{1,2}\s*(?:pro|air|s)\b", title_norm)
+            or re.search(r"\b(?:red\s*magic|redmagic)\b.*\b\d{1,2}\s*(?:pro|air|s)\b", title_norm)
             or any(_has_term(title_norm, w) for w in ("smartphone", "phone", "5g", "snapdragon", "nubia", "zte", "unlocked", "gaming phone", "gaming-smartphone", "nfc"))
         )
     if re.search(r"\b\d+\s*(gb|go|tb)\b", title_norm):
@@ -758,15 +758,26 @@ def _is_phone_accessory_title(title_norm):
     # Standalone bundle indicator checks
     is_bundle = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
 
+    # Battery words can sometimes be description of battery health (e.g. "100% Akku")
+    # rather than a replacement battery.
+    battery_words = {"akku", "battery", "batterie", "batteries"}
+    is_battery_health_desc = False
+    if any(_has_accessory_term(title_norm, w) for w in battery_words):
+        has_storage = re.search(r"\b\d+\s*(?:gb|go|tb)\b", title_norm) is not None
+        has_health = re.search(r"\b\d+%\b", title_norm) is not None or any(w in title_norm for w in ("zyklen", "cycles", "kapazität", "kapazitaet", "zustand", "health", "neu", "top", "gut"))
+        if has_storage and has_health:
+            is_battery_health_desc = True
+
     # Hard parts — always accessory, no override possible
-    has_hard_part = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_PART_WORDS)
+    hard_parts_to_check = [w for w in PHONE_HARD_PART_WORDS if not (is_battery_health_desc and w in battery_words)]
+    has_hard_part = any(_has_accessory_term(title_norm, w) for w in hard_parts_to_check)
     if has_hard_part:
         if is_bundle and _title_leads_with_phone_model(title_norm):
             sep_pattern = re.compile(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
             m = sep_pattern.search(title_norm)
             if m:
                 before_sep = title_norm[:m.start()]
-                before_has_hard = any(_has_accessory_term(before_sep, w) for w in PHONE_HARD_PART_WORDS)
+                before_has_hard = any(_has_accessory_term(before_sep, w) for w in hard_parts_to_check)
                 if before_has_hard:
                     return True
             return False
@@ -1037,6 +1048,16 @@ def _is_console_device_title(title_norm, query_norm):
 def _build_smart_search_query(search):
     """Natively appends standard category-specific negative keywords to exclude defects and parts."""
     query = search.get("query", "").strip()
+    
+    # Auto-expand Redmagic to match both space and spaceless versions
+    query_lower = query.lower()
+    if "redmagic" in query_lower:
+        import re
+        query = re.sub(r"\bredmagic\b", '(redmagic, "red magic")', query, flags=re.IGNORECASE)
+    elif "red magic" in query_lower:
+        import re
+        query = re.sub(r"\bred\s+magic\b", '(redmagic, "red magic")', query, flags=re.IGNORECASE)
+
     if query.startswith("-") or " -" in query:
         return query
     
@@ -1054,6 +1075,11 @@ def _build_smart_search_query(search):
     # Category-specific safe defect/parts exclusions
     if eff_category == "phones":
         excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
+        # Exclude common accessories from eBay search query directly if they are not in the query itself
+        acc_excludes = ["hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", "folie", "folien", "glass", "glas", "tasche", "schutzhülle"]
+        for w in acc_excludes:
+            if w not in query_lower:
+                excludes.append(w)
         
     exclude_str = " ".join(f"-{w}" for w in excludes)
     return f"{query} {exclude_str}"
@@ -1410,6 +1436,98 @@ def build_ebay_url(search):
     return f"{base}?{qstr}"
 
 
+def _clean_time_left(txt):
+    if not txt:
+        return ""
+    import re
+    from datetime import datetime, timedelta
+    t = txt.strip()
+    
+    # If it already has remaining time terms (Std, Min, Tag, h, m, d), return it cleaned
+    if re.search(r"\d+\s*(?:Std|Min|Tag|std|min|tag|[hmd])", t):
+        if t.lower().startswith("noch "):
+            t = t[5:]
+        t = re.sub(r"\s*\(.*?\)", "", t)
+        return t.strip()
+        
+    # Check for DayOfWeek, HH:MM format (e.g. "Mo, 09:18" or "Mo,09:18")
+    m_dow = re.search(r"\b(Mo|Di|Mi|Do|Fr|Sa|So),\s*(\d{2}):(\d{2})\b", t, re.IGNORECASE)
+    if m_dow:
+        dow_str = m_dow.group(1)
+        hour = int(m_dow.group(2))
+        minute = int(m_dow.group(3))
+        
+        dow_map = {"mo": 0, "di": 1, "mi": 2, "do": 3, "fr": 4, "sa": 5, "so": 6}
+        target_dow = dow_map[dow_str.lower()]
+        
+        now = datetime.now()
+        target_date = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        
+        days_ahead = target_dow - now.weekday()
+        if days_ahead < 0 or (days_ahead == 0 and target_date < now):
+            days_ahead += 7
+            
+        target_date += timedelta(days=days_ahead)
+        diff = target_date - now
+        
+        days = diff.days
+        hours = diff.seconds // 3600
+        minutes = (diff.seconds % 3600) // 60
+        
+        parts = []
+        if days > 0:
+            parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+        if hours > 0:
+            parts.append(f"{hours} Std")
+        if minutes > 0 or not parts:
+            parts.append(f"{minutes} Min")
+        return " ".join(parts)
+        
+    # Check for DD. MMM. HH:MM format (e.g. "27. Apr. 09:17" or "15. Jun. 09:18")
+    m_date = re.search(r"\b(\d{1,2})\.\s*(Jan|Feb|Mär|Maer|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s*(\d{2}):(\d{2})\b", t, re.IGNORECASE)
+    if m_date:
+        day = int(m_date.group(1))
+        month_str = m_date.group(2).lower()
+        hour = int(m_date.group(3))
+        minute = int(m_date.group(4))
+        
+        month_map = {
+            "jan": 1, "feb": 2, "mär": 3, "maer": 3, "apr": 4, "mai": 5, "jun": 6,
+            "jul": 7, "aug": 8, "sep": 9, "okt": 10, "nov": 11, "dez": 12
+        }
+        month_key = month_str[:3]
+        if month_key in month_map:
+            month = month_map[month_key]
+        else:
+            return t
+            
+        now = datetime.now()
+        year = now.year
+        
+        try:
+            target_date = datetime(year, month, day, hour, minute)
+            if target_date < now:
+                target_date = datetime(year + 1, month, day, hour, minute)
+        except ValueError:
+            return t
+            
+        diff = target_date - now
+        days = diff.days
+        hours = diff.seconds // 3600
+        minutes = (diff.seconds % 3600) // 60
+        
+        parts = []
+        if days > 0:
+            parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+        if hours > 0:
+            parts.append(f"{hours} Std")
+        if minutes > 0 or not parts:
+            parts.append(f"{minutes} Min")
+        return " ".join(parts)
+        
+    return t
+
+
 def parse_ebay_results(html):
     soup = BeautifulSoup(html, "html.parser")
     items = []
@@ -1487,11 +1605,12 @@ def parse_ebay_results(html):
             for s in all_spans:
                 txt = s.get_text(strip=True)
                 cls = " ".join(s.get("class", []))
-                if re.match(r"\d+\s*(Std|Min|Tag|[hmd])", txt) and "secondary" in cls:
-                    time_left = txt
-                    if not auction:
-                        auction = True
-                        buy_now = False
+                if ("secondary" in cls or "s-item__time-left" in cls) and (re.search(r"\d+\s*(Std|Min|Tag|[hmd])", txt) or re.search(r"\b\d{2}:\d{2}\b", txt)):
+                    is_specific = "s-item__time-left" in cls or "time-left" in cls
+                    if is_specific or not time_left:
+                        cleaned = _clean_time_left(txt)
+                        if cleaned:
+                            time_left = cleaned
 
             seller_name = ""
             rating_count = 0
@@ -1879,11 +1998,11 @@ def parse_ebay_api_results(data):
                     minutes = (diff.seconds % 3600) // 60
                     parts = []
                     if days > 0:
-                        parts.append(f"{days}d")
+                        parts.append(f"{days} Tag{'e' if days > 1 else ''}")
                     if hours > 0:
-                        parts.append(f"{hours}h")
+                        parts.append(f"{hours} Std")
                     if minutes > 0 or not parts:
-                        parts.append(f"{minutes}m")
+                        parts.append(f"{minutes} Min")
                     time_left_str = " ".join(parts)
             except Exception as e:
                 logger.warning("Error parsing itemEndDate '%s': %s", end_date_str, e)
@@ -2131,14 +2250,15 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 continue
 
         listing_type = filters.get("listing_type", "all")
-        if listing_type == "auction" and not item.get("auction"):
-            continue
-        if listing_type in ("buy_now", "buy_now_offer") and (item.get("auction") or not item.get("buy_now")):
-            continue
-        if listing_type == "offer" and not item.get("best_offer"):
-            continue
-        if filters.get("best_offer") and not item.get("best_offer"):
-            continue
+        if not is_statistics:
+            if listing_type == "auction" and not item.get("auction"):
+                continue
+            if listing_type in ("buy_now", "buy_now_offer") and (item.get("auction") or not item.get("buy_now")):
+                continue
+            if listing_type == "offer" and not item.get("best_offer"):
+                continue
+            if filters.get("best_offer") and not item.get("best_offer"):
+                continue
             
         # User requirement: For auction listings (unless they have Buy It Now),
         # only send if:
@@ -2494,33 +2614,25 @@ async def send_notification(bot, item, search, stats_7d=None):
     trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
     emoji = _trust_emoji(trust)
 
-    types = []
-    if item["auction"] and not item["buy_now"]:
-        # Auction-first for auction listings
-        types.append("Auktion")
-        if item["best_offer"]:
-            types.append("🤝 Preisvorschlag")
+    if item["buy_now"]:
+        type_str = "Sofortkauf+" if item["best_offer"] else "Sofortkauf"
+    elif item["auction"]:
+        type_str = "Auktion+" if item["best_offer"] else "Auktion"
     else:
-        # Buy-now-first for buy listings
-        if item["buy_now"]:
-            types.append("Sofort-Kaufen")
-        if item["best_offer"]:
-            types.append("🤝 Preisvorschlag")
-        if item["auction"]:
-            types.append("Auktion")
-    type_str = " + ".join(types)
+        type_str = "Sofortkauf+" if item["best_offer"] else "Sofortkauf"
 
+    total_p = item["total_price"]
     # Price display: distinguish "buy now" from "auction"
     if item["auction"] and not item["buy_now"]:
         time_info = f" · {item['time_left']}" if item.get("time_left") else ""
-        price_line = f"💰 🔨 Ставка {item['price']:.0f}€{time_info}"
+        price_line = f"💰 🔨 Ставка {total_p:.0f}€{time_info}"
         type_line = f"🏷 {type_str}"
     elif item["buy_now"]:
         offer = " 🤝" if item["best_offer"] else ""
-        price_line = f"💰 🛒 {item['price']:.0f}€{offer}"
+        price_line = f"💰 🛒 {total_p:.0f}€{offer}"
         type_line = f"🏷 {type_str}"
     else:
-        price_line = f"💰 {item['price']:.0f}€"
+        price_line = f"💰 {total_p:.0f}€"
         type_line = f"🏷 {type_str}"
 
     location_flag = ""
@@ -2533,9 +2645,9 @@ async def send_notification(bot, item, search, stats_7d=None):
             location_flag = "🇪🇺 "
 
     if item.get("is_pickup_only"):
-        shipping_str = "Nur Abholung (Без доставки)"
+        shipping_suffix = " (Nur Abholung)"
     else:
-        shipping_str = "Бесплатная доставка" if item["shipping_cost"] == 0 else f"+{item['shipping_cost']:.0f}€ доставка"
+        shipping_suffix = ""
 
     outlier = is_outlier(item["price"], search["id"])
 
@@ -2546,12 +2658,12 @@ async def send_notification(bot, item, search, stats_7d=None):
     # Price display: distinguish "buy now" from "auction"
     if item["auction"] and not item["buy_now"]:
         time_info = f" · {item['time_left']}" if item.get("time_left") else ""
-        price_val_str = f"🔨 Ставка {item['price']:.0f}€{time_info}"
+        price_val_str = f"🔨 Ставка {total_p:.0f}€{time_info}"
     elif item["buy_now"]:
         offer = " 🤝" if item["best_offer"] else ""
-        price_val_str = f"🛒 {item['price']:.0f}€{offer}"
+        price_val_str = f"🛒 {total_p:.0f}€{offer}"
     else:
-        price_val_str = f"{item['price']:.0f}€"
+        price_val_str = f"{total_p:.0f}€"
 
     rating_count = item.get("seller_rating_count", 0)
     rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
@@ -2560,7 +2672,7 @@ async def send_notification(bot, item, search, stats_7d=None):
         header,
         "",
         f"📌 <b>Товар:</b> <a href=\"{html.escape(item_url)}\">{html.escape(item['title'])}</a>",
-        f"💰 <b>Цена:</b> {price_val_str} ({shipping_str})",
+        f"💰 <b>Цена:</b> {price_val_str}{shipping_suffix}",
         f"🏷 <b>Тип:</b> {type_str}",
         f"👤 <b>Продавец:</b> {emoji} {html.escape(item['seller_name'])}{rating_str}",
     ]
@@ -2737,6 +2849,31 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
 async def _validate_candidate(item, search):
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
+        # Update time_left from live API details
+        end_date_str = details.get("itemEndDate")
+        if end_date_str:
+            try:
+                import re
+                clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
+                from datetime import datetime
+                end_dt = datetime.fromisoformat(clean_date)
+                now_dt = datetime.utcnow()
+                diff = end_dt - now_dt
+                if diff.total_seconds() > 0:
+                    days = diff.days
+                    hours = diff.seconds // 3600
+                    minutes = (diff.seconds % 3600) // 60
+                    parts = []
+                    if days > 0:
+                        parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                    if hours > 0:
+                        parts.append(f"{hours} Std")
+                    if minutes > 0 or not parts:
+                        parts.append(f"{minutes} Min")
+                    item["time_left"] = " ".join(parts)
+            except Exception:
+                pass
+
         # Log subcategory mismatch but do NOT block — sellers often list in wrong categories.
         cat_id = details.get("categoryId")
         search_cat = search.get("filters", {}).get("category", "all")
@@ -2831,29 +2968,45 @@ async def process_searches(bot, once=False):
                 orig_max_price = search.get("filters", {}).get("max_price")
                 orig_min_price = search.get("filters", {}).get("min_price")
                 
-                # Fetch exactly like in normal mode
-                results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, search)
+                # Fetch both BIN and Auctions to ensure all blocks are populated
+                import copy
                 
-                # API retry if blocked
-                if fetch_err in ("blocked", "rate_limit", "cooldown"):
-                    if _ebay_api_configured():
-                        api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
-                        if not api_err and api_items:
-                            results = api_items
-                            fetch_err = None
-                        else:
-                            blocked_searches.append(search)
-                    else:
-                        blocked_searches.append(search)
+                bin_search = copy.deepcopy(search)
+                bin_search.setdefault("filters", {})["listing_type"] = "buy_now_offer"
+                bin_search["filters"]["best_offer"] = False
+                bin_search["filters"]["min_price"] = None
+                bin_search["filters"]["max_price"] = None
                 
-                sweep = _auction_sweep_search(search)
-                if sweep:
-                    auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep)
-                    if not auction_err:
-                        results = _merge_items_by_id(results, auction_results)
+                auc_search = copy.deepcopy(search)
+                auc_search.setdefault("filters", {})["listing_type"] = "auction"
+                auc_search["filters"]["best_offer"] = False
+                auc_search["filters"]["min_price"] = None
+                auc_search["filters"]["max_price"] = None
+                
+                # Fetch BIN
+                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search)
+                if bin_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search)
+                    if not api_err:
+                        bin_results = bin_api_results
+                        bin_err = None
+                
+                # Fetch Auctions
+                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search)
+                if auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search)
+                    if not api_err:
+                        auc_results = auc_api_results
+                        auc_err = None
+                        
+                results = _merge_items_by_id(bin_results, auc_results)
+                
+                fetch_err = bin_err or auc_err
+                if fetch_err and not results:
+                    blocked_searches.append(search)
                 
                 # Filter results with skip_seen=True (to show already notified items)
-                # and is_statistics=True (to bypass auction time/bid filters)
+                # and is_statistics=True (to bypass auction time/bid and listing_type filters)
                 filtered = filter_results(results, search, config, skip_seen=True, is_statistics=True)
                 
                 # Group filtered items into Buy It Now and Auction
@@ -2907,33 +3060,21 @@ async def process_searches(bot, once=False):
                     }
                     return mapping.get(cat_name, "📦")
                 
-                def get_price_str(item):
-                    p = item["price"]
-                    ship = item.get("shipping_cost", 0.0)
-                    if ship > 0.0:
-                        return f"{p:.0f}€+{ship:.0f}€"
-                    return f"{p:.0f}€"
+                p1_val = cheapest_bin_no_bo["total_price"] if cheapest_bin_no_bo else None
+                p2_val = cheapest_bin_bo["total_price"] if cheapest_bin_bo else None
+                p3_val = cheapest_auc_no_bo["total_price"] if cheapest_auc_no_bo else None
+                p4_val = cheapest_auc_bo["total_price"] if cheapest_auc_bo else None
                 
-                def get_item_price_display(item, is_auction=False):
-                    if not item:
-                        return None
-                    p_str = get_price_str(item)
-                    if is_auction:
-                        t_left = item.get("time_left", "")
-                        if t_left:
-                            p_str += f" ({t_left})"
-                    return p_str
-                
-                p1 = get_item_price_display(cheapest_bin_no_bo, is_auction=False)
-                p2 = get_item_price_display(cheapest_bin_bo, is_auction=False)
-                p3 = get_item_price_display(cheapest_auc_no_bo, is_auction=True)
-                p4 = get_item_price_display(cheapest_auc_bo, is_auction=True)
+                p1 = f"{p1_val:.0f}€" if p1_val else None
+                p2 = f"{p2_val:.0f}€" if p2_val else None
+                p3 = f"{p3_val:.0f}€" if p3_val else None
+                p4 = f"{p4_val:.0f}€" if p4_val else None
                 
                 # Determine max length of the price strings
                 lengths = [len(p) for p in [p1, p2, p3, p4] if p is not None]
-                max_len = max(lengths) if lengths else 3
-                if max_len < 3:
-                    max_len = 3
+                max_len = max(lengths) if lengths else 4
+                if max_len < 4:
+                    max_len = 4
                 
                 # Dashes for missing items matching max_len
                 dashes = "-" * max_len
@@ -2944,39 +3085,55 @@ async def process_searches(bot, once=False):
                 lbl_auc_emoji = "🔨"
                 lbl_auc_bo_emoji = "⏳"
                 
-                lbl_bin = "Sofort   "
-                lbl_bin_bo = "Sofort+PV"
-                lbl_auc = "Auktion  "
-                lbl_auc_bo = "Aukt.+PV "
+                lbl_bin = "Sofortkauf  "
+                lbl_bin_bo = "Sofortkauf+ "
+                lbl_auc = "Auktion     "
+                lbl_auc_bo = "Auktion+    "
                 
-                def make_aligned_row(emoji, label, item, price_display, is_auction=False):
+                def _shorten_time_left(t_str):
+                    if not t_str:
+                        return ""
+                    import re
+                    t = t_str.strip()
+                    if t.lower().startswith("noch "):
+                        t = t[5:]
+                    t = re.sub(r"\s*\(.*?\)", "", t)
+                    return t.strip()
+                
+                def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False):
                     row_lines = []
                     if item:
-                        p_val = item["total_price"]
                         url = get_short_url(item["item_id"])
-                        verdict = get_verdict_str(p_val)
+                        verdict = get_verdict_str(total_price_val)
                         
-                        padded_price = price_display.rjust(max_len)
-                        row_lines.append(f"{emoji} <code>{label} {padded_price}  │ </code>{verdict}")
+                        spaces_for_price = " " * max_len
                         
-                        spaces_str = " " * 10
-                        row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
+                        time_info = ""
+                        if is_auction:
+                            t_left = item.get("time_left", "")
+                            if t_left:
+                                time_info = f" ({_shorten_time_left(t_left)})"
+                        
+                        row_lines.append(f"<code>{emoji} {label} {spaces_for_price}  │ </code>{verdict}{time_info}")
+                        
+                        spaces_str = " " * (len(label) + max_len + 6)
+                        row_lines.append(f"<code>🔗{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК - {total_price_str}*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        row_lines.append(f"{emoji} <code>{label} {padded_dashes}  │ </code>❌ Не найдено")
+                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ </code>❌ Не найдено")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
                 bin_lines = []
-                bin_lines.extend(make_aligned_row(lbl_bin_emoji, lbl_bin, cheapest_bin_no_bo, p1, is_auction=False))
+                bin_lines.extend(make_aligned_row(lbl_bin_emoji, lbl_bin, cheapest_bin_no_bo, p1_val, p1, is_auction=False))
                 bin_lines.append("")
-                bin_lines.extend(make_aligned_row(lbl_bin_bo_emoji, lbl_bin_bo, cheapest_bin_bo, p2, is_auction=False))
+                bin_lines.extend(make_aligned_row(lbl_bin_bo_emoji, lbl_bin_bo, cheapest_bin_bo, p2_val, p2, is_auction=False))
                 
                 # Build Auction block with blank lines in between
                 auc_lines = []
-                auc_lines.extend(make_aligned_row(lbl_auc_emoji, lbl_auc, cheapest_auc_no_bo, p3, is_auction=True))
+                auc_lines.extend(make_aligned_row(lbl_auc_emoji, lbl_auc, cheapest_auc_no_bo, p3_val, p3, is_auction=True))
                 auc_lines.append("")
-                auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4, is_auction=True))
+                auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4_val, p4, is_auction=True))
                 
                 # Build report block
                 limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
@@ -3088,6 +3245,30 @@ async def process_searches(bot, once=False):
                 details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
                 desc = ""
                 if details:
+                    # Update time_left from live API details
+                    end_date_str = details.get("itemEndDate")
+                    if end_date_str:
+                        try:
+                            import re
+                            clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
+                            from datetime import datetime
+                            end_dt = datetime.fromisoformat(clean_date)
+                            now_dt = datetime.utcnow()
+                            diff = end_dt - now_dt
+                            if diff.total_seconds() > 0:
+                                days = diff.days
+                                hours = diff.seconds // 3600
+                                minutes = (diff.seconds % 3600) // 60
+                                parts = []
+                                if days > 0:
+                                    parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                                if hours > 0:
+                                    parts.append(f"{hours} Std")
+                                if minutes > 0 or not parts:
+                                    parts.append(f"{minutes} Min")
+                                item["time_left"] = " ".join(parts)
+                        except Exception:
+                            pass
                     # Block incorrect subcategories (accessories/parts) to prevent false positives
                     cat_id = details.get("categoryId")
                     search_cat = search.get("filters", {}).get("category", "all")
@@ -3162,6 +3343,30 @@ async def process_searches(bot, once=False):
                     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
                     desc = ""
                     if details:
+                        # Update time_left from live API details
+                        end_date_str = details.get("itemEndDate")
+                        if end_date_str:
+                            try:
+                                import re
+                                clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
+                                from datetime import datetime
+                                end_dt = datetime.fromisoformat(clean_date)
+                                now_dt = datetime.utcnow()
+                                diff = end_dt - now_dt
+                                if diff.total_seconds() > 0:
+                                    days = diff.days
+                                    hours = diff.seconds // 3600
+                                    minutes = (diff.seconds % 3600) // 60
+                                    parts = []
+                                    if days > 0:
+                                        parts.append(f"{days} Tag{'e' if days > 1 else ''}")
+                                    if hours > 0:
+                                        parts.append(f"{hours} Std")
+                                    if minutes > 0 or not parts:
+                                        parts.append(f"{minutes} Min")
+                                    item["time_left"] = " ".join(parts)
+                            except Exception:
+                                pass
                         # Block incorrect subcategories (accessories/parts) to prevent false positives
                         cat_id = details.get("categoryId")
                         search_cat = search.get("filters", {}).get("category", "all")
