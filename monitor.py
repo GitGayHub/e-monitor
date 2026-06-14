@@ -2963,8 +2963,16 @@ async def process_searches(bot, once=False):
             logger.info(f"🔍 Statistics/Diagnostic mode active ({source_str})...")
             report_lines = []
             blocked_searches = []
+            processed_queries = set()
             
             for search in searches:
+                if not search.get("enabled", True):
+                    continue
+                q_norm = search.get("query", "").strip().lower()
+                if q_norm in processed_queries:
+                    continue
+                processed_queries.add(q_norm)
+                
                 orig_max_price = search.get("filters", {}).get("max_price")
                 orig_min_price = search.get("filters", {}).get("min_price")
                 
@@ -3100,27 +3108,36 @@ async def process_searches(bot, once=False):
                     t = re.sub(r"\s*\(.*?\)", "", t)
                     return t.strip()
                 
+                def is_under_one_hour(t_str):
+                    if not t_str:
+                        return False
+                    t_lower = t_str.lower()
+                    return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour"))
+                
                 def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False):
                     row_lines = []
                     if item:
                         url = get_short_url(item["item_id"])
                         verdict = get_verdict_str(total_price_val)
                         
-                        spaces_for_price = " " * max_len
+                        padded_price = total_price_str.rjust(max_len)
                         
                         time_info = ""
                         if is_auction:
                             t_left = item.get("time_left", "")
                             if t_left:
-                                time_info = f" ({_shorten_time_left(t_left)})"
+                                time_emoji = "✅" if is_under_one_hour(t_left) else "🟠"
+                                time_info = f" {time_emoji} ({_shorten_time_left(t_left)})"
                         
-                        row_lines.append(f"<code>{emoji} {label} {spaces_for_price}  │ </code>{verdict}{time_info}")
+                        # Emoji is outside <code>, followed by a single space
+                        row_lines.append(f"{emoji} <code>{label} {padded_price}  │ </code>{verdict}{time_info}")
                         
-                        spaces_str = " " * (len(label) + max_len + 6)
-                        row_lines.append(f"<code>🔗{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК - {total_price_str}*</b></a>")
+                        # Emoji 🔗 is outside <code>, followed by a single space
+                        spaces_str = " " * (len(label) + 1)
+                        row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ </code>❌ Не найдено")
+                        row_lines.append(f"{emoji} <code>{label} {padded_dashes}  │ </code>❌ Не найдено")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
