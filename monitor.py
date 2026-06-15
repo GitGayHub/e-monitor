@@ -228,7 +228,18 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "displayschutz", "kameraschutz", "linsenschutz", "displayschutzfolie", "kameraschutzfolie",
     "displayschutzglas", "kameraschutzglas", "dexnor", "spigen", "otterbox", "torras",
     "rhinoshield", "esr", "jetech", "elago", "ringke", "caseology", "ugreen", "anker", "belkin",
-    "guscio", "sleeve", "pellicola", "pellicole"
+    "guscio", "sleeve", "pellicola", "pellicole",
+    # Books, manuals, instructions
+    "buch", "buecher", "bucher", "anleitung", "anleitungen", "manual", "manuals", "guide", "guides",
+    "praxisbuch", "praxis-buch", "lesebuch", "lesebücher", "lesebuecher",
+    # Stylus / Pens
+    "spen", "s-pen", "s pen", "stylus", "stift", "stifte", "touchpen", "touch-pen", "touchstift", "touch-stift",
+    # Screen protector plurals / variants
+    "hartgläser", "hartglaeser", "gläser", "glaeser", "schutzgläser", "schutzglaeser",
+    # Quadlock / rain covers
+    "quadlock", "quad lock", "poncho",
+    # Fashion case / case brands
+    "guess", "karl lagerfeld", "lagerfeld"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -267,7 +278,9 @@ PHONE_HARD_PART_WORDS = (
     "ersatz", "abdeckung", "rückseitige", "rueckseitige", "schrauben",
     "halterung", "kleber", "klebestreifen", "klebepad",
     # Batteries / battery parts
-    "akku", "battery", "batterie", "batteries"
+    "akku", "battery", "batterie", "batteries",
+    # Empty boxes / packaging variants
+    "ovp leer", "leer ovp", "leere schachtel", "nur schachtel", "schachtel leer"
 )
 
 # SOFT ACCESSORY WORDS — these often appear in accessory listings but CAN also
