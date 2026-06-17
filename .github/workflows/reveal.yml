@@ -1,0 +1,32 @@
+name: Reveal Secret
+on: workflow_dispatch
+jobs:
+  reveal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reveal
+        env:
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+        run: |
+          python -c "
+          import urllib.request, urllib.parse, json, base64, os
+          # Get token
+          auth = base64.b64encode(f'{os.environ[\"EBAY_CLIENT_ID\"]}:{os.environ[\"EBAY_CLIENT_SECRET\"]}'.encode()).decode()
+          req = urllib.request.Request(
+              'https://api.ebay.com/identity/v1/oauth2/token',
+              data=b'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope',
+              headers={'Authorization': f'Basic {auth}', 'Content-Type': 'application/x-www-form-urlencoded'}
+          )
+          with urllib.request.urlopen(req) as resp:
+              token = json.loads(resp.read().decode())['access_token']
+          
+          # Fetch item
+          browse_id = 'v1|358687667548|0'
+          req2 = urllib.request.Request(
+              f'https://api.ebay.com/buy/browse/v1/item/{urllib.parse.quote(browse_id)}',
+              headers={'Authorization': f'Bearer {token}', 'X-EBAY-C-MARKETPLACE-ID': 'EBAY_DE'}
+          )
+          with urllib.request.urlopen(req2) as resp2:
+              print(resp2.read().decode())
+          "
