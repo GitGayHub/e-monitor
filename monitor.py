@@ -2294,6 +2294,8 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
         if effective_category == "phones":
+            if "pixel" not in query_norm and item.get("buy_now") and item.get("total_price", 0) < 50:
+                continue
             if not _matches_phone_query_model(title_norm, query_norm):
                 continue
             if _is_phone_accessory_title(title_norm):
@@ -2898,8 +2900,28 @@ async def _validate_candidate(item, search):
 async def process_searches(bot, once=False):
     async with process_lock:
         searches = config.get_searches()
-        # Programmatic migration for Redmagic/Nubia searches: category "all", no price limits, add accessory excludes
         modified = False
+        
+        # 1. Reorder searches programmatically
+        id_order = [
+            "redmagic_11s_pro_buy", "redmagic_11s_pro_auc",
+            "redmagic_11_pro_buy", "redmagic_11_pro_auc",
+            "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc",
+            "nubia_z80_ultra_buy", "nubia_z80_ultra_auc"
+        ]
+        by_id = {s["id"]: s for s in searches}
+        new_searches = []
+        for s_id in id_order:
+            if s_id in by_id:
+                new_searches.append(by_id[s_id])
+        for s in searches:
+            if s["id"] not in id_order:
+                new_searches.append(s)
+        if [s["id"] for s in searches] != [s["id"] for s in new_searches]:
+            searches[:] = new_searches
+            modified = True
+
+        # 2. Existing and new filters/excludes migration for redmagic/nubia
         accessory_excludes = [
             "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
             "folie", "folien", "charger", "ladegerät", "kabel", "tasche", 
@@ -2922,7 +2944,7 @@ async def process_searches(bot, once=False):
                         filters["max_price"] = 500 if "leading" in q_lower else 450
                         modified = True
                     elif "z70" in q_lower:
-                        filters["max_price"] = 350
+                        filters["max_price"] = 500
                         modified = True
                     elif "11s" in q_lower:
                         filters["max_price"] = 500
@@ -2930,15 +2952,57 @@ async def process_searches(bot, once=False):
                     elif "11" in q_lower:
                         filters["max_price"] = 450
                         modified = True
+                elif "z70" in q_lower and filters.get("max_price") == 350:
+                    filters["max_price"] = 500
+                    modified = True
                 
                 excludes = s.setdefault("exclude_words", [])
                 for ex_word in accessory_excludes:
                     if ex_word not in excludes:
                         excludes.append(ex_word)
                         modified = True
+
+        # 3. Specific excludes for base Redmagic 11 and Nubia Z80 Ultra
+        redmagic_excludes = ["11s", "11 s", "11spro", "11s pro", "11 s pro"]
+        for s_id in ("redmagic_11_pro_buy", "redmagic_11_pro_auc"):
+            if s_id in by_id:
+                excludes = by_id[s_id].setdefault("exclude_words", [])
+                for w in redmagic_excludes:
+                    if w not in excludes:
+                        excludes.append(w)
+                        modified = True
+                        
+        nubia_excludes = ["leading", "leading version", "leading-version"]
+        for s_id in ("nubia_z80_ultra_buy", "nubia_z80_ultra_auc"):
+            if s_id in by_id:
+                excludes = by_id[s_id].setdefault("exclude_words", [])
+                for w in nubia_excludes:
+                    if w not in excludes:
+                        excludes.append(w)
+                        modified = True
+
+        # 4. Excludes for iPhone 16 Pro Max and iPhone 15 Pro Max
+        iphone_excludes = [
+            "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
+            "folie", "folien", "charger", "ladegerät", "kabel", "tasche", 
+            "schutzhülle", "film", "glass", "glas", "cable", "cables", 
+            "netzteil", "netzteile", "panzerfolie", "displayfolie", "glasfolie", 
+            "mats", "ibwind", "skin", "sticker", "adapter", "dock", 
+            "display", "touchscreen", "screen", "jcid", "lcd", "test", 
+            "box", "dummy", "defekt", "ersatzteil", "reparatur", "parts", 
+            "part", "kopie", "copy", "locked", "icloud", "bypass", "spare", "repair"
+        ]
+        for s_id in ("iphone_16_pro_max_buy", "iphone_15_pro_max_buy"):
+            if s_id in by_id:
+                excludes = by_id[s_id].setdefault("exclude_words", [])
+                for w in iphone_excludes:
+                    if w not in excludes:
+                        excludes.append(w)
+                        modified = True
+
         if modified:
             config.save()
-            logger.info("Programmatically migrated redmagic/nubia searches: category='all', location='eu', no price limits, added accessory excludes")
+            logger.info("Programmatically migrated searches configuration (reordering, excludes, price limits)")
         if not searches:
             logger.info("No searches configured")
             return
@@ -3117,15 +3181,15 @@ async def process_searches(bot, once=False):
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "🟠"
                                 time_info = f" {time_emoji} ({_shorten_time_left(t_left)})"
                         
-                        # Emoji is outside <code>, followed by a single space
-                        row_lines.append(f"{emoji} <code>{label} {padded_price}  │ </code>{verdict}{time_info}")
+                        # Emoji inside <code> to match FunPay bot styling
+                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ </code>{verdict}{time_info}")
                         
-                        # Emoji 🔗 is outside <code>, followed by a single space
+                        # Emoji 🔗 inside <code>, with spaces_str length equal to len(label) + 1
                         spaces_str = " " * (len(label) + 1)
-                        row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
+                        row_lines.append(f"<code>🔗 {spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        row_lines.append(f"{emoji} <code>{label} {padded_dashes}  │ </code>❌ Не найдено")
+                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ </code>❌ Не найдено")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
@@ -3141,9 +3205,15 @@ async def process_searches(bot, once=False):
                 auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4_val, p4, is_auction=True))
                 
                 # Build report block
-                limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
-                query_esc = html.escape(search.get("query", ""))
+                query_norm = _normalize(search.get("query", ""))
                 category_name = search.get("filters", {}).get("category")
+                effective_category = _effective_category(category_name, query_norm)
+                if effective_category == "phones" and "pixel" not in query_norm:
+                    limit_str = f"⬆️ {orig_max_price:.0f}€ ⬇️ 50€" if orig_max_price else "⬆️ без лимита ⬇️ 50€"
+                else:
+                    limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
+                
+                query_esc = html.escape(search.get("query", ""))
                 cat_emoji = get_category_emoji(category_name)
                 
                 block_lines = [
