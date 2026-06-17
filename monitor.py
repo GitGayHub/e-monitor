@@ -1128,8 +1128,12 @@ def _build_smart_search_query(search):
     # Category-specific safe defect/parts exclusions
     if eff_category == "phones":
         excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
-        # Exclude common accessories from eBay search query directly if they are not in the query itself
-        acc_excludes = ["hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", "folie", "folien", "glass", "glas", "tasche", "schutzhülle"]
+        # Exclude only unambiguous accessory words from eBay search query.
+        # Words like glass/glas/folie/cover/tasche are NOT excluded here because
+        # eBay matches them against item specifics/descriptions too, which filters
+        # out real phones (e.g. "Ceramic Shield Glass" in specs). Programmatic
+        # filters (_is_phone_accessory_title etc.) handle these cases instead.
+        acc_excludes = ["hülle", "hüllen", "schutzfolie", "panzerglas", "schutzhülle"]
         for w in acc_excludes:
             if w not in query_lower:
                 excludes.append(w)
