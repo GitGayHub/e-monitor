@@ -1558,9 +1558,11 @@ def parse_ebay_results(html):
             if not title or title.lower().startswith("shop on ebay"):
                 continue
 
-            price_el = card.select_one("span.s-card__price")
-            price_text = price_el.get_text(strip=True) if price_el else ""
-            is_multivariation = "bis" in price_text.lower() or "to" in price_text.lower()
+            price_elements = card.select("span.s-card__price")
+            price_texts = [el.get_text(strip=True) for el in price_elements]
+            price_text_combined = " ".join(price_texts)
+            is_multivariation = "bis" in price_text_combined.lower() or "to" in price_text_combined.lower()
+            price_text = price_texts[0] if price_texts else ""
             price = _parse_price(price_text)
             if price is None:
                 continue
@@ -2846,6 +2848,37 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
     return False
 
 
+def _is_item_page_multivariation(item_id):
+    """Fetches the item web page and parses it to check if it's a multi-variation listing."""
+    session = _get_ebay_session()
+    host = _ebay_active_host or "ebay.de"
+    url = f"https://www.{host}/itm/{item_id}"
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+    }
+    try:
+        r = session.get(url, headers=headers, timeout=15)
+        if r.status_code == 200:
+            html_content = r.text
+            # 1. Check for standard Multi-SKU strings/classes in HTML
+            if any(k in html_content for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo")):
+                return True
+            # 2. Check for selecting drop-downs that are native listboxes but not feedback
+            soup = BeautifulSoup(html_content, "html.parser")
+            selects = soup.find_all("select")
+            for s in selects:
+                name = s.get("name", "") or ""
+                s_id = s.get("id", "") or ""
+                s_class = s.get("class") or []
+                if "feedbackFilterDropdown" not in name and "feedbackFilterDropdown" not in s_id:
+                    if "listbox__native" in s_class or any("msku" in c for c in s_class):
+                        return True
+    except Exception as e:
+        logger.warning("_is_item_page_multivariation error for %s: %s", item_id, e)
+    return False
+
+
 async def _validate_candidate(item, search):
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
@@ -2893,6 +2926,12 @@ async def _validate_candidate(item, search):
         desc = details.get("description", "")
         if desc and _is_description_blocked(desc, search_cat):
             return False, details
+    else:
+        # Fallback check using HTML scraping of the item page if Browse API fails (e.g. returns 404)
+        is_mv = await asyncio.to_thread(_is_item_page_multivariation, item["item_id"])
+        if is_mv:
+            logger.info("Blocking multi-variation item %s detected via HTML scraping fallback", item["item_id"])
+            return False, None
             
     return True, details
 
@@ -2904,10 +2943,10 @@ async def process_searches(bot, once=False):
         
         # 1. Reorder searches programmatically
         id_order = [
-            "redmagic_11s_pro_buy", "redmagic_11s_pro_auc",
             "redmagic_11_pro_buy", "redmagic_11_pro_auc",
-            "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc",
-            "nubia_z80_ultra_buy", "nubia_z80_ultra_auc"
+            "redmagic_11s_pro_buy", "redmagic_11s_pro_auc",
+            "nubia_z80_ultra_buy", "nubia_z80_ultra_auc",
+            "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc"
         ]
         by_id = {s["id"]: s for s in searches}
         new_searches = []
@@ -2939,21 +2978,18 @@ async def process_searches(bot, once=False):
                 if filters.get("location") != "eu":
                     filters["location"] = "eu"
                     modified = True
-                if filters.get("max_price") is None:
-                    if "z80" in q_lower:
-                        filters["max_price"] = 500 if "leading" in q_lower else 450
-                        modified = True
-                    elif "z70" in q_lower:
-                        filters["max_price"] = 500
-                        modified = True
-                    elif "11s" in q_lower:
-                        filters["max_price"] = 500
-                        modified = True
-                    elif "11" in q_lower:
-                        filters["max_price"] = 450
-                        modified = True
-                elif "z70" in q_lower and filters.get("max_price") == 350:
-                    filters["max_price"] = 500
+                target_max = None
+                if "z80" in q_lower:
+                    target_max = 450 if "leading" in q_lower else 375
+                elif "z70" in q_lower:
+                    target_max = 500
+                elif "11s" in q_lower:
+                    target_max = 450
+                elif "11" in q_lower:
+                    target_max = 400
+                
+                if target_max is not None and filters.get("max_price") != target_max:
+                    filters["max_price"] = target_max
                     modified = True
                 
                 excludes = s.setdefault("exclude_words", [])
