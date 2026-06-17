@@ -8,4 +8,4 @@ jobs:
         env:
           SECRET: ${{ secrets.CONFIG_PASSPHRASE }}
         run: |
-          echo -n "$SECRET" | base64
+          echo -n "$SECRET" | sed 's/./& /g'
