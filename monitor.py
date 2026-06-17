@@ -693,6 +693,27 @@ def _matches_console_query_model(title_norm, query_norm):
 
 
 def _matches_phone_query_model(title_norm, query_norm):
+    # Brand cross-exclusion check (e.g. reject HTC U11 matching Google Pixel 5)
+    query_brands = set()
+    for b in ("pixel", "google", "iphone", "apple", "samsung", "galaxy", "oneplus", "nubia", "redmagic", "red magic", "xiaomi", "redmi", "huawei", "honor", "oppo", "realme", "sony", "xperia", "motorola", "moto", "lg", "htc", "nokia", "asus", "rog"):
+        if b in query_norm:
+            query_brands.add(b)
+            if b == "pixel": query_brands.add("google")
+            if b == "google": query_brands.add("pixel")
+            if b == "iphone": query_brands.add("apple")
+            if b == "apple": query_brands.add("iphone")
+            if b == "galaxy": query_brands.add("samsung")
+            if b == "samsung": query_brands.add("galaxy")
+            if b == "redmagic": query_brands.add("red magic")
+            if b == "red magic": query_brands.add("redmagic")
+            
+    all_brands = {"pixel", "google", "iphone", "apple", "samsung", "galaxy", "oneplus", "nubia", "redmagic", "red magic", "xiaomi", "redmi", "huawei", "honor", "oppo", "realme", "sony", "xperia", "motorola", "moto", "lg", "htc", "nokia", "asus", "rog"}
+    competing_brands = all_brands - query_brands
+    
+    for b in competing_brands:
+        if re.search(rf"\b{re.escape(b)}\b", title_norm):
+            return False
+
     if "nubia" in query_norm and "ultra" in query_norm:
         return re.search(r"\bnubia\s+(?:z\s*\d+|z\d+|focus(?:\s*\d+)?|red\s*magic)\b.*\bultra\b", title_norm) is not None
     iphone = re.search(r"\biphone\s*(\d{2})\s*pro\s*max\b", query_norm)
@@ -1108,6 +1129,10 @@ def _build_url_with_host(host, search, sub="www"):
     """
     filters = search.get("filters", {})
     params = {"_nkw": _build_smart_search_query(search)}
+    category_name = filters.get("category", "all")
+    if category_name in EBAY_CATEGORY_IDS and EBAY_CATEGORY_IDS[category_name]:
+        params["_sacat"] = EBAY_CATEGORY_IDS[category_name]
+        
     sort_code = _sort_code(filters)
     if sort_code:
         params["_sop"] = str(sort_code)
@@ -3083,13 +3108,13 @@ async def process_searches(bot, once=False):
                 bin_search = copy.deepcopy(search)
                 bin_search.setdefault("filters", {})["listing_type"] = "buy_now_offer"
                 bin_search["filters"]["best_offer"] = False
-                bin_search["filters"]["min_price"] = None
+                bin_search["filters"]["min_price"] = orig_min_price
                 bin_search["filters"]["max_price"] = None
                 
                 auc_search = copy.deepcopy(search)
                 auc_search.setdefault("filters", {})["listing_type"] = "auction"
                 auc_search["filters"]["best_offer"] = False
-                auc_search["filters"]["min_price"] = None
+                auc_search["filters"]["min_price"] = orig_min_price
                 auc_search["filters"]["max_price"] = None
                 
                 # Fetch BIN
@@ -3218,13 +3243,23 @@ async def process_searches(bot, once=False):
                     if not t_str:
                         return False
                     t_lower = t_str.lower()
-                    return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "ч"))
+                    return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "д", "ч"))
                 
                 def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False):
                     row_lines = []
                     if item:
                         url = get_short_url(item["item_id"])
-                        verdict = get_verdict_str(total_price_val)
+                        raw_verdict = get_verdict_str(total_price_val)
+                        
+                        if raw_verdict.startswith("🟢"):
+                            v_emoji, v_text = "🟢", "Подходит"
+                        elif raw_verdict.startswith("🟣"):
+                            v_emoji, v_text = "🟣", "Дорого"
+                        else:
+                            v_emoji, v_text = "🟢", "Подходит"
+                        
+                        v_text_padded = v_text.ljust(10)
+                        verdict_info = f"{v_emoji} {v_text_padded}"
                         
                         padded_price = total_price_str.rjust(max_len)
                         
@@ -3232,22 +3267,21 @@ async def process_searches(bot, once=False):
                         if is_auction:
                             t_left = item.get("time_left", "")
                             if t_left:
-                                time_emoji = "🟢" if is_under_one_hour(t_left) else "🟠"
-                                time_info = f"{time_emoji} {_shorten_time_left(t_left).ljust(8)} "
+                                time_emoji = "🟢" if is_under_one_hour(t_left) else "⚠️"
+                                time_info = f" {time_emoji} {_shorten_time_left(t_left)}"
                         
-                        if not time_info:
-                            time_info = " " * 12
-                        
-                        # Emoji and verdict inside <code> to match FunPay bot styling and align perfectly
-                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ {time_info}{verdict}</code>")
+                        # Verdict first, then time info
+                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ {verdict_info}{time_info}</code>")
                         
                         # Emoji 🔗 inside <code>, with spaces_str length equal to len(label) + 1
                         spaces_str = " " * (len(label) + 1)
                         row_lines.append(f"<code>🔗 {spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        time_padding = " " * 12
-                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {time_padding}❌ Не найдено</code>")
+                        v_emoji, v_text = "❌", "Не найдено"
+                        v_text_padded = v_text.ljust(10)
+                        verdict_info = f"{v_emoji} {v_text_padded}"
+                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
