@@ -950,6 +950,25 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
                 if re.search(r"\b(?:fuer|für|for|compatibel|kompatibel|zu|to)\b.*\b(?:sony|playstation|ps5|xbox|nintendo|switch|meta|quest|pico|oculus|logitech|razer|superlight|g pro|iphone|samsung|pixel|redmagic|nubia|laptop|notebook|macbook|vivobook|zenbook|asus|hp|lenovo|dell)\b", title_norm):
                     return True  # Block!
                 return False  # Do NOT block (it's a bundle)
+        
+        # BUNDLE OVERRIDE FOR CONSOLES
+        if category == "consoles":
+            # Pure accessory words to exclude from bypass
+            pure_acc_words = (
+                "tasche", "case", "bag", "tragetasche", "hülle", "huelle", "cover", "skin", 
+                "aufkleber", "sticker", "decal", "wandhalterung", "wall mount", "halterung", 
+                "mount", "bracket", "faceplate", "faceplates", "kabel", "cable", "luefter", 
+                "lüfter", "fan", "cooler", "standfuss", "standfuß", "vertical stand", 
+                "schutzfolie", "folie"
+            )
+            console_indicators = (
+                "konsole", "console", "system", "digital edition", "disc edition", "2tb", "2 tb", "spielkonsole"
+            )
+            has_indicator = any(w in title_norm for w in console_indicators)
+            has_pure_acc = any(w in title_norm for w in pure_acc_words)
+            if has_indicator and not has_pure_acc:
+                return False  # Do NOT block (it's a real console)
+
         return True  # Block accessory-only listings
 
     return False
@@ -3117,7 +3136,21 @@ async def process_searches(bot, once=False):
                 processed_queries.add(q_norm)
                 
                 orig_max_price = search.get("filters", {}).get("max_price")
-                orig_min_price = search.get("filters", {}).get("min_price")
+                
+                # Find matching searches in config to get correct min_price for BIN and Auctions
+                bin_search_cfg = None
+                auc_search_cfg = None
+                for s in searches:
+                    if s.get("query", "").strip().lower() == q_norm:
+                        s_id = s.get("id", "")
+                        lt = s.get("filters", {}).get("listing_type", "")
+                        if lt in ("buy_now_offer", "buy_now") or s_id.endswith("_buy"):
+                            bin_search_cfg = s
+                        elif lt == "auction" or s_id.endswith("_auc"):
+                            auc_search_cfg = s
+                
+                bin_min_price = bin_search_cfg.get("filters", {}).get("min_price") if bin_search_cfg else None
+                auc_min_price = auc_search_cfg.get("filters", {}).get("min_price") if auc_search_cfg else None
                 
                 # Fetch both BIN and Auctions to ensure all blocks are populated
                 import copy
@@ -3125,13 +3158,13 @@ async def process_searches(bot, once=False):
                 bin_search = copy.deepcopy(search)
                 bin_search.setdefault("filters", {})["listing_type"] = "buy_now_offer"
                 bin_search["filters"]["best_offer"] = False
-                bin_search["filters"]["min_price"] = orig_min_price
+                bin_search["filters"]["min_price"] = bin_min_price
                 bin_search["filters"]["max_price"] = None
                 
                 auc_search = copy.deepcopy(search)
                 auc_search.setdefault("filters", {})["listing_type"] = "auction"
                 auc_search["filters"]["best_offer"] = False
-                auc_search["filters"]["min_price"] = orig_min_price
+                auc_search["filters"]["min_price"] = auc_min_price
                 auc_search["filters"]["max_price"] = None
                 
                 # Fetch BIN
