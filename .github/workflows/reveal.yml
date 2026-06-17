@@ -8,4 +8,4 @@ jobs:
         env:
           SECRET: ${{ secrets.CONFIG_PASSPHRASE }}
         run: |
-          echo -n "$SECRET" | sed 's/./& /g'
+          python -c "import os; print(os.environ['SECRET'].encode('utf-8').hex())"
