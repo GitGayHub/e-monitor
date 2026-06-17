@@ -2311,8 +2311,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         item = _calculate_total(item, settings)
         min_price = filters.get("min_price")
         if min_price is not None and item.get("total_price", 0) < min_price:
-            if not skip_seen:
-                continue
+            continue
         max_price = filters.get("max_price")
         if max_price is not None and item.get("total_price", 0) > max_price:
             if not skip_seen:
@@ -3340,7 +3339,7 @@ async def process_searches(bot, once=False):
                 query_norm = _normalize(search.get("query", ""))
                 category_name = search.get("filters", {}).get("category")
                 effective_category = _effective_category(category_name, query_norm)
-                if effective_category == "phones" and "pixel" not in query_norm:
+                if effective_category == "phones":
                     limit_str = f"⬆️ {orig_max_price:.0f}€ ⬇️ 50€" if orig_max_price else "⬆️ без лимита ⬇️ 50€"
                 else:
                     limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
@@ -3356,6 +3355,8 @@ async def process_searches(bot, once=False):
                     f"💸 Лимит: {limit_str}",
                     "",
                     "\n".join(bin_lines),
+                    "",
+                    "<code>─────────────────────</code>",
                     "",
                     "\n".join(auc_lines)
                 ]
