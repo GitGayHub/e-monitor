@@ -239,7 +239,7 @@ PHONE_HARD_ACCESSORY_WORDS = (
     # Quadlock / rain covers
     "quadlock", "quad lock", "poncho",
     # Fashion case / case brands
-    "guess", "karl lagerfeld", "lagerfeld"
+    "guess", "karl lagerfeld", "lagerfeld", "uag", "speck", "presidio", "pitaka", "mous", "casetify", "urban armor gear", "urban armor", "nomad", "monarch pro", "monarch"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -1508,15 +1508,23 @@ def _clean_time_left(txt):
             return _format_time_left_from_seconds(minutes * 60)
         return t.strip()
         
-    # Check for DayOfWeek, HH:MM format (e.g. "Mo, 09:18" or "Mo,09:18")
-    m_dow = re.search(r"\b(Mo|Di|Mi|Do|Fr|Sa|So),\s*(\d{2}):(\d{2})\b", t, re.IGNORECASE)
+    # Check for DayOfWeek, HH:MM format (e.g. "Mo, 09:18" or "Sonntag, 10:55" or "So., 10:55")
+    m_dow = re.search(r"\b(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag|Mo|Di|Mi|Do|Fr|Sa|So)\.?,?\s*(\d{2}):(\d{2})\b", t, re.IGNORECASE)
     if m_dow:
-        dow_str = m_dow.group(1)
+        dow_str = m_dow.group(1).lower()
         hour = int(m_dow.group(2))
         minute = int(m_dow.group(3))
         
-        dow_map = {"mo": 0, "di": 1, "mi": 2, "do": 3, "fr": 4, "sa": 5, "so": 6}
-        target_dow = dow_map[dow_str.lower()]
+        dow_map = {
+            "mo": 0, "montag": 0,
+            "di": 1, "dienstag": 1,
+            "mi": 2, "mittwoch": 2,
+            "do": 3, "donnerstag": 3,
+            "fr": 4, "freitag": 4,
+            "sa": 5, "samstag": 5,
+            "so": 6, "sonntag": 6
+        }
+        target_dow = dow_map[dow_str]
         
         now = datetime.now()
         target_date = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
@@ -1527,7 +1535,9 @@ def _clean_time_left(txt):
             
         target_date += timedelta(days=days_ahead)
         diff = target_date - now
-        return _format_time_left_from_seconds(max(0.0, diff.total_seconds()))
+        if diff.total_seconds() <= 0:
+            return ""
+        return _format_time_left_from_seconds(diff.total_seconds())
         
     # Check for DD. MMM. HH:MM format (e.g. "27. Apr. 09:17" or "15. Jun. 09:18")
     m_date = re.search(r"\b(\d{1,2})\.\s*(Jan|Feb|Mär|Maer|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez)\.?\s*(\d{2}):(\d{2})\b", t, re.IGNORECASE)
@@ -1553,12 +1563,19 @@ def _clean_time_left(txt):
         try:
             target_date = datetime(year, month, day, hour, minute)
             if target_date < now:
-                target_date = datetime(year + 1, month, day, hour, minute)
+                # Only add 1 year if it results in a date in the near future (e.g. <= 30 days)
+                future_date = datetime(year + 1, month, day, hour, minute)
+                if (future_date - now).days <= 30:
+                    target_date = future_date
+                else:
+                    return ""
         except ValueError:
             return t
             
         diff = target_date - now
-        return _format_time_left_from_seconds(max(0.0, diff.total_seconds()))
+        if diff.total_seconds() <= 0:
+            return ""
+        return _format_time_left_from_seconds(diff.total_seconds())
         
     return t
 
