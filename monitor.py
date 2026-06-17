@@ -1260,6 +1260,9 @@ def _parse_time_left_to_minutes(time_left_str):
 def _format_time_left_from_seconds(total_seconds):
     if total_seconds <= 0:
         return "0мин"
+    # eBay auctions can last at most 30 days; anything beyond is bogus
+    if total_seconds > 30 * 86400:
+        return ""
     days = int(total_seconds // 86400)
     hours = int((total_seconds % 86400) // 3600)
     minutes = int((total_seconds % 3600) // 60)
@@ -3091,24 +3094,11 @@ async def process_searches(bot, once=False):
                         excludes.append(w)
                         modified = True
 
-        # 4. Excludes for iPhone 16 Pro Max and iPhone 15 Pro Max
-        iphone_excludes = [
-            "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
-            "folie", "folien", "charger", "ladegerät", "kabel", "tasche", 
-            "schutzhülle", "film", "glass", "glas", "cable", "cables", 
-            "netzteil", "netzteile", "panzerfolie", "displayfolie", "glasfolie", 
-            "mats", "ibwind", "skin", "sticker", "adapter", "dock", 
-            "display", "touchscreen", "screen", "jcid", "lcd", "test", 
-            "box", "dummy", "defekt", "ersatzteil", "reparatur", "parts", 
-            "part", "kopie", "copy", "locked", "icloud", "bypass", "spare", "repair"
-        ]
-        for s_id in ("iphone_16_pro_max_buy", "iphone_15_pro_max_buy"):
-            if s_id in by_id:
-                excludes = by_id[s_id].setdefault("exclude_words", [])
-                for w in iphone_excludes:
-                    if w not in excludes:
-                        excludes.append(w)
-                        modified = True
+        # 4. iPhone exclude_words are NOT programmatically overridden here.
+        # The min_price floor of 50 EUR and the PHONE_HARD_ACCESSORY_WORDS
+        # filter in _is_category_blocked_title already handle accessory spam.
+        # Adding words like "kabel", "display", "glass" etc. was blocking
+        # real phone listings (e.g. "iPhone 16 Pro Max mit Ladekabel").
 
         if modified:
             config.save()
