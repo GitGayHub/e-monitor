@@ -3310,7 +3310,6 @@ async def process_searches(bot, once=False):
                 await asyncio.sleep(0.5)
 
             if not once:
-                import random
                 await asyncio.sleep(random.uniform(2, 5))
 
         # === API RETRY for blocked searches ===
