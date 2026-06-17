@@ -3421,8 +3421,6 @@ async def process_searches(bot, once=False):
                     "",
                     "\n".join(bin_lines),
                     "",
-                    "<code>─────────────────────</code>",
-                    "",
                     "\n".join(auc_lines)
                 ]
                 
