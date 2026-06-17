@@ -1191,17 +1191,17 @@ def _parse_time_left_to_minutes(time_left_str):
     t = time_left_str.lower().strip()
     
     days = 0
-    m_days = re.search(r"(\d+)\s*(?:tag|d)", t)
+    m_days = re.search(r"(\d+)\s*(?:tag|t\b|d\b|day)", t)
     if m_days:
         days = int(m_days.group(1))
         
     hours = 0
-    m_hours = re.search(r"(\d+)\s*(?:std|h)", t)
+    m_hours = re.search(r"(\d+)\s*(?:std|h\b|hour)", t)
     if m_hours:
         hours = int(m_hours.group(1))
         
     minutes = 0
-    m_minutes = re.search(r"(\d+)\s*(?:min|m\b)", t)
+    m_minutes = re.search(r"(\d+)\s*(?:min|m\b|minute)", t)
     if m_minutes:
         minutes = int(m_minutes.group(1))
         
@@ -1216,16 +1216,21 @@ def _parse_time_left_to_minutes(time_left_str):
 def _format_time_left_from_seconds(total_seconds):
     if total_seconds >= 86400:
         days = int(total_seconds // 86400)
-        return f"{days} days+"
+        if days % 10 == 1 and days % 100 != 11:
+            return f"{days} день+"
+        elif days % 10 in (2, 3, 4) and not (days % 100 in (12, 13, 14)):
+            return f"{days} дня+"
+        else:
+            return f"{days} дней+"
     else:
         hours = int(total_seconds // 3600)
         minutes = int((total_seconds % 3600) // 60)
         parts = []
         if hours > 0:
-            parts.append(f"{hours}h")
+            parts.append(f"{hours}ч")
         if minutes > 0 or not parts:
-            parts.append(f"{minutes}m")
-        return "".join(parts)
+            parts.append(f"{minutes}мин")
+        return " ".join(parts)
 
 
 def _normalize(text):
@@ -1471,8 +1476,8 @@ def _clean_time_left(txt):
     from datetime import datetime, timedelta
     t = txt.strip()
     
-    # If it already has remaining time terms (Std, Min, Tag, h, m, d), return it cleaned
-    if re.search(r"\d+\s*(?:Std|Min|Tag|std|min|tag|[hmd])", t):
+    # If it already has remaining time terms (Std, Min, Tag, std, min, tag|[hmdtT]), return it cleaned
+    if re.search(r"\d+\s*(?:Std|Min|Tag|std|min|tag|[hmdtT]|day|hour|minute)", t):
         if t.lower().startswith("noch "):
             t = t[5:]
         t = re.sub(r"\s*\(.*?\)", "", t)
@@ -2623,18 +2628,18 @@ async def send_notification(bot, item, search, stats_7d=None):
     else:
         type_str = "Sofortkauf+" if item["best_offer"] else "Sofortkauf"
 
-    total_p = item["total_price"]
+    base_p = item["price"] + item["shipping_cost"]
     # Price display: distinguish "buy now" from "auction"
     if item["auction"] and not item["buy_now"]:
         time_info = f" · {item['time_left']}" if item.get("time_left") else ""
-        price_line = f"💰 🔨 Ставка {total_p:.0f}€{time_info}"
+        price_line = f"💰 🔨 Ставка {base_p:.0f}€{time_info}"
         type_line = f"🏷 {type_str}"
     elif item["buy_now"]:
         offer = " 🤝" if item["best_offer"] else ""
-        price_line = f"💰 🛒 {total_p:.0f}€{offer}"
+        price_line = f"💰 🛒 {base_p:.0f}€{offer}"
         type_line = f"🏷 {type_str}"
     else:
-        price_line = f"💰 {total_p:.0f}€"
+        price_line = f"💰 {base_p:.0f}€"
         type_line = f"🏷 {type_str}"
 
     location_flag = ""
@@ -2660,12 +2665,12 @@ async def send_notification(bot, item, search, stats_7d=None):
     # Price display: distinguish "buy now" from "auction"
     if item["auction"] and not item["buy_now"]:
         time_info = f" · {item['time_left']}" if item.get("time_left") else ""
-        price_val_str = f"🔨 Ставка {total_p:.0f}€{time_info}"
+        price_val_str = f"🔨 Ставка {base_p:.0f}€{time_info}"
     elif item["buy_now"]:
         offer = " 🤝" if item["best_offer"] else ""
-        price_val_str = f"🛒 {total_p:.0f}€{offer}"
+        price_val_str = f"🛒 {base_p:.0f}€{offer}"
     else:
-        price_val_str = f"{total_p:.0f}€"
+        price_val_str = f"{base_p:.0f}€"
 
     rating_count = item.get("seller_rating_count", 0)
     rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
@@ -3161,10 +3166,15 @@ async def process_searches(bot, once=False):
                 p3_val = cheapest_auc_no_bo["total_price"] if cheapest_auc_no_bo else None
                 p4_val = cheapest_auc_bo["total_price"] if cheapest_auc_bo else None
                 
-                p1 = f"{p1_val:.0f}€" if p1_val else None
-                p2 = f"{p2_val:.0f}€" if p2_val else None
-                p3 = f"{p3_val:.0f}€" if p3_val else None
-                p4 = f"{p4_val:.0f}€" if p4_val else None
+                p1_base = (cheapest_bin_no_bo["price"] + cheapest_bin_no_bo["shipping_cost"]) if cheapest_bin_no_bo else None
+                p2_base = (cheapest_bin_bo["price"] + cheapest_bin_bo["shipping_cost"]) if cheapest_bin_bo else None
+                p3_base = (cheapest_auc_no_bo["price"] + cheapest_auc_no_bo["shipping_cost"]) if cheapest_auc_no_bo else None
+                p4_base = (cheapest_auc_bo["price"] + cheapest_auc_bo["shipping_cost"]) if cheapest_auc_bo else None
+
+                p1 = f"{p1_base:.0f}€" if p1_base else None
+                p2 = f"{p2_base:.0f}€" if p2_base else None
+                p3 = f"{p3_base:.0f}€" if p3_base else None
+                p4 = f"{p4_base:.0f}€" if p4_base else None
                 
                 # Determine max length of the price strings
                 lengths = [len(p) for p in [p1, p2, p3, p4] if p is not None]
@@ -3200,7 +3210,7 @@ async def process_searches(bot, once=False):
                     if not t_str:
                         return False
                     t_lower = t_str.lower()
-                    return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour"))
+                    return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "ч"))
                 
                 def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False):
                     row_lines = []
@@ -3215,10 +3225,10 @@ async def process_searches(bot, once=False):
                             t_left = item.get("time_left", "")
                             if t_left:
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "🟠"
-                                time_info = f" {time_emoji} ({_shorten_time_left(t_left)})"
+                                time_info = f"{time_emoji} {_shorten_time_left(t_left)} "
                         
                         # Emoji inside <code> to match FunPay bot styling
-                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ </code>{verdict}{time_info}")
+                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ </code>{time_info}{verdict}")
                         
                         # Emoji 🔗 inside <code>, with spaces_str length equal to len(label) + 1
                         spaces_str = " " * (len(label) + 1)
@@ -3250,6 +3260,8 @@ async def process_searches(bot, once=False):
                     limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
                 
                 query_esc = html.escape(search.get("query", ""))
+                if search.get("filters", {}).get("location") == "de":
+                    query_esc += " 🇩🇪"
                 cat_emoji = get_category_emoji(category_name)
                 
                 block_lines = [
