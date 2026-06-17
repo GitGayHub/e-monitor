@@ -1214,23 +1214,20 @@ def _parse_time_left_to_minutes(time_left_str):
 
 
 def _format_time_left_from_seconds(total_seconds):
-    if total_seconds >= 86400:
-        days = int(total_seconds // 86400)
-        if days % 10 == 1 and days % 100 != 11:
-            return f"{days} день+"
-        elif days % 10 in (2, 3, 4) and not (days % 100 in (12, 13, 14)):
-            return f"{days} дня+"
-        else:
-            return f"{days} дней+"
-    else:
-        hours = int(total_seconds // 3600)
-        minutes = int((total_seconds % 3600) // 60)
-        parts = []
-        if hours > 0:
-            parts.append(f"{hours}ч")
-        if minutes > 0 or not parts:
-            parts.append(f"{minutes}мин")
-        return " ".join(parts)
+    if total_seconds <= 0:
+        return "0мин"
+    days = int(total_seconds // 86400)
+    hours = int((total_seconds % 86400) // 3600)
+    minutes = int((total_seconds % 3600) // 60)
+    
+    parts = []
+    if days > 0:
+        parts.append(f"{days}д")
+    if hours > 0:
+        parts.append(f"{hours}ч")
+    if (minutes > 0 and days == 0) or not parts:
+        parts.append(f"{minutes}мин")
+    return " ".join(parts)
 
 
 def _normalize(text):
@@ -1541,6 +1538,16 @@ def _clean_time_left(txt):
     return t
 
 
+def _is_nested_in_card(el, card_el):
+    curr = el.parent
+    while curr and curr != card_el:
+        cl = curr.get("class", []) if hasattr(curr, "get") else []
+        if "s-card" in cl or "s-item" in cl:
+            return True
+        curr = curr.parent
+    return False
+
+
 def parse_ebay_results(html):
     soup = BeautifulSoup(html, "html.parser")
     items = []
@@ -1563,7 +1570,7 @@ def parse_ebay_results(html):
             if not title or title.lower().startswith("shop on ebay"):
                 continue
 
-            price_elements = card.select("span.s-card__price")
+            price_elements = [el for el in card.select("span.s-card__price") if not _is_nested_in_card(el, card)]
             price_texts = [el.get_text(strip=True) for el in price_elements]
             price_text_combined = " ".join(price_texts)
             is_multivariation = "bis" in price_text_combined.lower() or "to" in price_text_combined.lower()
@@ -1579,7 +1586,7 @@ def parse_ebay_results(html):
                 if "ebaystatic.com" in image_url and "ebayimg" not in image_url:
                     image_url = ""
 
-            all_spans = card.select("span")
+            all_spans = [s for s in card.select("span") if not _is_nested_in_card(s, card)]
             all_texts = [s.get_text(strip=True).lower() for s in all_spans]
 
             is_pickup_only = False
@@ -1619,9 +1626,10 @@ def parse_ebay_results(html):
 
             for s in all_spans:
                 txt = s.get_text(strip=True)
-                cls = " ".join(s.get("class", []))
-                if ("secondary" in cls or "s-item__time-left" in cls) and (re.search(r"\d+\s*(Std|Min|Tag|[hmd])", txt) or re.search(r"\b\d{2}:\d{2}\b", txt)):
-                    is_specific = "s-item__time-left" in cls or "time-left" in cls
+                cls = s.get("class", [])
+                cls_str = " ".join(cls)
+                if ("secondary" in cls_str or "time-left" in cls_str or "s-card__time" in cls_str) and (re.search(r"\d+\s*(Std|Min|Tag|[hmdtT])", txt) or re.search(r"\b\d{2}:\d{2}\b", txt)):
+                    is_specific = "s-item__time-left" in cls_str or "time-left" in cls_str or "s-card__time-left" in cls_str
                     if is_specific or not time_left:
                         cleaned = _clean_time_left(txt)
                         if cleaned:
@@ -3134,7 +3142,7 @@ async def process_searches(bot, once=False):
                     if orig_max_price and price_val > orig_max_price:
                         return "🟣 Дорого"
                     else:
-                        return "✅ Подходит"
+                        return "🟢 Подходит"
                 
                 def get_short_url(item_id):
                     return f"https://www.ebay.de/itm/{item_id}"
@@ -3225,17 +3233,21 @@ async def process_searches(bot, once=False):
                             t_left = item.get("time_left", "")
                             if t_left:
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "🟠"
-                                time_info = f"{time_emoji} {_shorten_time_left(t_left)} "
+                                time_info = f"{time_emoji} {_shorten_time_left(t_left).ljust(8)} "
                         
-                        # Emoji inside <code> to match FunPay bot styling
-                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ </code>{time_info}{verdict}")
+                        if not time_info:
+                            time_info = " " * 12
+                        
+                        # Emoji and verdict inside <code> to match FunPay bot styling and align perfectly
+                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ {time_info}{verdict}</code>")
                         
                         # Emoji 🔗 inside <code>, with spaces_str length equal to len(label) + 1
                         spaces_str = " " * (len(label) + 1)
                         row_lines.append(f"<code>🔗 {spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ </code>❌ Не найдено")
+                        time_padding = " " * 12
+                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {time_padding}❌ Не найдено</code>")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
