@@ -188,6 +188,18 @@ ALLOWED_SUBCATEGORIES = {
     "vr_headsets": {"190066"},         # VR-Headsets
 }
 
+EBAY_DEVICE_CATEGORY_IDS = {
+    "phones": "9355",          # Handys & Smartphones / Cell Phones & Smartphones
+    "smart_watches": "178893",  # Smartwatches
+    "consoles": "139971",       # Videospiel-Konsolen / Video Game Consoles
+    "laptops": "177",          # Notebooks & Netbooks / Laptops & Netbooks
+    "tablets": "171485",        # Tablets & eReader / Tablets & eBook Readers
+    "computers": "179",        # PC Desktops & All-in-Ones
+    "headphones": "112529",    # Kopfhörer & Headsets / Headphones
+    "vr_headsets": "190066",   # VR-Headsets / Virtual Reality Headsets
+}
+
+
 PHONE_HARD_ACCESSORY_WORDS = (
     "case", "cover", "protector", "tempered glass", "bumper", "magsafe",
     "funda", "fundas", "coque", "coques", "custodia", "custodie",
@@ -745,14 +757,35 @@ def _matches_phone_query_model(title_norm, query_norm):
     return True
 
 
+def _is_smartwatch_search_query(query_norm):
+    watch_terms = ("watch", "smartwatch", "smart-watch", "applewatch", "fitbit", "garmin")
+    return any(term in query_norm for term in watch_terms)
+
+
 def _is_phone_search_query(query_norm):
     phone_terms = (
         "iphone", "galaxy", "oneplus", "nubia", "red magic", "redmagic", "pixel",
-        "samsung", "xiaomi", "motorola", "realme", "huawei", "oppo", "xperia", "smartwatch"
+        "samsung", "xiaomi", "motorola", "realme", "huawei", "oppo", "xperia"
     )
     if any(term in query_norm for term in phone_terms):
         return True
     return re.search(r"\b(?:samsung\s+)?s\d{2}\s+ultra\b", query_norm) is not None
+
+
+def _is_console_search_query(query_norm):
+    console_terms = ("playstation", "ps5", "ps4", "xbox", "nintendo switch", "switch konsole")
+    return any(term in query_norm for term in console_terms)
+
+
+def _is_laptop_search_query(query_norm):
+    laptop_terms = ("laptop", "notebook", "macbook", "thinkpad", "ultrabook", "chromebook")
+    return any(term in query_norm for term in laptop_terms)
+
+
+def _is_tablet_search_query(query_norm):
+    tablet_terms = ("ipad", "galaxy tab", "tablet", "lenovo tab")
+    return any(term in query_norm for term in tablet_terms)
+
 
 
 def _has_accessory_term(title_norm, term):
@@ -975,16 +1008,25 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
 
 
 def _effective_category(category, query_norm):
-    if category and category != "all":
-        return category
+    if _is_smartwatch_search_query(query_norm):
+        return "smart_watches"
+    if _is_phone_search_query(query_norm):
+        return "phones"
     if "sony wh" in query_norm or "sony ult wear" in query_norm:
         return "headphones"
     if any(w in query_norm for w in ("quest", "pico", "vive", "slimevr", "slime tracker", "full body tracking")):
         return "vr_headsets"
+    if _is_console_search_query(query_norm):
+        return "consoles"
+    if _is_laptop_search_query(query_norm):
+        return "laptops"
+    if _is_tablet_search_query(query_norm):
+        return "tablets"
     if _has_term(query_norm, "pc"):
         return "computers"
-    if _is_phone_search_query(query_norm):
-        return "phones"
+        
+    if category and category != "all":
+        return category
     return category
 
 
@@ -1152,9 +1194,18 @@ def _build_url_with_host(host, search, sub="www"):
     """
     filters = search.get("filters", {})
     params = {"_nkw": _build_smart_search_query(search)}
-    category_name = filters.get("category", "all")
-    if category_name in EBAY_CATEGORY_IDS and EBAY_CATEGORY_IDS[category_name]:
-        params["_sacat"] = EBAY_CATEGORY_IDS[category_name]
+    
+    category = filters.get("category", "all")
+    query_norm = _normalize(search.get("query", ""))
+    eff_category = _effective_category(category, query_norm)
+    
+    device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
+    if device_cat_id:
+        params["_sacat"] = device_cat_id
+    elif eff_category and eff_category != "all":
+        cat_id = _category_id(eff_category)
+        if cat_id:
+            params["_sacat"] = cat_id
         
     sort_code = _sort_code(filters)
     if sort_code:
@@ -1985,8 +2036,18 @@ def _build_ebay_api_params(search):
         "limit": "100",
         "sort": sort_param,
     }
-    # Don't filter by category_id in API — search all categories.
-    # Programmatic title-based filters handle relevance.
+    
+    category = filters.get("category", "all")
+    query_norm = _normalize(search.get("query", ""))
+    eff_category = _effective_category(category, query_norm)
+    
+    device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
+    if device_cat_id:
+        params["category_ids"] = device_cat_id
+    elif eff_category and eff_category != "all":
+        cat_id = _category_id(eff_category)
+        if cat_id:
+            params["category_ids"] = cat_id
 
     filter_parts = []
     currency = EBAY_API_CURRENCY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "EUR")
