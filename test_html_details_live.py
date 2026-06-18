@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Ensure we can import monitor
+# Trigger run at 13:46
 import monitor
 
 def test_live_details():
