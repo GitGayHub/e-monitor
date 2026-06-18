@@ -3538,20 +3538,7 @@ async def process_searches(bot, once=False):
                     filters["category"] = "all"
                     modified = True
 
-                target_max = None
-                if "z80" in q_lower:
-                    target_max = 450 if "leading" in q_lower else 375
-                elif "z70" in q_lower:
-                    target_max = 500
-                elif "11s" in q_lower:
-                    target_max = 450
-                elif "11" in q_lower:
-                    target_max = 400
-                
-                if target_max is not None and filters.get("max_price") != target_max:
-                    filters["max_price"] = target_max
-                    modified = True
-                
+
 
 
         # 3. Specific excludes for base Redmagic 11 and Nubia Z80 Ultra
