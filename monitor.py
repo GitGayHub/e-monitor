@@ -3173,6 +3173,13 @@ async def process_searches(bot, once=False):
             searches[:] = new_searches
             modified = True
 
+        # 1.5 Migrate location filters from "eu" to "worldwide"
+        for s in searches:
+            filters = s.setdefault("filters", {})
+            if filters.get("location") == "eu":
+                filters["location"] = "worldwide"
+                modified = True
+
         # 2. Existing and new filters/excludes migration for redmagic/nubia
         accessory_excludes = [
             "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
