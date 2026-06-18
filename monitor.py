@@ -2326,7 +2326,31 @@ def _is_eu(location_text):
     return False
 
 
-def _calculate_total(item, settings):
+def _get_api_shipping_and_import(details):
+    shipping_cost = None
+    import_charges = None
+    shipping_opts = details.get("shippingOptions") or []
+    if shipping_opts:
+        min_opt = None
+        min_cost = None
+        for opt in shipping_opts:
+            cost = _api_float(opt.get("shippingCost"))
+            if cost is not None:
+                if min_cost is None or cost < min_cost:
+                    min_cost = cost
+                    min_opt = opt
+        if min_opt:
+            shipping_cost = min_opt.get("shippingCost", {}).get("value")
+            if shipping_cost is not None:
+                try:
+                    shipping_cost = float(shipping_cost)
+                except (ValueError, TypeError):
+                    shipping_cost = None
+            import_charges = _api_float(min_opt.get("importCharges"))
+    return shipping_cost, import_charges
+
+
+def _calculate_total(item, settings, details=None):
     """Calculate total price including import duties for non-EU items.
     
     For non-EU (UK, US, China, etc.) via eBay Global Shipping:
@@ -2337,16 +2361,38 @@ def _calculate_total(item, settings):
     Real example: £419 item + £30.76 shipping → £97.98 Einfuhrabgaben → total £547.74
     That's ~21.7% on (price+shipping) + small fixed fee.
     """
+    if details:
+        api_price = _api_float(details.get("price"))
+        if api_price is not None:
+            item["price"] = api_price
+            
+        api_shipping, _ = _get_api_shipping_and_import(details)
+        if api_shipping is not None:
+            item["shipping_cost"] = api_shipping
+        
+        api_loc = _api_location(details)
+        if api_loc:
+            item["location"] = api_loc
+
     total = item["price"] + item["shipping_cost"]
     if settings.get("warn_non_eu") and item["location"]:
         if not _is_eu(item["location"]):
-            # Import costs: 19% VAT + ~4% customs + ~5€ handling
-            base = item["price"] + item["shipping_cost"]
-            vat = base * 0.19
-            customs = base * 0.04  # electronics ~3.7-4.7%
-            handling = 5.0
-            import_cost = vat + customs + handling
-            total = base + import_cost
+            actual_import = None
+            if details:
+                _, actual_import = _get_api_shipping_and_import(details)
+                
+            if actual_import is not None:
+                import_cost = actual_import
+            else:
+                # Import costs: 19% VAT + ~4% customs + ~5€ handling
+                base = item["price"] + item["shipping_cost"]
+                vat = base * 0.19
+                customs = base * 0.04  # electronics ~3.7-4.7%
+                handling = 5.0
+                import_cost = vat + customs + handling
+                
+            total = item["price"] + item["shipping_cost"] + import_cost
+            
     item["total_price"] = round(total, 2)
     return item
 
@@ -3067,6 +3113,9 @@ async def _validate_candidate(item, search):
         desc = details.get("description", "")
         if desc and _is_description_blocked(desc, search_cat):
             return False, details
+            
+        # Update item details with the actual API values
+        _calculate_total(item, config.get_settings(), details)
     else:
         # Fallback check using HTML scraping of the item page if Browse API fails (e.g. returns 404)
         is_mv = await asyncio.to_thread(_is_item_page_multivariation, item["item_id"])
@@ -3297,10 +3346,10 @@ async def process_searches(bot, once=False):
                 p3_val = cheapest_auc_no_bo["total_price"] if cheapest_auc_no_bo else None
                 p4_val = cheapest_auc_bo["total_price"] if cheapest_auc_bo else None
                 
-                p1_base = (cheapest_bin_no_bo["price"] + cheapest_bin_no_bo["shipping_cost"]) if cheapest_bin_no_bo else None
-                p2_base = (cheapest_bin_bo["price"] + cheapest_bin_bo["shipping_cost"]) if cheapest_bin_bo else None
-                p3_base = (cheapest_auc_no_bo["price"] + cheapest_auc_no_bo["shipping_cost"]) if cheapest_auc_no_bo else None
-                p4_base = (cheapest_auc_bo["price"] + cheapest_auc_bo["shipping_cost"]) if cheapest_auc_bo else None
+                p1_base = cheapest_bin_no_bo["total_price"] if cheapest_bin_no_bo else None
+                p2_base = cheapest_bin_bo["total_price"] if cheapest_bin_bo else None
+                p3_base = cheapest_auc_no_bo["total_price"] if cheapest_auc_no_bo else None
+                p4_base = cheapest_auc_bo["total_price"] if cheapest_auc_bo else None
 
                 p1 = f"{p1_base:.0f}€" if p1_base else None
                 p2 = f"{p2_base:.0f}€" if p2_base else None
@@ -3584,6 +3633,11 @@ async def process_searches(bot, once=False):
                     logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                     seen_ids.add(item["item_id"])
                     continue
+                
+                if details:
+                    _calculate_total(item, config.get_settings(), details)
+                    h = _item_hash(item["seller_name"], item["title"], item["price"])
+
                 sent = await send_notification(bot, item, search, stats_7d)
                 if sent:
                     total_new += 1
@@ -3671,6 +3725,11 @@ async def process_searches(bot, once=False):
                         logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                         seen_ids.add(item["item_id"])
                         continue
+                    
+                    if details:
+                        _calculate_total(item, config.get_settings(), details)
+                        h = _item_hash(item["seller_name"], item["title"], item["price"])
+
                     sent = await send_notification(bot, item, search, stats_7d)
                     if sent:
                         total_new += 1
