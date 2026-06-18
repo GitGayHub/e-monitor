@@ -2415,7 +2415,7 @@ def _fetch_item_details_html(item_id):
             content = script.string or ""
             if not content:
                 continue
-            m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([\d-T:]+Z?)["\']', content)
+            m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([\d\-T:]+Z?)["\']', content)
             if m:
                 end_date_iso = m.group(1)
                 break
