@@ -1339,6 +1339,26 @@ def _format_time_left_from_seconds(total_seconds):
     return " ".join(parts)
 
 
+def _parse_end_date_to_seconds(end_date_str):
+    if not end_date_str:
+        return None
+    try:
+        clean_date = end_date_str.strip()
+        if clean_date.endswith("Z"):
+            clean_date = clean_date[:-1] + "+00:00"
+        from datetime import datetime, timezone
+        end_dt = datetime.fromisoformat(clean_date)
+        if end_dt.tzinfo is not None:
+            now_dt = datetime.now(timezone.utc)
+        else:
+            now_dt = datetime.utcnow()
+        diff = end_dt - now_dt
+        return diff.total_seconds()
+    except Exception as e:
+        logger.warning("Error parsing end date '%s': %s", end_date_str, e)
+        return None
+
+
 def _normalize(text):
     t = text.lower()
     t = t.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
@@ -2296,17 +2316,9 @@ def parse_ebay_api_results(data):
 
         time_left_str = ""
         end_date_str = summary.get("itemEndDate")
-        if end_date_str:
-            try:
-                clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
-                from datetime import datetime
-                end_dt = datetime.fromisoformat(clean_date)
-                now_dt = datetime.utcnow()
-                diff = end_dt - now_dt
-                if diff.total_seconds() > 0:
-                    time_left_str = _format_time_left_from_seconds(diff.total_seconds())
-            except Exception as e:
-                logger.warning("Error parsing itemEndDate '%s': %s", end_date_str, e)
+        seconds_left = _parse_end_date_to_seconds(end_date_str)
+        if seconds_left is not None and seconds_left > 0:
+            time_left_str = _format_time_left_from_seconds(seconds_left)
 
         items.append({
             "item_id": _api_item_id(summary),
@@ -2415,7 +2427,7 @@ def _fetch_item_details_html(item_id):
             content = script.string or ""
             if not content:
                 continue
-            m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([\d\-T:]+Z?)["\']', content)
+            m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([^"\']+)["\']', content)
             if m:
                 end_date_iso = m.group(1)
                 break
@@ -2486,7 +2498,7 @@ def _fetch_item_details(item_id):
     """Fetches the item details. First tries HTML scraping fallback, then falls back to eBay Browse API details."""
     try:
         html_details = _fetch_item_details_html(item_id)
-        if html_details and html_details.get("description") and html_details.get("itemEndDate"):
+        if html_details is not None:
             logger.info("Successfully fetched item %s details via HTML scraping", item_id)
             return html_details
     except Exception as e:
@@ -3354,19 +3366,9 @@ async def _validate_candidate(item, search):
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
         # Update time_left from live API details
-        end_date_str = details.get("itemEndDate")
-        if end_date_str:
-            try:
-                import re
-                clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
-                from datetime import datetime
-                end_dt = datetime.fromisoformat(clean_date)
-                now_dt = datetime.utcnow()
-                diff = end_dt - now_dt
-                if diff.total_seconds() > 0:
-                    item["time_left"] = _format_time_left_from_seconds(diff.total_seconds())
-            except Exception:
-                pass
+        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
+        if seconds_left is not None and seconds_left > 0:
+            item["time_left"] = _format_time_left_from_seconds(seconds_left)
 
         # Log subcategory mismatch but do NOT block — sellers often list in wrong categories.
         cat_id = details.get("categoryId")
@@ -3970,19 +3972,9 @@ async def process_searches(bot, once=False):
                 desc = ""
                 if details:
                     # Update time_left from live API details
-                    end_date_str = details.get("itemEndDate")
-                    if end_date_str:
-                        try:
-                            import re
-                            clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
-                            from datetime import datetime
-                            end_dt = datetime.fromisoformat(clean_date)
-                            now_dt = datetime.utcnow()
-                            diff = end_dt - now_dt
-                            if diff.total_seconds() > 0:
-                                item["time_left"] = _format_time_left_from_seconds(diff.total_seconds())
-                        except Exception:
-                            pass
+                    seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
+                    if seconds_left is not None and seconds_left > 0:
+                        item["time_left"] = _format_time_left_from_seconds(seconds_left)
                     # Block incorrect subcategories (accessories/parts) to prevent false positives
                     cat_id = details.get("categoryId")
                     search_cat = search.get("filters", {}).get("category", "all")
@@ -4062,19 +4054,9 @@ async def process_searches(bot, once=False):
                     desc = ""
                     if details:
                         # Update time_left from live API details
-                        end_date_str = details.get("itemEndDate")
-                        if end_date_str:
-                            try:
-                                import re
-                                clean_date = re.sub(r"\.\d+Z$", "", end_date_str).replace("Z", "")
-                                from datetime import datetime
-                                end_dt = datetime.fromisoformat(clean_date)
-                                now_dt = datetime.utcnow()
-                                diff = end_dt - now_dt
-                                if diff.total_seconds() > 0:
-                                    item["time_left"] = _format_time_left_from_seconds(diff.total_seconds())
-                            except Exception:
-                                pass
+                        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
+                        if seconds_left is not None and seconds_left > 0:
+                            item["time_left"] = _format_time_left_from_seconds(seconds_left)
                         # Block incorrect subcategories (accessories/parts) to prevent false positives
                         cat_id = details.get("categoryId")
                         search_cat = search.get("filters", {}).get("category", "all")
