@@ -2334,8 +2334,165 @@ def parse_ebay_api_results(data):
     return items
 
 
+def _fetch_item_details_html(item_id):
+    """Fetches item details (description, exact end date, etc.) by scraping the item page."""
+    session = _get_ebay_session()
+    host = _ebay_active_host or "ebay.de"
+    url = f"https://www.{host}/itm/{item_id}"
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": f"https://www.{host}/",
+    }
+    logger.info("Scraping item page details for item %s via HTML", item_id)
+    try:
+        resp = session.get(url, headers=headers, timeout=15)
+    except Exception as e:
+        logger.warning("_fetch_item_details_html: network error for %s: %s", item_id, e)
+        return None
+
+    if resp.status_code != 200:
+        logger.warning("_fetch_item_details_html: HTTP %d for item %s", resp.status_code, item_id)
+        return None
+
+    html = resp.text or ""
+    challenge_markers = (
+        "pardon our interruption",
+        "bitte entschuldigen sie die störung",
+        "splashui/captcha",
+        "are you a robot",
+        "automated access",
+        "/splashui/",
+        "verify you are a human",
+        "checking your browser",
+        "access denied",
+    )
+    soup = BeautifulSoup(html, "html.parser")
+    title_el = soup.find("title")
+    title_text = title_el.get_text(strip=True) if title_el else ""
+    if "/splashui/" in resp.url.lower() or any(m in title_text.lower() for m in challenge_markers) or any(m in html[:8000].lower() for m in challenge_markers):
+        logger.warning("_fetch_item_details_html: challenge page hit for item %s", item_id)
+        return None
+
+    is_mv = any(k in html for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo"))
+    item_group_type = "SELLER_DEFINED_VARIATIONS" if is_mv else None
+
+    price_val = None
+    currency = "EUR"
+    end_date_iso = None
+
+    schema_scripts = soup.find_all("script", type="application/ld+json")
+    for s in schema_scripts:
+        try:
+            data = json.loads(s.string or "")
+            products = []
+            if isinstance(data, dict):
+                if data.get("@type") == "Product":
+                    products.append(data)
+            elif isinstance(data, list):
+                for item in data:
+                    if isinstance(item, dict) and item.get("@type") == "Product":
+                        products.append(item)
+
+            for prod in products:
+                offers = prod.get("offers")
+                if offers:
+                    if isinstance(offers, dict):
+                        price_val = offers.get("price")
+                        currency = offers.get("priceCurrency") or "EUR"
+                        end_date_iso = offers.get("validThrough") or offers.get("priceValidUntil")
+                    elif isinstance(offers, list) and len(offers) > 0:
+                        price_val = offers[0].get("price")
+                        currency = offers[0].get("priceCurrency") or "EUR"
+                        end_date_iso = offers[0].get("validThrough") or offers[0].get("priceValidUntil")
+                if end_date_iso:
+                    break
+        except Exception:
+            pass
+
+    if not end_date_iso:
+        for script in soup.find_all("script"):
+            content = script.string or ""
+            if not content:
+                continue
+            m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([\d-T:]+Z?)["\']', content)
+            if m:
+                end_date_iso = m.group(1)
+                break
+            m2 = re.search(r'["\'](?:endTime|endDateTime|endTimeStamp)["\']\s*:\s*(\d{10,13})', content)
+            if m2:
+                ts = int(m2.group(1))
+                if ts > 1000000000000:
+                    ts = ts / 1000.0
+                from datetime import datetime, timezone
+                end_date_iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+                break
+
+    desc_html = ""
+    desc_ifr = soup.find("iframe", id="desc_ifr") or soup.find("iframe", name="desc_ifr")
+    if not desc_ifr:
+        for iframe in soup.find_all("iframe"):
+            src = iframe.get("src") or ""
+            if "ViewItemDescV4" in src or "ebaydesc.com" in src:
+                desc_ifr = iframe
+                break
+
+    if desc_ifr:
+        desc_src = desc_ifr.get("src") or ""
+        if desc_src:
+            if desc_src.startswith("//"):
+                desc_src = "https:" + desc_src
+            elif desc_src.startswith("/"):
+                desc_src = f"https://www.{host}" + desc_src
+            logger.info("Fetching description HTML from iframe: %s", desc_src)
+            try:
+                desc_headers = {
+                    "User-Agent": headers["User-Agent"] if "User-Agent" in headers else "Mozilla/5.0",
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                }
+                desc_resp = session.get(desc_src, headers=desc_headers, timeout=10)
+                if desc_resp.status_code == 200:
+                    desc_html = desc_resp.text or ""
+                else:
+                    logger.warning("Description iframe HTTP %d", desc_resp.status_code)
+            except Exception as e:
+                logger.warning("Failed to fetch description iframe: %s", e)
+    else:
+        desc_div = soup.find(id="desc_div") or soup.find(class_="vi-desc-main-container")
+        if desc_div:
+            desc_html = str(desc_div)
+
+    if end_date_iso:
+        end_date_iso = end_date_iso.strip()
+        if not end_date_iso.endswith("Z") and "+" not in end_date_iso and len(end_date_iso) >= 19:
+            end_date_iso += ".000Z"
+        elif end_date_iso.endswith("Z") and "." not in end_date_iso:
+            end_date_iso = end_date_iso[:-1] + ".000Z"
+
+    result = {
+        "description": desc_html,
+        "itemEndDate": end_date_iso,
+        "title": title_text,
+    }
+    if item_group_type:
+        result["itemGroupType"] = item_group_type
+    if price_val is not None:
+        result["price"] = {"value": str(price_val), "currency": currency}
+
+    return result
+
+
 def _fetch_item_details(item_id):
-    """Fetches the item details via the eBay Browse API."""
+    """Fetches the item details. First tries HTML scraping fallback, then falls back to eBay Browse API details."""
+    try:
+        html_details = _fetch_item_details_html(item_id)
+        if html_details and html_details.get("description") and html_details.get("itemEndDate"):
+            logger.info("Successfully fetched item %s details via HTML scraping", item_id)
+            return html_details
+    except Exception as e:
+        logger.warning("_fetch_item_details: HTML scraping error for item %s: %s", item_id, e)
+
+    logger.info("Falling back to eBay Browse API details for item %s", item_id)
     token, err = _get_ebay_api_token()
     if err:
         logger.warning("_fetch_item_details: token error: %s", err)
