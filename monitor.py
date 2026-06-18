@@ -2744,11 +2744,10 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         min_price = filters.get("min_price")
         if min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
             continue
-        # Check limit_price (or max_price if limit_price not set) only for Buy It Now (non-auction) items.
-        # Auctions can have any current bid — we want to notify about ending-soon
-        # auctions regardless of their current price (mirrors min_price logic above).
+        # Check limit_price (or max_price if limit_price not set) for all items.
+        # If the item (even an auction) is already more expensive than our target limit, filter it out.
         limit_or_max = filters.get("limit_price") or filters.get("max_price")
-        if limit_or_max is not None and not item.get("auction") and item.get("total_price", 0) > limit_or_max:
+        if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
             if not skip_seen:
                 continue
             
@@ -2774,7 +2773,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # User requirement: For auction listings (unless they have Buy It Now),
         # only send if:
         # A) They accept Best Offer and have 0 bids.
-        # B) They are ending in 1 hour or less.
+        # B) They are ending in 24 hours (1 day) or less.
         if not is_statistics:
             if item.get("auction") and not item.get("buy_now"):
                 is_new_best_offer = item.get("best_offer") and item.get("bids_count") == 0
@@ -2782,7 +2781,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 time_left_str = item.get("time_left", "")
                 if time_left_str:
                     minutes = _parse_time_left_to_minutes(time_left_str)
-                    if minutes is not None and minutes <= 60:
+                    if minutes is not None and minutes <= 1440:  # 24 hours (1 day)
                         is_ending_soon = True
                 if not (is_new_best_offer or is_ending_soon):
                     continue
