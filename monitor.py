@@ -2026,7 +2026,9 @@ def _api_item_id(summary):
     return m.group(0) if m else raw
 
 
-def _build_ebay_api_params(search):
+def _build_ebay_api_params(search, market=None):
+    if market is None:
+        market = EBAY_MARKETPLACE_ID
     filters = search.get("filters", {}) or {}
     sort_param = "newlyListed"
     if filters.get("sort") == "price_asc":
@@ -2050,7 +2052,7 @@ def _build_ebay_api_params(search):
             params["category_ids"] = cat_id
 
     filter_parts = []
-    currency = EBAY_API_CURRENCY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "EUR")
+    currency = EBAY_API_CURRENCY_BY_MARKETPLACE.get(market, "EUR")
     min_price = filters.get("min_price")
     max_price = filters.get("max_price")
     if min_price or max_price:
@@ -2092,6 +2094,62 @@ def _build_ebay_api_params(search):
     if filter_parts:
         params["filter"] = ",".join(filter_parts)
     return params
+
+
+def fetch_ebay_api_ex(search):
+    token, err = _get_ebay_api_token()
+    if err:
+        return [], err
+
+    markets = [EBAY_MARKETPLACE_ID]
+    loc = (search.get("filters") or {}).get("location", "de")
+    if loc in ("eu", "worldwide"):
+        extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]
+        for m in extra_markets:
+            if m not in markets:
+                markets.append(m)
+
+    all_items = []
+    seen_item_ids = set()
+    last_err = None
+
+    for market in markets:
+        params = _build_ebay_api_params(search, market=market)
+        url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
+        country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(market, "DE")
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Accept": "application/json",
+                    "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                    "X-EBAY-C-MARKETPLACE-ID": market,
+                    "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
+                data = json.loads(resp.read().decode("utf-8", errors="replace"))
+            items = parse_ebay_api_results(data)
+            for item in items:
+                if item["item_id"] not in seen_item_ids:
+                    seen_item_ids.add(item["item_id"])
+                    all_items.append(item)
+        except urllib.error.HTTPError as e:
+            try:
+                body = e.read().decode("utf-8", errors="replace")
+                logger.warning("eBay API HTTP %s for '%s' on %s: %s", e.code, search["query"], market, body[:300])
+            except Exception:
+                pass
+            last_err = _ebay_api_http_error(e.code)
+        except Exception as e:
+            logger.warning("eBay API network error for '%s' on %s: %s", search["query"], market, e)
+            last_err = "api_network"
+
+    logger.info("  %s -> %d items via eBay Browse API (markets: %s)", search["query"], len(all_items), ", ".join(markets))
+    if all_items:
+        return all_items, None
+    return [], last_err
 
 
 def parse_ebay_api_results(data):
@@ -3498,7 +3556,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
-            footer_str += "\nℹ️ <i>Версия: 09:18 18 июня</i>"
+            footer_str += "\nℹ️ <i>Версия: 09:36 18 июня</i>"
             
             for idx in range(0, len(report_lines), chunk_size):
                 chunk_items = report_lines[idx : idx + chunk_size]
@@ -4011,9 +4069,12 @@ async def run_continuous():
     register_settings_handlers(app, config)
 
     job_queue = app.job_queue
+    interval_val = 300
+    if _is_statistics_mode(config) and os.environ.get("GITHUB_ACTIONS") != "true":
+        interval_val = 60
     job_queue.run_repeating(
         scheduled_check,
-        interval=300,
+        interval=interval_val,
         first=10,
         name="ebay_check",
     )
