@@ -716,8 +716,8 @@ def _matches_phone_query_model(title_norm, query_norm):
             if b == "apple": query_brands.add("iphone")
             if b == "galaxy": query_brands.add("samsung")
             if b == "samsung": query_brands.add("galaxy")
-            if b == "redmagic": query_brands.add("red magic")
-            if b == "red magic": query_brands.add("redmagic")
+            if b in ("redmagic", "red magic", "nubia"):
+                query_brands.update({"redmagic", "red magic", "nubia"})
             
     all_brands = {"pixel", "google", "iphone", "apple", "samsung", "galaxy", "oneplus", "nubia", "redmagic", "red magic", "xiaomi", "redmi", "huawei", "honor", "oppo", "realme", "sony", "xperia", "motorola", "moto", "lg", "htc", "nokia", "asus", "rog"}
     competing_brands = all_brands - query_brands
