@@ -2114,13 +2114,14 @@ def _build_ebay_api_params(search, market=None):
     query_norm = _normalize(search.get("query", ""))
     eff_category = _effective_category(category, query_norm)
     
-    device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
-    if device_cat_id:
-        params["category_ids"] = device_cat_id
-    elif eff_category and eff_category != "all":
-        cat_id = _category_id(eff_category)
-        if cat_id:
-            params["category_ids"] = cat_id
+    if category and category != "all":
+        device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
+        if device_cat_id:
+            params["category_ids"] = device_cat_id
+        elif eff_category and eff_category != "all":
+            cat_id = _category_id(eff_category)
+            if cat_id:
+                params["category_ids"] = cat_id
 
     filter_parts = []
     currency = EBAY_API_CURRENCY_BY_MARKETPLACE.get(market, "EUR")
