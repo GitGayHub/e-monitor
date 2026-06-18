@@ -3133,11 +3133,7 @@ async def process_searches(bot, once=False):
                     filters["max_price"] = target_max
                     modified = True
                 
-                excludes = s.setdefault("exclude_words", [])
-                for ex_word in accessory_excludes:
-                    if ex_word not in excludes:
-                        excludes.append(ex_word)
-                        modified = True
+
 
         # 3. Specific excludes for base Redmagic 11 and Nubia Z80 Ultra
         redmagic_excludes = ["11s", "11 s", "11spro", "11s pro", "11 s pro"]
@@ -3404,14 +3400,26 @@ async def process_searches(bot, once=False):
                 query_norm = _normalize(search.get("query", ""))
                 category_name = search.get("filters", {}).get("category")
                 effective_category = _effective_category(category_name, query_norm)
-                if effective_category == "phones":
-                    limit_str = f"⬆️ {orig_max_price:.0f}€ ⬇️ 50€" if orig_max_price else "⬆️ без лимита ⬇️ 50€"
-                else:
-                    limit_str = f"{orig_max_price:.0f}€" if orig_max_price else "без лимита"
+                min_price_val = None
+                if bin_min_price is not None:
+                    min_price_val = bin_min_price
+                elif auc_min_price is not None:
+                    min_price_val = auc_min_price
+                if min_price_val is None and effective_category == "phones" and "pixel" not in query_norm:
+                    min_price_val = 50
+
+                max_str = f"⬆️ {orig_max_price:.0f}€" if orig_max_price else "⬆️ без лимита"
+                min_str = f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ без лимита"
+                limit_str = f"{max_str} {min_str}"
                 
                 query_esc = html.escape(search.get("query", ""))
-                if search.get("filters", {}).get("location") == "de":
+                loc = search.get("filters", {}).get("location")
+                if loc == "de":
                     query_esc += " 🇩🇪"
+                elif loc == "eu":
+                    query_esc += " 🇪🇺"
+                elif loc == "worldwide":
+                    query_esc += " 🌍"
                 cat_emoji = get_category_emoji(category_name)
                 
                 block_lines = [
