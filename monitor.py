@@ -3385,13 +3385,22 @@ async def _validate_candidate(item, search):
         if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
             return False, details
             
-        # Block constructor/bait listings
-        api_price_val = details.get("price", {}).get("value")
-        if api_price_val:
+        scraped_price = None
+        try:
+            scraped_price = float(item["price"])
+        except Exception:
+            pass
+
+        # Update item details with the actual API values (handles conversion and shipping)
+        _calculate_total(item, config.get_settings(), details)
+
+        # Block constructor/bait listings (skip for auctions and check in converted currency)
+        if scraped_price is not None and not item.get("auction"):
             try:
-                api_price = float(api_price_val)
-                scraped_price = float(item["price"])
+                api_price = float(item["price"])
                 if abs(api_price - scraped_price) > 1.0:
+                    logger.info("Blocking item %s: price mismatch (search: %s, details: %s)", 
+                                item["item_id"], scraped_price, api_price)
                     return False, details
             except Exception:
                 pass
@@ -3399,9 +3408,6 @@ async def _validate_candidate(item, search):
         desc = details.get("description", "")
         if desc and _is_description_blocked(desc, search_cat):
             return False, details
-            
-        # Update item details with the actual API values
-        _calculate_total(item, config.get_settings(), details)
     else:
         # Fallback check using HTML scraping of the item page if Browse API fails (e.g. returns 404)
         is_mv = await asyncio.to_thread(_is_item_page_multivariation, item["item_id"])
