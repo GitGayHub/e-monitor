@@ -158,5 +158,12 @@ def main():
         shutil.copy2(sync_local, sync_origin)
         print("Copied app_sync.json successfully")
 
+    # 6. Copy details_test_output.json
+    det_origin = os.path.join(repo_root, "details_test_output.json")
+    det_local = os.path.join(backup_dir, "details_test_output.json")
+    if os.path.exists(det_local):
+        shutil.copy2(det_local, det_origin)
+        print("Copied details_test_output.json successfully")
+
 if __name__ == "__main__":
     main()
