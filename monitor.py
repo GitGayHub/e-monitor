@@ -1697,26 +1697,29 @@ def _is_nested_in_card(el, card_el):
 def parse_ebay_results(html):
     soup = BeautifulSoup(html, "html.parser")
     items = []
-    cards = soup.select("li.s-card")
+    cards = soup.select("li.s-card, li.s-item")
     for card in cards:
         try:
-            listing_id = card.get("data-listingid", "")
-            if not listing_id:
-                continue
+            listing_id = card.get("data-listingid") or card.get("data-id") or card.get("id") or ""
+            # Strip prefixes like 'item' from id if present
+            if listing_id.startswith("item"):
+                listing_id = listing_id[4:]
 
-            link_el = card.select_one("a.s-card__link")
+            link_el = card.select_one("a.s-card__link, a.s-item__link, a.s-item__link-wrapper")
             if not link_el:
                 continue
             href = link_el.get("href", "")
             item_id_match = re.search(r"/itm/(\d+)", href)
             item_id = item_id_match.group(1) if item_id_match else listing_id
+            if not item_id:
+                continue
 
-            title_el = card.select_one("span.su-styled-text.primary.default")
+            title_el = card.select_one("span.su-styled-text.primary.default, div.s-item__title, h3.s-item__title, span[role='heading']")
             title = title_el.get_text(strip=True) if title_el else ""
             if not title or title.lower().startswith("shop on ebay"):
                 continue
 
-            price_elements = [el for el in card.select("span.s-card__price") if not _is_nested_in_card(el, card)]
+            price_elements = [el for el in card.select("span.s-card__price, span.s-item__price") if not _is_nested_in_card(el, card)]
             price_texts = [el.get_text(strip=True) for el in price_elements]
             price_text_combined = " ".join(price_texts)
             is_multivariation = "bis" in price_text_combined.lower() or "to" in price_text_combined.lower()
@@ -1725,7 +1728,7 @@ def parse_ebay_results(html):
             if price is None:
                 continue
 
-            img_el = card.select_one("img.s-card__image")
+            img_el = card.select_one("img.s-card__image, img.s-item__image, .s-item__image-img img")
             image_url = ""
             if img_el:
                 image_url = img_el.get("src", "") or img_el.get("data-defer-load", "")
