@@ -2233,41 +2233,6 @@ def parse_ebay_api_results(data):
     return items
 
 
-def fetch_ebay_api_ex(search):
-    token, err = _get_ebay_api_token()
-    if err:
-        return [], err
-    params = _build_ebay_api_params(search)
-    url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
-    country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "DE")
-    try:
-        req = urllib.request.Request(
-            url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Accept": "application/json",
-                "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-                "X-EBAY-C-MARKETPLACE-ID": EBAY_MARKETPLACE_ID,
-                "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
-            },
-        )
-        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
-            data = json.loads(resp.read().decode("utf-8", errors="replace"))
-        items = parse_ebay_api_results(data)
-        logger.info("  %s -> %d items via eBay Browse API", search["query"], len(items))
-        return items, None
-    except urllib.error.HTTPError as e:
-        try:
-            body = e.read().decode("utf-8", errors="replace")
-            logger.warning("eBay API HTTP %s for '%s': %s", e.code, search["query"], body[:300])
-        except Exception:
-            pass
-        return [], _ebay_api_http_error(e.code)
-    except Exception as e:
-        logger.warning("eBay API network error for '%s': %s", search["query"], e)
-        return [], "api_network"
-
-
 def _fetch_item_details(item_id):
     """Fetches the item details via the eBay Browse API."""
     token, err = _get_ebay_api_token()
