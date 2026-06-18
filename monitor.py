@@ -2112,6 +2112,7 @@ def _build_ebay_api_params(search, market=None):
         "q": _build_smart_search_query(search),
         "limit": "100",
         "sort": sort_param,
+        "fieldgroups": "EXTENDED",
     }
     
     category = filters.get("category", "all")
