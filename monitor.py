@@ -2741,11 +2741,11 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         min_price = filters.get("min_price")
         if min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
             continue
-        # Check max_price only for Buy It Now (non-auction) items.
+        # Check limit_price (or max_price if limit_price not set) only for Buy It Now (non-auction) items.
         # Auctions can have any current bid — we want to notify about ending-soon
         # auctions regardless of their current price (mirrors min_price logic above).
-        max_price = filters.get("max_price")
-        if max_price is not None and not item.get("auction") and item.get("total_price", 0) > max_price:
+        limit_or_max = filters.get("limit_price") or filters.get("max_price")
+        if limit_or_max is not None and not item.get("auction") and item.get("total_price", 0) > limit_or_max:
             if not skip_seen:
                 continue
             
@@ -3615,7 +3615,7 @@ async def process_searches(bot, once=False):
                     continue
                 processed_queries.add(q_norm)
                 
-                orig_max_price = search.get("filters", {}).get("max_price")
+                orig_max_price = search.get("filters", {}).get("limit_price") or search.get("filters", {}).get("max_price")
                 
                 # Find matching searches in config to get correct min_price for BIN and Auctions
                 bin_search_cfg = None
@@ -3841,9 +3841,19 @@ async def process_searches(bot, once=False):
                 if min_price_val is None and effective_category == "phones" and "pixel" not in query_norm:
                     min_price_val = 50
 
-                max_str = f"⬆️ {orig_max_price:.0f}€" if orig_max_price else "⬆️ без лимита"
-                min_str = f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ без лимита"
-                limit_str = f"{max_str} {min_str}"
+                limit_val = search.get("filters", {}).get("limit_price")
+                max_price_val = search.get("filters", {}).get("max_price")
+                
+                limit_str_part = f"🎯 {limit_val:.0f}€" if limit_val else ""
+                max_str_part = f"⬆️ {max_price_val:.0f}€" if max_price_val else "⬆️ без лимита"
+                min_str_part = f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ без лимита"
+                
+                parts = []
+                if limit_str_part:
+                    parts.append(limit_str_part)
+                parts.append(max_str_part)
+                parts.append(min_str_part)
+                limit_str = " | ".join(parts)
                 
                 query_esc = html.escape(search.get("query", ""))
                 loc = search.get("filters", {}).get("location")

@@ -36,7 +36,8 @@ def as_bool(value, default=True):
 def app_search_to_config(search):
     filters = {
         "min_price": as_number(search.get("minPrice")),
-        "max_price": as_number(search.get("maxPrice")),
+        "limit_price": as_number(search.get("maxPrice")),
+        "max_price": 2500,
         "condition": search.get("condition") or "any",
         "listing_type": search.get("listingType") or "all",
         "seller_type": search.get("sellerType") or "any",

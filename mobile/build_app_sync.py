@@ -23,7 +23,7 @@ def convert_search(search):
         "id": search.get("id") or "",
         "query": search.get("query") or "",
         "minPrice": filters.get("min_price"),
-        "maxPrice": filters.get("max_price"),
+        "maxPrice": filters.get("limit_price") or filters.get("max_price"),
         "condition": filters.get("condition") or "any",
         "listingType": filters.get("listing_type") or "all",
         "sellerType": filters.get("seller_type") or "any",
