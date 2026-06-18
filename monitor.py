@@ -1984,7 +1984,19 @@ def _api_float(obj):
     if not obj:
         return None
     try:
-        return float(obj.get("value"))
+        val = float(obj.get("value"))
+        currency = obj.get("currency", "EUR")
+        if currency and currency.strip().upper() != "EUR":
+            rates = {
+                "GBP": 1.18,
+                "USD": 0.92,
+                "AUD": 0.61,
+                "CHF": 1.04,
+                "CAD": 0.67,
+            }
+            rate = rates.get(currency.strip().upper(), 1.0)
+            val = round(val * rate, 2)
+        return val
     except (TypeError, ValueError, AttributeError):
         return None
 
@@ -3528,7 +3540,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
-            footer_str += "\nℹ️ <i>Версия: 09:36 18 июня</i>"
+            footer_str += "\nℹ️ <i>Версия: 09:55 18 июня</i>"
             
             for idx in range(0, len(report_lines), chunk_size):
                 chunk_items = report_lines[idx : idx + chunk_size]
