@@ -84,6 +84,7 @@ jobs:
           EBAY_MARKETPLACE_ID: EBAY_DE
           EBAY_SOURCE: auto
         run: |
+          python test_html_details_live.py
           python monitor.py --once 2>&1 | tee run_output.log
           # Append mini-log entry
           python -c "
@@ -141,13 +142,13 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           backup_dir="$(mktemp -d)"
-          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json; do
+          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json; do
             if [ -f "$f" ]; then
               mkdir -p "$backup_dir/$(dirname "$f")"
               cp "$f" "$backup_dir/$f"
             fi
           done
-          git checkout -- seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json 2>/dev/null || true
+          git checkout -- seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json 2>/dev/null || true
           git fetch origin main || true
           if ! git rebase origin/main; then
             git rebase --abort || true
@@ -158,7 +159,7 @@ jobs:
           python merge_state.py "$backup_dir" "."
           # Re-encrypt config before committing
           python config_crypt.py encrypt config.json config.json.enc
-          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json || true
+          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json || true
           if git diff --cached --quiet; then
             echo "No runtime state changes"
             exit 0
