@@ -3420,6 +3420,13 @@ async def process_searches(bot, once=False):
                     query_esc += " 🇪🇺"
                 elif loc == "worldwide":
                     query_esc += " 🌍"
+                
+                cat_filter = search.get("filters", {}).get("category", "all")
+                if cat_filter and cat_filter != "all":
+                    query_esc += " ⚙️"
+                else:
+                    query_esc += " ♾️"
+                    
                 cat_emoji = get_category_emoji(category_name)
                 
                 block_lines = [
@@ -3444,7 +3451,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
-            footer_str += "\nℹ️ <i>Версия: 09:07 18 июня</i>"
+            footer_str += "\nℹ️ <i>Версия: 09:17 18 июня</i>"
             
             for idx in range(0, len(report_lines), chunk_size):
                 chunk_items = report_lines[idx : idx + chunk_size]
