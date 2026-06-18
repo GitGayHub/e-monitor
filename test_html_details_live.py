@@ -1,9 +1,9 @@
 import sys
-import sqlite3
 import json
 import os
 import time
 import requests
+import re
 from bs4 import BeautifulSoup
 
 sys.stdout.reconfigure(encoding='utf-8')
@@ -30,41 +30,56 @@ def send_telegram_msg(msg):
         print(f"Telegram send error: {e}")
 
 def test_live_details():
-    # 1. Warm up the session
     session = monitor._get_ebay_session()
-    monitor._warmup_session(session, "ebay.de")
     
-    # 2. Get active auctions using a scraper search
-    search = {
-        "id": "auction_test_search",
-        "query": "iphone",
-        "filters": {"category": "phones", "listing_type": "auction"},
-        "min_price": 10.0,
-        "max_price": 1000.0,
+    # 1. Fetch active auctions directly
+    search_url = "https://www.ebay.de/sch/i.html?_nkw=iphone&LH_Auction=1"
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": "https://www.ebay.de/",
     }
+    print(f"Fetching search: {search_url}")
+    try:
+        resp = session.get(search_url, headers=headers, timeout=15)
+        print(f"Search Page Status: {resp.status_code}")
+        soup = BeautifulSoup(resp.text, "html.parser")
+    except Exception as e:
+        print(f"Error fetching search page: {e}")
+        soup = None
+        
+    item_ids = []
+    if soup:
+        # Look for listing links
+        links = soup.find_all("a", href=re.compile(r"/itm/\d+"))
+        for l in links:
+            href = l.get("href", "")
+            m = re.search(r"/itm/(\d+)", href)
+            if m:
+                iid = m.group(1)
+                if iid not in item_ids:
+                    item_ids.append(iid)
+                    
+    print(f"Found item IDs from search page: {item_ids}")
     
-    print("Running auction search...")
-    items, err = monitor.fetch_ebay_ex(search)
-    print(f"Search returned {len(items)} items. Error: {err}")
-    
-    if not items:
-        # Fallback to general DB if search failed or returned 0
-        print("No auction items found in search, falling back to database...")
+    if not item_ids:
+        # Fallback to DB
+        print("No item IDs parsed from search page. Falling back to DB...")
         db_path = os.path.join(os.path.dirname(__file__), "price_history.db")
         if os.path.exists(db_path):
+            import sqlite3
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute("SELECT item_id FROM seller_prices ORDER BY recorded_at DESC LIMIT 20")
             rows = cursor.fetchall()
             conn.close()
-            items = [{"item_id": r[0], "title": "DB Item"} for r in rows if r[0]]
+            item_ids = [r[0] for r in rows if r[0]]
             
-    targets = items[:3]
-    print(f"Testing HTML details fetching on: {[t.get('item_id') for t in targets]}")
+    targets = item_ids[:3]
+    print(f"Testing HTML details fetching on: {targets}")
     
     results = {}
-    for item in targets:
-        item_id = item["item_id"]
+    for item_id in targets:
         print(f"\nFetching HTML details for item {item_id}...")
         try:
             details = monitor._fetch_item_details_html(item_id)
@@ -104,7 +119,7 @@ def test_live_details():
     print(f"\nSaved test results to {output_path}")
 
     # Format Telegram Message
-    msg_lines = ["<b>🚨 Auction Details Scraper Test Results (HTML-first)</b>\n"]
+    msg_lines = ["<b>🚨 Live Details Scraper Test Results (Direct Search)</b>\n"]
     for iid, res in results.items():
         msg_lines.append(f"<b>Item {iid}:</b>")
         if res["status"] == "success":
