@@ -1868,32 +1868,91 @@ def _parse_price(text):
     if "bis" in text.lower() or "to" in text.lower():
         parts = re.split(r"bis|to", text, flags=re.IGNORECASE)
         text = parts[0].strip()
-    # Extract only the first price block to avoid commercial net price suffix (exkl. MwSt.)
-    match = re.search(r'([\d.,\s]+)(?:EUR|USD|€|\$)', text, re.IGNORECASE)
+    
+    # Truncate anything in parentheses or after "ca." / "approx."
+    text_clean = re.split(r'\(|ca\.|approx\.', text, flags=re.IGNORECASE)[0].strip()
+    
+    # Detect currency
+    currency = "EUR"
+    text_upper = text_clean.upper()
+    if "GBP" in text_upper or "£" in text_upper:
+        currency = "GBP"
+    elif "AUD" in text_upper or "A$" in text_upper:
+        currency = "AUD"
+    elif "CAD" in text_upper or "C$" in text_upper:
+        currency = "CAD"
+    elif "CHF" in text_upper:
+        currency = "CHF"
+    elif "USD" in text_upper or "$" in text_upper:
+        currency = "USD"
+        
+    # Extract number
+    match = re.search(r'\d+[\d.,\s]*', text_clean)
     if match:
-        text = match.group(1).strip()
-    else:
-        match = re.search(r'(?:EUR|USD|€|\$)\s*([\d.,\s]+)', text, re.IGNORECASE)
-        if match:
-            text = match.group(1).strip()
-    text = _normalize_price_number(text)
+        val_str = _normalize_price_number(match.group(0).strip())
+        try:
+            val = float(val_str)
+            if currency != "EUR":
+                rates = {
+                    "GBP": 1.18,
+                    "USD": 0.92,
+                    "AUD": 0.61,
+                    "CHF": 1.04,
+                    "CAD": 0.67,
+                }
+                rate = rates.get(currency, 1.0)
+                val = round(val * rate, 2)
+            return val
+        except ValueError:
+            return None
+    val_str = _normalize_price_number(text_clean)
     try:
-        return float(text)
+        return float(val_str)
     except ValueError:
         return None
 
 
 def _parse_shipping(text):
-    text = text.lower().strip()
-    if not text or "kostenlos" in text or "free" in text or "gratis" in text:
+    text_clean = text.lower().strip()
+    if not text_clean or any(w in text_clean for w in ("kostenlos", "free", "gratis")):
         return 0.0
-    match = re.search(r"([\d.,]+)\s*(€|\$)|(?:eur|usd|us)\s*([\d.,]+)", text, re.IGNORECASE)
+        
+    # Truncate anything in parentheses or after "ca." / "approx."
+    text_clean = re.split(r'\(|ca\.|approx\.', text_clean, flags=re.IGNORECASE)[0].strip()
+    
+    # Detect currency
+    currency = "EUR"
+    text_upper = text_clean.upper()
+    if "GBP" in text_upper or "£" in text_upper:
+        currency = "GBP"
+    elif "AUD" in text_upper or "A$" in text_upper:
+        currency = "AUD"
+    elif "CAD" in text_upper or "C$" in text_upper:
+        currency = "CAD"
+    elif "CHF" in text_upper:
+        currency = "CHF"
+    elif "USD" in text_upper or "$" in text_upper:
+        currency = "USD"
+        
+    # Extract number
+    match = re.search(r'\d+[\d.,\s]*', text_clean)
     if match:
-        val = _normalize_price_number(match.group(1) or match.group(3))
+        val_str = _normalize_price_number(match.group(0).strip())
         try:
-            return float(val)
+            val = float(val_str)
+            if currency != "EUR":
+                rates = {
+                    "GBP": 1.18,
+                    "USD": 0.92,
+                    "AUD": 0.61,
+                    "CHF": 1.04,
+                    "CAD": 0.67,
+                }
+                rate = rates.get(currency, 1.0)
+                val = round(val * rate, 2)
+            return val
         except ValueError:
-            pass
+            return 0.0
     return 0.0
 
 
@@ -3540,7 +3599,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
-            footer_str += "\nℹ️ <i>Версия: 09:55 18 июня</i>"
+            footer_str += "\nℹ️ <i>Версия: 10:02 18 июня</i>"
             
             for idx in range(0, len(report_lines), chunk_size):
                 chunk_items = report_lines[idx : idx + chunk_size]
