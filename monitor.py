@@ -3368,18 +3368,18 @@ async def process_searches(bot, once=False):
                 
                 # Fetch BIN
                 bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search)
-                if bin_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                if _ebay_api_configured():
                     bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search)
                     if not api_err:
-                        bin_results = bin_api_results
+                        bin_results = _merge_items_by_id(bin_results, bin_api_results)
                         bin_err = None
                 
                 # Fetch Auctions
                 auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search)
-                if auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                if _ebay_api_configured():
                     auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search)
                     if not api_err:
-                        auc_results = auc_api_results
+                        auc_results = _merge_items_by_id(auc_results, auc_api_results)
                         auc_err = None
                         
                 results = _merge_items_by_id(bin_results, auc_results)
