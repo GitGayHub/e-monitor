@@ -30,7 +30,9 @@ from config_manager import ConfigManager
 from price_history import (
     init_db, record_snapshot, record_seller_price, delete_seller_data,
     get_median_7d, get_stats_7d, get_trend, is_outlier,
+    get_last_run, record_search_run,
 )
+
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -2173,14 +2175,22 @@ def _build_ebay_api_params(search, market=None):
     return params
 
 
-def fetch_ebay_api_ex(search):
+def fetch_ebay_api_ex(search, force=False):
     token, err = _get_ebay_api_token()
     if err:
         return [], err
 
     markets = [EBAY_MARKETPLACE_ID]
     loc = (search.get("filters") or {}).get("location", "de")
-    if loc in ("eu", "worldwide"):
+    
+    # Priority check: only phones and consoles categories get worldwide searches.
+    # Everything else is dynamically forced to DE only to conserve API quota.
+    query_norm = _normalize(search.get("query", ""))
+    cat = (search.get("filters") or {}).get("category", "all")
+    eff_cat = _effective_category(cat, query_norm)
+    is_high_priority = eff_cat in ("phones", "consoles")
+    
+    if is_high_priority and loc in ("eu", "worldwide"):
         extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]
         for m in extra_markets:
             if m not in markets:
@@ -2191,6 +2201,32 @@ def fetch_ebay_api_ex(search):
     last_err = None
 
     for market in markets:
+        # Check rate-limiting if force is False
+        if not force:
+            last_run_str = get_last_run(search.get("id", ""), market)
+            if last_run_str:
+                try:
+                    from datetime import datetime
+                    last_dt = datetime.fromisoformat(last_run_str)
+                    from datetime import timedelta
+                    elapsed = datetime.now() - last_dt
+                    
+                    if market == EBAY_MARKETPLACE_ID:
+                        # DE primary check: 10 minutes interval
+                        if elapsed < timedelta(minutes=10):
+                            logger.debug("Skipping API call for %s on %s (checked %ds ago)", 
+                                         search["query"], market, elapsed.total_seconds())
+                            continue
+                    else:
+                        # Extra markets: 1 hour interval
+                        if elapsed < timedelta(hours=1):
+                            logger.debug("Skipping API call for %s on extra market %s (checked %ds ago)", 
+                                         search["query"], market, elapsed.total_seconds())
+                            continue
+                except Exception as ex:
+                    logger.warning("Error checking last run timestamp: %s", ex)
+        
+        # Query API and record run timestamp
         params = _build_ebay_api_params(search, market=market)
         url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
         country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(market, "DE")
@@ -2208,6 +2244,13 @@ def fetch_ebay_api_ex(search):
             with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
                 data = json.loads(resp.read().decode("utf-8", errors="replace"))
             items = parse_ebay_api_results(data)
+            
+            # Record run timestamp on success
+            try:
+                record_search_run(search.get("id", ""), market)
+            except Exception as ex:
+                logger.warning("Error recording search run: %s", ex)
+                
             for item in items:
                 if item["item_id"] not in seen_item_ids:
                     seen_item_ids.add(item["item_id"])
@@ -2227,6 +2270,7 @@ def fetch_ebay_api_ex(search):
     if all_items:
         return all_items, None
     return [], last_err
+
 
 
 def parse_ebay_api_results(data):
@@ -2608,10 +2652,11 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     return filtered
 
 
-def fetch_ebay(search):
+def fetch_ebay(search, force=False):
     """Returns list of items. On error returns []. For detailed status use fetch_ebay_ex."""
-    items, _err = fetch_ebay_ex(search)
+    items, _err = fetch_ebay_ex(search, force=force)
     return items
+
 
 
 def _merge_items_by_id(*groups):
@@ -2783,7 +2828,7 @@ def _query_cache_key(search):
     return "|".join(parts)
 
 
-def fetch_ebay_ex(search):
+def fetch_ebay_ex(search, force=False):
     """Returns (items, error). Tries host chain: remembers a working one,
     falls back to next host on block/rate_limit. After sustained blocks the
     eBay client cools down for a while so a flagged IP can recover.
@@ -2804,7 +2849,7 @@ def fetch_ebay_ex(search):
         return items, err
 
     if source == "api":
-        items, err = fetch_ebay_api_ex(search)
+        items, err = fetch_ebay_api_ex(search, force=force)
         _ebay_query_cache[cache_key] = (time.time(), items, err)
         return items, err
 
@@ -2812,7 +2857,7 @@ def fetch_ebay_ex(search):
         wait = int(_ebay_block_until - now)
         logger.info("eBay cooldown active, %d s left", wait)
         if source == "auto" and _ebay_api_configured():
-            items, err = fetch_ebay_api_ex(search)
+            items, err = fetch_ebay_api_ex(search, force=force)
             if err is None:
                 _ebay_query_cache[cache_key] = (time.time(), items, None)
                 return items, None
@@ -2866,11 +2911,12 @@ def fetch_ebay_ex(search):
     if source == "auto" and _ebay_api_configured():
         _ebay_block_until = max(_ebay_block_until, time.time() + _EBAY_BLOCK_COOLDOWN_BASE)
         logger.info("eBay HTML blocked/rate-limited, trying Browse API fallback")
-        api_items, api_err = fetch_ebay_api_ex(search)
+        api_items, api_err = fetch_ebay_api_ex(search, force=force)
         if api_err is None:
             _ebay_query_cache[cache_key] = (time.time(), api_items, None)
             return api_items, None
         logger.warning("eBay API fallback failed: %s", api_err)
+
 
     # Still blocked — exponential cooldown to stop hammering the flagged IP.
     _ebay_consecutive_blocks += 1
@@ -3373,20 +3419,21 @@ async def process_searches(bot, once=False):
                 auc_search["filters"]["max_price"] = None
                 
                 # Fetch BIN
-                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search)
+                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)
                 if _ebay_api_configured():
-                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search)
+                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)
                     if not api_err:
                         bin_results = _merge_items_by_id(bin_results, bin_api_results)
                         bin_err = None
                 
                 # Fetch Auctions
-                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search)
+                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)
                 if _ebay_api_configured():
-                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search)
+                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)
                     if not api_err:
                         auc_results = _merge_items_by_id(auc_results, auc_api_results)
                         auc_err = None
+
                         
                 results = _merge_items_by_id(bin_results, auc_results)
                 

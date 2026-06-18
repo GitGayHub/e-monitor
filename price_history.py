@@ -46,6 +46,15 @@ def init_db():
             conn.execute(
                 "CREATE INDEX IF NOT EXISTS idx_seller_prices ON seller_prices(seller_name)"
             )
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS search_runs (
+                    search_id TEXT NOT NULL,
+                    market TEXT NOT NULL,
+                    last_run_at TEXT NOT NULL,
+                    PRIMARY KEY (search_id, market)
+                )
+            """)
+
 
 
 def record_snapshot(search_id, sofort_prices, pv_prices, auction_prices, total_results=0):
@@ -204,3 +213,28 @@ def is_outlier(price, search_id):
     if not stats or stats.get("snapshots", 0) < 3:
         return False
     return price < median * 0.4
+
+
+def get_last_run(search_id, market):
+    init_db()
+    with _DB_LOCK:
+        with _connect() as conn:
+            row = conn.execute(
+                "SELECT last_run_at FROM search_runs WHERE search_id = ? AND market = ?",
+                (search_id, market)
+            ).fetchone()
+            if row:
+                return row["last_run_at"]
+            return None
+
+
+def record_search_run(search_id, market):
+    init_db()
+    now = datetime.now().isoformat()
+    with _DB_LOCK:
+        with _connect() as conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO search_runs (search_id, market, last_run_at) VALUES (?, ?, ?)",
+                (search_id, market, now)
+            )
+
