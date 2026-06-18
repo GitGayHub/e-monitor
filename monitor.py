@@ -3444,6 +3444,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
+            footer_str += "\nℹ️ <i>Версия: 08:56 18 июня</i>"
             
             for idx in range(0, len(report_lines), chunk_size):
                 chunk_items = report_lines[idx : idx + chunk_size]
