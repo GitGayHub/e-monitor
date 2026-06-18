@@ -251,7 +251,11 @@ PHONE_HARD_ACCESSORY_WORDS = (
     # Quadlock / rain covers
     "quadlock", "quad lock", "poncho",
     # Fashion case / case brands
-    "guess", "karl lagerfeld", "lagerfeld", "uag", "speck", "presidio", "pitaka", "mous", "casetify", "urban armor gear", "urban armor", "nomad", "monarch pro", "monarch"
+    "guess", "karl lagerfeld", "lagerfeld", "uag", "speck", "presidio", "pitaka", "mous", "casetify", "urban armor gear", "urban armor", "nomad", "monarch pro", "monarch",
+    # Spanish, French, Italian accessory terms
+    "estuche", "estuches", "antigolpes", "portatarjetas", "magnetico", "anillo", "anillos", "bague",
+    "soporte", "soportes", "supporto", "supporti", "antichoc", "anti-choc", "antiurto",
+    "cargador", "cargadores", "chargeur", "chargeurs", "caricabatterie"
 )
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
@@ -2515,8 +2519,9 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if item_id in banned_ids:
             continue
         item = _calculate_total(item, settings)
+        # Check min_price only for Buy It Now (non-auction) items
         min_price = filters.get("min_price")
-        if min_price is not None and item.get("total_price", 0) < min_price:
+        if min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
             continue
         max_price = filters.get("max_price")
         if max_price is not None and item.get("total_price", 0) > max_price:
