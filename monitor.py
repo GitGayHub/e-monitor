@@ -3116,9 +3116,7 @@ async def process_searches(bot, once=False):
                 if filters.get("category") != "all":
                     filters["category"] = "all"
                     modified = True
-                if filters.get("location") != "eu":
-                    filters["location"] = "eu"
-                    modified = True
+
                 target_max = None
                 if "z80" in q_lower:
                     target_max = 450 if "leading" in q_lower else 375
@@ -3451,7 +3449,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
-            footer_str += "\nℹ️ <i>Версия: 09:17 18 июня</i>"
+            footer_str += "\nℹ️ <i>Версия: 09:18 18 июня</i>"
             
             for idx in range(0, len(report_lines), chunk_size):
                 chunk_items = report_lines[idx : idx + chunk_size]
