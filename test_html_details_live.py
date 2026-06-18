@@ -34,33 +34,37 @@ def test_live_details():
     session = monitor._get_ebay_session()
     monitor._warmup_session(session, "ebay.de")
     
-    # 2. Get 3 active item IDs from the local database
-    db_path = os.path.join(os.path.dirname(__file__), "price_history.db")
-    if not os.path.exists(db_path):
-        print(f"Database not found at {db_path}!")
-        send_telegram_msg("<b>Details Scraper Test</b>: DB not found!")
-        return
-        
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT item_id FROM seller_prices ORDER BY recorded_at DESC LIMIT 50")
-    rows = cursor.fetchall()
-    conn.close()
+    # 2. Get active auctions using a scraper search
+    search = {
+        "id": "auction_test_search",
+        "query": "iphone",
+        "filters": {"category": "phones", "listing_type": "auction"},
+        "min_price": 10.0,
+        "max_price": 1000.0,
+    }
     
-    item_ids = []
-    seen = set()
-    for row in rows:
-        iid = row[0]
-        if iid and iid not in seen:
-            seen.add(iid)
-            item_ids.append(iid)
+    print("Running auction search...")
+    items, err = monitor.fetch_ebay_ex(search)
+    print(f"Search returned {len(items)} items. Error: {err}")
+    
+    if not items:
+        # Fallback to general DB if search failed or returned 0
+        print("No auction items found in search, falling back to database...")
+        db_path = os.path.join(os.path.dirname(__file__), "price_history.db")
+        if os.path.exists(db_path):
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT item_id FROM seller_prices ORDER BY recorded_at DESC LIMIT 20")
+            rows = cursor.fetchall()
+            conn.close()
+            items = [{"item_id": r[0], "title": "DB Item"} for r in rows if r[0]]
             
-    print(f"Found {len(item_ids)} unique item IDs in database.")
-    targets = item_ids[:3]
-    print(f"Testing HTML details fetching on: {targets}")
+    targets = items[:3]
+    print(f"Testing HTML details fetching on: {[t.get('item_id') for t in targets]}")
     
     results = {}
-    for item_id in targets:
+    for item in targets:
+        item_id = item["item_id"]
         print(f"\nFetching HTML details for item {item_id}...")
         try:
             details = monitor._fetch_item_details_html(item_id)
@@ -100,7 +104,7 @@ def test_live_details():
     print(f"\nSaved test results to {output_path}")
 
     # Format Telegram Message
-    msg_lines = ["<b>🚨 Details Scraper Test Results (HTML-first)</b>\n"]
+    msg_lines = ["<b>🚨 Auction Details Scraper Test Results (HTML-first)</b>\n"]
     for iid, res in results.items():
         msg_lines.append(f"<b>Item {iid}:</b>")
         if res["status"] == "success":
