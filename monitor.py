@@ -2183,14 +2183,7 @@ def fetch_ebay_api_ex(search, force=False):
     markets = [EBAY_MARKETPLACE_ID]
     loc = (search.get("filters") or {}).get("location", "de")
     
-    # Priority check: only phones and consoles categories get worldwide searches.
-    # Everything else is dynamically forced to DE only to conserve API quota.
-    query_norm = _normalize(search.get("query", ""))
-    cat = (search.get("filters") or {}).get("category", "all")
-    eff_cat = _effective_category(cat, query_norm)
-    is_high_priority = eff_cat in ("phones", "consoles")
-    
-    if is_high_priority and loc in ("eu", "worldwide"):
+    if loc in ("eu", "worldwide"):
         extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]
         for m in extra_markets:
             if m not in markets:
@@ -2212,14 +2205,14 @@ def fetch_ebay_api_ex(search, force=False):
                     elapsed = datetime.now() - last_dt
                     
                     if market == EBAY_MARKETPLACE_ID:
-                        # DE primary check: 10 minutes interval
-                        if elapsed < timedelta(minutes=10):
+                        # DE primary check: 20 minutes interval
+                        if elapsed < timedelta(minutes=20):
                             logger.debug("Skipping API call for %s on %s (checked %ds ago)", 
                                          search["query"], market, elapsed.total_seconds())
                             continue
                     else:
-                        # Extra markets: 1 hour interval
-                        if elapsed < timedelta(hours=1):
+                        # Extra markets: 2 hours 40 minutes (160 minutes) interval
+                        if elapsed < timedelta(minutes=160):
                             logger.debug("Skipping API call for %s on extra market %s (checked %ds ago)", 
                                          search["query"], market, elapsed.total_seconds())
                             continue
