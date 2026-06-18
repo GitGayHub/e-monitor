@@ -54,6 +54,14 @@ def init_db():
                     PRIMARY KEY (search_id, market)
                 )
             """)
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS api_calls_log (
+                    called_at TEXT NOT NULL
+                )
+            """)
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_api_calls_log_time ON api_calls_log(called_at)"
+            )
 
 
 
@@ -237,4 +245,28 @@ def record_search_run(search_id, market):
                 "INSERT OR REPLACE INTO search_runs (search_id, market, last_run_at) VALUES (?, ?, ?)",
                 (search_id, market, now)
             )
+
+
+def record_api_call():
+    init_db()
+    now = datetime.now()
+    now_iso = now.isoformat()
+    cutoff = (now - timedelta(hours=24)).isoformat()
+    with _DB_LOCK:
+        with _connect() as conn:
+            conn.execute("INSERT INTO api_calls_log (called_at) VALUES (?)", (now_iso,))
+            conn.execute("DELETE FROM api_calls_log WHERE called_at < ?", (cutoff,))
+
+
+def get_api_calls_count_24h():
+    init_db()
+    cutoff = (datetime.now() - timedelta(hours=24)).isoformat()
+    with _DB_LOCK:
+        with _connect() as conn:
+            row = conn.execute(
+                "SELECT COUNT(*) FROM api_calls_log WHERE called_at >= ?",
+                (cutoff,)
+            ).fetchone()
+            return row[0] if row else 0
+
 

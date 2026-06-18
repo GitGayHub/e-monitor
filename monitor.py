@@ -31,6 +31,7 @@ from price_history import (
     init_db, record_snapshot, record_seller_price, delete_seller_data,
     get_median_7d, get_stats_7d, get_trend, is_outlier,
     get_last_run, record_search_run,
+    record_api_call, get_api_calls_count_24h,
 )
 
 
@@ -2196,28 +2197,13 @@ def fetch_ebay_api_ex(search, force=False):
     for market in markets:
         # Check rate-limiting if force is False
         if not force:
-            last_run_str = get_last_run(search.get("id", ""), market)
-            if last_run_str:
-                try:
-                    from datetime import datetime
-                    last_dt = datetime.fromisoformat(last_run_str)
-                    from datetime import timedelta
-                    elapsed = datetime.now() - last_dt
-                    
-                    if market == EBAY_MARKETPLACE_ID:
-                        # DE primary check: 20 minutes interval
-                        if elapsed < timedelta(minutes=20):
-                            logger.debug("Skipping API call for %s on %s (checked %ds ago)", 
-                                         search["query"], market, elapsed.total_seconds())
-                            continue
-                    else:
-                        # Extra markets: 2 hours 40 minutes (160 minutes) interval
-                        if elapsed < timedelta(minutes=160):
-                            logger.debug("Skipping API call for %s on extra market %s (checked %ds ago)", 
-                                         search["query"], market, elapsed.total_seconds())
-                            continue
-                except Exception as ex:
-                    logger.warning("Error checking last run timestamp: %s", ex)
+            search_id = search.get("id", "")
+            if (search_id, market) not in _allowed_api_targets_this_run:
+                logger.debug("Skipping API call for %s on %s (not in priority queue this run)", 
+                             search["query"], market)
+                continue
+            # Discard so we don't query it again in this run
+            _allowed_api_targets_this_run.discard((search_id, market))
         
         # Query API and record run timestamp
         params = _build_ebay_api_params(search, market=market)
@@ -2240,6 +2226,7 @@ def fetch_ebay_api_ex(search, force=False):
             
             # Record run timestamp on success
             try:
+                record_api_call()
                 record_search_run(search.get("id", ""), market)
             except Exception as ex:
                 logger.warning("Error recording search run: %s", ex)
@@ -3266,9 +3253,79 @@ async def _validate_candidate(item, search):
     return True, details
 
 
+_allowed_api_targets_this_run = set()
+
+def initialize_api_budget_and_queue(searches):
+    global _allowed_api_targets_this_run
+    _allowed_api_targets_this_run = set()
+    
+    # 1. Calculate allowed number of API calls M this run based on last 24h count
+    try:
+        api_calls_24h = get_api_calls_count_24h()
+    except Exception as e:
+        logger.warning("Error getting API calls count from DB: %s", e)
+        api_calls_24h = 0
+        
+    if api_calls_24h < 4000:
+        M = 15
+    elif api_calls_24h < 4500:
+        M = 8
+    elif api_calls_24h < 4800:
+        M = 4
+    else:
+        M = 0
+        
+    logger.info("eBay API budget this run: M=%d (API calls in last 24h: %d/5000)", M, api_calls_24h)
+    if M <= 0:
+        return
+        
+    # 2. Build list of all possible (search_id, market) targets
+    all_targets = []
+    for search in searches:
+        search_id = search.get("id", "")
+        if not search_id:
+            continue
+        markets = ["EBAY_DE"]
+        loc = (search.get("filters") or {}).get("location", "de")
+        if loc in ("eu", "worldwide"):
+            for m in ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]:
+                if m not in markets:
+                    markets.append(m)
+        for market in markets:
+            all_targets.append((search_id, market))
+            
+    # 3. Retrieve last_run_at and calculate priority scores
+    scored_targets = []
+    from datetime import datetime
+    now = datetime.now()
+    for search_id, market in all_targets:
+        last_run_str = get_last_run(search_id, market)
+        if last_run_str:
+            try:
+                last_dt = datetime.fromisoformat(last_run_str)
+                elapsed = (now - last_dt).total_seconds() / 60.0 # minutes
+            except Exception:
+                elapsed = 1000000.0 # very old
+        else:
+            elapsed = 1000000.0 # never run
+            
+        target_interval = 15.0 if market == "EBAY_DE" else 150.0
+        score = elapsed / target_interval
+        scored_targets.append(((search_id, market), score))
+        
+    # 4. Sort by priority score descending and pick top M
+    scored_targets.sort(key=lambda x: x[1], reverse=True)
+    top_targets = scored_targets[:M]
+    
+    _allowed_api_targets_this_run = {target for target, score in top_targets}
+    logger.info("Top %d priority API targets queued: %s", len(_allowed_api_targets_this_run), 
+                [f"{tid}:{m}" for tid, m in _allowed_api_targets_this_run])
+
+
 async def process_searches(bot, once=False):
     async with process_lock:
         searches = config.get_searches()
+        initialize_api_budget_and_queue(searches)
         modified = False
         
         # 1. Reorder searches programmatically
