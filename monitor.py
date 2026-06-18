@@ -2396,7 +2396,7 @@ def _fetch_item_details_html(item_id):
     schema_scripts = soup.find_all("script", type="application/ld+json")
     for s in schema_scripts:
         try:
-            data = json.loads(s.string or "")
+            data = json.loads(s.text or s.string or "")
             products = []
             if isinstance(data, dict):
                 if data.get("@type") == "Product":
@@ -2424,7 +2424,7 @@ def _fetch_item_details_html(item_id):
 
     if not end_date_iso:
         for script in soup.find_all("script"):
-            content = script.string or ""
+            content = script.text or script.string or ""
             if not content:
                 continue
             m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([^"\']+)["\']', content)
@@ -2439,6 +2439,28 @@ def _fetch_item_details_html(item_id):
                 from datetime import datetime, timezone
                 end_date_iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat().replace("+00:00", "Z")
                 break
+
+    # Raw HTML fallback for end date and price if structured parsing failed
+    if not end_date_iso:
+        m = re.search(r'["\'](?:validThrough|priceValidUntil|endDate|endDateTime|endTime)["\']\s*:\s*["\']([^"\']+)["\']', html)
+        if m:
+            end_date_iso = m.group(1)
+        else:
+            m2 = re.search(r'["\'](?:endTime|endDateTime|endTimeStamp)["\']\s*:\s*(\d{10,13})', html)
+            if m2:
+                ts = int(m2.group(1))
+                if ts > 1000000000000:
+                    ts = ts / 1000.0
+                from datetime import datetime, timezone
+                end_date_iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+
+    if price_val is None:
+        m_price = re.search(r'["\']price["\']\s*:\s*["\']([\d.]+)["\']', html)
+        if m_price:
+            price_val = m_price.group(1)
+            m_curr = re.search(r'["\']priceCurrency["\']\s*:\s*["\']([A-Z]{3})["\']', html)
+            if m_curr:
+                currency = m_curr.group(1)
 
     desc_html = ""
     desc_ifr = soup.find("iframe", id="desc_ifr") or soup.find("iframe", name="desc_ifr")
@@ -2498,9 +2520,11 @@ def _fetch_item_details(item_id):
     """Fetches the item details. First tries HTML scraping fallback, then falls back to eBay Browse API details."""
     try:
         html_details = _fetch_item_details_html(item_id)
-        if html_details is not None:
+        if html_details is not None and html_details.get("price") and html_details.get("itemEndDate"):
             logger.info("Successfully fetched item %s details via HTML scraping", item_id)
             return html_details
+        else:
+            logger.warning("_fetch_item_details: HTML scraping details missing critical fields for %s", item_id)
     except Exception as e:
         logger.warning("_fetch_item_details: HTML scraping error for item %s: %s", item_id, e)
 
