@@ -79,7 +79,7 @@ jobs:
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_MARKETPLACE_ID: EBAY_DE
-          EBAY_SOURCE: auto
+          EBAY_SOURCE: html
         run: |
           python monitor.py --once 2>&1 | tee run_output.log
           # Append mini-log entry
