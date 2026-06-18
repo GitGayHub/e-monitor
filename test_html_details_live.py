@@ -3,12 +3,31 @@ import sqlite3
 import json
 import os
 import time
+import requests
 from bs4 import BeautifulSoup
 
 sys.stdout.reconfigure(encoding='utf-8')
 
 # Ensure we can import monitor
 import monitor
+
+def send_telegram_msg(msg):
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    if not token or not chat_id:
+        print("Telegram token or chat_id not set in env!")
+        return
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": msg,
+        "parse_mode": "HTML"
+    }
+    try:
+        resp = requests.post(url, json=payload, timeout=10)
+        print(f"Telegram send status: {resp.status_code}")
+    except Exception as e:
+        print(f"Telegram send error: {e}")
 
 def test_live_details():
     # 1. Warm up the session
@@ -19,6 +38,7 @@ def test_live_details():
     db_path = os.path.join(os.path.dirname(__file__), "price_history.db")
     if not os.path.exists(db_path):
         print(f"Database not found at {db_path}!")
+        send_telegram_msg("<b>Details Scraper Test</b>: DB not found!")
         return
         
     conn = sqlite3.connect(db_path)
@@ -45,10 +65,9 @@ def test_live_details():
         try:
             details = monitor._fetch_item_details_html(item_id)
             if details:
-                # Truncate description for clean json output
                 desc_snippet = details.get("description", "")
-                if len(desc_snippet) > 200:
-                    desc_snippet = desc_snippet[:200] + "... [TRUNCATED]"
+                if len(desc_snippet) > 150:
+                    desc_snippet = desc_snippet[:150] + "... [TRUNCATED]"
                 
                 results[item_id] = {
                     "status": "success",
@@ -79,6 +98,24 @@ def test_live_details():
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
     print(f"\nSaved test results to {output_path}")
+
+    # Format Telegram Message
+    msg_lines = ["<b>🚨 Details Scraper Test Results (HTML-first)</b>\n"]
+    for iid, res in results.items():
+        msg_lines.append(f"<b>Item {iid}:</b>")
+        if res["status"] == "success":
+            msg_lines.append(f"• Title: {res['title']}")
+            msg_lines.append(f"• EndDate: <code>{res['itemEndDate']}</code>")
+            msg_lines.append(f"• Price: {res['price']}")
+            msg_lines.append(f"• GroupType: {res['itemGroupType']}")
+            msg_lines.append(f"• Description length: {res['description_length']}")
+            msg_lines.append(f"• Desc snippet: <i>{res['description_snippet']}</i>")
+        else:
+            msg_lines.append(f"• Status: {res['status']}")
+            msg_lines.append(f"• Reason/Error: {res.get('reason') or res.get('error')}")
+        msg_lines.append("")
+        
+    send_telegram_msg("\n".join(msg_lines))
 
 if __name__ == "__main__":
     test_live_details()
