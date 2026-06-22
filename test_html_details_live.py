@@ -125,8 +125,19 @@ elif '🔎 <i>Поиск: {search_mode}</i>' in s and 'except NameError' not in 
 # 4) Reduce Telegram diagnostic chunk size to avoid Telegram HTML/entity limits.
 s = s.replace('            chunk_size = 8', '            chunk_size = 4')
 
+# 5) Diagnostic report is sent as plain text until delivery is stable.
+s = s.replace('                    parse_mode="HTML",\n                    force_backup=force_backup', '                    parse_mode=None,\n                    force_backup=force_backup')
+s = s.replace(
+    '                chunks.append(chunk_text)',
+    '''                chunk_text = chunk_text.replace("<code>", "").replace("</code>", "")
+                chunk_text = chunk_text.replace("<b>", "").replace("</b>", "")
+                chunk_text = chunk_text.replace("<i>", "").replace("</i>", "")
+                chunk_text = re.sub(r'<a href="([^"]+)"><b>\\*ТЫК\\*</b></a>', r'\\1', chunk_text)
+                chunks.append(chunk_text)'''
+)
+
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight patched safe footer and smaller Telegram chunks')
+    print('preflight patched plain Telegram diagnostic report')
 else:
     print('preflight: no monitor.py changes')
