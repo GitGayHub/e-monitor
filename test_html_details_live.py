@@ -1,4 +1,6 @@
 import sys
+from pathlib import Path
+
 sys.stdout.reconfigure(encoding='utf-8')
 
 try:
@@ -8,3 +10,12 @@ try:
     print('monitor patch applied')
 except Exception as exc:
     print(f'monitor patch skipped: {exc}')
+
+p = Path('monitor.py')
+if p.exists():
+    s = p.read_text(encoding='utf-8')
+    o = s
+    s = s.replace('EBAY_SOURCE = os.environ.get("EBAY_SOURCE", "auto").strip().lower()', 'EBAY_SOURCE = "api_first"')
+    if s != o:
+        p.write_text(s, encoding='utf-8')
+        print('monitor forced to api_first')
