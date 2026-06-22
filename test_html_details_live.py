@@ -115,7 +115,6 @@ new_footer = '''            try:
 if old_footer in s:
     s = s.replace(old_footer, new_footer)
 elif '🔎 <i>Поиск: {search_mode}</i>' in s and 'except NameError' not in s:
-    # Repair the previous fragile footer patch if it was already applied.
     s = re.sub(
         r'            if used_html and used_api:\n                search_mode = "html \+ api"\n            elif used_api:\n                search_mode = "full api"\n            else:\n                search_mode = "full html"\n            footer_str \+= f"\\nℹ️ <i>Версия: \{_get_version_string\(\)\}</i>\\n🔎 <i>Поиск: \{search_mode\}</i>"',
         new_footer,
@@ -123,8 +122,11 @@ elif '🔎 <i>Поиск: {search_mode}</i>' in s and 'except NameError' not in 
         count=1,
     )
 
+# 4) Reduce Telegram diagnostic chunk size to avoid Telegram HTML/entity limits.
+s = s.replace('            chunk_size = 8', '            chunk_size = 4')
+
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight patched safe source footer')
+    print('preflight patched safe footer and smaller Telegram chunks')
 else:
     print('preflight: no monitor.py changes')
