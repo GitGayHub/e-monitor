@@ -24,6 +24,23 @@ def patch_monitor():
     s = s.replace('v_text = "Не"', 'v_text = "Не найдено"')
     s = re.sub(r'v_text\s*=\s*["\']Не["\']', 'v_text = "Не найдено"', s)
 
+    # Statistics mode must not miss expensive Auction+ examples like RedMagic 11 Pro Golden Saga.
+    # The old code validated only the 5 cheapest candidates, so expensive but relevant Auction+
+    # listings could be absent from the stats block even though max_price is disabled there.
+    s = s.replace('                    for item in items[:5]:', '                    for item in items[:30]:')
+    s = s.replace(
+        '                auc_search["filters"]["max_price"] = None\n',
+        '                auc_search["filters"]["max_price"] = None\n'
+        '                auc_search["filters"]["location"] = "worldwide"\n'
+        '                auc_search["filters"]["sort"] = "newest"\n'
+        '                auc_search["filters"]["sort_code"] = "10"\n'
+        '                auc_search["filters"]["_ipg"] = 240\n'
+    )
+    s = s.replace(
+        '                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer")]',
+        '                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer") and item.get("bids_count") in (0, None)]'
+    )
+
     # Unknown auction time must not be interpreted as 0 minutes left.
     parser = '''def _parse_time_left_to_minutes(time_left_str):
     t = (time_left_str or "").lower().strip()
@@ -53,7 +70,7 @@ def _passes_notification_price_and_auction_rules(item, search):
     if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
         return False
     if item.get("auction") and not item.get("buy_now"):
-        is_new_best_offer = bool(item.get("best_offer")) and item.get("bids_count") == 0
+        is_new_best_offer = bool(item.get("best_offer")) and item.get("bids_count") in (0, None)
         minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
         is_ending_soon = minutes is not None and minutes <= 1440
         return is_new_best_offer or is_ending_soon
@@ -94,14 +111,54 @@ def migrate_config():
         return
     data = json.loads(CONFIG.read_text(encoding='utf-8'))
     changed = 0
-    for search in data.get('searches', []):
+    searches = data.setdefault('searches', [])
+    for search in searches:
         filters = search.setdefault('filters', {})
+        q = (search.get('query') or '').lower()
+        sid = search.get('id', '')
         if filters.get('location') == 'eu':
             filters['location'] = 'worldwide'
             changed += 1
+        if ('redmagic' in q or 'red magic' in q) and '11' in q and 'pro' in q:
+            before = json.dumps(filters, sort_keys=True, ensure_ascii=False)
+            filters['location'] = 'worldwide'
+            filters['_ipg'] = 240
+            if filters.get('listing_type') == 'auction' or sid.endswith('_auc'):
+                filters['sort'] = 'newest'
+                filters['sort_code'] = '10'
+            after = json.dumps(filters, sort_keys=True, ensure_ascii=False)
+            if after != before:
+                changed += 1
+
+    # Statistics-only sweep query: a real eBay search filter, not a direct item URL.
+    # This helps catch special expensive Auction+ listings such as Golden Saga variants.
+    if not any(s.get('id') == 'redmagic_11_pro_golden_auc_stats' for s in searches):
+        searches.append({
+            'id': 'redmagic_11_pro_golden_auc_stats',
+            'query': 'red magic 11 pro golden',
+            'enabled': True,
+            'notify': False,
+            'filters': {
+                'listing_type': 'auction',
+                'condition': 'any',
+                'seller_type': 'any',
+                'location': 'worldwide',
+                'category': 'phones',
+                'min_price': 500,
+                'max_price': None,
+                'sort': 'newest',
+                'sort_code': '10',
+                '_ipg': 240,
+            },
+            'exclude_words': [],
+            'include_words': [],
+            'exclude_sellers': [],
+        })
+        changed += 1
+
     if changed:
         CONFIG.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'config EU->worldwide migrated: {changed}')
+    print(f'config migrated for worldwide RedMagic Auction+ stats: {changed}')
 
 
 if __name__ == '__main__':
