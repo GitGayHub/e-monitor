@@ -4,9 +4,13 @@ import os
 import time
 import requests
 import re
+import runpy
 from bs4 import BeautifulSoup
 
 sys.stdout.reconfigure(encoding='utf-8')
+
+if os.path.exists('monitor_runtime_patch.py'):
+    runpy.run_path('monitor_runtime_patch.py', run_name='__main__')
 
 # Ensure we can import monitor
 # Trigger run at 13:46
