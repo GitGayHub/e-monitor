@@ -45,6 +45,32 @@ if old_cat in s:
 # Smaller Telegram chunks, but keep normal HTML formatting.
 s = s.replace('            chunk_size = 8', '            chunk_size = 4')
 
+# Compact limit line: emojis are separators, no extra pipe characters.
+s = s.replace('                limit_str = " | ".join(parts)', '                limit_str = " ".join(parts)')
+
+# Compact row labels for Android Telegram width.
+s = s.replace('                lbl_bin = "Sofortkauf  "', '                lbl_bin = "Sofort"')
+s = s.replace('                lbl_bin_bo = "Sofortkauf+ "', '                lbl_bin_bo = "Sofort+"')
+s = s.replace('                lbl_auc = "Auktion     "', '                lbl_auc = "Auktion"')
+s = s.replace('                lbl_auc_bo = "Auktion+    "', '                lbl_auc_bo = "Auktion+"')
+
+# Missing prices should not grow to 5 dashes just because another price is 2056€.
+s = s.replace('                dashes = "-" * max_len', '                dashes = "---"')
+s = s.replace('                        padded_dashes = dashes.rjust(max_len)', '                        padded_dashes = dashes')
+
+# Remove verdict padding that makes rows wrap on Android.
+s = s.replace('                            v_text_padded = v_text.ljust(10)', '                            v_text_padded = v_text')
+s = s.replace('                        v_text_padded = v_text.ljust(10)', '                        v_text_padded = v_text')
+
+# Put auction time on its own short line instead of forcing the main row to wrap.
+old_row = '                        # Verdict first, then time info\n                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ {verdict_info}{time_info}</code>")'
+new_row = '                        row_lines.append(f"<code>{emoji} {label} {padded_price} │ {verdict_info}</code>")\n                        if time_info:\n                            row_lines.append(f"<code>{time_info.strip()}</code>")'
+if old_row in s:
+    s = s.replace(old_row, new_row)
+
+s = s.replace('                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")',
+              '                        row_lines.append(f"<code>{emoji} {label} {padded_dashes} │ {verdict_info}</code>")')
+
 # Footer source label, static and safe for current GitHub HTML-primary run.
 old_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"'
 new_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}\\n🔎 Поиск: full html</i>"'
@@ -53,6 +79,6 @@ if old_footer in s:
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight: restored safe HTML all-category report')
+    print('preflight: compact mobile Telegram report rows')
 else:
     print('preflight: no monitor.py changes')
