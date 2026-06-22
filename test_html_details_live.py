@@ -17,6 +17,8 @@ if p.exists():
     o = s
     s = s.replace('EBAY_SOURCE = os.environ.get("EBAY_SOURCE", "auto").strip().lower()', 'EBAY_SOURCE = "api_first"')
     s = s.replace('    if filters.get("sort") == "price_asc":\n        sort_param = "price"\n', '    if filters.get("sort") == "price_asc":\n        sort_param = "price"\n    elif filters.get("sort") == "price_desc":\n        sort_param = "-price"\n')
+    s = s.replace('                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer") and item.get("bids_count") in (0, None)]', '                auc_bo = [item for item in filtered if item.get("auction") and item.get("bids_count") in (0, None)]')
+    s = s.replace('                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer")]', '                auc_bo = [item for item in filtered if item.get("auction") and item.get("bids_count") in (0, None)]')
     if s != o:
         p.write_text(s, encoding='utf-8')
         print('monitor preflight patch applied')
