@@ -12,7 +12,6 @@ def patch_monitor():
     orig = s
 
     # Treat EU searches exactly like worldwide searches.
-    # On ebay.de this makes the real eBay search parameter LH_PrefLoc=3.
     s = s.replace('    loc = filters.get("location", "de")\n', '    loc = filters.get("location", "de")\n    if loc == "eu":\n        loc = "worldwide"\n')
     s = s.replace('    loc = (search.get("filters") or {}).get("location", "de")\n    \n    if loc in ("eu", "worldwide"):', '    loc = (search.get("filters") or {}).get("location", "de")\n    if loc == "eu":\n        loc = "worldwide"\n    \n    if loc in ("eu", "worldwide"):')
     s = s.replace('        extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]', '        extra_markets = ["EBAY_US", "EBAY_GB", "EBAY_CA", "EBAY_AU", "EBAY_ES", "EBAY_FR", "EBAY_IT"]')
@@ -22,22 +21,38 @@ def patch_monitor():
     # API/statistics should scan deeper, not only the first small page.
     s = s.replace('        "limit": "100",', '        "limit": "200",')
 
-    # Fix statistics UI when a slot is empty: never show a truncated "Не".
+    # Browse API does not handle the HTML smart query syntax well. Use a clean API query.
+    if 'def _build_ebay_api_query(search):' not in s:
+        s = s.replace(
+            '\ndef _build_ebay_api_params(search, market=None):',
+            '''\ndef _build_ebay_api_query(search):
+    q = (search.get("query") or "").strip()
+    if not q:
+        q = _build_smart_search_query(search)
+    q = re.sub(r"[()\"']", " ", q)
+    q = re.sub(r"\\bredmagic\\b", "red magic", q, flags=re.IGNORECASE)
+    q = re.sub(r"\\s+", " ", q).strip()
+    return q
+
+
+def _build_ebay_api_params(search, market=None):'''
+        )
+    s = s.replace('        "q": _build_smart_search_query(search),', '        "q": _build_ebay_api_query(search),')
+
+    # Fix statistics UI when a slot is empty.
     s = s.replace('v_emoji, v_text = "❌", "Не"', 'v_emoji, v_text = "❌", "Не найдено"')
     s = s.replace('v_text = "Не"', 'v_text = "Не найдено"')
     s = re.sub(r'v_text\s*=\s*["\']Не["\']', 'v_text = "Не найдено"', s)
+    s = re.sub(
+        r'                    else:\n                        padded_dashes = dashes\.rjust\(max_len\)\n                        v_emoji, v_text = "❌", "Не найдено"\n                        v_text_padded = v_text\.ljust\(10\)\n                        verdict_info = f"\{v_emoji\} \{v_text_padded\}"\n                        row_lines\.append\(f"<code>\{emoji\} \{label\} \{padded_dashes\}  │ \{verdict_info\}</code>"\)',
+        '                    else:\n                        row_lines.append(f"{emoji} {label.strip()} ----  │ ❌ Не найдено")',
+        s,
+    )
 
     # Statistics mode must be generic: every normal search filter gets a deep sweep.
-    # No product-specific cheat queries. The same user query/filter is fetched deeper
-    # with multiple sort modes, then expensive matches are shown as "Дорого" instead of missing.
     s = s.replace('                    for item in items[:5]:', '                    for item in items:')
     s = s.replace('                    for item in items[:30]:', '                    for item in items:')
-
-    # If an older patch forced all auction stats to worldwide, remove that. The clone should
-    # respect the normal search filter; EU is migrated to worldwide separately.
     s = s.replace('                auc_search["filters"]["location"] = "worldwide"\n', '')
-
-    # Make statistics clones ask eBay for a large page, without permanently changing config.
     s = s.replace(
         '                bin_search["filters"]["max_price"] = None\n',
         '                bin_search["filters"]["max_price"] = None\n'
@@ -50,27 +65,41 @@ def patch_monitor():
     )
 
     stats_fetch_block = '''                # Fetch BIN and Auctions with the same normal user query/filter, but merge several sort modes.
-                # This is generic for RedMagic, PlayStation, Logitech, etc.; it is not item-specific.
                 async def fetch_stats_deep(base_search, label):
                     batches = []
                     first_err = None
                     sort_modes = [("newest", "10"), ("price_asc", "15"), ("price_desc", "12")]
-                    for sort_name, sort_code in sort_modes:
-                        variant = copy.deepcopy(base_search)
-                        variant.setdefault("filters", {})["sort"] = sort_name
-                        variant["filters"]["sort_code"] = sort_code
-                        variant["filters"]["_ipg"] = 240
-                        one_results, one_err = await asyncio.to_thread(fetch_ebay_ex, variant, force=True)
-                        if one_results:
-                            batches.append(one_results)
-                        if one_err and first_err is None:
-                            first_err = one_err
-                        if one_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
-                            logger.info("  %s: HTML blocked for %s stats (%s), falling back to API", search["query"], label, sort_name)
-                            api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, variant, force=True)
-                            if not api_err and api_results:
-                                batches.append(api_results)
-                                first_err = None
+
+                    query_variants = [copy.deepcopy(base_search)]
+                    raw_q = (base_search.get("query") or "").strip()
+                    clean_q = re.sub(r"[()\"']", " ", raw_q)
+                    clean_q = re.sub(r"\\s+", " ", clean_q).strip()
+                    if clean_q and clean_q.lower() != raw_q.lower():
+                        qv = copy.deepcopy(base_search)
+                        qv["query"] = clean_q
+                        query_variants.append(qv)
+                    if "redmagic" in raw_q.lower():
+                        qv = copy.deepcopy(base_search)
+                        qv["query"] = re.sub(r"\\bredmagic\\b", "red magic", raw_q, flags=re.IGNORECASE)
+                        query_variants.append(qv)
+
+                    for base_variant in query_variants:
+                        for sort_name, sort_code in sort_modes:
+                            variant = copy.deepcopy(base_variant)
+                            variant.setdefault("filters", {})["sort"] = sort_name
+                            variant["filters"]["sort_code"] = sort_code
+                            variant["filters"]["_ipg"] = 240
+                            one_results, one_err = await asyncio.to_thread(fetch_ebay_ex, variant, force=True)
+                            if one_results:
+                                batches.append(one_results)
+                            if one_err and first_err is None:
+                                first_err = one_err
+                            if (one_err in ("blocked", "rate_limit", "cooldown") or not one_results) and _ebay_api_configured():
+                                logger.info("  %s: using API fallback for %s stats (%s)", variant["query"], label, sort_name)
+                                api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, variant, force=True)
+                                if not api_err and api_results:
+                                    batches.append(api_results)
+                                    first_err = None
                     return _merge_items_by_id(*batches), first_err
 
                 bin_results, bin_err = await fetch_stats_deep(bin_search, "BIN")
@@ -161,14 +190,11 @@ def migrate_config():
     changed = 0
     searches = data.setdefault('searches', [])
 
-    # Remove previous too-specific stats helper if it already got created.
     before_len = len(searches)
     searches[:] = [s for s in searches if s.get('id') != 'redmagic_11_pro_golden_auc_stats']
     if len(searches) != before_len:
         changed += 1
 
-    # Only generic migration: old EU location becomes real worldwide.
-    # Do not add product-specific searches or mutate RedMagic only.
     for search in searches:
         filters = search.setdefault('filters', {})
         if filters.get('location') == 'eu':
