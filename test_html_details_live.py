@@ -70,6 +70,12 @@ if old_row in s:
 s = s.replace('                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")',
               '                        row_lines.append(f"<code>{emoji} {label} {padded_dashes} | {verdict_info}</code>")')
 
+# Align the *ТЫК* link under the price column, not under the label.
+s = s.replace(
+    '                        spaces_str = " " * (len(label) + 1)',
+    '                        link_extra = max(0, max_len - 3)\n                        if total_price_str and len(total_price_str) <= 3:\n                            link_extra = max(0, (max_len - 3) // 2)\n                        spaces_str = " " * (len(label) + 1 + link_extra)'
+)
+
 # Footer source label, static and safe for current GitHub HTML-primary run.
 old_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"'
 new_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}\\n🔎 Поиск: full html</i>"'
@@ -78,6 +84,6 @@ if old_footer in s:
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight: aligned Telegram report columns like tg-monitor')
+    print('preflight: aligned click link under price column')
 else:
     print('preflight: no monitor.py changes')
