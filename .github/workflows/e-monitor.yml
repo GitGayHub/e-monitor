@@ -139,7 +139,7 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           backup_dir="$(mktemp -d)"
-          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json; do
+          for f in seen_ids.json config.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json monitor.py; do
             if [ -f "$f" ]; then
               mkdir -p "$backup_dir/$(dirname "$f")"
               cp "$f" "$backup_dir/$f"
@@ -154,9 +154,12 @@ jobs:
           python config_crypt.py decrypt config.json.enc config.json
           # Run merge_state.py to merge state from this run into the rebased files
           python merge_state.py "$backup_dir" "."
+          if [ -f "$backup_dir/monitor.py" ]; then
+            cp "$backup_dir/monitor.py" monitor.py
+          fi
           # Re-encrypt config before committing
           python config_crypt.py encrypt config.json config.json.enc
-          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json || true
+          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json monitor.py || true
           if git diff --cached --quiet; then
             echo "No runtime state changes"
             exit 0
