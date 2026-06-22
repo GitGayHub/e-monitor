@@ -52,7 +52,7 @@ jobs:
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_MARKETPLACE_ID: EBAY_DE
-          EBAY_SOURCE: api_first
+          EBAY_SOURCE: auto
         run: |
           python test_html_details_live.py
           python monitor.py --once 2>&1 | tee run_output.log
@@ -86,7 +86,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           EBAY_MARKETPLACE_ID: EBAY_DE
-          EBAY_SOURCE: api_first
+          EBAY_SOURCE: auto
         run: |
           python mobile/build_app_sync.py
 
