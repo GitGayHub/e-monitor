@@ -136,8 +136,38 @@ s = s.replace(
                 chunks.append(chunk_text)'''
 )
 
+# 6) Persist Telegram delivery diagnostics into details_test_output.json.
+s = s.replace(
+    '            chunks = []\n            chunk_size = 8',
+    '''            delivery_debug = {"stage": "before_chunks", "report_lines": len(report_lines), "chunks": 0, "sends": []}
+            def _write_delivery_debug():
+                try:
+                    with open("details_test_output.json", "w", encoding="utf-8") as f:
+                        json.dump({"telegram_delivery": delivery_debug}, f, ensure_ascii=False, indent=2)
+                except Exception as e:
+                    logger.warning("delivery debug write failed: %s", e)
+            _write_delivery_debug()
+            chunks = []
+            chunk_size = 4'''
+)
+s = s.replace(
+    '            logger.info(f"📊 Отправляю diagnostic report в Telegram ({len(chunks)} частей)...")',
+    '''            delivery_debug["stage"] = "before_send"
+            delivery_debug["chunks"] = len(chunks)
+            delivery_debug["force_backup"] = len(blocked_searches) > 0
+            _write_delivery_debug()
+            logger.info(f"📊 Отправляю diagnostic report в Telegram ({len(chunks)} частей)...")'''
+)
+s = s.replace(
+    '                if not sent:\n                    logger.error(f"Ошибка отправки части {i+1} диагностического отчета")',
+    '''                delivery_debug["sends"].append({"part": i + 1, "length": len(chunk_text), "sent": bool(sent)})
+                _write_delivery_debug()
+                if not sent:
+                    logger.error(f"Ошибка отправки части {i+1} диагностического отчета")'''
+)
+
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight patched plain Telegram diagnostic report')
+    print('preflight patched Telegram delivery diagnostics')
 else:
     print('preflight: no monitor.py changes')
