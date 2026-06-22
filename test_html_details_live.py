@@ -65,33 +65,66 @@ s = s.replace(
 )
 
 # 3) Track what was actually used in the statistics report: full html / html + api / full api.
-s = s.replace(
-    '            processed_queries = set()\n             \n            for search in searches:',
-    '            processed_queries = set()\n            used_html = False\n            used_api = False\n             \n            for search in searches:'
-)
-s = s.replace(
-    '                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)',
-    '                used_html = True\n                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)'
-)
-s = s.replace(
-    '                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)',
-    '                    used_api = True\n                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)'
-)
-s = s.replace(
-    '                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)',
-    '                used_html = True\n                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)'
-)
-s = s.replace(
-    '                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)',
-    '                    used_api = True\n                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)'
-)
-s = s.replace(
-    '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"',
-    '            if used_html and used_api:\n                search_mode = "html + api"\n            elif used_api:\n                search_mode = "full api"\n            else:\n                search_mode = "full html"\n            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>\\n🔎 <i>Поиск: {search_mode}</i>"'
-)
+# Use regex/guards so a missed replacement can never crash Telegram sending.
+if 'used_html = False' not in s:
+    s = re.sub(
+        r'(processed_queries\s*=\s*set\(\)\n)(\s*\n\s*for search in searches:)',
+        r'\1            used_html = False\n            used_api = False\n\2',
+        s,
+        count=1,
+    )
+
+if 'used_html = True\n                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)' not in s:
+    s = s.replace(
+        '                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)',
+        '                used_html = True\n                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)'
+    )
+if 'used_api = True\n                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)' not in s:
+    s = s.replace(
+        '                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)',
+        '                    used_api = True\n                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)'
+    )
+if 'used_html = True\n                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)' not in s:
+    s = s.replace(
+        '                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)',
+        '                used_html = True\n                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)'
+    )
+if 'used_api = True\n                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)' not in s:
+    s = s.replace(
+        '                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)',
+        '                    used_api = True\n                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)'
+    )
+
+old_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"'
+new_footer = '''            try:
+                _used_html = bool(used_html)
+            except NameError:
+                _used_html = True
+            try:
+                _used_api = bool(used_api)
+            except NameError:
+                _used_api = False
+            if _used_html and _used_api:
+                search_mode = "html + api"
+            elif _used_api:
+                search_mode = "full api"
+            else:
+                search_mode = "full html"
+            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>\\n🔎 <i>Поиск: {search_mode}</i>"'''
+
+if old_footer in s:
+    s = s.replace(old_footer, new_footer)
+elif '🔎 <i>Поиск: {search_mode}</i>' in s and 'except NameError' not in s:
+    # Repair the previous fragile footer patch if it was already applied.
+    s = re.sub(
+        r'            if used_html and used_api:\n                search_mode = "html \+ api"\n            elif used_api:\n                search_mode = "full api"\n            else:\n                search_mode = "full html"\n            footer_str \+= f"\\nℹ️ <i>Версия: \{_get_version_string\(\)\}</i>\\n🔎 <i>Поиск: \{search_mode\}</i>"',
+        new_footer,
+        s,
+        count=1,
+    )
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight patched HTML/API parity and source footer')
+    print('preflight patched safe source footer')
 else:
     print('preflight: no monitor.py changes')
