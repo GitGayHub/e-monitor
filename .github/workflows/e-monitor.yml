@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e-monitor
-  cancel-in-progress: false
+  group: e-monitor-v2
+  cancel-in-progress: true
 
 jobs:
   check_e:
