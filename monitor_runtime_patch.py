@@ -19,23 +19,61 @@ def patch_monitor():
     s = s.replace('    "EBAY_US": "USD",\n    "EBAY_GB": "GBP",\n}', '    "EBAY_US": "USD",\n    "EBAY_GB": "GBP",\n    "EBAY_CA": "CAD",\n    "EBAY_AU": "AUD",\n}')
     s = s.replace('    "EBAY_US": "US",\n    "EBAY_GB": "GB",\n}', '    "EBAY_US": "US",\n    "EBAY_GB": "GB",\n    "EBAY_CA": "CA",\n    "EBAY_AU": "AU",\n}')
 
+    # API/statistics should scan deeper, not only the first small page.
+    s = s.replace('        "limit": "100",', '        "limit": "200",')
+
     # Fix statistics UI when a slot is empty: never show a truncated "Не".
     s = s.replace('v_emoji, v_text = "❌", "Не"', 'v_emoji, v_text = "❌", "Не найдено"')
     s = s.replace('v_text = "Не"', 'v_text = "Не найдено"')
     s = re.sub(r'v_text\s*=\s*["\']Не["\']', 'v_text = "Не найдено"', s)
 
-    # Statistics mode must not miss expensive Auction+ examples like RedMagic 11 Pro Golden Saga.
-    # The old code validated only the 5 cheapest candidates, so expensive but relevant Auction+
-    # listings could be absent from the stats block even though max_price is disabled there.
-    s = s.replace('                    for item in items[:5]:', '                    for item in items[:30]:')
+    # Statistics mode must prove the normal RedMagic 11 Pro filter finds Auction+.
+    # Do not add item-specific queries. Use the user's normal query, but scan deeper and merge
+    # several sort modes so a costly Auction+ can still be discovered and marked as "Дорого".
+    s = s.replace('                    for item in items[:5]:', '                    for item in items:')
+    s = s.replace('                    for item in items[:30]:', '                    for item in items:')
     s = s.replace(
         '                auc_search["filters"]["max_price"] = None\n',
         '                auc_search["filters"]["max_price"] = None\n'
         '                auc_search["filters"]["location"] = "worldwide"\n'
-        '                auc_search["filters"]["sort"] = "newest"\n'
-        '                auc_search["filters"]["sort_code"] = "10"\n'
         '                auc_search["filters"]["_ipg"] = 240\n'
     )
+    auction_fetch_old = '''                # Fetch Auctions
+                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)
+                if auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                    logger.info("  %s: HTML blocked for Auction stats, falling back to API", search["query"])
+                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)
+                    if not api_err:
+                        auc_results = auc_api_results
+                        auc_err = None
+
+                        
+                results = _merge_items_by_id(bin_results, auc_results)'''
+    auction_fetch_new = '''                # Fetch Auctions with the same normal user query, but merge several sort modes.
+                # This is NOT an item-specific shortcut; it just makes the RedMagic 11 Pro filter exhaustive enough
+                # for statistics, where expensive Auction+ listings must be visible as "Дорого".
+                auc_batches = []
+                auc_err = None
+                auction_sort_modes = [("newest", "10"), ("price_asc", "15"), ("price_desc", "12")]
+                for sort_name, sort_code in auction_sort_modes:
+                    auc_variant = copy.deepcopy(auc_search)
+                    auc_variant["filters"]["sort"] = sort_name
+                    auc_variant["filters"]["sort_code"] = sort_code
+                    one_auc_results, one_auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_variant, force=True)
+                    if one_auc_results:
+                        auc_batches.append(one_auc_results)
+                    if one_auc_err and auc_err is None:
+                        auc_err = one_auc_err
+                    if one_auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                        logger.info("  %s: HTML blocked for Auction stats (%s), falling back to API", search["query"], sort_name)
+                        auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_variant, force=True)
+                        if not api_err and auc_api_results:
+                            auc_batches.append(auc_api_results)
+                            auc_err = None
+                auc_results = _merge_items_by_id(*auc_batches)
+
+                results = _merge_items_by_id(bin_results, auc_results)'''
+    s = s.replace(auction_fetch_old, auction_fetch_new)
     s = s.replace(
         '                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer")]',
         '                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer") and item.get("bids_count") in (0, None)]'
@@ -112,6 +150,13 @@ def migrate_config():
     data = json.loads(CONFIG.read_text(encoding='utf-8'))
     changed = 0
     searches = data.setdefault('searches', [])
+
+    # Remove previous too-specific stats helper if it already got created.
+    before_len = len(searches)
+    searches[:] = [s for s in searches if s.get('id') != 'redmagic_11_pro_golden_auc_stats']
+    if len(searches) != before_len:
+        changed += 1
+
     for search in searches:
         filters = search.setdefault('filters', {})
         q = (search.get('query') or '').lower()
@@ -130,35 +175,9 @@ def migrate_config():
             if after != before:
                 changed += 1
 
-    # Statistics-only sweep query: a real eBay search filter, not a direct item URL.
-    # This helps catch special expensive Auction+ listings such as Golden Saga variants.
-    if not any(s.get('id') == 'redmagic_11_pro_golden_auc_stats' for s in searches):
-        searches.append({
-            'id': 'redmagic_11_pro_golden_auc_stats',
-            'query': 'red magic 11 pro golden',
-            'enabled': True,
-            'notify': False,
-            'filters': {
-                'listing_type': 'auction',
-                'condition': 'any',
-                'seller_type': 'any',
-                'location': 'worldwide',
-                'category': 'phones',
-                'min_price': 500,
-                'max_price': None,
-                'sort': 'newest',
-                'sort_code': '10',
-                '_ipg': 240,
-            },
-            'exclude_words': [],
-            'include_words': [],
-            'exclude_sellers': [],
-        })
-        changed += 1
-
     if changed:
         CONFIG.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'config migrated for worldwide RedMagic Auction+ stats: {changed}')
+    print(f'config migrated for normal RedMagic 11 Pro worldwide stats: {changed}')
 
 
 if __name__ == '__main__':
