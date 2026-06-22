@@ -12,11 +12,17 @@ def patch_monitor():
     orig = s
 
     # Treat EU searches exactly like worldwide searches.
+    # On ebay.de this makes the real eBay search parameter LH_PrefLoc=3.
     s = s.replace('    loc = filters.get("location", "de")\n', '    loc = filters.get("location", "de")\n    if loc == "eu":\n        loc = "worldwide"\n')
     s = s.replace('    loc = (search.get("filters") or {}).get("location", "de")\n    \n    if loc in ("eu", "worldwide"):', '    loc = (search.get("filters") or {}).get("location", "de")\n    if loc == "eu":\n        loc = "worldwide"\n    \n    if loc in ("eu", "worldwide"):')
     s = s.replace('        extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]', '        extra_markets = ["EBAY_US", "EBAY_GB", "EBAY_CA", "EBAY_AU", "EBAY_ES", "EBAY_FR", "EBAY_IT"]')
     s = s.replace('    "EBAY_US": "USD",\n    "EBAY_GB": "GBP",\n}', '    "EBAY_US": "USD",\n    "EBAY_GB": "GBP",\n    "EBAY_CA": "CAD",\n    "EBAY_AU": "AUD",\n}')
     s = s.replace('    "EBAY_US": "US",\n    "EBAY_GB": "GB",\n}', '    "EBAY_US": "US",\n    "EBAY_GB": "GB",\n    "EBAY_CA": "CA",\n    "EBAY_AU": "AU",\n}')
+
+    # Fix statistics UI when a slot is empty: never show a truncated "Не".
+    s = s.replace('v_emoji, v_text = "❌", "Не"', 'v_emoji, v_text = "❌", "Не найдено"')
+    s = s.replace('v_text = "Не"', 'v_text = "Не найдено"')
+    s = re.sub(r'v_text\s*=\s*["\']Не["\']', 'v_text = "Не найдено"', s)
 
     # Unknown auction time must not be interpreted as 0 minutes left.
     parser = '''def _parse_time_left_to_minutes(time_left_str):
