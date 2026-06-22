@@ -70,10 +70,10 @@ if old_row in s:
 s = s.replace('                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")',
               '                        row_lines.append(f"<code>{emoji} {label} {padded_dashes} | {verdict_info}</code>")')
 
-# Fixed tg-monitor base link spacing.
+# Dynamic tg-monitor link spacing: 10 for very short prices, otherwise 9.
 s = s.replace(
     '                        spaces_str = " " * (len(label) + 1)',
-    '                        spaces_str = " " * 9'
+    '                        price_num = int(total_price_val) if total_price_val is not None else 0\n                        spaces_len = 10 if price_num < 10 else 9\n                        spaces_str = " " * spaces_len'
 )
 
 # Footer source label, static and safe for current GitHub HTML-primary run.
@@ -84,6 +84,6 @@ if old_footer in s:
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight: using fixed tg-monitor click spacing')
+    print('preflight: using dynamic tg-monitor click spacing')
 else:
     print('preflight: no monitor.py changes')
