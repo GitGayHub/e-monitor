@@ -27,53 +27,63 @@ def patch_monitor():
     s = s.replace('v_text = "Не"', 'v_text = "Не найдено"')
     s = re.sub(r'v_text\s*=\s*["\']Не["\']', 'v_text = "Не найдено"', s)
 
-    # Statistics mode must prove the normal RedMagic 11 Pro filter finds Auction+.
-    # Do not add item-specific queries. Use the user's normal query, but scan deeper and merge
-    # several sort modes so a costly Auction+ can still be discovered and marked as "Дорого".
+    # Statistics mode must be generic: every normal search filter gets a deep sweep.
+    # No product-specific cheat queries. The same user query/filter is fetched deeper
+    # with multiple sort modes, then expensive matches are shown as "Дорого" instead of missing.
     s = s.replace('                    for item in items[:5]:', '                    for item in items:')
     s = s.replace('                    for item in items[:30]:', '                    for item in items:')
+
+    # If an older patch forced all auction stats to worldwide, remove that. The clone should
+    # respect the normal search filter; EU is migrated to worldwide separately.
+    s = s.replace('                auc_search["filters"]["location"] = "worldwide"\n', '')
+
+    # Make statistics clones ask eBay for a large page, without permanently changing config.
+    s = s.replace(
+        '                bin_search["filters"]["max_price"] = None\n',
+        '                bin_search["filters"]["max_price"] = None\n'
+        '                bin_search["filters"]["_ipg"] = 240\n'
+    )
     s = s.replace(
         '                auc_search["filters"]["max_price"] = None\n',
         '                auc_search["filters"]["max_price"] = None\n'
-        '                auc_search["filters"]["location"] = "worldwide"\n'
         '                auc_search["filters"]["_ipg"] = 240\n'
     )
-    auction_fetch_old = '''                # Fetch Auctions
-                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)
-                if auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
-                    logger.info("  %s: HTML blocked for Auction stats, falling back to API", search["query"])
-                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)
-                    if not api_err:
-                        auc_results = auc_api_results
-                        auc_err = None
 
-                        
-                results = _merge_items_by_id(bin_results, auc_results)'''
-    auction_fetch_new = '''                # Fetch Auctions with the same normal user query, but merge several sort modes.
-                # This is NOT an item-specific shortcut; it just makes the RedMagic 11 Pro filter exhaustive enough
-                # for statistics, where expensive Auction+ listings must be visible as "Дорого".
-                auc_batches = []
-                auc_err = None
-                auction_sort_modes = [("newest", "10"), ("price_asc", "15"), ("price_desc", "12")]
-                for sort_name, sort_code in auction_sort_modes:
-                    auc_variant = copy.deepcopy(auc_search)
-                    auc_variant["filters"]["sort"] = sort_name
-                    auc_variant["filters"]["sort_code"] = sort_code
-                    one_auc_results, one_auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_variant, force=True)
-                    if one_auc_results:
-                        auc_batches.append(one_auc_results)
-                    if one_auc_err and auc_err is None:
-                        auc_err = one_auc_err
-                    if one_auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
-                        logger.info("  %s: HTML blocked for Auction stats (%s), falling back to API", search["query"], sort_name)
-                        auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_variant, force=True)
-                        if not api_err and auc_api_results:
-                            auc_batches.append(auc_api_results)
-                            auc_err = None
-                auc_results = _merge_items_by_id(*auc_batches)
+    stats_fetch_block = '''                # Fetch BIN and Auctions with the same normal user query/filter, but merge several sort modes.
+                # This is generic for RedMagic, PlayStation, Logitech, etc.; it is not item-specific.
+                async def fetch_stats_deep(base_search, label):
+                    batches = []
+                    first_err = None
+                    sort_modes = [("newest", "10"), ("price_asc", "15"), ("price_desc", "12")]
+                    for sort_name, sort_code in sort_modes:
+                        variant = copy.deepcopy(base_search)
+                        variant.setdefault("filters", {})["sort"] = sort_name
+                        variant["filters"]["sort_code"] = sort_code
+                        variant["filters"]["_ipg"] = 240
+                        one_results, one_err = await asyncio.to_thread(fetch_ebay_ex, variant, force=True)
+                        if one_results:
+                            batches.append(one_results)
+                        if one_err and first_err is None:
+                            first_err = one_err
+                        if one_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                            logger.info("  %s: HTML blocked for %s stats (%s), falling back to API", search["query"], label, sort_name)
+                            api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, variant, force=True)
+                            if not api_err and api_results:
+                                batches.append(api_results)
+                                first_err = None
+                    return _merge_items_by_id(*batches), first_err
 
+                bin_results, bin_err = await fetch_stats_deep(bin_search, "BIN")
+                auc_results, auc_err = await fetch_stats_deep(auc_search, "Auction")
                 results = _merge_items_by_id(bin_results, auc_results)'''
-    s = s.replace(auction_fetch_old, auction_fetch_new)
+    s = re.sub(
+        r'                # Fetch BIN\n.*?                results = _merge_items_by_id\(bin_results, auc_results\)',
+        stats_fetch_block,
+        s,
+        count=1,
+        flags=re.S,
+    )
+
     s = s.replace(
         '                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer")]',
         '                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer") and item.get("bids_count") in (0, None)]'
@@ -108,7 +118,7 @@ def _passes_notification_price_and_auction_rules(item, search):
     if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
         return False
     if item.get("auction") and not item.get("buy_now"):
-        is_new_best_offer = bool(item.get("best_offer")) and item.get("bids_count") in (0, None)
+        is_new_best_offer = bool(item.get("best_offer")) and item.get("bids_count") == 0
         minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
         is_ending_soon = minutes is not None and minutes <= 1440
         return is_new_best_offer or is_ending_soon
@@ -157,27 +167,17 @@ def migrate_config():
     if len(searches) != before_len:
         changed += 1
 
+    # Only generic migration: old EU location becomes real worldwide.
+    # Do not add product-specific searches or mutate RedMagic only.
     for search in searches:
         filters = search.setdefault('filters', {})
-        q = (search.get('query') or '').lower()
-        sid = search.get('id', '')
         if filters.get('location') == 'eu':
             filters['location'] = 'worldwide'
             changed += 1
-        if ('redmagic' in q or 'red magic' in q) and '11' in q and 'pro' in q:
-            before = json.dumps(filters, sort_keys=True, ensure_ascii=False)
-            filters['location'] = 'worldwide'
-            filters['_ipg'] = 240
-            if filters.get('listing_type') == 'auction' or sid.endswith('_auc'):
-                filters['sort'] = 'newest'
-                filters['sort_code'] = '10'
-            after = json.dumps(filters, sort_keys=True, ensure_ascii=False)
-            if after != before:
-                changed += 1
 
     if changed:
         CONFIG.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'config migrated for normal RedMagic 11 Pro worldwide stats: {changed}')
+    print(f'config migrated generically for worldwide stats: {changed}')
 
 
 if __name__ == '__main__':
