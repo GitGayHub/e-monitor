@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "3 * * * *"
   workflow_dispatch:
 
 concurrency:
@@ -15,7 +15,7 @@ concurrency:
 jobs:
   check_e:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 70
     permissions:
       contents: write
 
@@ -42,7 +42,7 @@ jobs:
         run: |
           python config_crypt.py decrypt config.json.enc config.json
 
-      - name: Run monitor once
+      - name: Run monitor loop
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_BOT_TOKEN_BACKUP: ${{ secrets.TELEGRAM_BOT_TOKEN_BACKUP }}
@@ -53,33 +53,83 @@ jobs:
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_MARKETPLACE_ID: EBAY_DE
           EBAY_SOURCE: auto
+          RUN_INTERVAL_SEC: 120
+          RUN_ITERATIONS: 29
         run: |
-          python test_html_details_live.py
-          python monitor.py --once 2>&1 | tee run_output.log
-          python -c "
+          set +e
+          : > run_output_all.log
+          for i in $(seq 1 "$RUN_ITERATIONS"); do
+            echo "===== E MONITOR ITERATION $i/$RUN_ITERATIONS =====" | tee -a run_output_all.log
+            echo "iteration_start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a run_output_all.log
+
+            python test_html_details_live.py 2>&1 | tee preflight_output.log
+            PREFLIGHT_STATUS=${PIPESTATUS[0]}
+            cat preflight_output.log >> run_output_all.log
+
+            python monitor.py --once 2>&1 | tee run_output.log
+            MONITOR_STATUS=${PIPESTATUS[0]}
+            cat run_output.log >> run_output_all.log
+
+            PREFLIGHT_STATUS="$PREFLIGHT_STATUS" MONITOR_STATUS="$MONITOR_STATUS" LOOP_INDEX="$i" python - <<'PY'
           import json, os
           from datetime import datetime, timezone
+
           log_file = 'run_log.json'
           logs = []
           if os.path.exists(log_file):
               try:
-                  with open(log_file) as f: logs = json.load(f)
+                  with open(log_file) as f:
+                      logs = json.load(f)
               except Exception:
                   logs = []
-          output = open('run_output.log', encoding='utf-8', errors='ignore').read()
+
+          output = ''
+          if os.path.exists('run_output.log'):
+              output = open('run_output.log', encoding='utf-8', errors='ignore').read()
+          lower = output.lower()
+
+          reason = ''
+          if 'rate_limit' in lower or 'rate limit' in lower:
+              reason = 'rate_limit'
+          elif 'cooldown' in lower:
+              reason = 'cooldown'
+          elif 'blocked' in lower:
+              reason = 'blocked'
+          elif 'api fallback' in lower or 'fallback' in lower:
+              reason = 'fallback'
+
+          telegram_failed = (
+              'failed to send message via bot' in lower
+              or 'ошибка отправки' in lower
+              or ('telegram' in lower and ('error' in lower or 'exception' in lower))
+          )
+
           entry = {
               'time': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
-              'trigger': '${{ github.event_name }}',
+              'trigger': os.environ.get('GITHUB_EVENT_NAME', '${{ github.event_name }}'),
+              'loop_index': int(os.environ.get('LOOP_INDEX') or 0),
               'new': output.count('send_notification') + output.count('🆕') + output.count('🚨'),
-              'blocked': 'blocked' in output.lower() or 'cooldown' in output.lower(),
-              'source': 'api' if 'api' in output.lower() else 'html',
+              'blocked': bool(reason),
+              'blocked_reason': reason,
+              'source': 'api' if 'api' in lower else 'html',
+              'preflight_status': int(os.environ.get('PREFLIGHT_STATUS') or 0),
+              'monitor_status': int(os.environ.get('MONITOR_STATUS') or 0),
+              'telegram_failed': telegram_failed,
           }
           logs.append(entry)
-          logs = logs[-50:]
-          with open(log_file, 'w') as f: json.dump(logs, f, indent=1)
+          logs = logs[-300:]
+          with open(log_file, 'w') as f:
+              json.dump(logs, f, indent=1)
           print(f'Log: {entry}')
-          "
-          rm -f run_output.log
+          PY
+
+            if [ "$i" -lt "$RUN_ITERATIONS" ]; then
+              sleep "$RUN_INTERVAL_SEC"
+            fi
+          done
+
+          tail -n 240 run_output_all.log > monitor_debug_tail.txt
+          rm -f run_output.log preflight_output.log run_output_all.log
 
       - name: Build Android sync manifest
         env:
@@ -98,7 +148,7 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           python config_crypt.py encrypt config.json config.json.enc
-          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json || true
+          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json monitor_debug_tail.txt || true
           if git diff --cached --quiet; then
             echo "No runtime state changes"
             exit 0
