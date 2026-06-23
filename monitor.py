@@ -3881,9 +3881,8 @@ async def process_searches(bot, once=False):
                         else:
                             v_emoji, v_text = "🟢", "Подходит"
                         
-                        v_text_padded = v_text.ljust(10)
-                        verdict_info = f"{v_emoji} {v_text_padded}"
-                        
+                        verdict_info = f"{v_emoji} {v_text}"
+
                         padded_price = total_price_str.rjust(max_len)
                         
                         time_line = ""
@@ -3893,7 +3892,7 @@ async def process_searches(bot, once=False):
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "⚠️"
                                 time_line = f"{time_emoji} {_shorten_time_left(t_left)}"
 
-                        row_lines.append(f"{emoji} <code>{label} {padded_price} │ </code>{verdict_info}")
+                        row_lines.append(f"{emoji} <code>{label} {padded_price}  │ </code>{verdict_info}")
                         if time_line:
                             row_lines.append(f"<code>{time_line}</code>")
 
@@ -3902,9 +3901,8 @@ async def process_searches(bot, once=False):
                     else:
                         padded_dashes = dashes.rjust(max_len)
                         v_emoji, v_text = "❌", "Не найдено"
-                        v_text_padded = v_text.ljust(10)
-                        verdict_info = f"{v_emoji} {v_text_padded}"
-                        row_lines.append(f"{emoji} <code>{label} {padded_dashes} │ </code>{verdict_info}")
+                        verdict_info = f"{v_emoji} {v_text}"
+                        row_lines.append(f"{emoji} <code>{label} {padded_dashes}  │ </code>{verdict_info}")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
