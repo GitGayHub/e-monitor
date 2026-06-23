@@ -54,7 +54,8 @@ s = s.replace('                lbl_bin_bo = "Sofortkauf+ "', '                lb
 s = s.replace('                lbl_auc = "Auktion     "', '                lbl_auc = "Auktion "')
 s = s.replace('                lbl_auc_bo = "Auktion+    "', '                lbl_auc_bo = "Auktion+"')
 
-# Missing prices stay as 3 dashes, but remain right-aligned in the price column.
+# Current tg-monitor layout uses a fixed 7-char price column.
+s = s.replace('                max_len = max(lengths) if lengths else 4\n                if max_len < 4:\n                    max_len = 4', '                max_len = 7')
 s = s.replace('                dashes = "-" * max_len', '                dashes = "---"')
 
 # Remove verdict padding that makes rows wrap on Android.
@@ -70,11 +71,15 @@ if old_row in s:
 s = s.replace('                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")',
               '                        row_lines.append(f"<code>{emoji} {label} {padded_dashes} | {verdict_info}</code>")')
 
-# Dynamic tg-monitor link spacing: 10 for very short prices, otherwise 9.
+# Dynamic tg-monitor link spacing: 10 for prices below 100, otherwise 9.
 s = s.replace(
     '                        spaces_str = " " * (len(label) + 1)',
-    '                        price_num = int(total_price_val) if total_price_val is not None else 0\n                        spaces_len = 10 if price_num < 10 else 9\n                        spaces_str = " " * spaces_len'
+    '                        price_num = int(total_price_val) if total_price_val is not None else 0\n                        spaces_len = 10 if price_num < 100 else 9\n                        spaces_str = " " * spaces_len'
 )
+s = s.replace('price_num < 10 else 9', 'price_num < 100 else 9')
+
+# Match tg-monitor: keep the link icon outside monospace, spaces inside monospace.
+s = s.replace('<code>🔗 {spaces_str}</code>', '🔗 <code>{spaces_str}</code>')
 
 # Footer source label, static and safe for current GitHub HTML-primary run.
 old_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"'
@@ -84,6 +89,6 @@ if old_footer in s:
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight: using dynamic tg-monitor click spacing')
+    print('preflight: matched tg-monitor link layout')
 else:
     print('preflight: no monitor.py changes')
