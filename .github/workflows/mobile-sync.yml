@@ -52,7 +52,7 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           EBAY_MARKETPLACE_ID: EBAY_DE
-          EBAY_SOURCE: api_first
+          EBAY_SOURCE: auto
         run: |
           if [ -f config.json ]; then
             python mobile/merge_app_sync_to_config.py

@@ -19,7 +19,7 @@ def load_json(path, default):
 
 def convert_search(search):
     filters = search.get("filters") or {}
-    return {
+    converted = {
         "id": search.get("id") or "",
         "query": search.get("query") or "",
         "minPrice": filters.get("min_price"),
@@ -37,6 +37,9 @@ def convert_search(search):
         "notify": bool(search.get("notify", True)),
         "enabled": bool(search.get("enabled", True)),
     }
+    if search.get("display_name"):
+        converted["displayName"] = search["display_name"]
+    return converted
 
 
 def main():
@@ -55,7 +58,7 @@ def main():
         "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "config": {
             "ebay_marketplace_id": os.environ.get("EBAY_MARKETPLACE_ID", "EBAY_DE"),
-            "ebay_source": os.environ.get("EBAY_SOURCE", "api_first"),
+            "ebay_source": os.environ.get("EBAY_SOURCE", "auto"),
             "user_zip": str(settings.get("user_zip") or ""),
             "user_country": str(settings.get("user_country") or "de"),
             "non_eu_tax_rate": str(settings.get("non_eu_tax_rate", 0.19)),

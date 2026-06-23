@@ -62,15 +62,11 @@ jobs:
             echo "===== E MONITOR ITERATION $i/$RUN_ITERATIONS =====" | tee -a run_output_all.log
             echo "iteration_start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a run_output_all.log
 
-            python test_html_details_live.py 2>&1 | tee preflight_output.log
-            PREFLIGHT_STATUS=${PIPESTATUS[0]}
-            cat preflight_output.log >> run_output_all.log
-
             python monitor.py --once 2>&1 | tee run_output.log
             MONITOR_STATUS=${PIPESTATUS[0]}
             cat run_output.log >> run_output_all.log
 
-            PREFLIGHT_STATUS="$PREFLIGHT_STATUS" MONITOR_STATUS="$MONITOR_STATUS" LOOP_INDEX="$i" python - <<'PY'
+            MONITOR_STATUS="$MONITOR_STATUS" LOOP_INDEX="$i" python - <<'PY'
           import json, os
           from datetime import datetime, timezone
 
@@ -112,7 +108,6 @@ jobs:
               'blocked': bool(reason),
               'blocked_reason': reason,
               'source': 'api' if 'api' in lower else 'html',
-              'preflight_status': int(os.environ.get('PREFLIGHT_STATUS') or 0),
               'monitor_status': int(os.environ.get('MONITOR_STATUS') or 0),
               'telegram_failed': telegram_failed,
           }
@@ -129,7 +124,7 @@ jobs:
           done
 
           tail -n 240 run_output_all.log > monitor_debug_tail.txt
-          rm -f run_output.log preflight_output.log run_output_all.log
+          rm -f run_output.log run_output_all.log
 
       - name: Build Android sync manifest
         env:

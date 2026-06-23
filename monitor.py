@@ -384,7 +384,7 @@ PHONE_DEVICE_HINTS = PHONE_STRONG_DEVICE_HINTS + PHONE_WEAK_DEVICE_HINTS
 
 BAD_CONDITION_WORDS = (
     "defekt", "teildefekt", "displayschaden", "display gewechselt", "icloud sperre", "gesperrt",
-    "funktioniert nicht", "nur box", "verpackung", "tauschen", "tausch",
+    "funktioniert nicht", "nur box", "nur verpackung", "leere verpackung", "tauschen", "tausch",
     "leerbox", "leerhuelle", "leerhülle", "empty box", "empty case", "nur ovp",
     "nur karton", "leerer karton", "schachtel leer", "leere schachtel",
     "psn servern ausgeschlossen", "von psn servern ausgeschlossen",
@@ -1177,15 +1177,9 @@ def _build_smart_search_query(search):
     # Category-specific safe defect/parts exclusions
     if eff_category == "phones":
         excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
-        # Exclude only unambiguous accessory words from eBay search query.
-        # Words like glass/glas/folie/cover/tasche are NOT excluded here because
-        # eBay matches them against item specifics/descriptions too, which filters
-        # out real phones (e.g. "Ceramic Shield Glass" in specs). Programmatic
-        # filters (_is_phone_accessory_title etc.) handle these cases instead.
-        acc_excludes = ["hülle", "hüllen", "schutzfolie", "panzerglas", "schutzhülle"]
-        for w in acc_excludes:
-            if w not in query_lower:
-                excludes.append(w)
+        # Keep accessory words out of the eBay-side negative query. eBay matches
+        # them against descriptions/specifics too, which hides real phones with
+        # included cases or screen protectors. Title filters handle accessories.
         
     exclude_str = " ".join(f"-{w}" for w in excludes)
     return f"{query} {exclude_str}"
@@ -1206,13 +1200,14 @@ def _build_url_with_host(host, search, sub="www"):
     query_norm = _normalize(search.get("query", ""))
     eff_category = _effective_category(category, query_norm)
     
-    device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
-    if device_cat_id:
-        params["_sacat"] = device_cat_id
-    elif eff_category and eff_category != "all":
-        cat_id = _category_id(eff_category)
-        if cat_id:
-            params["_sacat"] = cat_id
+    if category and category != "all":
+        device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
+        if device_cat_id:
+            params["_sacat"] = device_cat_id
+        elif eff_category and eff_category != "all":
+            cat_id = _category_id(eff_category)
+            if cat_id:
+                params["_sacat"] = cat_id
         
     sort_code = _sort_code(filters)
     if sort_code:
@@ -1239,7 +1234,7 @@ def _build_url_with_host(host, search, sub="www"):
         elif cond == "used":
             params["LH_ItemCondition"] = "3000"
         elif cond == "any":
-            params["LH_ItemCondition"] = "1000|1500|2000|2500|3000"
+            params["LH_ItemCondition"] = "1500|1000|2010|2020|2030|3000"
     lt = filters.get("listing_type", "all")
     if lt in ("buy_now", "buy_now_offer"):
         params["LH_BIN"] = "1"
@@ -1571,7 +1566,7 @@ def build_ebay_url(search):
         elif cond == "used":
             params["LH_ItemCondition"] = "3000"
         elif cond == "any":
-            params["LH_ItemCondition"] = "1000|1500|2000|2500|3000"
+            params["LH_ItemCondition"] = "1500|1000|2010|2020|2030|3000"
     lt = filters.get("listing_type", "all")
     if lt in ("buy_now", "buy_now_offer"):
         params["LH_BIN"] = "1"
@@ -1893,6 +1888,53 @@ def _normalize_price_number(text):
     return text
 
 
+def _currency_rate(currency):
+    rates = {
+        "EUR": 1.0,
+        "GBP": 1.18,
+        "USD": 0.92,
+        "AUD": 0.61,
+        "CHF": 1.04,
+        "CAD": 0.67,
+    }
+    return rates.get((currency or "EUR").strip().upper(), 1.0)
+
+
+def _detect_price_currency(text):
+    text_upper = (text or "").replace("\xa0", " ").upper()
+    if "GBP" in text_upper or "£" in text_upper or "Ł" in text_upper:
+        return "GBP"
+    if "AUD" in text_upper or "A$" in text_upper or re.search(r"\bAU\s*\$", text_upper):
+        return "AUD"
+    if "CAD" in text_upper or "C$" in text_upper or re.search(r"\bCA\s*\$", text_upper):
+        return "CAD"
+    if "CHF" in text_upper:
+        return "CHF"
+    if "USD" in text_upper or re.search(r"\bUS\s*\$", text_upper) or "$" in text_upper:
+        return "USD"
+    return "EUR"
+
+
+def _strip_approx_price_text(text):
+    text_clean = (text or "").replace("\xa0", " ").strip()
+    text_clean = re.split(r"\(|approx\.", text_clean, maxsplit=1, flags=re.IGNORECASE)[0].strip()
+    ca_match = re.search(r"\bca\.\s*", text_clean, flags=re.IGNORECASE)
+    if ca_match:
+        if ca_match.start() == 0:
+            text_clean = text_clean[ca_match.end():].strip()
+        else:
+            text_clean = text_clean[:ca_match.start()].strip()
+    return text_clean
+
+
+def _convert_currency_value(value, currency):
+    try:
+        val = float(value)
+    except (TypeError, ValueError):
+        return None
+    return round(val * _currency_rate(currency), 2)
+
+
 def _parse_price(text):
     text = text.replace("\xa0", " ").strip()
     if "bis" in text.lower() or "to" in text.lower():
@@ -1900,39 +1942,17 @@ def _parse_price(text):
         text = parts[0].strip()
     
     # Truncate anything in parentheses or after "ca." / "approx."
-    text_clean = re.split(r'\(|ca\.|approx\.', text, flags=re.IGNORECASE)[0].strip()
+    text_clean = _strip_approx_price_text(text)
     
-    # Detect currency
-    currency = "EUR"
-    text_upper = text_clean.upper()
-    if "GBP" in text_upper or "£" in text_upper:
-        currency = "GBP"
-    elif "AUD" in text_upper or "A$" in text_upper:
-        currency = "AUD"
-    elif "CAD" in text_upper or "C$" in text_upper:
-        currency = "CAD"
-    elif "CHF" in text_upper:
-        currency = "CHF"
-    elif "USD" in text_upper or "$" in text_upper:
-        currency = "USD"
-        
+    currency = _detect_price_currency(text_clean)
+
     # Extract number
     match = re.search(r'\d+[\d.,\s]*', text_clean)
     if match:
         val_str = _normalize_price_number(match.group(0).strip())
         try:
             val = float(val_str)
-            if currency != "EUR":
-                rates = {
-                    "GBP": 1.18,
-                    "USD": 0.92,
-                    "AUD": 0.61,
-                    "CHF": 1.04,
-                    "CAD": 0.67,
-                }
-                rate = rates.get(currency, 1.0)
-                val = round(val * rate, 2)
-            return val
+            return _convert_currency_value(val, currency)
         except ValueError:
             return None
     val_str = _normalize_price_number(text_clean)
@@ -1948,39 +1968,17 @@ def _parse_shipping(text):
         return 0.0
         
     # Truncate anything in parentheses or after "ca." / "approx."
-    text_clean = re.split(r'\(|ca\.|approx\.', text_clean, flags=re.IGNORECASE)[0].strip()
+    text_clean = _strip_approx_price_text(text_clean)
     
-    # Detect currency
-    currency = "EUR"
-    text_upper = text_clean.upper()
-    if "GBP" in text_upper or "£" in text_upper:
-        currency = "GBP"
-    elif "AUD" in text_upper or "A$" in text_upper:
-        currency = "AUD"
-    elif "CAD" in text_upper or "C$" in text_upper:
-        currency = "CAD"
-    elif "CHF" in text_upper:
-        currency = "CHF"
-    elif "USD" in text_upper or "$" in text_upper:
-        currency = "USD"
-        
+    currency = _detect_price_currency(text_clean)
+
     # Extract number
     match = re.search(r'\d+[\d.,\s]*', text_clean)
     if match:
         val_str = _normalize_price_number(match.group(0).strip())
         try:
             val = float(val_str)
-            if currency != "EUR":
-                rates = {
-                    "GBP": 1.18,
-                    "USD": 0.92,
-                    "AUD": 0.61,
-                    "CHF": 1.04,
-                    "CAD": 0.67,
-                }
-                rate = rates.get(currency, 1.0)
-                val = round(val * rate, 2)
-            return val
+            return _convert_currency_value(val, currency) or 0.0
         except ValueError:
             return 0.0
     return 0.0
@@ -2076,15 +2074,7 @@ def _api_float(obj):
         val = float(obj.get("value"))
         currency = obj.get("currency", "EUR")
         if currency and currency.strip().upper() != "EUR":
-            rates = {
-                "GBP": 1.18,
-                "USD": 0.92,
-                "AUD": 0.61,
-                "CHF": 1.04,
-                "CAD": 0.67,
-            }
-            rate = rates.get(currency.strip().upper(), 1.0)
-            val = round(val * rate, 2)
+            val = round(val * _currency_rate(currency), 2)
         return val
     except (TypeError, ValueError, AttributeError):
         return None
@@ -2646,6 +2636,29 @@ def _is_eu(location_text):
     return False
 
 
+def _is_clearly_non_germany_location(location_text):
+    loc = _normalize(location_text)
+    non_de_terms = (
+        "grossbritannien", "great britain", "united kingdom", "uk", "england",
+        "schottland", "scotland", "wales", "oesterreich", "osterreich", "austria",
+        "frankreich", "france", "italien", "italy", "spanien", "spain",
+        "niederlande", "netherlands", "belgien", "belgium", "polen", "poland",
+        "portugal", "griechenland", "greece", "tschechien", "czech",
+        "schweden", "sweden", "daenemark", "danemark", "denmark",
+        "finnland", "finland", "ungarn", "hungary", "rumaenien", "rumanien",
+        "romania", "bulgarien", "bulgaria", "kroatien", "croatia",
+        "slowakei", "slovakia", "slowenien", "slovenia", "litauen", "lithuania",
+        "lettland", "latvia", "estland", "estonia", "luxemburg", "luxembourg",
+        "malta", "zypern", "cyprus", "schweiz", "switzerland", "norwegen",
+        "norway", "usa", "united states", "china", "japan", "tuerkei",
+        "turkey", "indien", "india", "australien", "australia", "kanada",
+        "canada",
+    )
+    if any(term in loc for term in non_de_terms):
+        return True
+    return re.search(r"\b(?:at|fr|it|es|nl|be|pl|pt|gr|cz|se|dk|fi|hu|ro|bg|hr|sk|si|lt|lv|ee|lu|ch|no|gb|uk|us|cn|jp|tr|in|au|ca)\b", loc) is not None
+
+
 def _get_api_shipping_and_import(details):
     shipping_cost = None
     import_charges = None
@@ -2660,12 +2673,7 @@ def _get_api_shipping_and_import(details):
                     min_cost = cost
                     min_opt = opt
         if min_opt:
-            shipping_cost = min_opt.get("shippingCost", {}).get("value")
-            if shipping_cost is not None:
-                try:
-                    shipping_cost = float(shipping_cost)
-                except (ValueError, TypeError):
-                    shipping_cost = None
+            shipping_cost = min_cost
             import_charges = _api_float(min_opt.get("importCharges"))
     return shipping_cost, import_charges
 
@@ -2740,6 +2748,9 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if item_id in banned_ids:
             continue
         item = _calculate_total(item, settings)
+        if filters.get("location", "de") == "de" and item.get("location"):
+            if _is_clearly_non_germany_location(item["location"]):
+                continue
         # Check min_price only for Buy It Now (non-auction) items
         min_price = filters.get("min_price")
         if min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
@@ -3527,7 +3538,9 @@ async def process_searches(bot, once=False):
             "redmagic_11_pro_buy", "redmagic_11_pro_auc",
             "redmagic_11s_pro_buy", "redmagic_11s_pro_auc",
             "nubia_z80_ultra_buy", "nubia_z80_ultra_auc",
-            "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc"
+            "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc",
+            "nubia_z70_ultra_buy", "nubia_z70_ultra_auc",
+            "nubia_z70s_ultra_buy", "nubia_z70s_ultra_auc"
         ]
         by_id = {s["id"]: s for s in searches}
         new_searches = []
@@ -3586,6 +3599,69 @@ async def process_searches(bot, once=False):
                         excludes.append(w)
                         modified = True
 
+        for s_id in ("nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc"):
+            if s_id in by_id and by_id[s_id].get("display_name") != "Nubia Z80 LV":
+                by_id[s_id]["display_name"] = "Nubia Z80 LV"
+                modified = True
+
+        for s_id in ("nubia_z70_ultra_buy", "nubia_z70_ultra_auc"):
+            if s_id in by_id:
+                filters = by_id[s_id].setdefault("filters", {})
+                if filters.get("limit_price") != 325:
+                    filters["limit_price"] = 325
+                    modified = True
+                if filters.get("max_price") != 2500:
+                    filters["max_price"] = 2500
+                    modified = True
+
+        def ensure_z70s_search(source_id, new_id, listing_type, min_price):
+            nonlocal modified
+            if new_id in by_id:
+                search = by_id[new_id]
+            else:
+                template = copy.deepcopy(by_id.get(source_id) or {})
+                if not template:
+                    return
+                template["id"] = new_id
+                template["query"] = "Nubia Z70S Ultra"
+                searches.append(template)
+                by_id[new_id] = template
+                search = template
+                modified = True
+            if search.get("query") != "Nubia Z70S Ultra":
+                search["query"] = "Nubia Z70S Ultra"
+                modified = True
+            filters = search.setdefault("filters", {})
+            expected = {
+                "min_price": min_price,
+                "limit_price": 325,
+                "max_price": 2500,
+                "condition": "any",
+                "listing_type": listing_type,
+                "seller_type": "any",
+                "location": "worldwide",
+                "category": "all",
+            }
+            for key, value in expected.items():
+                if filters.get(key) != value:
+                    filters[key] = value
+                    modified = True
+
+        ensure_z70s_search("nubia_z70_ultra_buy", "nubia_z70s_ultra_buy", "buy_now_offer", 50)
+        ensure_z70s_search("nubia_z70_ultra_auc", "nubia_z70s_ultra_auc", "auction", None)
+
+        by_id = {s["id"]: s for s in searches}
+        new_searches = []
+        for s_id in id_order:
+            if s_id in by_id:
+                new_searches.append(by_id[s_id])
+        for s in searches:
+            if s["id"] not in id_order:
+                new_searches.append(s)
+        if [s["id"] for s in searches] != [s["id"] for s in new_searches]:
+            searches[:] = new_searches
+            modified = True
+
         # 4. iPhone exclude_words are NOT programmatically overridden here.
         # The min_price floor of 50 EUR and the PHONE_HARD_ACCESSORY_WORDS
         # filter in _is_category_blocked_title already handle accessory spam.
@@ -3599,7 +3675,7 @@ async def process_searches(bot, once=False):
             logger.info("No searches configured")
             return
 
-        test_summary_mode = _is_statistics_mode(config)
+        test_summary_mode = True if os.environ.get("GITHUB_ACTIONS") == "true" else _is_statistics_mode(config)
 
         if test_summary_mode:
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
@@ -3692,10 +3768,11 @@ async def process_searches(bot, once=False):
                             return item
                     return None
                 
-                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=lambda x: x["total_price"]), search)
-                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=lambda x: x["total_price"]), search)
-                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=lambda x: x["total_price"]), search)
-                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=lambda x: x["total_price"]), search)
+                base_price_key = lambda x: float(x.get("price") or 0) + float(x.get("shipping_cost") or 0)
+                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=base_price_key), search)
+                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=base_price_key), search)
+                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=base_price_key), search)
+                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=base_price_key), search)
                 
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
@@ -3729,29 +3806,28 @@ async def process_searches(bot, once=False):
                     }
                     return mapping.get(cat_name, "📦")
                 
-                p1_val = cheapest_bin_no_bo["total_price"] if cheapest_bin_no_bo else None
-                p2_val = cheapest_bin_bo["total_price"] if cheapest_bin_bo else None
-                p3_val = cheapest_auc_no_bo["total_price"] if cheapest_auc_no_bo else None
-                p4_val = cheapest_auc_bo["total_price"] if cheapest_auc_bo else None
-                
-                p1_base = cheapest_bin_no_bo["total_price"] if cheapest_bin_no_bo else None
-                p2_base = cheapest_bin_bo["total_price"] if cheapest_bin_bo else None
-                p3_base = cheapest_auc_no_bo["total_price"] if cheapest_auc_no_bo else None
-                p4_base = cheapest_auc_bo["total_price"] if cheapest_auc_bo else None
+                def display_price(item):
+                    if not item:
+                        return None
+                    return round(float(item.get("price") or 0) + float(item.get("shipping_cost") or 0), 2)
+
+                p1_val = display_price(cheapest_bin_no_bo)
+                p2_val = display_price(cheapest_bin_bo)
+                p3_val = display_price(cheapest_auc_no_bo)
+                p4_val = display_price(cheapest_auc_bo)
+
+                p1_base = p1_val
+                p2_base = p2_val
+                p3_base = p3_val
+                p4_base = p4_val
 
                 p1 = f"{p1_base:.0f}€" if p1_base else None
                 p2 = f"{p2_base:.0f}€" if p2_base else None
                 p3 = f"{p3_base:.0f}€" if p3_base else None
                 p4 = f"{p4_base:.0f}€" if p4_base else None
                 
-                # Determine max length of the price strings
-                lengths = [len(p) for p in [p1, p2, p3, p4] if p is not None]
-                max_len = max(lengths) if lengths else 4
-                if max_len < 4:
-                    max_len = 4
-                
-                # Dashes for missing items matching max_len
-                dashes = "-" * max_len
+                max_len = 7
+                dashes = "---"
                 
                 # Prefix labels and emojis (one emoji and one space outside <code>)
                 lbl_bin_emoji = "🛒"
@@ -3759,10 +3835,22 @@ async def process_searches(bot, once=False):
                 lbl_auc_emoji = "🔨"
                 lbl_auc_bo_emoji = "⏳"
                 
-                lbl_bin = "Sofortkauf  "
-                lbl_bin_bo = "Sofortkauf+ "
-                lbl_auc = "Auktion     "
-                lbl_auc_bo = "Auktion+    "
+                label_width = 8
+                lbl_bin = "Sofort".ljust(label_width)
+                lbl_bin_bo = "Sofort+".ljust(label_width)
+                lbl_auc = "Auktion".ljust(label_width)
+                lbl_auc_bo = "Auktion+".ljust(label_width)
+
+                def _tg_link_spaces(*vals):
+                    ok = True
+                    for v in vals:
+                        if v is not None and int(v) >= 100:
+                            ok = False
+                            break
+                    return 10 if ok else 9
+
+                bin_link_spaces = _tg_link_spaces(p1_base, p2_base)
+                auc_link_spaces = _tg_link_spaces(p3_base, p4_base)
                 
                 def _shorten_time_left(t_str):
                     if not t_str:
@@ -3780,7 +3868,7 @@ async def process_searches(bot, once=False):
                     t_lower = t_str.lower()
                     return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "д", "ч"))
                 
-                def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False):
+                def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False, link_spaces_len=9):
                     row_lines = []
                     if item:
                         url = get_short_url(item["item_id"])
@@ -3798,38 +3886,38 @@ async def process_searches(bot, once=False):
                         
                         padded_price = total_price_str.rjust(max_len)
                         
-                        time_info = ""
+                        time_line = ""
                         if is_auction:
                             t_left = item.get("time_left", "")
                             if t_left:
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "⚠️"
-                                time_info = f" {time_emoji} {_shorten_time_left(t_left)}"
-                        
-                        # Verdict first, then time info
-                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ {verdict_info}{time_info}</code>")
-                        
-                        # Emoji 🔗 inside <code>, with spaces_str length equal to len(label) + 1
-                        spaces_str = " " * (len(label) + 1)
-                        row_lines.append(f"<code>🔗 {spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
+                                time_line = f"{time_emoji} {_shorten_time_left(t_left)}"
+
+                        row_lines.append(f"{emoji} <code>{label} {padded_price} │ </code>{verdict_info}")
+                        if time_line:
+                            row_lines.append(f"<code>{time_line}</code>")
+
+                        spaces_str = " " * link_spaces_len
+                        row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
                         v_emoji, v_text = "❌", "Не найдено"
                         v_text_padded = v_text.ljust(10)
                         verdict_info = f"{v_emoji} {v_text_padded}"
-                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")
+                        row_lines.append(f"{emoji} <code>{label} {padded_dashes} │ </code>{verdict_info}")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
                 bin_lines = []
-                bin_lines.extend(make_aligned_row(lbl_bin_emoji, lbl_bin, cheapest_bin_no_bo, p1_val, p1, is_auction=False))
+                bin_lines.extend(make_aligned_row(lbl_bin_emoji, lbl_bin, cheapest_bin_no_bo, p1_val, p1, is_auction=False, link_spaces_len=bin_link_spaces))
                 bin_lines.append("")
-                bin_lines.extend(make_aligned_row(lbl_bin_bo_emoji, lbl_bin_bo, cheapest_bin_bo, p2_val, p2, is_auction=False))
+                bin_lines.extend(make_aligned_row(lbl_bin_bo_emoji, lbl_bin_bo, cheapest_bin_bo, p2_val, p2, is_auction=False, link_spaces_len=bin_link_spaces))
                 
                 # Build Auction block with blank lines in between
                 auc_lines = []
-                auc_lines.extend(make_aligned_row(lbl_auc_emoji, lbl_auc, cheapest_auc_no_bo, p3_val, p3, is_auction=True))
+                auc_lines.extend(make_aligned_row(lbl_auc_emoji, lbl_auc, cheapest_auc_no_bo, p3_val, p3, is_auction=True, link_spaces_len=auc_link_spaces))
                 auc_lines.append("")
-                auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4_val, p4, is_auction=True))
+                auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4_val, p4, is_auction=True, link_spaces_len=auc_link_spaces))
                 
                 # Build report block
                 query_norm = _normalize(search.get("query", ""))
@@ -3855,9 +3943,9 @@ async def process_searches(bot, once=False):
                     parts.append(limit_str_part)
                 parts.append(max_str_part)
                 parts.append(min_str_part)
-                limit_str = " | ".join(parts)
+                limit_str = " ".join(parts)
                 
-                query_esc = html.escape(search.get("query", ""))
+                query_esc = html.escape(search.get("display_name") or search.get("query", ""))
                 loc = search.get("filters", {}).get("location")
                 if loc == "de":
                     query_esc += " 🇩🇪"
@@ -3916,7 +4004,7 @@ async def process_searches(bot, once=False):
                               "июля", "августа", "сентября", "октября", "ноября", "декабря"]
                     return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
             
-            footer_str += f"\nℹ️ <i>Версия: {_get_version_string()}</i>"
+            footer_str += f"\nℹ️ <i>Версия: {_get_version_string()}</i>\n🔎 Поиск: full html"
 
             
             for idx in range(0, len(report_lines), chunk_size):
