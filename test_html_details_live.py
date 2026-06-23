@@ -104,8 +104,7 @@ s = s.replace(
     'auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4_val, p4, is_auction=True, link_spaces_len=auc_link_spaces))'
 )
 
-# Match tg-monitor: keep the link icon outside monospace, spaces inside monospace.
-s = s.replace('<code>🔗 {spaces_str}</code>', '🔗 <code>{spaces_str}</code>')
+# Keep previous working display: link icon inside monospace. Telegram copy may expose hidden URL.
 
 # Footer source label, static and safe for current GitHub HTML-primary run.
 old_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"'
@@ -115,6 +114,6 @@ if old_footer in s:
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight: matched tg-monitor pair link layout')
+    print('preflight: reverted link icon rendering change')
 else:
     print('preflight: no monitor.py changes')
