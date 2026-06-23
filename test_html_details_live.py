@@ -68,14 +68,14 @@ s = s.replace(
 s = s.replace('                            v_text_padded = v_text.ljust(10)', '                            v_text_padded = v_text')
 s = s.replace('                        v_text_padded = v_text.ljust(10)', '                        v_text_padded = v_text')
 
-# Put auction time on its own short line instead of forcing the main row to wrap.
+# Match tg-monitor row rendering: emoji outside code, table columns inside code, verdict outside code.
 old_row = '                        # Verdict first, then time info\n                        row_lines.append(f"<code>{emoji} {label} {padded_price}  │ {verdict_info}{time_info}</code>")'
-new_row = '                        row_lines.append(f"<code>{emoji} {label} {padded_price} | {verdict_info}</code>")\n                        if time_info:\n                            row_lines.append(f"<code>{time_info.strip()}</code>")'
+new_row = '                        row_lines.append(f"{emoji} <code>{label} {padded_price} | </code>{verdict_info}")\n                        if time_info:\n                            row_lines.append(f"<code>{time_info.strip()}</code>")'
 if old_row in s:
     s = s.replace(old_row, new_row)
 
 s = s.replace('                        row_lines.append(f"<code>{emoji} {label} {padded_dashes}  │ {verdict_info}</code>")',
-              '                        row_lines.append(f"<code>{emoji} {label} {padded_dashes} | {verdict_info}</code>")')
+              '                        row_lines.append(f"{emoji} <code>{label} {padded_dashes} | </code>{verdict_info}")')
 
 # Add a link spacing argument to make_aligned_row and use the pair-level value.
 s = s.replace(
@@ -104,7 +104,8 @@ s = s.replace(
     'auc_lines.extend(make_aligned_row(lbl_auc_bo_emoji, lbl_auc_bo, cheapest_auc_bo, p4_val, p4, is_auction=True, link_spaces_len=auc_link_spaces))'
 )
 
-# Keep previous working display: link icon inside monospace. Telegram copy may expose hidden URL.
+# Match tg-monitor: link icon outside monospace, spaces inside monospace.
+s = s.replace('<code>🔗 {spaces_str}</code>', '🔗 <code>{spaces_str}</code>')
 
 # Footer source label, static and safe for current GitHub HTML-primary run.
 old_footer = '            footer_str += f"\\nℹ️ <i>Версия: {_get_version_string()}</i>"'
@@ -114,6 +115,6 @@ if old_footer in s:
 
 if s != o:
     p.write_text(s, encoding='utf-8')
-    print('preflight: reverted link icon rendering change')
+    print('preflight: using tg-monitor row rendering scheme')
 else:
     print('preflight: no monitor.py changes')
