@@ -386,7 +386,7 @@ PHONE_DEVICE_HINTS = PHONE_STRONG_DEVICE_HINTS + PHONE_WEAK_DEVICE_HINTS
 
 BAD_CONDITION_WORDS = (
     "konvolut", "konvolute", "defekt", "teildefekt", "displayschaden", "display gewechselt", "icloud sperre", "gesperrt",
-    "funktioniert nicht", "nur box", "nur verpackung", "leere verpackung", "tauschen", "tausch",
+    "funktioniert nicht", "nur box", "nur verpackung", "leere verpackung", "tauschen", "tausche", "tausch",
     "leerbox", "leerhuelle", "leerhülle", "empty box", "empty case", "nur ovp",
     "nur karton", "leerer karton", "schachtel leer", "leere schachtel",
     "psn servern ausgeschlossen", "von psn servern ausgeschlossen",
@@ -601,9 +601,51 @@ def _query_words(query):
     return words
 
 
+def _query_match_plan(query):
+    """Return (required_words, alternative_groups) for eBay-style OR groups.
+
+    A query such as "(playstation 5, ps5) pro" means:
+    - require "pro"
+    - require either "playstation 5" or "ps5"
+    """
+    query = query or ""
+    alternative_groups = []
+
+    def consume_group(match):
+        raw_alts = [p.strip().strip("\"'") for p in match.group(1).split(",")]
+        alts = []
+        for alt in raw_alts:
+            words = _query_words(alt)
+            if words:
+                alts.append(words)
+        if len(alts) > 1:
+            alternative_groups.append(alts)
+            return " "
+        if len(alts) == 1:
+            return " ".join(alts[0])
+        return " "
+
+    remainder = re.sub(r"\(([^()]*)\)", consume_group, query)
+    return _query_words(remainder), alternative_groups
+
+
+def _query_matches_title(title_norm, query):
+    required_words, alternative_groups = _query_match_plan(query)
+    if required_words and not all(_has_query_word(title_norm, w) for w in required_words):
+        return False
+    for alternatives in alternative_groups:
+        if not any(all(_has_query_word(title_norm, w) for w in alt) for alt in alternatives):
+            return False
+    return True
+
+
 def _has_query_word(title_norm, word):
     if word == "redmagic":
         return _has_term(title_norm, "redmagic") or "red magic" in title_norm
+    if word in ("ti", "super", "xt"):
+        # GPU titles are often written as "5070ti"/"4070super"/"7900xt".
+        if re.search(rf"\b\d{{3,4}}\s*{re.escape(word)}\b", title_norm):
+            return True
     if word.isdigit():
         return re.search(rf"\b{re.escape(word)}(?:[a-zA-Z]+)?(?:gb|go|tb)?\b", title_norm) is not None
     return _has_term(title_norm, word)
@@ -625,6 +667,47 @@ def _category_id(value):
     if value.isdigit():
         return value
     return EBAY_CATEGORY_IDS.get(value, "")
+
+
+def _phone_model_aspect_params(query_norm):
+    """Return eBay phone model aspect params for obvious model searches."""
+    model = None
+    pixel = re.search(r"\b(?:google\s+)?pixel\s+(\d+[a-z]?)(?:\s+(pro|xl|fold))?\b", query_norm)
+    if pixel:
+        parts = [pixel.group(1)]
+        if pixel.group(2):
+            parts.append(pixel.group(2).upper() if pixel.group(2) == "xl" else pixel.group(2).title())
+        model = "Google Pixel " + " ".join(p.upper() if p == "xl" else p for p in parts)
+
+    iphone = re.search(
+        r"\b(?:apple\s+)?iphone\s+(\d{1,2})(?:\s+(pro\s+max|pro|plus|mini|e))?\b",
+        query_norm,
+    )
+    if iphone:
+        parts = [iphone.group(1)]
+        if iphone.group(2):
+            parts.append(" ".join(part.title() for part in iphone.group(2).split()))
+        model = "Apple iPhone " + " ".join(parts)
+
+    galaxy = re.search(
+        r"\b(?:samsung\s+)?galaxy\s+((?:s|z|a)\d{1,2})(?:\s+(ultra|plus|fe|fold|flip))?\b",
+        query_norm,
+    )
+    if galaxy:
+        parts = [galaxy.group(1).upper()]
+        if galaxy.group(2):
+            parts.append(galaxy.group(2).title())
+        model = "Samsung Galaxy " + " ".join(parts)
+
+    if not model:
+        return None
+
+    # eBay aspect values in search URLs are encoded once inside the parameter,
+    # then encoded again as part of the query string.
+    return {
+        "Modell": requests.utils.quote(model),
+        "_dcat": EBAY_DEVICE_CATEGORY_IDS.get("phones") or "9355",
+    }
 
 
 def _host_chain_for_search(search):
@@ -804,6 +887,8 @@ def _has_accessory_term(title_norm, term):
     
     words = re.findall(r'[a-z0-9]+', title_norm)
     for w in words:
+        if term_norm == "kabel" and w.startswith("kabellos"):
+            continue
         if w == term_norm:
             return True
         if len(w) > len(term_norm):
@@ -815,6 +900,14 @@ def _has_accessory_term(title_norm, term):
 
 
 def _is_phone_accessory_title(title_norm):
+    service_patterns = (
+        r"\b(?:unlock|entsperr|freischalt)[a-z]*\b.{0,30}\bservice\b",
+        r"\bservice\b.{0,30}\b(?:unlock|entsperr|freischalt)[a-z]*\b",
+        r"\bicloud\b.{0,30}\b(?:unlock|entsperr|freischalt)[a-z]*\b",
+    )
+    if any(re.search(pattern, title_norm) for pattern in service_patterns):
+        return True
+
     """Detect titles that are clearly accessories or spare parts.
 
     Hard parts (battery/lcd/digitizer/motherboard/...) are always treated as accessory
@@ -947,6 +1040,13 @@ def _is_display_replacement(text_norm):
     """Detect display/screen/oled/glass/backglass replacements in title or description."""
     p1 = r"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b.*\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|bekommen|erneuert|reparatur)\b"
     p2 = r"\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|neues|neuer|getauschtes|gewechseltes|repariertes|ersetztes|erneuertes|frisches)\b.*\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
+    return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
+
+
+def _is_display_replacement_description(text_norm):
+    repair_words = "getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|erneuert|reparatur"
+    p1 = rf"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b.{{0,80}}\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:{repair_words})\b"
+    p2 = rf"\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:getauschtes|gewechseltes|repariertes|ersetztes|erneuertes)\b.{{0,80}}\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
     return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
 
 
@@ -1095,7 +1195,19 @@ def _matches_category_query(title_norm, category, query_norm):
             return any(term in title_norm for term in ("kopfhoerer", "headphones", "over-ear", "over ear"))
         return True
 
-    if "playstation 5 pro" in query_norm:
+    is_ps5_pro_query = (
+        "playstation 5 pro" in query_norm
+        or "ps5 pro" in query_norm
+        or (
+            "pro" in _query_words(query_norm)
+            and any(
+                all(_has_query_word(" ".join(alt), w) for w in ("playstation", "5")) or "ps5" in alt
+                for alt_group in _query_match_plan(query_norm)[1]
+                for alt in alt_group
+            )
+        )
+    )
+    if is_ps5_pro_query:
         return ("playstation 5 pro" in title_norm or "ps5 pro" in title_norm) and not _is_category_blocked_title(title_norm, category, query_norm)
 
     if category == "consoles":
@@ -1210,6 +1322,10 @@ def _build_url_with_host(host, search, sub="www"):
             cat_id = _category_id(eff_category)
             if cat_id:
                 params["_sacat"] = cat_id
+
+    phone_aspects = _phone_model_aspect_params(query_norm) if eff_category == "phones" else None
+    if phone_aspects:
+        params.update(phone_aspects)
         
     sort_code = _sort_code(filters)
     if sort_code:
@@ -1244,6 +1360,8 @@ def _build_url_with_host(host, search, sub="www"):
             params["LH_BO"] = "1"
     elif lt == "auction":
         params["LH_Auction"] = "1"
+        if filters.get("best_offer"):
+            params["LH_BO"] = "1"
     elif lt == "offer":
         params["LH_BO"] = "1"
     st = filters.get("seller_type", "any")
@@ -1585,6 +1703,8 @@ def build_ebay_url(search):
             params["LH_BO"] = "1"
     elif lt == "auction":
         params["LH_Auction"] = "1"
+        if filters.get("best_offer"):
+            params["LH_BO"] = "1"
     elif lt == "offer":
         params["LH_BO"] = "1"
     st = filters.get("seller_type", "any")
@@ -2191,7 +2311,10 @@ def _build_ebay_api_params(search, market=None):
         "offer": "BEST_OFFER",
     }
     if lt in buying_map:
-        filter_parts.append(f"buyingOptions:{{{buying_map[lt]}}}")
+        buying_options = [buying_map[lt]]
+        if filters.get("best_offer") and "BEST_OFFER" not in buying_options:
+            buying_options.append("BEST_OFFER")
+        filter_parts.append(f"buyingOptions:{{{'|'.join(buying_options)}}}")
 
     st = filters.get("seller_type", "any")
     seller_map = {
@@ -2598,12 +2721,14 @@ def _is_description_blocked(desc_html, category):
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
 
-    if _is_display_replacement(desc_norm):
+    if _is_display_replacement_description(desc_norm):
         logger.info("Description blocked due to display/screen replacement pattern")
         return True
 
     # 1. Check for bad condition words/phrases
     for w in BAD_CONDITION_WORDS:
+        if w in ("tausch", "tauschen") and re.search(r"\b(?:kein|keine|keinen|nicht|no)\s+(?:um)?tausch\b|\bumtausch\b", desc_norm):
+            continue
         if _has_term(desc_norm, w):
             logger.info("Description blocked due to bad condition word/phrase: '%s'", w)
             return True
@@ -2754,7 +2879,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     item_hashes = config_obj.get_item_hashes()
     filters = search.get("filters", {})
     category = filters.get("category", "all")
-    query_words = _query_words(search.get("query", ""))
+    query_text = search.get("query", "")
     exclude_words = [_normalize(w) for w in search.get("exclude_words", [])]
     include_words = [_normalize(w) for w in search.get("include_words", [])]
     exclude_sellers = [s.lower() for s in search.get("exclude_sellers", [])]
@@ -2794,7 +2919,17 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 continue
 
         listing_type = filters.get("listing_type", "all")
-        if not is_statistics:
+        if is_statistics and filters.get("_stats_bucket_filter"):
+            if listing_type == "auction" and not item.get("auction"):
+                continue
+            if listing_type in ("buy_now", "buy_now_offer") and (item.get("auction") or not item.get("buy_now")):
+                continue
+            if filters.get("best_offer"):
+                if not item.get("best_offer"):
+                    continue
+            elif item.get("best_offer"):
+                continue
+        else:
             if listing_type == "auction" and not item.get("auction"):
                 continue
             if listing_type in ("buy_now", "buy_now_offer") and (item.get("auction") or not item.get("buy_now")):
@@ -2831,7 +2966,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if cond_norm:
             if cond_norm in BAD_CONDITIONS or any(w in cond_norm for w in ("defekt", "ersatzteil", "parts", "not working", "salvage", "reparatur", "broken")):
                 continue
-        if query_words and not all(_has_query_word(title_norm, w) for w in query_words):
+        if not _query_matches_title(title_norm, query_text):
             continue
         query_norm = _normalize(search.get("query", ""))
         effective_category = _effective_category(category, query_norm)
@@ -2889,6 +3024,26 @@ def _auction_sweep_search(search):
     sweep.setdefault("filters", {})["listing_type"] = "auction"
     sweep["id"] = f"{search.get('id', 'search')}__auction_sweep"
     return sweep
+
+
+def _statistics_search_variant(search, listing_type, min_price=None, best_offer=False):
+    variant = copy.deepcopy(search)
+    filters = variant.setdefault("filters", {})
+    filters["_stats_category"] = filters.get("category", "all")
+    effective_category = _effective_category(filters.get("category", "all"), _normalize(variant.get("query", "")))
+    if effective_category == "consoles":
+        filters["category"] = "all"
+    filters["listing_type"] = listing_type
+    filters["best_offer"] = bool(best_offer)
+    filters["min_price"] = min_price
+    filters["max_price"] = None
+    filters["sort"] = "price_asc"
+    filters.pop("sort_code", None)
+    filters["_ipg"] = 240
+    filters["_stats_bucket_filter"] = True
+    suffix = "bo" if best_offer else "all"
+    variant["id"] = f"{search.get('id', 'search')}__stats_{listing_type}_{suffix}"
+    return variant
 
 
 def _warmup_session(session, host):
@@ -3032,7 +3187,7 @@ def _do_fetch_one(host, search, referer=None):
 def _query_cache_key(search):
     """Stable key for the search-input portion that affects eBay results."""
     filters = search.get("filters", {}) or {}
-    keys = ("category", "max_price", "min_price", "condition", "condition_code", "listing_type", "best_offer", "seller_type", "location", "sort", "sort_code")
+    keys = ("category", "max_price", "min_price", "condition", "condition_code", "listing_type", "best_offer", "seller_type", "location", "sort", "sort_code", "_ipg")
     source = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
     parts = [f"source={source}", f"market={EBAY_MARKETPLACE_ID}", search.get("query", "").strip().lower()]
     for k in keys:
@@ -3735,43 +3890,31 @@ async def process_searches(bot, once=False):
                 bin_min_price = bin_search_cfg.get("filters", {}).get("min_price") if bin_search_cfg else None
                 auc_min_price = auc_search_cfg.get("filters", {}).get("min_price") if auc_search_cfg else None
                 
-                # Fetch both BIN and Auctions to ensure all blocks are populated
+                # Fetch each stats bucket with cheapest-first sorting. A single
+                # newest-first BIN/Auction page can miss the real lowest valid item.
+                stats_fetches = [
+                    ("BIN stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, False)),
+                    ("BIN+BO stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, True)),
+                    ("Auction stats", _statistics_search_variant(search, "auction", auc_min_price, False)),
+                    ("Auction+BO stats", _statistics_search_variant(search, "auction", auc_min_price, True)),
+                ]
+                result_groups = []
+                fetch_errors = []
+                for label, stats_search in stats_fetches:
+                    bucket_results, bucket_err = await asyncio.to_thread(fetch_ebay_ex, stats_search, force=True)
+                    if bucket_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
+                        logger.info("  %s: HTML blocked for %s, falling back to API", search["query"], label)
+                        api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, stats_search, force=True)
+                        if not api_err:
+                            bucket_results = api_results
+                            bucket_err = None
+                    if bucket_results:
+                        result_groups.append(bucket_results)
+                    if bucket_err:
+                        fetch_errors.append(bucket_err)
 
-                
-                bin_search = copy.deepcopy(search)
-                bin_search.setdefault("filters", {})["listing_type"] = "buy_now_offer"
-                bin_search["filters"]["best_offer"] = False
-                bin_search["filters"]["min_price"] = bin_min_price
-                bin_search["filters"]["max_price"] = None
-                
-                auc_search = copy.deepcopy(search)
-                auc_search.setdefault("filters", {})["listing_type"] = "auction"
-                auc_search["filters"]["best_offer"] = False
-                auc_search["filters"]["min_price"] = auc_min_price
-                auc_search["filters"]["max_price"] = None
-                
-                # Fetch BIN
-                bin_results, bin_err = await asyncio.to_thread(fetch_ebay_ex, bin_search, force=True)
-                if bin_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
-                    logger.info("  %s: HTML blocked for BIN stats, falling back to API", search["query"])
-                    bin_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, bin_search, force=True)
-                    if not api_err:
-                        bin_results = bin_api_results
-                        bin_err = None
-                
-                # Fetch Auctions
-                auc_results, auc_err = await asyncio.to_thread(fetch_ebay_ex, auc_search, force=True)
-                if auc_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
-                    logger.info("  %s: HTML blocked for Auction stats, falling back to API", search["query"])
-                    auc_api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, auc_search, force=True)
-                    if not api_err:
-                        auc_results = auc_api_results
-                        auc_err = None
-
-                        
-                results = _merge_items_by_id(bin_results, auc_results)
-                
-                fetch_err = bin_err or auc_err
+                results = _merge_items_by_id(*result_groups)
+                fetch_err = fetch_errors[0] if fetch_errors else None
                 if fetch_err and not results:
                     blocked_searches.append(search)
                 
@@ -3787,7 +3930,7 @@ async def process_searches(bot, once=False):
                 
                 # Helper to find the cheapest validated candidate
                 async def find_cheapest_valid(items, search_cfg):
-                    for item in items[:5]:
+                    for item in items[:30]:
                         is_valid, _ = await _validate_candidate(item, search_cfg)
                         if is_valid:
                             return item
@@ -4090,14 +4233,14 @@ async def process_searches(bot, once=False):
             preisvorschlag = [r for r in filtered if r["best_offer"]]
             auctions = [r for r in filtered if r["auction"]]
 
-            sofort_prices = [r["price"] for r in sofort if not is_outlier(r["price"], search["id"])]
-            pv_prices = [r["price"] for r in preisvorschlag if not is_outlier(r["price"], search["id"])]
-            auction_prices = [r["price"] for r in auctions if not is_outlier(r["price"], search["id"])]
+            sofort_prices = [r["total_price"] for r in sofort if not is_outlier(r["total_price"], search["id"])]
+            pv_prices = [r["total_price"] for r in preisvorschlag if not is_outlier(r["total_price"], search["id"])]
+            auction_prices = [r["total_price"] for r in auctions if not is_outlier(r["total_price"], search["id"])]
             record_snapshot(search["id"], sofort_prices, pv_prices, auction_prices, len(filtered))
 
             for r in filtered:
-                if not is_outlier(r["price"], search["id"]):
-                    record_seller_price(search["id"], r["seller_name"], r["price"], r["item_id"])
+                if not is_outlier(r["total_price"], search["id"]):
+                    record_seller_price(search["id"], r["seller_name"], r["total_price"], r["item_id"])
 
             stats_7d = get_stats_7d(search["id"])
 
