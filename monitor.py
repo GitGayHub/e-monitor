@@ -3865,12 +3865,10 @@ async def process_searches(bot, once=False):
                 lbl_auc_bo = "Auktion+".ljust(label_width)
 
                 def _tg_link_spaces(*vals):
-                    lengths = [len(v) for v in vals if v is not None]
-                    max_p_len = max(lengths) if lengths else 2
-                    return 14 - max_p_len
+                    return 11
 
-                bin_link_spaces = _tg_link_spaces(p1, p2)
-                auc_link_spaces = _tg_link_spaces(p3, p4)
+                bin_link_spaces = _tg_link_spaces()
+                auc_link_spaces = _tg_link_spaces()
                 
                 def _shorten_time_left(t_str):
                     if not t_str:
