@@ -1289,29 +1289,38 @@ EU_COUNTRIES = {
 
 
 def _parse_time_left_to_minutes(time_left_str):
-    t = time_left_str.lower().strip()
-    
-    days = 0
+    t = (time_left_str or "").lower().strip()
+    if not t:
+        return None
+    days = hours = minutes = 0
+    matched = False
     m_days = re.search(r"(\d+)\s*(?:tag|t\b|d\b|day)", t)
     if m_days:
-        days = int(m_days.group(1))
-        
-    hours = 0
+        days = int(m_days.group(1)); matched = True
     m_hours = re.search(r"(\d+)\s*(?:std|h\b|hour)", t)
     if m_hours:
-        hours = int(m_hours.group(1))
-        
-    minutes = 0
+        hours = int(m_hours.group(1)); matched = True
     m_minutes = re.search(r"(\d+)\s*(?:min|m\b|minute)", t)
     if m_minutes:
-        minutes = int(m_minutes.group(1))
-        
-    if days == 0 and hours == 0 and minutes == 0:
-        if "sek" in t or "s" in t or "sec" in t:
-            return 1  # 1 minute or less
-            
-    total_minutes = days * 1440 + hours * 60 + minutes
-    return total_minutes
+        minutes = int(m_minutes.group(1)); matched = True
+    if not matched:
+        if re.search(r"\b\d+\s*(?:sek|sec|second|seconds|s)\b", t):
+            return 1
+        return None
+    return days * 1440 + hours * 60 + minutes
+
+
+def _passes_notification_price_and_auction_rules(item, search):
+    filters = search.get("filters", {}) or {}
+    limit_or_max = filters.get("limit_price") or filters.get("max_price")
+    if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
+        return False
+    if item.get("auction") and not item.get("buy_now"):
+        is_new_best_offer = bool(item.get("best_offer")) and item.get("bids_count") == 0
+        minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
+        is_ending_soon = minutes is not None and minutes <= 1440
+        return is_new_best_offer or is_ending_soon
+    return True
 
 
 def _format_time_left_from_seconds(total_seconds):
@@ -2117,6 +2126,16 @@ def _api_item_id(summary):
     return m.group(0) if m else raw
 
 
+def _build_ebay_api_query(search):
+    q = (search.get("query") or "").strip()
+    if not q:
+        q = _build_smart_search_query(search)
+    q = re.sub(r"[()\"'\"]", " ", q)
+    q = re.sub(r"\bredmagic\b", "red magic", q, flags=re.IGNORECASE)
+    q = re.sub(r"\s+", " ", q).strip()
+    return q
+
+
 def _build_ebay_api_params(search, market=None):
     if market is None:
         market = EBAY_MARKETPLACE_ID
@@ -2125,8 +2144,8 @@ def _build_ebay_api_params(search, market=None):
     if filters.get("sort") == "price_asc":
         sort_param = "price"
     params = {
-        "q": _build_smart_search_query(search),
-        "limit": "100",
+        "q": _build_ebay_api_query(search),
+        "limit": "200",
         "sort": sort_param,
         "fieldgroups": "EXTENDED",
     }
@@ -2196,6 +2215,8 @@ def fetch_ebay_api_ex(search, force=False):
 
     markets = [EBAY_MARKETPLACE_ID]
     loc = (search.get("filters") or {}).get("location", "de")
+    if loc == "eu":
+        loc = "worldwide"
     
     if loc in ("eu", "worldwide"):
         extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]
@@ -3492,6 +3513,8 @@ def initialize_api_budget_and_queue(searches):
             continue
         markets = ["EBAY_DE"]
         loc = (search.get("filters") or {}).get("location", "de")
+        if loc == "eu":
+            loc = "worldwide"
         if loc in ("eu", "worldwide"):
             for m in ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]:
                 if m not in markets:
@@ -3711,7 +3734,7 @@ async def process_searches(bot, once=False):
                 auc_min_price = auc_search_cfg.get("filters", {}).get("min_price") if auc_search_cfg else None
                 
                 # Fetch both BIN and Auctions to ensure all blocks are populated
-                import copy
+
                 
                 bin_search = copy.deepcopy(search)
                 bin_search.setdefault("filters", {})["listing_type"] = "buy_now_offer"
@@ -3758,7 +3781,7 @@ async def process_searches(bot, once=False):
                 bin_no_bo = [item for item in filtered if item.get("buy_now") and not item.get("best_offer")]
                 bin_bo = [item for item in filtered if item.get("buy_now") and item.get("best_offer")]
                 auc_no_bo = [item for item in filtered if item.get("auction") and not item.get("best_offer")]
-                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer")]
+                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer") and item.get("bids_count") in (0, None)]
                 
                 # Helper to find the cheapest validated candidate
                 async def find_cheapest_valid(items, search_cfg):
@@ -3842,15 +3865,12 @@ async def process_searches(bot, once=False):
                 lbl_auc_bo = "Auktion+".ljust(label_width)
 
                 def _tg_link_spaces(*vals):
-                    ok = True
-                    for v in vals:
-                        if v is not None and int(v) >= 100:
-                            ok = False
-                            break
-                    return 10 if ok else 9
+                    lengths = [len(v) for v in vals if v is not None]
+                    max_p_len = max(lengths) if lengths else 2
+                    return 14 - max_p_len
 
-                bin_link_spaces = _tg_link_spaces(p1_base, p2_base)
-                auc_link_spaces = _tg_link_spaces(p3_base, p4_base)
+                bin_link_spaces = _tg_link_spaces(p1, p2)
+                auc_link_spaces = _tg_link_spaces(p3, p4)
                 
                 def _shorten_time_left(t_str):
                     if not t_str:
@@ -3892,7 +3912,7 @@ async def process_searches(bot, once=False):
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "⚠️"
                                 time_line = f"{time_emoji} {_shorten_time_left(t_left)}"
 
-                        row_lines.append(f"{emoji} <code>{label} {padded_price}  │ </code>{verdict_info}")
+                        row_lines.append(f"{emoji} <code>{label}{padded_price}  │ </code>{verdict_info}")
                         if time_line:
                             row_lines.append(f"<code>{time_line}</code>")
 
@@ -3902,7 +3922,7 @@ async def process_searches(bot, once=False):
                         padded_dashes = dashes.rjust(max_len)
                         v_emoji, v_text = "❌", "Не найдено"
                         verdict_info = f"{v_emoji} {v_text}"
-                        row_lines.append(f"{emoji} <code>{label} {padded_dashes}  │ </code>{verdict_info}")
+                        row_lines.append(f"{emoji} <code>{label}{padded_dashes}  │ </code>{verdict_info}")
                     return row_lines
                 
                 # Build Sofortkauf block with blank lines in between
@@ -4004,20 +4024,20 @@ async def process_searches(bot, once=False):
             
             footer_str += f"\nℹ️ <i>Версия: {_get_version_string()}</i>\n🔎 Поиск: full html"
 
-            
-            for idx in range(0, len(report_lines), chunk_size):
-                chunk_items = report_lines[idx : idx + chunk_size]
-                
-                # Join the items in the chunk using the 31-dash code-wrapped separator
-                chunk_text = "\n\n<code>───────────────────────────────</code>\n\n".join(chunk_items)
-                
-                if idx > 0:
+            report_lines.append(footer_str)
+
+            content_lines = report_lines[:-1]
+            footer_line = report_lines[-1]
+            chunks_data = [content_lines[i:i + chunk_size] for i in range(0, len(content_lines), chunk_size)]
+            if chunks_data:
+                chunks_data[-1].append(footer_line)
+            else:
+                chunks_data = [[footer_line]]
+
+            for idx, chunk in enumerate(chunks_data, 1):
+                chunk_text = "\n\n<code>───────────────────────────────</code>\n\n".join(chunk)
+                if idx > 1:
                     chunk_text = f"<code>───────────────────────────────</code>\n\n" + chunk_text
-                
-                # If this is the last chunk, append the footer
-                if idx + chunk_size >= len(report_lines):
-                    chunk_text += f"\n\n<code>───────────────────────────────</code>\n\n{footer_str}"
-                
                 chunks.append(chunk_text)
             
             logger.info(f"📊 Отправляю diagnostic report в Telegram ({len(chunks)} частей)...")
@@ -4133,6 +4153,11 @@ async def process_searches(bot, once=False):
                     _calculate_total(item, config.get_settings(), details)
                     h = _item_hash(item["seller_name"], item["title"], item["price"])
 
+                if not _passes_notification_price_and_auction_rules(item, search):
+                    logger.info("Skipping notification for item %s: price/auction rules failed after details refresh", item["item_id"])
+                    seen_ids.add(item["item_id"])
+                    continue
+
                 sent = await send_notification(bot, item, search, stats_7d)
                 if sent:
                     total_new += 1
@@ -4214,6 +4239,11 @@ async def process_searches(bot, once=False):
                     if details:
                         _calculate_total(item, config.get_settings(), details)
                         h = _item_hash(item["seller_name"], item["title"], item["price"])
+
+                    if not _passes_notification_price_and_auction_rules(item, search):
+                        logger.info("Skipping notification for item %s: price/auction rules failed after details refresh", item["item_id"])
+                        seen_ids.add(item["item_id"])
+                        continue
 
                     sent = await send_notification(bot, item, search, stats_7d)
                     if sent:

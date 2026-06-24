@@ -1,5 +1,2 @@
-import os
-import runpy
-
-if os.path.exists('monitor_runtime_patch.py'):
-    runpy.run_path('monitor_runtime_patch.py', run_name='__main__')
+# autostart_patch.py is deprecated. All changes have been directly applied to monitor.py.
+pass
