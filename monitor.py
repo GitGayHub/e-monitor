@@ -293,6 +293,8 @@ PHONE_HARD_PART_WORDS = (
     "middle frame", "mittelrahmen", "mitte rahmen", "bezel", "frame bezel",
     "replacement bezel", "displayrahmen", "rahmen", "photography kit",
     "photo kit", "fotografie-kit", "camera kit", "photography-kit",
+    "photography set", "photography-set", "photo set", "photo-set", "fotografie set", "fotografie-set",
+    "camera set", "camera-set",
     # Additional replacements / parts
     "ersatz", "abdeckung", "rückseitige", "rueckseitige", "schrauben",
     "halterung", "kleber", "klebestreifen", "klebepad",
@@ -345,7 +347,7 @@ def _has_phone_model_pattern(title_norm):
         r"\boneplus\s+ace",
         r"\bpixel\s+\d",
         r"\b(?:red\s*magic|redmagic)\s*\d{1,2}",
-        r"\bnubia\s+z\d+",
+        r"\bnubia\s+z\d+[a-z]?",
         r"\bsamsung\s+.*\bultra\b",
     )
     return any(re.search(p, title_norm) for p in patterns)
@@ -364,7 +366,7 @@ def _title_leads_with_phone_model(title_norm):
         r"^oneplus\s+(?:\d{1,2}|ace)",
         r"^(?:google\s+)?pixel\s+\d",
         r"^(?:zte\s+)?(?:nubia\s+)?(?:red\s*magic|redmagic)\s*\d{1,2}",
-        r"^(?:zte\s+)?nubia\s+(?:z\d+|focus)",
+        r"^(?:zte\s+)?nubia\s+(?:z\d+[a-z]?|focus)",
         r"^(?:neu|new)[\s!]*(?:zte\s+)?nubia",
         r"^(?:neu|new)[\s!]*(?:samsung|apple|oneplus|google)",
     )
@@ -383,7 +385,7 @@ PHONE_WEAK_DEVICE_HINTS = (
 PHONE_DEVICE_HINTS = PHONE_STRONG_DEVICE_HINTS + PHONE_WEAK_DEVICE_HINTS
 
 BAD_CONDITION_WORDS = (
-    "defekt", "teildefekt", "displayschaden", "display gewechselt", "icloud sperre", "gesperrt",
+    "konvolut", "konvolute", "defekt", "teildefekt", "displayschaden", "display gewechselt", "icloud sperre", "gesperrt",
     "funktioniert nicht", "nur box", "nur verpackung", "leere verpackung", "tauschen", "tausch",
     "leerbox", "leerhuelle", "leerhülle", "empty box", "empty case", "nur ovp",
     "nur karton", "leerer karton", "schachtel leer", "leere schachtel",
@@ -642,7 +644,7 @@ def _has_term(title_norm, term):
 def _is_phone_device_title(title_norm):
     if any(_has_term(title_norm, w) for w in PHONE_DEVICE_HINTS):
         return True
-    if re.search(r"\bnubia\s+(?:z\d+|focus|red\s*magic)\b.*\bultra\b", title_norm):
+    if re.search(r"\bnubia\s+(?:z\d+[a-z]?|focus|red\s*magic)\b.*\bultra\b", title_norm):
         return True
     if re.search(r"\biphone\s+\d{2}\s+pro\s+max\b", title_norm):
         return True
@@ -734,7 +736,7 @@ def _matches_phone_query_model(title_norm, query_norm):
             return False
 
     if "nubia" in query_norm and "ultra" in query_norm:
-        return re.search(r"\bnubia\s+(?:z\s*\d+|z\d+|focus(?:\s*\d+)?|red\s*magic)\b.*\bultra\b", title_norm) is not None
+        return re.search(r"\bnubia\s+(?:z\s*\d+[a-z]?|z\d+[a-z]?|focus(?:\s*\d+)?|red\s*magic)\b.*\bultra\b", title_norm) is not None
     iphone = re.search(r"\biphone\s*(\d{2})\s*pro\s*max\b", query_norm)
     if iphone:
         return re.search(rf"\biphone\s*{iphone.group(1)}\s*pro\s*max\b", title_norm) is not None
