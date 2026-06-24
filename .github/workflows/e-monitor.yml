@@ -62,7 +62,7 @@ jobs:
             echo "===== E MONITOR ITERATION $i/$RUN_ITERATIONS =====" | tee -a run_output_all.log
             echo "iteration_start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a run_output_all.log
 
-            python monitor.py --once 2>&1 | tee run_output.log
+            python github_default_monitor.py --once 2>&1 | tee run_output.log
             MONITOR_STATUS=${PIPESTATUS[0]}
             cat run_output.log >> run_output_all.log
 
