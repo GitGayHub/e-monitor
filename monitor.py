@@ -2939,20 +2939,20 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             if filters.get("best_offer") and not item.get("best_offer"):
                 continue
             
-        # User requirement: For auction listings (unless they have Buy It Now),
-        # only send if:
-        # A) They accept Best Offer and have 0 bids.
-        # B) They are ending in 24 hours (1 day) or less.
+        # Auction notifications:
+        # A) Best Offer auctions can be sent immediately when the configured
+        #    price limit is satisfied.
+        # B) Regular auctions must also end within 24 hours (1 day inclusive).
         if not is_statistics:
             if item.get("auction") and not item.get("buy_now"):
-                is_new_best_offer = item.get("best_offer") and item.get("bids_count") == 0
+                is_best_offer = item.get("best_offer")
                 is_ending_soon = False
                 time_left_str = item.get("time_left", "")
                 if time_left_str:
                     minutes = _parse_time_left_to_minutes(time_left_str)
                     if minutes is not None and minutes <= 1440:  # 24 hours (1 day)
                         is_ending_soon = True
-                if not (is_new_best_offer or is_ending_soon):
+                if not (is_best_offer or is_ending_soon):
                     continue
                 
         seller_lower = item["seller_name"].lower()
