@@ -291,6 +291,8 @@ PHONE_HARD_PART_WORDS = (
     "nur ovp", "nur die ovp",
     # Middle frame, bezel, photography kits
     "middle frame", "mittelrahmen", "mitte rahmen", "bezel", "frame bezel",
+    "central frame", "center frame", "mid frame", "inner frame",
+    "cornice", "cornice centrale", "telaio", "telaio centrale",
     "replacement bezel", "displayrahmen", "rahmen", "photography kit",
     "photo kit", "fotografie-kit", "camera kit", "photography-kit",
     "photography set", "photography-set", "photo set", "photo-set", "fotografie set", "fotografie-set",
@@ -1436,10 +1438,10 @@ def _passes_notification_price_and_auction_rules(item, search):
     if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
         return False
     if item.get("auction") and not item.get("buy_now"):
-        is_new_best_offer = bool(item.get("best_offer")) and item.get("bids_count") == 0
+        is_best_offer = bool(item.get("best_offer"))
         minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
         is_ending_soon = minutes is not None and minutes <= 1440
-        return is_new_best_offer or is_ending_soon
+        return is_best_offer or is_ending_soon
     return True
 
 
@@ -1514,6 +1516,13 @@ def save_seen_ids():
         lst = lst[-10000:]
     with open(SEEN_IDS_FILE, "w") as f:
         json.dump(lst, f)
+
+
+def mark_seen_item(item_id):
+    if not item_id:
+        return
+    seen_ids.add(str(item_id))
+    save_seen_ids()
 
 
 def _is_statistics_mode(config_obj):
@@ -3855,7 +3864,7 @@ async def process_searches(bot, once=False):
             logger.info("No searches configured")
             return
 
-        test_summary_mode = True if os.environ.get("GITHUB_ACTIONS") == "true" else _is_statistics_mode(config)
+        test_summary_mode = _is_statistics_mode(config)
 
         if test_summary_mode:
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
@@ -4265,13 +4274,13 @@ async def process_searches(bot, once=False):
                             cat_path_ids = details.get("categoryIdPath", "").split("|")
                             if not any(cid in allowed_set for cid in cat_path_ids):
                                 logger.info("Skipping notification for item %s: category %s not allowed for search %s", item["item_id"], cat_id, search_cat)
-                                seen_ids.add(item["item_id"])
+                                mark_seen_item(item["item_id"])
                                 continue
 
                     # Block SELLER_DEFINED_VARIATIONS
                     if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
                         logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
-                        seen_ids.add(item["item_id"])
+                        mark_seen_item(item["item_id"])
                         continue
                     # Block constructor/bait listings (price mismatch between search results and API details)
                     api_price_val = details.get("price", {}).get("value")
@@ -4281,7 +4290,7 @@ async def process_searches(bot, once=False):
                             scraped_price = float(item["price"])
                             if abs(api_price - scraped_price) > 1.0:
                                 logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
-                                seen_ids.add(item["item_id"])
+                                mark_seen_item(item["item_id"])
                                 continue
                         except Exception as pe:
                             logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
@@ -4289,7 +4298,7 @@ async def process_searches(bot, once=False):
 
                 if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                     logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
-                    seen_ids.add(item["item_id"])
+                    mark_seen_item(item["item_id"])
                     continue
                 
                 if details:
@@ -4298,7 +4307,7 @@ async def process_searches(bot, once=False):
 
                 if not _passes_notification_price_and_auction_rules(item, search):
                     logger.info("Skipping notification for item %s: price/auction rules failed after details refresh", item["item_id"])
-                    seen_ids.add(item["item_id"])
+                    mark_seen_item(item["item_id"])
                     continue
 
                 sent = await send_notification(bot, item, search, stats_7d)
@@ -4306,7 +4315,7 @@ async def process_searches(bot, once=False):
                     total_new += 1
                     if not item.get("auction"):
                         config.add_item_hash(h)
-                    seen_ids.add(item["item_id"])
+                    mark_seen_item(item["item_id"])
                 else:
                     logger.warning("Notification failed; will retry item %s on next run", item["item_id"])
                 await asyncio.sleep(0.5)
@@ -4352,13 +4361,13 @@ async def process_searches(bot, once=False):
                                 cat_path_ids = details.get("categoryIdPath", "").split("|")
                                 if not any(cid in allowed_set for cid in cat_path_ids):
                                     logger.info("Skipping notification for item %s: category %s not allowed for search %s", item["item_id"], cat_id, search_cat)
-                                    seen_ids.add(item["item_id"])
+                                    mark_seen_item(item["item_id"])
                                     continue
 
                         # Block SELLER_DEFINED_VARIATIONS
                         if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
                             logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
-                            seen_ids.add(item["item_id"])
+                            mark_seen_item(item["item_id"])
                             continue
                         # Block constructor/bait listings (price mismatch between search results and API details)
                         api_price_val = details.get("price", {}).get("value")
@@ -4368,7 +4377,7 @@ async def process_searches(bot, once=False):
                                 scraped_price = float(item["price"])
                                 if abs(api_price - scraped_price) > 1.0:
                                     logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
-                                    seen_ids.add(item["item_id"])
+                                    mark_seen_item(item["item_id"])
                                     continue
                             except Exception as pe:
                                 logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
@@ -4376,7 +4385,7 @@ async def process_searches(bot, once=False):
 
                     if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                         logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
-                        seen_ids.add(item["item_id"])
+                        mark_seen_item(item["item_id"])
                         continue
                     
                     if details:
@@ -4385,7 +4394,7 @@ async def process_searches(bot, once=False):
 
                     if not _passes_notification_price_and_auction_rules(item, search):
                         logger.info("Skipping notification for item %s: price/auction rules failed after details refresh", item["item_id"])
-                        seen_ids.add(item["item_id"])
+                        mark_seen_item(item["item_id"])
                         continue
 
                     sent = await send_notification(bot, item, search, stats_7d)
@@ -4393,7 +4402,7 @@ async def process_searches(bot, once=False):
                         total_new += 1
                         if not item.get("auction"):
                             config.add_item_hash(h)
-                        seen_ids.add(item["item_id"])
+                        mark_seen_item(item["item_id"])
                     else:
                         logger.warning("Notification failed; will retry item %s on next run", item["item_id"])
                     await asyncio.sleep(0.5)
@@ -4415,7 +4424,7 @@ async def process_pending_callbacks(bot):
                 if data.startswith("hide:"):
                     item_id = data[5:]
                     config.ban_item(item_id)
-                    seen_ids.add(item_id)
+                    mark_seen_item(item_id)
                     try:
                         await update.callback_query.answer("❌ Объявление скрыто")
                         msg = update.callback_query.message
@@ -4727,7 +4736,7 @@ async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data.startswith("hide:"):
         item_id = data[5:]
         config.ban_item(item_id)
-        seen_ids.add(item_id)
+        mark_seen_item(item_id)
         await query.answer("❌ Объявление скрыто")
         try:
             await query.message.edit_reply_markup(reply_markup=None)
