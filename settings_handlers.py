@@ -275,6 +275,30 @@ def register_settings_handlers(app: Application, config):
             await target.edit_text(text, parse_mode="HTML", reply_markup=markup)
 
     async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        if context.args:
+            arg = context.args[0]
+            if arg.startswith("ban_"):
+                item_id = arg[4:]
+                config.ban_item(item_id)
+                from monitor import seen_ids, save_seen_ids
+                seen_ids.add(item_id)
+                save_seen_ids()
+                await update.message.reply_text(f"❌ Объявление {item_id} скрыто.")
+                return
+            elif arg.startswith("banseller_"):
+                encoded_seller = arg[10:]
+                import base64
+                try:
+                    padding = '=' * (4 - (len(encoded_seller) % 4))
+                    seller = base64.urlsafe_b64decode((encoded_seller + padding).encode('utf-8')).decode('utf-8')
+                except Exception:
+                    seller = encoded_seller
+                config.ban_seller_global(seller)
+                from price_history import delete_seller_data
+                delete_seller_data(seller)
+                await update.message.reply_text(f"🚫 Продавец {seller} забанен.")
+                return
+
         await update.message.reply_text("👋", reply_markup=_reply_keyboard())
         await _show_main(update.message, context, is_new_msg=True)
 

@@ -3337,6 +3337,29 @@ def _get_version_string():
         return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
 
 
+def get_category_emoji(cat_name):
+    cat_name = (cat_name or "").strip().lower()
+    mapping = {
+        "phones": "📱",
+        "phone_parts": "⚙️",
+        "phone_accessories": "🔌",
+        "tablets": "📟",
+        "laptops": "💻",
+        "computers": "🖥️",
+        "monitors": "🖥️",
+        "mice": "🖱️",
+        "headphones": "🎧",
+        "vr": "🥽",
+        "vr_headsets": "🥽",
+        "cameras": "📷",
+        "video_games": "🎮",
+        "consoles": "🎮",
+        "smart_watches": "⌚",
+        "electronics": "🔌",
+    }
+    return mapping.get(cat_name, "📦")
+
+
 async def send_notification(bot, item, search, stats_7d=None):
     item_url = item.get("url") or ""
     item_id = item.get("item_id")
@@ -3362,27 +3385,6 @@ async def send_notification(bot, item, search, stats_7d=None):
         type_str = "Sofortkauf+" if item["best_offer"] else "Sofortkauf"
 
     base_p = item["price"] + item["shipping_cost"]
-    # Price display: distinguish "buy now" from "auction"
-    if item["auction"] and not item["buy_now"]:
-        time_info = f" · {item['time_left']}" if item.get("time_left") else ""
-        price_line = f"💰 🔨 Ставка {base_p:.0f}€{time_info}"
-        type_line = f"🏷 {type_str}"
-    elif item["buy_now"]:
-        offer = " 🤝" if item["best_offer"] else ""
-        price_line = f"💰 🛒 {base_p:.0f}€{offer}"
-        type_line = f"🏷 {type_str}"
-    else:
-        price_line = f"💰 {base_p:.0f}€"
-        type_line = f"🏷 {type_str}"
-
-    location_flag = ""
-    if item["location"]:
-        if not _is_eu(item["location"]):
-            location_flag = "⚠️🌍 "
-        elif "deutschland" in item["location"].lower() or "germany" in item["location"].lower():
-            location_flag = "🇩🇪 "
-        else:
-            location_flag = "🇪🇺 "
 
     if item.get("is_pickup_only"):
         shipping_suffix = " (Nur Abholung)"
@@ -3391,11 +3393,32 @@ async def send_notification(bot, item, search, stats_7d=None):
 
     outlier = is_outlier(item["price"], search["id"])
 
-    header = "🚨 <b>Подозрительно дешевое предложение!</b>" if outlier else "🔔 <b>Найдено предложение!</b>"
+    # 1. Header: cat_emoji query_name with location & category symbols
+    category_name = search.get("filters", {}).get("category")
+    cat_emoji = get_category_emoji(category_name)
+    
+    query_esc = html.escape(search.get("display_name") or search.get("query", ""))
+    loc = search.get("filters", {}).get("location")
+    if loc == "de":
+        query_esc += " 🇩🇪"
+    elif loc == "eu":
+        query_esc += " 🇪🇺"
+    elif loc == "worldwide":
+        query_esc += " 🌍"
+        
+    cat_filter = search.get("filters", {}).get("category", "all")
+    if cat_filter and cat_filter != "all":
+        query_esc += " ⚙️"
+    else:
+        query_esc += " ♾️"
+        
+    header = f"{cat_emoji} <b>{query_esc}</b>"
+    if outlier:
+        header = f"🚨 {header}"
     if item.get("is_pickup_only"):
         header = "⚠️ <b>NUR ABHOLUNG (Без доставки)</b> ⚠️\n\n" + header
 
-    # Price display: distinguish "buy now" from "auction"
+    # 2. Price
     if item["auction"] and not item["buy_now"]:
         time_info = f" · {item['time_left']}" if item.get("time_left") else ""
         price_val_str = f"🔨 Ставка {base_p:.0f}€{time_info}"
@@ -3404,77 +3427,108 @@ async def send_notification(bot, item, search, stats_7d=None):
         price_val_str = f"🛒 {base_p:.0f}€{offer}"
     else:
         price_val_str = f"{base_p:.0f}€"
+        
+    price_line = f"💰 Цена: <a href=\"{html.escape(item_url)}\">{price_val_str}</a>{shipping_suffix}"
 
+    # 3. Limit: 💸 Лимит: 🎯 400€ ⬆️ 2500€ ⬇️ 50€
+    limit_val = search.get("filters", {}).get("limit_price")
+    max_price_val = search.get("filters", {}).get("max_price")
+    min_price_val = search.get("filters", {}).get("min_price")
+
+    limit_parts = []
+    if limit_val:
+        limit_parts.append(f"🎯 {limit_val:.0f}€")
+    limit_parts.append(f"⬆️ {max_price_val:.0f}€" if max_price_val else "⬆️ без лимита")
+    limit_parts.append(f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ без лимита")
+    
+    limit_line = f"💸 Лимит: {' '.join(limit_parts)}"
+
+    # 4. Description
+    desc_line = f"📌 Описание: {html.escape(item['title'])}"
+
+    # 5. Details table (Type, Condition, Seller)
+    def pad_lbl(lbl, width=11):
+        return lbl.ljust(width)
+        
+    cond_str = html.escape(item["condition"]) if item.get("condition") else "Не указано"
+    
     rating_count = item.get("seller_rating_count", 0)
     rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
-
-    lines = [
-        header,
-        "",
-        f"📌 <b>Товар:</b> <a href=\"{html.escape(item_url)}\">{html.escape(item['title'])}</a>",
-        f"💰 <b>Цена:</b> {price_val_str}{shipping_suffix}",
-        f"🏷 <b>Тип:</b> {type_str}",
-        f"👤 <b>Продавец:</b> {emoji} {html.escape(item['seller_name'])}{rating_str}",
-    ]
-
-    if item["condition"] or item["location"]:
-        cond_loc_parts = []
-        if item["condition"]:
-            cond_loc_parts.append(html.escape(item["condition"]))
-        if item["location"]:
-            cond_loc_parts.append(f"{location_flag}{html.escape(item['location'])}")
-        lines.append(f"📦 <b>Состояние & Локация:</b> {' | '.join(cond_loc_parts)}")
     
-    # Abholung hint: check if item is within ~100km using PLZ coordinates
+    table_lines = [
+        f"🏷 <code>{pad_lbl('Тип')}│  {type_str}</code>",
+        f"📦 <code>{pad_lbl('Состояние')}│  {cond_str}</code>",
+        f"👤 <code>{pad_lbl('Продавец')}│  {emoji} {html.escape(item['seller_name'])}{rating_str}</code>"
+    ]
+    table_text = "\n".join(table_lines)
+
+    # 6. Extra details
+    extra_lines = []
     if item["location"]:
         from plz_distance import is_nearby, get_distance_from_location
         nearby, dist_km = is_nearby(item["location"], max_km=100)
         if nearby:
             if dist_km is not None:
                 if dist_km > 120:
-                    # Berlin exception — far but reachable
-                    lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km (Berlin)")
+                    extra_lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km (Berlin)")
                 else:
-                    lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km")
+                    extra_lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km")
             else:
-                lines.append(f"📍 <b>Дистанция:</b> Abholung möglich")
-    
+                extra_lines.append(f"📍 <b>Дистанция:</b> Abholung möglich")
+                
     if item["total_price"] != item["price"] + item["shipping_cost"]:
         import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
-        lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.0f}€ пошлина → итого ~{item['total_price']:.0f}€")
+        extra_lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.0f}€ пошлина → итого ~{item['total_price']:.0f}€")
 
     if outlier:
         median = get_median_7d(search["id"])
         if median:
-            lines.append(f"\n⚠️ <b>Подозрительно низкая цена</b> (медиана: {median:.0f}€)\nНе учтено в статистике")
+            extra_lines.append(f"⚠️ <b>Подозрительно низкая цена</b> (медиана: {median:.0f}€)\nНе учтено в статистике")
     elif stats_7d and stats_7d.get("median"):
         median = stats_7d["median"]
         diff_pct = ((median - item["price"]) / median) * 100
         if diff_pct > 5:
-            lines.append(f"\n🔥 <b>Скидка:</b> {item['price']:.0f}€ — на {diff_pct:.0f}% ниже медианы! ({stats_7d['first_date']}–{stats_7d['last_date']})")
+            extra_lines.append(f"🔥 <b>Скидка:</b> {item['price']:.0f}€ — на {diff_pct:.0f}% ниже медианы! ({stats_7d['first_date']}–{stats_7d['last_date']})")
 
+    # 7. Assemble deep links
+    try:
+        bot_info = await bot.get_me()
+        bot_username = bot_info.username
+    except Exception:
+        bot_username = "FunPayMonitor1488_BOT"
+        
+    import base64
+    try:
+        encoded_seller = base64.urlsafe_b64encode(item['seller_name'].encode('utf-8')).decode('utf-8').rstrip('=')
+    except Exception:
+        encoded_seller = "unknown"
+        
+    hide_url = f"https://t.me/{bot_username}?start=ban_{item['item_id']}"
+    ban_url = f"https://t.me/{bot_username}?start=banseller_{encoded_seller}"
+    
+    links_line = f"🔗 <a href=\"{html.escape(item_url)}\">Ссылка</a>  │  ❌ <a href=\"{html.escape(hide_url)}\">Скрыть</a>  │  🚫 <a href=\"{html.escape(ban_url)}\">Бан</a>"
+    
     is_github = os.environ.get("GITHUB_ACTIONS") == "true"
-    source_line = "\n📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "\n📋 <b>Автомониторинг: Локальный 💻</b>"
-    source_line += f"\nℹ️ <i>Версия: {_get_version_string()}</i>\n🔎 Поиск: full html"
-    lines.append(source_line)
+    source_line = "🤖 GitHub автомониторинг" if is_github else "💻 Локальный автомониторинг"
 
-    caption = "\n".join(lines)
+    parts = [header, price_line, limit_line, desc_line, table_text]
+    if extra_lines:
+        parts.append("\n".join(extra_lines))
+    parts.append(links_line)
+    parts.append(source_line)
+
+    caption = "\n\n".join(parts)
     if len(caption) > 1024:
-        caption = caption[:1020] + "..."
-
-    keyboard = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("🔗 Открыть", url=item_url),
-            InlineKeyboardButton("❌ Скрыть", callback_data=f"hide:{item['item_id']}"),
-            InlineKeyboardButton("🚫 Бан", callback_data=f"ban:{item['seller_name']}"),
-        ]
-    ])
+        excess = len(caption) - 1021
+        truncated_title = item['title'][:-excess] + "..." if len(item['title']) > excess else item['title'][:20] + "..."
+        desc_line = f"📌 Описание: {html.escape(truncated_title)}"
+        parts[3] = desc_line
+        caption = "\n\n".join(parts)
+        if len(caption) > 1024:
+            caption = caption[:1020] + "..."
 
     img = item.get("image_url") or ""
     if img and not img.startswith("data:"):
-        # Upgrade thumbnail to s-l800: enough resolution for Telegram preview
-        # but ~5x faster to fetch than s-l1600 (which is the original size,
-        # often 1-3 MB and routinely trips Telegram's 30s download timeout).
         import re as _re
         img = _re.sub(r"/s-l\d+\.(jpg|jpeg|png|webp)", r"/s-l800.\1", img, flags=_re.IGNORECASE)
 
@@ -3485,7 +3539,7 @@ async def send_notification(bot, item, search, stats_7d=None):
             TELEGRAM_CHAT_ID,
             caption,
             img=img,
-            keyboard=keyboard,
+            keyboard=None,
             parse_mode="HTML"
         )
         return sent
