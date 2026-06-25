@@ -65,6 +65,8 @@ jobs:
           RUN_ITERATIONS: 29
         run: |
           set +e
+          git config --global user.name "E Bot"
+          git config --global user.email "bot@noreply.github.com"
           : > run_output_all.log
           for i in $(seq 1 "$RUN_ITERATIONS"); do
             echo "===== E MONITOR ITERATION $i/$RUN_ITERATIONS =====" | tee -a run_output_all.log
@@ -125,6 +127,14 @@ jobs:
               json.dump(logs, f, indent=1)
           print(f'Log: {entry}')
           PY
+
+            python config_crypt.py encrypt config.json config.json.enc
+            git add seen_ids.json config.json.enc run_log.json || true
+            if ! git diff --cached --quiet; then
+              git commit -m "Checkpoint monitor state"
+              git pull --rebase origin main || true
+              git push || true
+            fi
 
             if [ "$i" -lt "$RUN_ITERATIONS" ]; then
               sleep "$RUN_INTERVAL_SEC"
