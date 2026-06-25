@@ -3309,6 +3309,34 @@ def fetch_ebay_ex(search, force=False):
     return [], "cooldown"
 
 
+def _get_version_string():
+    try:
+        import subprocess
+        from datetime import datetime, timezone, timedelta
+        repo_dir = os.path.dirname(os.path.abspath(__file__))
+        res = subprocess.run(
+            ["git", "-C", repo_dir, "log", "-1", "--format=%ct"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        timestamp = int(res.stdout.strip())
+        dt = datetime.fromtimestamp(timestamp, timezone(timedelta(hours=2)))
+        months = [
+            "января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря",
+        ]
+        return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]}"
+    except Exception:
+        from datetime import datetime, timezone, timedelta
+        dt = datetime.now(timezone(timedelta(hours=2)))
+        months = [
+            "января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря",
+        ]
+        return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
+
+
 async def send_notification(bot, item, search, stats_7d=None):
     item_url = item.get("url") or ""
     item_id = item.get("item_id")
@@ -3427,6 +3455,7 @@ async def send_notification(bot, item, search, stats_7d=None):
 
     is_github = os.environ.get("GITHUB_ACTIONS") == "true"
     source_line = "\n📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "\n📋 <b>Автомониторинг: Локальный 💻</b>"
+    source_line += f"\nℹ️ <i>Версия: {_get_version_string()}</i>\n🔎 Поиск: full html"
     lines.append(source_line)
 
     caption = "\n".join(lines)
