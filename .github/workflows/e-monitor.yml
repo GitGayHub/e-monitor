@@ -129,7 +129,10 @@ jobs:
           PY
 
             python config_crypt.py encrypt config.json config.json.enc
-            git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json monitor_debug_tail.txt || true
+            git add seen_ids.json config.json.enc price_history.db run_log.json || true
+            [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
+            [ -f details_test_output.json ] && git add details_test_output.json
+            [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
             if ! git diff --cached --quiet; then
               git commit -m "Checkpoint monitor state"
               git pull --rebase --autostash origin main || true
@@ -161,11 +164,14 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           python config_crypt.py encrypt config.json config.json.enc
-          git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json monitor_debug_tail.txt || true
+          git add seen_ids.json config.json.enc price_history.db run_log.json || true
+          [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
+          [ -f details_test_output.json ] && git add details_test_output.json
+          [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
           if git diff --cached --quiet; then
             echo "No runtime state changes"
             exit 0
           fi
           git commit -m "Update monitor state"
-          git pull --rebase origin main || true
-          git push || true
+          git pull --rebase --autostash origin main || true
+          git push || (git pull --rebase --autostash origin main && git push) || true
