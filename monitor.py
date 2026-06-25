@@ -3510,6 +3510,7 @@ async def send_notification(bot, item, search, stats_7d=None):
     
     is_github = os.environ.get("GITHUB_ACTIONS") == "true"
     source_line = "🤖 GitHub автомониторинг" if is_github else "💻 Локальный автомониторинг"
+    source_line += f"\nℹ️ Версия: {_get_version_string()}\n🔎 Поиск: full html"
 
     parts = [header, price_line, limit_line, desc_line, table_text]
     if extra_lines:

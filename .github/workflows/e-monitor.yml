@@ -129,11 +129,11 @@ jobs:
           PY
 
             python config_crypt.py encrypt config.json config.json.enc
-            git add seen_ids.json config.json.enc run_log.json || true
+            git add seen_ids.json config.json.enc price_history.db run_log.json mobile/app_sync.json details_test_output.json monitor_debug_tail.txt || true
             if ! git diff --cached --quiet; then
               git commit -m "Checkpoint monitor state"
-              git pull --rebase origin main || true
-              git push || true
+              git pull --rebase --autostash origin main || true
+              git push || (git pull --rebase --autostash origin main && git push) || true
             fi
 
             if [ "$i" -lt "$RUN_ITERATIONS" ]; then
