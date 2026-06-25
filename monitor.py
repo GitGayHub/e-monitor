@@ -1416,17 +1416,17 @@ def _parse_time_left_to_minutes(time_left_str):
         return None
     days = hours = minutes = 0
     matched = False
-    m_days = re.search(r"(\d+)\s*(?:tag|t\b|d\b|day)", t)
+    m_days = re.search(r"(\d+)\s*(?:tag|t\b|d\b|day|д)", t)
     if m_days:
         days = int(m_days.group(1)); matched = True
-    m_hours = re.search(r"(\d+)\s*(?:std|h\b|hour)", t)
+    m_hours = re.search(r"(\d+)\s*(?:std|h\b|hour|ч)", t)
     if m_hours:
         hours = int(m_hours.group(1)); matched = True
-    m_minutes = re.search(r"(\d+)\s*(?:min|m\b|minute)", t)
+    m_minutes = re.search(r"(\d+)\s*(?:min|m\b|minute|мин)", t)
     if m_minutes:
         minutes = int(m_minutes.group(1)); matched = True
     if not matched:
-        if re.search(r"\b\d+\s*(?:sek|sec|second|seconds|s)\b", t):
+        if re.search(r"\b\d+\s*(?:sek|sec|second|seconds|s|сек)\b", t):
             return 1
         return None
     return days * 1440 + hours * 60 + minutes
@@ -2768,7 +2768,7 @@ def _trust_emoji(trust):
         return "✅"
     if trust == "newbie":
         return "⚠️"
-    return "⚠️❗"
+    return "⚠️❗️"
 
 
 def _is_eu(location_text):
@@ -3336,7 +3336,6 @@ def _get_version_string():
         ]
         return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
 
-
 def get_category_emoji(cat_name):
     cat_name = (cat_name or "").strip().lower()
     mapping = {
@@ -3418,49 +3417,72 @@ async def send_notification(bot, item, search, stats_7d=None):
     if item.get("is_pickup_only"):
         header = "⚠️ <b>NUR ABHOLUNG (Без доставки)</b> ⚠️\n\n" + header
 
-    # 2. Price
-    if item["auction"] and not item["buy_now"]:
-        time_info = f" · {item['time_left']}" if item.get("time_left") else ""
-        price_val_str = f"🔨 Ставка {base_p:.0f}€{time_info}"
-    elif item["buy_now"]:
-        offer = " 🤝" if item["best_offer"] else ""
-        price_val_str = f"🛒 {base_p:.0f}€{offer}"
-    else:
-        price_val_str = f"{base_p:.0f}€"
-        
-    price_line = f"💰 Цена: <a href=\"{html.escape(item_url)}\">{price_val_str}</a>{shipping_suffix}"
+    # Helper padding function
+    def pad_lbl(lbl, width=14):
+        return lbl.ljust(width)
 
-    # 3. Limit: 💸 Лимит: 🎯 400€ ⬆️ 2500€ ⬇️ 50€
+    # 2. Price Line
+    esc_url = html.escape(item_url)
+    if item["auction"] and not item["buy_now"]:
+        bids_count = item.get("bids_count", 0)
+        time_left = item.get("time_left", "")
+        minutes = _parse_time_left_to_minutes(time_left)
+        circle = "🟠" if (minutes is not None and minutes > 1440) else "🟢"
+        
+        if item["best_offer"]:
+            price_val_str = f"🤝{base_p:.0f}€"
+        else:
+            price_val_str = f"{base_p:.0f}€"
+            
+        price_line = f"<a href=\"{esc_url}\">🎲</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a> 🔨 {bids_count} Bids ⏳{time_left} {circle}"
+    else:
+        if item["best_offer"]:
+            price_val_str = f"🤝 {base_p:.0f}€"
+        else:
+            price_val_str = f"{base_p:.0f}€"
+            
+        price_line = f"<a href=\"{esc_url}\">🛍</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a>"
+
+    # Add shipping suffix to price line if present
+    if shipping_suffix:
+        price_line += f" {shipping_suffix}"
+
+    # 3. Type Line
+    type_line = f"🏷 Тип: {type_str}"
+
+    # 4. Description Line
+    desc_line = f"📌 Описание: {html.escape(item['title'])}"
+
+    # 5. Details Table: Condition, Country, Seller, Limit
+    cond_str = html.escape(item["condition"]) if item.get("condition") else "Не указано"
+    cond_line = f"📦 <code>{pad_lbl('Состояние')}│  </code>{cond_str}"
+
+    country_val = "Не указано"
+    if item["location"]:
+        loc_lower = item["location"].lower()
+        if "deutschland" in loc_lower or "germany" in loc_lower or "германи" in loc_lower:
+            country_val = "🇩🇪 Германия"
+        elif not _is_eu(item["location"]):
+            country_val = f"⚠️🌍 {html.escape(item['location'])}"
+        else:
+            country_val = f"🇪🇺 {html.escape(item['location'])}"
+    country_line = f"🌐 <code>{pad_lbl('Страна')}│  </code>{country_val}"
+
+    rating_count = item.get("seller_rating_count", 0)
+    rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
+    seller_val = f"{emoji} {html.escape(item['seller_name'])}{rating_str}"
+    seller_line = f"👤 <code>{pad_lbl('Продавец')}│  </code>{seller_val}"
+
     limit_val = search.get("filters", {}).get("limit_price")
     max_price_val = search.get("filters", {}).get("max_price")
     min_price_val = search.get("filters", {}).get("min_price")
 
     limit_parts = []
-    if limit_val:
-        limit_parts.append(f"🎯 {limit_val:.0f}€")
-    limit_parts.append(f"⬆️ {max_price_val:.0f}€" if max_price_val else "⬆️ без лимита")
-    limit_parts.append(f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ без лимита")
-    
-    limit_line = f"💸 Лимит: {' '.join(limit_parts)}"
-
-    # 4. Description
-    desc_line = f"📌 Описание: {html.escape(item['title'])}"
-
-    # 5. Details table (Type, Condition, Seller)
-    def pad_lbl(lbl, width=11):
-        return lbl.ljust(width)
-        
-    cond_str = html.escape(item["condition"]) if item.get("condition") else "Не указано"
-    
-    rating_count = item.get("seller_rating_count", 0)
-    rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
-    
-    table_lines = [
-        f"🏷 <code>{pad_lbl('Тип')}│  {type_str}</code>",
-        f"📦 <code>{pad_lbl('Состояние')}│  {cond_str}</code>",
-        f"👤 <code>{pad_lbl('Продавец')}│  {emoji} {html.escape(item['seller_name'])}{rating_str}</code>"
-    ]
-    table_text = "\n".join(table_lines)
+    limit_parts.append(f"🎯 {limit_val:.0f}€" if limit_val else "🎯 ♾️")
+    limit_parts.append(f"⬆️ {max_price_val:.0f}€" if max_price_val else "⬆️ ♾️")
+    limit_parts.append(f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ ♾️")
+    limit_val_str = " ".join(limit_parts)
+    limit_line = f"💸 <code>{pad_lbl('Лимит:')}│  </code>{limit_val_str}"
 
     # 6. Extra details
     extra_lines = []
@@ -3512,11 +3534,13 @@ async def send_notification(bot, item, search, stats_7d=None):
     source_line = "🤖 GitHub автомониторинг" if is_github else "💻 Локальный автомониторинг"
     source_line += f"\nℹ️ Версия: {_get_version_string()}\n🔎 Поиск: full html"
 
-    parts = [header, price_line, limit_line, desc_line, table_text]
+    details_block = f"{cond_line}\n{country_line}\n{seller_line}\n{limit_line}"
+
+    parts = [header, price_line, type_line, desc_line, details_block]
     if extra_lines:
         parts.append("\n".join(extra_lines))
-    parts.append(links_line)
     parts.append(source_line)
+    parts.append(links_line)
 
     caption = "\n\n".join(parts)
     if len(caption) > 1024:
