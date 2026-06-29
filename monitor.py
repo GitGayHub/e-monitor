@@ -2768,6 +2768,7 @@ def _fetch_item_details_html(item_id):
 
 def _fetch_item_details(item_id):
     """Fetches the item details. First tries HTML scraping fallback, then falls back to eBay Browse API details."""
+    html_details = None
     try:
         html_details = _fetch_item_details_html(item_id)
         if html_details is not None and html_details.get("price") and html_details.get("itemEndDate"):
@@ -2800,6 +2801,10 @@ def _fetch_item_details(item_id):
         )
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
+        if html_details:
+            for key in ("description", "itemLocationText", "title", "itemEndDate", "price"):
+                if html_details.get(key) and not data.get(key):
+                    data[key] = html_details[key]
         return data
     except urllib.error.HTTPError as e:
         try:
@@ -2807,10 +2812,10 @@ def _fetch_item_details(item_id):
             logger.warning("_fetch_item_details: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
         except Exception:
             pass
-        return None
+        return html_details
     except Exception as e:
         logger.warning("_fetch_item_details: eBay API network error for item %s: %s", item_id, e)
-        return None
+        return html_details
 
 
 def _clean_description(html_text):

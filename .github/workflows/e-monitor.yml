@@ -23,7 +23,7 @@ concurrency:
 jobs:
   check_e:
     runs-on: ubuntu-latest
-    timeout-minutes: 14
+    timeout-minutes: 9
     permissions:
       contents: write
 
@@ -63,7 +63,7 @@ jobs:
           EBAY_MARKETPLACE_ID: EBAY_DE
           EBAY_SOURCE: auto
           RUN_INTERVAL_SEC: 120
-          RUN_ITERATIONS: 3
+          RUN_ITERATIONS: 2
         run: |
           set +e
           git config --global user.name "E Bot"
