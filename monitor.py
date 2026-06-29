@@ -460,7 +460,8 @@ CATEGORY_ACCESSORY_WORDS = {
         "kopfhoererbuegel", "kabelanschluss", "drahtanschluss", "12-pin",
         "kopfbügel abdeckung", "kopfbuegel abdeckung", "stirnband abdeckung",
         "schaumstoff", "einlagen", "polster paar", "nur ohrpolster",
-        "foam earpad", "ear cushions", "pads pair",
+        "foam earpad", "ear cushions", "pads pair", "earmuff", "earmuffs",
+        "ear muff", "ear muffs", "gehoerschuetzer", "gehoerschutz",
     ),
     "vr_headsets": (
         "lens protector", "protector cover", "controller stand", "halterung",
@@ -521,7 +522,8 @@ CATEGORY_HARD_PART_WORDS = {
         "lautsprechertreiber", "kopfhoererbuegel", "kabelanschluss", "drahtanschluss", "12-pin",
         "kopfbügel abdeckung", "kopfbuegel abdeckung", "stirnband abdeckung",
         "schaumstoff", "einlagen", "polster paar", "nur ohrpolster",
-        "foam earpad", "ear cushions", "pads pair", "schrauben",
+        "foam earpad", "ear cushions", "pads pair", "earmuff", "earmuffs",
+        "ear muff", "ear muffs", "gehoerschuetzer", "gehoerschutz", "schrauben",
     ),
     "vr_headsets": (
         "lens protector", "gurte", "strap", "controllergriffe", "aufsatz", "lentes",
@@ -975,7 +977,7 @@ def _is_for_accessory_title(title_norm, query_norm, category):
     # Detect if listing is for an accessory by checking for target compatibility phrases (e.g. "for PS5")
     # if the main device keyword/model only appears after the "for" term (or not at all).
     for_patterns = re.compile(
-        r"\b(?:fuer|für|for|voor|para|pour|per|geeignet\s+fuer|geeignet\s+für|compatible\s+(?:with|to|con|avec)?|kompatibel\s+(?:mit|zu)?|compatibile\s+(?:con)?)\b",
+        r"\b(?:fuer|für|f\?{1,3}r|for|voor|para|pour|per|geeignet\s+(?:fuer|für|f\?{1,3}r)|compatible\s*(?:with|to|con|avec)?|kompatib(?:el|le)\s*(?:mit|zu|fuer|für|f\?{1,3}r)?|compatibile\s*(?:con)?)\b",
         re.IGNORECASE
     )
     for_match = for_patterns.search(title_norm)
@@ -1052,10 +1054,25 @@ def _is_display_replacement_description(text_norm):
     return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
 
 
+def _has_damage_word(text_norm):
+    damage_words = r"schaden|schaeden|beschaedigt|beschaedigung|damage|damaged|defect|defective"
+    neg = r"(?<!ohne\s)(?<!kein\s)(?<!keine\s)(?<!keinen\s)(?<!nicht\s)(?<!no\s)(?<!without\s)"
+    if re.search(rf"\b{neg}(?:{damage_words})\b", text_norm, re.IGNORECASE):
+        return True
+    part_words = r"display|bildschirm|screen|oled|glas|glass|scheibe|rueckseite|backcover|back\s+cover|backglass|back\s+glass"
+    if re.search(rf"\b(?:{part_words})\b.{{0,50}}\b{neg}(?:{damage_words})\b", text_norm, re.IGNORECASE):
+        return True
+    if re.search(rf"\b{neg}(?:{damage_words})\b.{{0,50}}\b(?:{part_words})\b", text_norm, re.IGNORECASE):
+        return True
+    return False
+
+
 def _is_category_blocked_title(title_norm, category, query_norm=None):
     if any(_has_term(title_norm, w) for w in BAD_CONDITION_WORDS):
         return True
     if _is_display_replacement(title_norm):
+        return True
+    if _has_damage_word(title_norm):
         return True
     # Check for screen/backcover lifting/loose/separation
     if re.search(r"\b(?:screen|display|backcover|glass|glas|rueckseite)\b.*\b(?:lifted|lifting|loose|geloest|steht\s+ab|lose|abgeloest|abgeht)\b", title_norm):
@@ -1409,6 +1426,72 @@ EU_COUNTRIES = {
     "malta", "mt", "zypern", "cyprus", "cy",
 }
 
+COUNTRY_INFO = {
+    "DE": ("\U0001f1e9\U0001f1ea", "\u0413\u0435\u0440\u043c\u0430\u043d\u0438\u044f", True),
+    "GB": ("\U0001f1ec\U0001f1e7", "\u0412\u0435\u043b\u0438\u043a\u043e\u0431\u0440\u0438\u0442\u0430\u043d\u0438\u044f", False),
+    "UK": ("\U0001f1ec\U0001f1e7", "\u0412\u0435\u043b\u0438\u043a\u043e\u0431\u0440\u0438\u0442\u0430\u043d\u0438\u044f", False),
+    "US": ("\U0001f1fa\U0001f1f8", "\u0421\u0428\u0410", False),
+    "CN": ("\U0001f1e8\U0001f1f3", "\u041a\u0438\u0442\u0430\u0439", False),
+    "JP": ("\U0001f1ef\U0001f1f5", "\u042f\u043f\u043e\u043d\u0438\u044f", False),
+    "FR": ("\U0001f1eb\U0001f1f7", "\u0424\u0440\u0430\u043d\u0446\u0438\u044f", True),
+    "IT": ("\U0001f1ee\U0001f1f9", "\u0418\u0442\u0430\u043b\u0438\u044f", True),
+    "ES": ("\U0001f1ea\U0001f1f8", "\u0418\u0441\u043f\u0430\u043d\u0438\u044f", True),
+    "NL": ("\U0001f1f3\U0001f1f1", "\u041d\u0438\u0434\u0435\u0440\u043b\u0430\u043d\u0434\u044b", True),
+    "AT": ("\U0001f1e6\U0001f1f9", "\u0410\u0432\u0441\u0442\u0440\u0438\u044f", True),
+    "PL": ("\U0001f1f5\U0001f1f1", "\u041f\u043e\u043b\u044c\u0448\u0430", True),
+    "BE": ("\U0001f1e7\U0001f1ea", "\u0411\u0435\u043b\u044c\u0433\u0438\u044f", True),
+    "PT": ("\U0001f1f5\U0001f1f9", "\u041f\u043e\u0440\u0442\u0443\u0433\u0430\u043b\u0438\u044f", True),
+    "SE": ("\U0001f1f8\U0001f1ea", "\u0428\u0432\u0435\u0446\u0438\u044f", True),
+    "DK": ("\U0001f1e9\U0001f1f0", "\u0414\u0430\u043d\u0438\u044f", True),
+    "FI": ("\U0001f1eb\U0001f1ee", "\u0424\u0438\u043d\u043b\u044f\u043d\u0434\u0438\u044f", True),
+    "IE": ("\U0001f1ee\U0001f1ea", "\u0418\u0440\u043b\u0430\u043d\u0434\u0438\u044f", True),
+    "CZ": ("\U0001f1e8\U0001f1ff", "\u0427\u0435\u0445\u0438\u044f", True),
+    "CH": ("\U0001f1e8\U0001f1ed", "\u0428\u0432\u0435\u0439\u0446\u0430\u0440\u0438\u044f", False),
+    "NO": ("\U0001f1f3\U0001f1f4", "\u041d\u043e\u0440\u0432\u0435\u0433\u0438\u044f", False),
+    "CA": ("\U0001f1e8\U0001f1e6", "\u041a\u0430\u043d\u0430\u0434\u0430", False),
+    "AU": ("\U0001f1e6\U0001f1fa", "\u0410\u0432\u0441\u0442\u0440\u0430\u043b\u0438\u044f", False),
+}
+
+COUNTRY_ALIASES = {
+    "deutschland": "DE", "germany": "DE", "germania": "DE",
+    "grossbritannien": "GB", "great britain": "GB", "united kingdom": "GB",
+    "england": "GB", "scotland": "GB", "wales": "GB",
+    "usa": "US", "united states": "US", "china": "CN", "japan": "JP",
+    "frankreich": "FR", "france": "FR", "italien": "IT", "italy": "IT",
+    "spanien": "ES", "spain": "ES", "niederlande": "NL", "netherlands": "NL",
+    "oesterreich": "AT", "osterreich": "AT", "austria": "AT",
+    "polen": "PL", "poland": "PL", "belgien": "BE", "belgium": "BE",
+    "portugal": "PT", "schweden": "SE", "sweden": "SE",
+    "daenemark": "DK", "danemark": "DK", "denmark": "DK",
+    "finnland": "FI", "finland": "FI", "irland": "IE", "ireland": "IE",
+    "tschechien": "CZ", "czech": "CZ", "schweiz": "CH", "switzerland": "CH",
+    "norwegen": "NO", "norway": "NO", "kanada": "CA", "canada": "CA",
+    "australien": "AU", "australia": "AU",
+}
+
+
+def _country_code_from_location(location_text):
+    if not location_text:
+        return None
+    raw = str(location_text).strip()
+    for part in reversed([p.strip() for p in re.split(r"[,|/]", raw) if p.strip()]):
+        token = re.sub(r"[^A-Za-z]", "", part).upper()
+        if token in COUNTRY_INFO:
+            return token
+    loc = _normalize(raw)
+    for alias, code in sorted(COUNTRY_ALIASES.items(), key=lambda x: len(x[0]), reverse=True):
+        if _has_term(loc, alias):
+            return code
+    return None
+
+
+def _format_country_for_notification(location_text):
+    code = _country_code_from_location(location_text)
+    if code and code in COUNTRY_INFO:
+        flag, name, _is_eu_country = COUNTRY_INFO[code]
+        return f"{flag} {name}"
+    return "\u041d\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043e"
+
 
 def _parse_time_left_to_minutes(time_left_str):
     t = (time_left_str or "").lower().strip()
@@ -1486,8 +1569,13 @@ def _parse_end_date_to_seconds(end_date_str):
 
 
 def _normalize(text):
+    if text is None:
+        return ""
     t = text.lower()
     t = t.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")
+    t = t.replace("\ufffd", "?")
+    t = re.sub(r"\bf\?{1,3}r\b", "fuer", t)
+    t = re.sub(r"\bgeh\?rsch\?{1,3}tzer\b", "gehoerschuetzer", t)
     t = t.replace("-", " ")  # Treat hyphens as spaces
     t = re.sub(r"\b(\d+)\s+(gb|go|tb)\b", r"\1\2", t)
     t = re.sub(r"\s+", " ", t)
@@ -2644,6 +2732,18 @@ def _fetch_item_details_html(item_id):
         if desc_div:
             desc_html = str(desc_div)
 
+    location_text = ""
+    page_lines = [line.strip() for line in soup.get_text("\n", strip=True).splitlines() if line.strip()]
+    for idx, line in enumerate(page_lines):
+        m = re.match(r"^(?:Standort|Artikelstandort|Item location|Located in)\s*:?\s*(.+)$", line, re.IGNORECASE)
+        if m and m.group(1).strip():
+            location_text = m.group(1).strip()
+            break
+        if re.match(r"^(?:Standort|Artikelstandort|Item location|Located in)\s*:?\s*$", line, re.IGNORECASE):
+            if idx + 1 < len(page_lines):
+                location_text = page_lines[idx + 1].strip()
+                break
+
     if end_date_iso:
         end_date_iso = end_date_iso.strip()
         if not end_date_iso.endswith("Z") and "+" not in end_date_iso and len(end_date_iso) >= 19:
@@ -2656,6 +2756,8 @@ def _fetch_item_details_html(item_id):
         "itemEndDate": end_date_iso,
         "title": title_text,
     }
+    if location_text:
+        result["itemLocationText"] = location_text
     if item_group_type:
         result["itemGroupType"] = item_group_type
     if price_val is not None:
@@ -2753,6 +2855,50 @@ def _is_description_blocked(desc_html, category):
     return False
 
 
+def _details_search_text(details):
+    if not details:
+        return ""
+    parts = []
+    for key in ("title", "shortDescription", "subtitle", "description", "itemLocationText"):
+        val = details.get(key)
+        if val:
+            parts.append(str(val))
+    for key in ("categoryPath", "categoryIdPath", "categoryName"):
+        val = details.get(key)
+        if val:
+            parts.append(str(val))
+    for aspect in details.get("localizedAspects") or []:
+        if not isinstance(aspect, dict):
+            continue
+        name = aspect.get("name")
+        value = aspect.get("value")
+        if name or value:
+            parts.append(f"{name or ''} {value or ''}")
+    loc = _api_location(details)
+    if loc:
+        parts.append(loc)
+    return " ".join(parts)
+
+
+def _is_details_blocked(details, search):
+    if not details:
+        return False
+    filters = search.get("filters", {}) or {}
+    query_norm = _normalize(search.get("query", ""))
+    category = _effective_category(filters.get("category", "all"), query_norm)
+    details_norm = _normalize(_details_search_text(details))
+    if not details_norm:
+        return False
+    if _is_category_blocked_title(details_norm, category, query_norm):
+        logger.info("Details blocked due to category/accessory/damage text")
+        return True
+    if category == "headphones":
+        if re.search(r"\b(?:produktart|type)\s+(?:earmuffs?|ear\s+muffs?|gehoerschuetzer|gehoerschutz)\b", details_norm):
+            logger.info("Details blocked: headphone listing is earmuffs/ear protectors")
+            return True
+    return False
+
+
 def _seller_trust(rating_count, rating_percent, top_rated=False):
     if top_rated and rating_count >= 3:
         return "trusted"
@@ -2772,6 +2918,9 @@ def _trust_emoji(trust):
 
 
 def _is_eu(location_text):
+    code = _country_code_from_location(location_text)
+    if code and code in COUNTRY_INFO:
+        return COUNTRY_INFO[code][2]
     loc = location_text.lower().strip()
     # Known non-EU countries that must NOT match
     non_eu = ("großbritannien", "grossbritannien", "great britain", "united kingdom",
@@ -2794,6 +2943,9 @@ def _is_eu(location_text):
 
 
 def _is_clearly_non_germany_location(location_text):
+    code = _country_code_from_location(location_text)
+    if code:
+        return code != "DE"
     loc = _normalize(location_text)
     non_de_terms = (
         "grossbritannien", "great britain", "united kingdom", "uk", "england",
@@ -2855,7 +3007,7 @@ def _calculate_total(item, settings, details=None):
         if api_shipping is not None:
             item["shipping_cost"] = api_shipping
         
-        api_loc = _api_location(details)
+        api_loc = _api_location(details) or details.get("itemLocationText", "")
         if api_loc:
             item["location"] = api_loc
 
@@ -3457,15 +3609,7 @@ async def send_notification(bot, item, search, stats_7d=None):
     cond_str = html.escape(item["condition"]) if item.get("condition") else "Не указано"
     cond_line = f"📦 <code>{pad_lbl('Состояние')}│  </code>{cond_str}"
 
-    country_val = "Не указано"
-    if item["location"]:
-        loc_lower = item["location"].lower()
-        if "deutschland" in loc_lower or "germany" in loc_lower or "германи" in loc_lower:
-            country_val = "🇩🇪 Германия"
-        elif not _is_eu(item["location"]):
-            country_val = f"⚠️🌍 {html.escape(item['location'])}"
-        else:
-            country_val = f"🇪🇺 {html.escape(item['location'])}"
+    country_val = _format_country_for_notification(item.get("location", ""))
     country_line = f"🌐 <code>{pad_lbl('Страна')}│  </code>{country_val}"
 
     rating_count = item.get("seller_rating_count", 0)
@@ -3728,6 +3872,9 @@ async def _validate_candidate(item, search):
 
         # Update item details with the actual API values (handles conversion and shipping)
         _calculate_total(item, config.get_settings(), details)
+
+        if _is_details_blocked(details, search):
+            return False, details
 
         # Block constructor/bait listings (skip for auctions and check in converted currency)
         if scraped_price is not None and not item.get("auction"):
@@ -4404,6 +4551,11 @@ async def process_searches(bot, once=False):
                             logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
                     desc = details.get("description", "")
 
+                if details and _is_details_blocked(details, search):
+                    logger.info("Skipping notification for item %s: blocked by details check", item["item_id"])
+                    mark_seen_item(item["item_id"])
+                    continue
+
                 if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                     logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                     mark_seen_item(item["item_id"])
@@ -4490,6 +4642,11 @@ async def process_searches(bot, once=False):
                             except Exception as pe:
                                 logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
                         desc = details.get("description", "")
+
+                    if details and _is_details_blocked(details, search):
+                        logger.info("Skipping notification for item %s: blocked by details check", item["item_id"])
+                        mark_seen_item(item["item_id"])
+                        continue
 
                     if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                         logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
