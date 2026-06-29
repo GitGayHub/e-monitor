@@ -23,7 +23,7 @@ concurrency:
 jobs:
   check_e:
     runs-on: ubuntu-latest
-    timeout-minutes: 9
+    timeout-minutes: 20
     permissions:
       contents: write
 
@@ -68,6 +68,14 @@ jobs:
           set +e
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
+          MONITOR_MODE="$(tr -d '\r\n[:space:]' < mode.txt 2>/dev/null || echo normal)"
+          if [ "$MONITOR_MODE" = "statistics" ] && [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            echo "Statistics mode is active; skipping scheduled run. Use workflow_dispatch for a statistics report."
+            exit 0
+          fi
+          if [ "$MONITOR_MODE" = "statistics" ]; then
+            RUN_ITERATIONS=1
+          fi
           : > run_output_all.log
           for i in $(seq 1 "$RUN_ITERATIONS"); do
             echo "===== E MONITOR ITERATION $i/$RUN_ITERATIONS =====" | tee -a run_output_all.log
