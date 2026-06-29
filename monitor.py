@@ -264,6 +264,7 @@ PHONE_HARD_ACCESSORY_WORDS = (
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
 # No override possible. A title with "motherboard" or "digitizer" is never a phone for sale.
 PHONE_HARD_PART_WORDS = (
+    "display", "bildschirm", "screen", "oled",
     "lcd", "digitizer", "touch screen", "screen replacement",
     "screen assembly", "display assembly", "charging port", "back glass",
     "back cover", "housing", "spare part", "spare parts",
@@ -2864,7 +2865,10 @@ def _details_search_text(details):
     if not details:
         return ""
     parts = []
-    for key in ("title", "shortDescription", "subtitle", "description", "itemLocationText"):
+    # Keep this scoped to listing metadata. The full eBay description iframe can
+    # include promoted/recommended items and other page chrome; description risk
+    # is handled separately by _is_description_blocked().
+    for key in ("title", "shortDescription", "subtitle", "itemLocationText"):
         val = details.get(key)
         if val:
             parts.append(str(val))
@@ -2894,6 +2898,9 @@ def _is_details_blocked(details, search):
     details_norm = _normalize(_details_search_text(details))
     if not details_norm:
         return False
+    if category == "phones" and _is_phone_accessory_title(details_norm):
+        logger.info("Details blocked due to phone accessory/part metadata")
+        return True
     if _is_category_blocked_title(details_norm, category, query_norm):
         logger.info("Details blocked due to category/accessory/damage text")
         return True
