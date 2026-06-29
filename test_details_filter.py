@@ -8,6 +8,7 @@ class DetailsFilterTest(unittest.TestCase):
         search = {"query": "iPhone 15 Pro Max", "filters": {"category": "phones"}}
         details = {
             "title": "Apple iPhone 15 Pro Max Schwarz 256GB",
+            "shortDescription": "6,7 Zoll Super Retina XDR Display",
             "categoryName": "Handys & Smartphones",
             "itemLocationText": "Deutschland",
             "description": "<div>Andere kauften auch: iPhone 15 Pro Max Display Schaden</div>",
