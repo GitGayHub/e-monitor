@@ -2898,9 +2898,17 @@ def _is_details_blocked(details, search):
     details_norm = _normalize(_details_search_text(details))
     if not details_norm:
         return False
-    if category == "phones" and _is_phone_accessory_title(details_norm):
-        logger.info("Details blocked due to phone accessory/part metadata")
-        return True
+    if category == "phones":
+        phone_title_norm = _normalize(" ".join(
+            str(details.get(k) or "") for k in ("title", "subtitle")
+        ))
+        if phone_title_norm and _is_phone_accessory_title(phone_title_norm):
+            logger.info("Details blocked due to phone accessory/part title")
+            return True
+        if phone_title_norm and _is_category_blocked_title(phone_title_norm, category, query_norm):
+            logger.info("Details blocked due to phone damage/part title")
+            return True
+        return False
     if _is_category_blocked_title(details_norm, category, query_norm):
         logger.info("Details blocked due to category/accessory/damage text")
         return True
@@ -4178,8 +4186,9 @@ async def process_searches(bot, once=False):
                 fetch_errors = []
                 for label, stats_search in stats_fetches:
                     bucket_results, bucket_err = await asyncio.to_thread(fetch_ebay_ex, stats_search, force=True)
-                    if bucket_err in ("blocked", "rate_limit", "cooldown") and _ebay_api_configured():
-                        logger.info("  %s: HTML blocked for %s, falling back to API", search["query"], label)
+                    if (bucket_err in ("blocked", "rate_limit", "cooldown") or not bucket_results) and _ebay_api_configured():
+                        reason = bucket_err or "empty"
+                        logger.info("  %s: HTML %s for %s, falling back to API", search["query"], reason, label)
                         api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, stats_search, force=True)
                         if not api_err:
                             bucket_results = api_results
