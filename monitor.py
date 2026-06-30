@@ -767,6 +767,8 @@ def _check_separator(sep):
 
 def _matches_console_query_model(title_norm, query_norm):
     if "ps5" in query_norm and "pro" in query_norm:
+        if _is_ps5_vr_only_title(title_norm):
+            return False
         patterns = [
             r"\b(?:ps5|playstation\s*5|ps\s*5)([^a-z0-9]{0,10})pro\b",
             r"\bpro([^a-z0-9]{0,10})(?:konsole|console|system)\b",
@@ -799,6 +801,43 @@ def _matches_console_query_model(title_norm, query_norm):
                     return True
         return False
     return True
+
+
+def _is_ps5_pro_search_query(query_norm):
+    return (
+        "playstation 5 pro" in query_norm
+        or "ps5 pro" in query_norm
+        or (
+            "pro" in _query_words(query_norm)
+            and any(
+                all(_has_query_word(" ".join(alt), w) for w in ("playstation", "5")) or "ps5" in alt
+                for alt_group in _query_match_plan(query_norm)[1]
+                for alt in alt_group
+            )
+        )
+    )
+
+
+def _has_ps5_pro_console_hint(title_norm):
+    if re.search(r"\b(?:ps5|playstation\s*5|ps\s*5)\s*pro\b", title_norm):
+        return True
+    return _has_ps5_console_hardware_hint(title_norm)
+
+
+def _has_ps5_console_hardware_hint(title_norm):
+    if re.search(r"\b(?:playstation|ps5|ps\s*5).{0,30}\b(?:konsole|console|spielkonsole|system)\b", title_norm):
+        return True
+    if re.search(r"\b(?:konsole|console|spielkonsole|system).{0,30}\b(?:playstation|ps5|ps\s*5)\b", title_norm):
+        return True
+    if re.search(r"\b(?:2\s*tb|cfi-\d|digital edition|disc edition|disk edition|mit laufwerk|ohne disk laufwerk)\b", title_norm):
+        return True
+    return False
+
+
+def _is_ps5_vr_only_title(title_norm):
+    if not any(term in title_norm for term in ("vr2", "psvr2", "ps vr2", "brille", "viewer", "sense controller")):
+        return False
+    return not _has_ps5_console_hardware_hint(title_norm)
 
 
 def _matches_phone_query_model(title_norm, query_norm):
@@ -1215,20 +1254,13 @@ def _matches_category_query(title_norm, category, query_norm):
             return any(term in title_norm for term in ("kopfhoerer", "headphones", "over-ear", "over ear"))
         return True
 
-    is_ps5_pro_query = (
-        "playstation 5 pro" in query_norm
-        or "ps5 pro" in query_norm
-        or (
-            "pro" in _query_words(query_norm)
-            and any(
-                all(_has_query_word(" ".join(alt), w) for w in ("playstation", "5")) or "ps5" in alt
-                for alt_group in _query_match_plan(query_norm)[1]
-                for alt in alt_group
-            )
-        )
-    )
+    is_ps5_pro_query = _is_ps5_pro_search_query(query_norm)
     if is_ps5_pro_query:
-        return ("playstation 5 pro" in title_norm or "ps5 pro" in title_norm) and not _is_category_blocked_title(title_norm, category, query_norm)
+        return (
+            _has_ps5_pro_console_hint(title_norm)
+            and not _is_ps5_vr_only_title(title_norm)
+            and not _is_category_blocked_title(title_norm, category, query_norm)
+        )
 
     if category == "consoles":
         return _is_console_device_title(title_norm, query_norm)
@@ -1252,6 +1284,9 @@ def _is_console_device_title(title_norm, query_norm):
     Limited editions like "PS5 Spider-Man Edition Konsole" pass because
     they contain "konsole". Games like "Spider-Man PS5" don't.
     """
+    if _is_ps5_pro_search_query(query_norm):
+        return _has_ps5_pro_console_hint(title_norm) and not _is_ps5_vr_only_title(title_norm)
+
     # Must have at least one console device hint to pass
     has_device_hint = any(_has_term(title_norm, w) for w in CONSOLE_DEVICE_HINTS)
     if has_device_hint:
@@ -1456,6 +1491,7 @@ COUNTRY_INFO = {
 COUNTRY_ALIASES = {
     "deutschland": "DE", "germany": "DE", "germania": "DE",
     "grossbritannien": "GB", "great britain": "GB", "united kingdom": "GB",
+    "vereinigtes konigreich": "GB", "vereinigtes koenigreich": "GB",
     "england": "GB", "scotland": "GB", "wales": "GB",
     "usa": "US", "united states": "US", "china": "CN", "japan": "JP",
     "frankreich": "FR", "france": "FR", "italien": "IT", "italy": "IT",
@@ -1961,6 +1997,10 @@ def parse_ebay_results(html):
 
             all_spans = [s for s in card.select("span") if not _is_nested_in_card(s, card)]
             all_texts = [s.get_text(strip=True).lower() for s in all_spans]
+            card_text = card.get_text(" ", strip=True)
+            card_text_lower = card_text.lower()
+            if card_text_lower:
+                all_texts.append(card_text_lower)
 
             is_pickup_only = False
             for txt in all_texts:
@@ -1997,6 +2037,20 @@ def parse_ebay_results(html):
                         except ValueError:
                             pass
 
+            if (
+                re.search(r"\b\d+\s*(?:gebot|gebote|bid|bids)\b", card_text_lower)
+                or "endet in" in card_text_lower
+                or "ends in" in card_text_lower
+            ):
+                auction = True
+                buy_now = False
+                m_bids_new = re.search(r"(\d+)\s*(?:gebot|gebote|bid|bids)\b", card_text_lower)
+                if m_bids_new:
+                    try:
+                        bids_count = int(m_bids_new.group(1))
+                    except ValueError:
+                        pass
+
             for s in all_spans:
                 txt = s.get_text(strip=True)
                 cls = s.get("class", [])
@@ -2007,6 +2061,17 @@ def parse_ebay_results(html):
                         cleaned = _clean_time_left(txt)
                         if cleaned:
                             time_left = cleaned
+
+            if not time_left and auction:
+                m_time = re.search(
+                    r"(?:endet in|ends in)\s*([0-9]+\s*(?:t|tag|tage|d|day|days|std|h|hour|hours|min|minute|minutes)(?:\s+[0-9]+\s*(?:t|tag|tage|d|day|days|std|h|hour|hours|min|minute|minutes))?)",
+                    card_text_lower,
+                    flags=re.IGNORECASE,
+                )
+                if m_time:
+                    cleaned = _clean_time_left(m_time.group(1))
+                    if cleaned:
+                        time_left = cleaned
 
             seller_name = ""
             rating_count = 0
@@ -2211,6 +2276,39 @@ def _parse_shipping(text):
         except ValueError:
             return 0.0
     return 0.0
+
+
+def _money_obj_eur(value):
+    if value is None:
+        return None
+    return {"value": f"{float(value):.2f}", "currency": "EUR"}
+
+
+def _parse_labeled_money(lines, label_patterns):
+    labels = tuple(re.compile(p, re.IGNORECASE) for p in label_patterns)
+    stop = re.compile(
+        r"^(?:lieferung|delivery|zahlungen|payments|r[üu]ckgabe|returns|standort|item location|artikelzustand|condition)\b",
+        re.IGNORECASE,
+    )
+    for idx, line in enumerate(lines):
+        if not any(p.search(line) for p in labels):
+            continue
+        candidates = []
+        after_label = re.sub(r"^.*?:", "", line, count=1).strip()
+        if after_label and after_label != line:
+            candidates.append(after_label)
+        for nxt in lines[idx + 1: idx + 5]:
+            if stop.search(nxt) and not re.search(r"(?:eur|€|gbp|£|usd|\$|\d+[,.]\d+)", nxt, re.IGNORECASE):
+                break
+            candidates.append(nxt)
+        for candidate in candidates:
+            if any(w in candidate.lower() for w in ("kostenlos", "free", "gratis")):
+                return 0.0
+            if re.search(r"(?:eur|€|gbp|£|usd|\$|\d+[,.]\d+)", candidate, re.IGNORECASE):
+                value = _parse_price(candidate)
+                if value is not None:
+                    return value
+    return None
 
 
 EBAY_API_CURRENCY_BY_MARKETPLACE = {
@@ -2600,6 +2698,13 @@ def _fetch_item_details_html(item_id):
         logger.warning("_fetch_item_details_html: network error for %s: %s", item_id, e)
         return None
 
+    if resp.status_code != 200 and host == "ebay.de":
+        try:
+            mobile_url = f"https://m.{host}/itm/{item_id}"
+            resp = session.get(mobile_url, headers=headers, timeout=15)
+        except Exception as e:
+            logger.warning("_fetch_item_details_html: mobile retry network error for %s: %s", item_id, e)
+
     if resp.status_code != 200:
         logger.warning("_fetch_item_details_html: HTTP %d for item %s", resp.status_code, item_id)
         return None
@@ -2735,6 +2840,8 @@ def _fetch_item_details_html(item_id):
 
     location_text = ""
     page_lines = [line.strip() for line in soup.get_text("\n", strip=True).splitlines() if line.strip()]
+    shipping_cost = _parse_labeled_money(page_lines, (r"^versand\b", r"^shipping\b"))
+    import_charges = _parse_labeled_money(page_lines, (r"^einfuhrabgaben\b", r"^import charges\b", r"^import fees\b"))
     for idx, line in enumerate(page_lines):
         m = re.match(r"^(?:Standort|Artikelstandort|Item location|Located in)\s*:?\s*(.+)$", line, re.IGNORECASE)
         if m and m.group(1).strip():
@@ -2761,6 +2868,10 @@ def _fetch_item_details_html(item_id):
         result["itemLocationText"] = location_text
     if item_group_type:
         result["itemGroupType"] = item_group_type
+    if shipping_cost is not None:
+        result["htmlShippingCost"] = _money_obj_eur(shipping_cost)
+    if import_charges is not None:
+        result["htmlImportCharges"] = _money_obj_eur(import_charges)
     if price_val is not None:
         result["price"] = {"value": str(price_val), "currency": currency}
 
@@ -2803,7 +2914,7 @@ def _fetch_item_details(item_id):
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
         if html_details:
-            for key in ("description", "itemLocationText", "title", "itemEndDate", "price"):
+            for key in ("description", "itemLocationText", "title", "itemEndDate", "price", "htmlShippingCost", "htmlImportCharges"):
                 if html_details.get(key) and not data.get(key):
                     data[key] = html_details[key]
         return data
@@ -2989,8 +3100,8 @@ def _is_clearly_non_germany_location(location_text):
 
 
 def _get_api_shipping_and_import(details):
-    shipping_cost = None
-    import_charges = None
+    shipping_cost = _api_float(details.get("htmlShippingCost"))
+    import_charges = _api_float(details.get("htmlImportCharges"))
     shipping_opts = details.get("shippingOptions") or []
     if shipping_opts:
         min_opt = None
@@ -3002,8 +3113,11 @@ def _get_api_shipping_and_import(details):
                     min_cost = cost
                     min_opt = opt
         if min_opt:
-            shipping_cost = min_cost
-            import_charges = _api_float(min_opt.get("importCharges"))
+            if shipping_cost is None:
+                shipping_cost = min_cost
+            opt_import = _api_float(min_opt.get("importCharges"))
+            if import_charges is None:
+                import_charges = opt_import
     return shipping_cost, import_charges
 
 
@@ -3040,6 +3154,7 @@ def _calculate_total(item, settings, details=None):
                 
             if actual_import is not None:
                 import_cost = actual_import
+                item["import_charges"] = round(import_cost, 2)
             else:
                 # Import costs: 19% VAT + ~4% customs + ~5€ handling
                 base = item["price"] + item["shipping_cost"]
@@ -3047,6 +3162,7 @@ def _calculate_total(item, settings, details=None):
                 customs = base * 0.04  # electronics ~3.7-4.7%
                 handling = 5.0
                 import_cost = vat + customs + handling
+                item["import_charges"] = round(import_cost, 2)
                 
             total = item["price"] + item["shipping_cost"] + import_cost
             
@@ -4078,6 +4194,25 @@ async def process_searches(bot, once=False):
                     filters["max_price"] = 2500
                     modified = True
 
+        ps5_safe_bundle_words = {
+            "laufwerk", "drive", "stand", "stÃ¤nder", "ständer",
+            "ovp", "verpackung", "karton",
+        }
+        for s_id in ("ps5_pro_buy", "ps5_pro_auc"):
+            if s_id in by_id:
+                search = by_id[s_id]
+                if search.get("display_name") != "PlayStation 5 Pro":
+                    search["display_name"] = "PlayStation 5 Pro"
+                    modified = True
+                if search.get("query") != "(playstation 5 pro, ps5 pro)":
+                    search["query"] = "(playstation 5 pro, ps5 pro)"
+                    modified = True
+                excludes = search.setdefault("exclude_words", [])
+                cleaned = [w for w in excludes if _normalize(w) not in ps5_safe_bundle_words]
+                if cleaned != excludes:
+                    search["exclude_words"] = cleaned
+                    modified = True
+
         def ensure_z70s_search(source_id, new_id, listing_type, min_price):
             nonlocal modified
             if new_id in by_id:
@@ -4215,17 +4350,20 @@ async def process_searches(bot, once=False):
                 
                 # Helper to find the cheapest validated candidate
                 async def find_cheapest_valid(items, search_cfg):
+                    valid_items = []
                     for item in items[:30]:
                         is_valid, _ = await _validate_candidate(item, search_cfg)
                         if is_valid:
-                            return item
-                    return None
+                            valid_items.append(item)
+                    if not valid_items:
+                        return None
+                    return min(valid_items, key=lambda x: float(x.get("total_price") or 0))
                 
-                base_price_key = lambda x: float(x.get("price") or 0) + float(x.get("shipping_cost") or 0)
-                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=base_price_key), search)
-                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=base_price_key), search)
-                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=base_price_key), search)
-                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=base_price_key), search)
+                total_price_key = lambda x: float(x.get("total_price") or 0)
+                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=total_price_key), search)
+                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=total_price_key), search)
+                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=total_price_key), search)
+                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=total_price_key), search)
                 
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
@@ -4262,7 +4400,7 @@ async def process_searches(bot, once=False):
                 def display_price(item):
                     if not item:
                         return None
-                    return round(float(item.get("price") or 0) + float(item.get("shipping_cost") or 0), 2)
+                    return round(float(item.get("total_price") or 0), 2)
 
                 p1_val = display_price(cheapest_bin_no_bo)
                 p2_val = display_price(cheapest_bin_bo)
