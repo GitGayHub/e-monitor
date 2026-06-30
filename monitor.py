@@ -1008,6 +1008,7 @@ def _is_phone_accessory_title(title_norm):
     # Soft part/accessory words and hard accessory words
     has_acc = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS)
     if has_acc:
+        category = None
         if category == "phones":
             protective_acc_words = (
                 "case", "cover", "protector", "hülle", "huelle", "h?lle",
