@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e-monitor-v2
+  group: ${{ github.event_name == 'workflow_dispatch' && format('e-monitor-v2-manual-{0}', github.run_id) || 'e-monitor-v2-auto' }}
   cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
 jobs:
