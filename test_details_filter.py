@@ -155,6 +155,12 @@ class DetailsFilterTest(unittest.TestCase):
 
         self.assertEqual([x["item_id"] for x in filtered], ["398120564552"])
 
+    def test_redmagic_mojibake_case_is_blocked(self):
+        query = monitor._normalize("Redmagic 11 Pro")
+        title = monitor._normalize("RedMagic 11 Pro Magnetische Hülle mit Displayschutz Stoßfest Hardcover")
+
+        self.assertTrue(monitor._is_category_blocked_title(title, "phones", query))
+
 
 if __name__ == "__main__":
     unittest.main()

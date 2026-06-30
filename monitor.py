@@ -221,7 +221,7 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "leather case", "gel skin", "charging cable", "usb-c", "usb c",
     "charger", "metal frame", "bracket", "hybridglas", "flexibleglass",
     "schutzglas", "hartglas", "displayfolie", "panzerfolie", "privacy",
-    "datenschutz", "grizzglass", "hülle", "huelle", "magcase",
+    "datenschutz", "grizzglass", "hülle", "huelle", "h?lle", "magcase",
     "clearcase", "klarsichtcase", "hardglass", "objektivschutz",
     "silverprotection", "silky matt", "3mk", "original display",
     "display defekt", "display gewechselt", "teildefekt", "icloud sperre",
@@ -238,10 +238,10 @@ PHONE_HARD_ACCESSORY_WORDS = (
     # Additional case / custom descriptors / brands
     "transparent", "tasche", "ledertasche", "gürteltasche", "gurteltasche", "schale",
     "ledercase", "lederhülle", "lederhuelle", "silikonhülle", "silikonhuelle",
-    "silicon case", "schutzhüllen", "schutzhuellen", "handyhüllen", "handyhuellen",
+    "silicon case", "schutzhüllen", "schutzhuellen", "schutzh?llen", "handyhüllen", "handyhuellen", "handyh?llen",
     "panzerfolie", "schutzglas", "glasfolie", "motiv", "design", "muster", "print",
     "displayschutz", "kameraschutz", "linsenschutz", "displayschutzfolie", "kameraschutzfolie",
-    "displayschutzglas", "kameraschutzglas", "dexnor", "spigen", "otterbox", "torras",
+    "displayschutzglas", "kameraschutzglas", "hardcover", "sto?fest", "stossfest", "dexnor", "spigen", "otterbox", "torras",
     "rhinoshield", "esr", "jetech", "elago", "ringke", "caseology", "ugreen", "anker", "belkin",
     "guscio", "sleeve", "pellicola", "pellicole",
     # Books, manuals, instructions
@@ -1008,6 +1008,23 @@ def _is_phone_accessory_title(title_norm):
     # Soft part/accessory words and hard accessory words
     has_acc = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS)
     if has_acc:
+        if category == "phones":
+            protective_acc_words = (
+                "case", "cover", "protector", "hülle", "huelle", "h?lle",
+                "displayschutz", "screen protector", "schutzfolie", "panzerglas",
+                "schutzglas", "displayfolie", "panzerfolie", "hardcover",
+                "sto?fest", "stossfest", "shockproof", "bumper",
+            )
+            strong_phone_hint = (
+                _has_phone_storage(title_norm)
+                or any(_has_term(title_norm, w) for w in (
+                    "smartphone", "handy", "phone", "5g", "gaming phone",
+                    "ohne simlock", "dual sim", "single sim", "global version",
+                    "global rom", "unlocked",
+                ))
+            )
+            if any(_has_accessory_term(title_norm, w) for w in protective_acc_words) and not strong_phone_hint:
+                return True
         if is_bundle and _title_leads_with_phone_model(title_norm):
             sep_pattern = re.compile(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
             m = sep_pattern.search(title_norm)
@@ -1140,6 +1157,23 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         return True
     if _is_for_accessory_title(title_norm, query_norm, category):
         return True
+    if category == "phones":
+        protective_acc_words = (
+            "case", "cover", "protector", "hülle", "huelle", "h?lle",
+            "displayschutz", "screen protector", "schutzfolie", "panzerglas",
+            "schutzglas", "displayfolie", "panzerfolie", "hardcover",
+            "sto?fest", "stossfest", "shockproof", "bumper",
+        )
+        strong_phone_hint = (
+            _has_phone_storage(title_norm)
+            or any(_has_term(title_norm, w) for w in (
+                "smartphone", "handy", "phone", "5g", "gaming phone",
+                "ohne simlock", "dual sim", "single sim", "global version",
+                "global rom", "unlocked",
+            ))
+        )
+        if any(_has_accessory_term(title_norm, w) for w in protective_acc_words) and not strong_phone_hint:
+            return True
     # Hard parts - always block, no bundle override
     hard_parts = CATEGORY_HARD_PART_WORDS.get(category, ())
     if any(_has_accessory_term(title_norm, w) for w in hard_parts):
