@@ -827,12 +827,63 @@ def _has_ps5_pro_console_hint(title_norm):
     return _has_ps5_console_hardware_hint(title_norm)
 
 
+def _is_ps5_console_and_vr_bundle(title_norm):
+    """Detect PS5 console + VR headset bundles (e.g. 'PS5 + PSVR2 + Spiele').
+
+    Returns True only when the title contains BOTH a VR term AND a standalone
+    PS5/PlayStation 5 reference that is NOT part of the VR product name or a
+    compatibility phrase like 'für PS5'.
+
+    Two-pass cleaning strategy:
+      1) preceded_pattern – removes 'PS5 VR2', 'Playstation 5 VR2' etc. where
+         the console name is glued to the VR term.
+      2) vr_pattern – removes remaining VR terms together with any trailing
+         platform-compatibility list ('PS5 / PS5 Pro', 'for PS5', …).
+    After both passes any surviving 'ps5' / 'playstation 5' token means a
+    real console is present in the bundle.
+    """
+    if not any(term in title_norm for term in ("vr2", "psvr2", "ps vr2", "brille", "viewer", "sense controller")):
+        return False
+
+    clean_title = title_norm
+
+    # Pass 1 – platform followed by VR term (e.g. "ps5 vr2", "playstation 5 vr brille")
+    preceded_pattern = (
+        r"\b(?:playstation\s*5|ps5|ps\s*5|ps4|playstation\s*4|ps\s*4)"
+        r"\s*(?:pro)?"
+        r"\s*(?:for|fuer|für|zu|compatible|kompatibel)?"
+        r"\s*(?:ps\s*vr2|psvr2|vr2|vr\s*brille|vr-brille|vr\s*headset|vr-headset|brille|viewer)\b"
+    )
+    clean_title = re.sub(preceded_pattern, " ", clean_title)
+
+    # Pass 2 – VR term optionally followed by platform-compatibility list
+    vr_pattern = (
+        r"\b(?:ps\s*vr2|psvr2|vr2|vr\s*brille|vr-brille|vr\s*headset|vr-headset"
+        r"|vr\s*glasses|brille|viewer|sense\s*controller|virtual\s*reality)\b"
+        r"(?:\s*(?:for|fuer|für|zu|compatible|kompatibel|system|brille|headset"
+        r"|viewer|set|bundle|pack|edition|playstation\s*5|ps5|ps\s*5|ps4"
+        r"|playstation\s*4|ps\s*4|pro|[\/\+,\s]))*"
+    )
+    clean_title = re.sub(vr_pattern, " ", clean_title)
+
+    # Pass 3 – explicit compatibility phrases ("for PS5", "für PlayStation 5")
+    clean_title = re.sub(
+        r"\b(?:fuer|für|for|compatibel|kompatibel|zu|to)\b\s*\b(?:sony|playstation|ps5|ps\s*5)\b",
+        " ", clean_title,
+    )
+
+    # If the cleaned title still mentions a PS5 console, it is a real bundle
+    return bool(re.search(r"\b(?:playstation\s*5|ps5|ps\s*5)\b", clean_title))
+
+
 def _has_ps5_console_hardware_hint(title_norm):
     if re.search(r"\b(?:playstation|ps5|ps\s*5).{0,30}\b(?:konsole|console|spielkonsole|system)\b", title_norm):
         return True
     if re.search(r"\b(?:konsole|console|spielkonsole|system).{0,30}\b(?:playstation|ps5|ps\s*5)\b", title_norm):
         return True
     if re.search(r"\b(?:2\s*tb|cfi-\d|digital edition|disc edition|disk edition|mit laufwerk|ohne disk laufwerk)\b", title_norm):
+        return True
+    if _is_ps5_console_and_vr_bundle(title_norm):
         return True
     return False
 
@@ -4393,7 +4444,7 @@ async def process_searches(bot, once=False):
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             source_str = "GitHub Автомониторинг" if is_github else "Локальный"
             logger.info(f"🔍 Statistics/Diagnostic mode active ({source_str})...")
-            report_lines = []
+            report_entries = []  # list of (sort_key, block_text) for alphabetical ordering
             blocked_searches = []
             processed_queries = set()
             
@@ -4672,11 +4723,16 @@ async def process_searches(bot, once=False):
                     "\n".join(auc_lines)
                 ]
                 
-                report_lines.append("\n".join(block_lines))
+                sort_key = (search.get("display_name") or search.get("query", "")).strip().lower()
+                report_entries.append((sort_key, "\n".join(block_lines)))
                 logger.info(f"Generated statistics block for '{search.get('query')}':\n" + "\n".join(block_lines))
                 
                 if not once:
                     await asyncio.sleep(random.uniform(2, 5))
+            
+            # Sort report blocks alphabetically by product name so related items are grouped together
+            report_entries.sort(key=lambda x: x[0])
+            report_lines = [block for _, block in report_entries]
             
             # Split report_lines into chunks of at most 8 items to avoid Telegram's 100 HTML entities limit
             chunks = []
