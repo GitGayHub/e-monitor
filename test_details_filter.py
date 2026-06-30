@@ -185,6 +185,72 @@ class DetailsFilterTest(unittest.TestCase):
         desc = "Das Backcover ist nicht gebrochen, keine Risse."
         self.assertFalse(monitor._is_description_blocked(desc, "phones"))
 
+    def test_hybrid_listing_prices_and_grouping(self):
+        # 1. HTML search result parsing of a hybrid listing
+        html = """
+        <ul>
+          <li class="s-item" data-listingid="168498547437">
+            <a class="s-item__link" href="https://www.ebay.de/itm/168498547437"></a>
+            <div class="s-item__title">5070 Ti PC Gaming computer</div>
+            <span class="s-item__price">EUR 2.720,00</span>
+            <span class="s-item__price">oder Sofort-Kaufen: EUR 3.808,00</span>
+            <span>0 Gebote</span>
+            <span>+ EUR 24,00 Lieferung</span>
+          </li>
+        </ul>
+        """
+        items = monitor.parse_ebay_results(html)
+        self.assertEqual(len(items), 1)
+        item = items[0]
+        self.assertTrue(item["auction"])
+        self.assertTrue(item["buy_now"])
+        self.assertEqual(item["auc_price"], 2720.0)
+        self.assertEqual(item["bin_price"], 3808.0)
+        self.assertTrue(item["_was_hybrid"])
+
+        # 2. _calculate_total on general/unseparated item computes correct totals
+        settings = {"warn_non_eu": False}
+        monitor._calculate_total(item, settings)
+        self.assertEqual(item["bin_total_price"], 3832.0)
+        self.assertEqual(item["auc_total_price"], 2744.0)
+
+        # 3. filter_results uses bin_price for buy_now search
+        search_buy = {
+            "query": "5070 Ti PC",
+            "filters": {
+                "listing_type": "buy_now_offer",
+                "limit_price": 3000,
+            }
+        }
+        filtered_buy = monitor.filter_results([item], search_buy, monitor.config, skip_seen=False)
+        # 3832.0 is > 3000 -> should be filtered out!
+        self.assertEqual(len(filtered_buy), 0)
+
+        # 4. filter_results uses auc_price for auction search
+        search_auc = {
+            "query": "5070 Ti PC",
+            "filters": {
+                "listing_type": "auction",
+                "limit_price": 3000,
+            }
+        }
+        filtered_auc = monitor.filter_results([item], search_auc, monitor.config, skip_seen=False)
+        # 2744.0 is <= 3000 -> should pass!
+        self.assertEqual(len(filtered_auc), 1)
+
+        # 5. Detail refresh updates prices correctly
+        details = {
+            "buyingOptions": ["AUCTION", "FIXED_PRICE"],
+            "price": {"value": "3900.00", "currency": "EUR"},
+            "currentBidPrice": {"value": "2800.00", "currency": "EUR"},
+            "itemLocationText": "Deutschland",
+        }
+        monitor._calculate_total(item, settings, details)
+        self.assertEqual(item["bin_price"], 3900.0)
+        self.assertEqual(item["auc_price"], 2800.0)
+        self.assertEqual(item["bin_total_price"], 3924.0)
+        self.assertEqual(item["auc_total_price"], 2824.0)
+
 
 if __name__ == "__main__":
     unittest.main()
