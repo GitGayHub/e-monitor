@@ -161,6 +161,30 @@ class DetailsFilterTest(unittest.TestCase):
 
         self.assertTrue(monitor._is_category_blocked_title(title, "phones", query))
 
+    def test_shipping_cost_not_confused_with_delivery_speed(self):
+        html = """
+        <ul>
+          <li class="s-item" data-listingid="178259719449">
+            <a class="s-item__link" href="https://www.ebay.de/itm/178259719449"></a>
+            <div class="s-item__title">iPhone 16 Pro Max 255GB Titan Black</div>
+            <span class="s-item__price">EUR 650,00</span>
+            <span>2-3 Tage Lieferung</span>
+            <span>+ EUR 6,19 Lieferung</span>
+          </li>
+        </ul>
+        """
+        items = monitor.parse_ebay_results(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["shipping_cost"], 6.19)
+
+    def test_description_blocked_on_broken_backcover(self):
+        desc = "Das Handy funktioniert einwandfrei jedoch ist das Backcover gebrochen"
+        self.assertTrue(monitor._is_description_blocked(desc, "phones"))
+
+    def test_description_not_blocked_on_clean_backcover(self):
+        desc = "Das Backcover ist nicht gebrochen, keine Risse."
+        self.assertFalse(monitor._is_description_blocked(desc, "phones"))
+
 
 if __name__ == "__main__":
     unittest.main()

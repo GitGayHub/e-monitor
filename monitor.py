@@ -2056,6 +2056,8 @@ def parse_ebay_results(html):
             if not is_pickup_only:
                 for s in all_spans:
                     txt = s.get_text(strip=True)
+                    if _is_delivery_speed_or_date(txt):
+                        continue
                     if "Lieferung" in txt or "Versand" in txt or "shipping" in txt.lower():
                         shipping_cost = _parse_shipping(txt)
                         break
@@ -2298,6 +2300,22 @@ def _parse_price(text):
         return float(val_str)
     except ValueError:
         return None
+
+
+def _is_delivery_speed_or_date(text):
+    t_lower = text.lower()
+    time_indicators = (
+        "tage", "day", "werktag", "business day", "bis ", "am ", 
+        "est. delivery", "estimated", "lieferung bis", "lieferung am",
+        "lieferung ca", "lieferung zwischen", "delivery between", "delivery by",
+        "tägliche", "taegliche"
+    )
+    if any(w in t_lower for w in time_indicators):
+        return True
+    months_pattern = r"\b(?:jan|feb|mär|maer|apr|mai|jun|jul|aug|sep|okt|nov|dez|january|february|march|april|may|june|july|august|september|october|november|december)\b"
+    if re.search(months_pattern, t_lower):
+        return True
+    return False
 
 
 def _parse_shipping(text):
@@ -2986,12 +3004,50 @@ def _clean_description(html_text):
     return text
 
 
+def _has_damage_in_description(desc_norm):
+    part_pattern = re.compile(
+        r"\b(?:backcover|back\s*cover|rueckseite|rückseite|rear\s*glass|back\s*glass|gehaeuse|gehäuse|housing|rahmen|frame|display|screen|glas|glass|kamera|camera|linse|linsen|lens|frontglas|frontglass|displayglas|displayglass|akkudeckel)\b",
+        re.IGNORECASE
+    )
+    defect_pattern = re.compile(
+        r"\b(?:gebrochen|gesprungen|kaputt|beschädigt|beschadigt|defekt|cracked|broken|damaged|defective|riss|risse|sprung|sprünge|spruenge|bruch|brüche|brueche|crack|cracks|damage|schaden|schäden|schaeden|beschädigung|beschädigungen|beschadigung|beschadigungen|absplitterung|absplitterungen|gesplittert)\b",
+        re.IGNORECASE
+    )
+    
+    for m_part in part_pattern.finditer(desc_norm):
+        part_start, part_end = m_part.span()
+        # Lookahead window: 50 characters after part
+        after_window = desc_norm[part_end : part_end + 50]
+        for m_defect in defect_pattern.finditer(after_window):
+            defect_start = m_defect.start()
+            between = after_window[:defect_start]
+            if not any(w in between for w in ("nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei")):
+                return True
+                
+        # Lookbehind window: 50 characters before part
+        before_window_start = max(0, part_start - 50)
+        before_window = desc_norm[before_window_start : part_start]
+        for m_defect in defect_pattern.finditer(before_window):
+            defect_end = m_defect.end()
+            between = before_window[defect_end:]
+            if not any(w in between for w in ("nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei")):
+                abs_defect_start = before_window_start + m_defect.start()
+                pre_defect = desc_norm[max(0, abs_defect_start - 15) : abs_defect_start]
+                if not any(w in pre_defect for w in ("nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei")):
+                    return True
+    return False
+
+
 def _is_description_blocked(desc_html, category):
     """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
     if not desc_html:
         return False
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+
+    if _has_damage_in_description(desc_norm):
+        logger.info("Description blocked due to damage check (part + defect words)")
+        return True
 
     if _is_display_replacement_description(desc_norm):
         logger.info("Description blocked due to display/screen replacement pattern")
