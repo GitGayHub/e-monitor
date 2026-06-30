@@ -2078,8 +2078,14 @@ def parse_ebay_results(html):
             price_texts = [el.get_text(strip=True) for el in price_elements]
             price_text_combined = " ".join(price_texts)
             is_multivariation = "bis" in price_text_combined.lower() or "to" in price_text_combined.lower()
-            price_text = price_texts[0] if price_texts else ""
-            price = _parse_price(price_text)
+            
+            parsed_prices = []
+            for pt in price_texts:
+                p_val = _parse_price(pt)
+                if p_val is not None:
+                    parsed_prices.append(p_val)
+            
+            price = parsed_prices[0] if parsed_prices else None
             if price is None:
                 continue
 
@@ -2126,7 +2132,6 @@ def parse_ebay_results(html):
                     best_offer = True
                 if ("gebot" in txt and "angebot" not in txt) or "bid" in txt or "ставк" in txt:
                     auction = True
-                    buy_now = False
                     m_bids = re.search(r"(\d+)\s*(?:gebot|bid|ставк)", txt)
                     if m_bids:
                         try:
@@ -2140,13 +2145,30 @@ def parse_ebay_results(html):
                 or "ends in" in card_text_lower
             ):
                 auction = True
-                buy_now = False
                 m_bids_new = re.search(r"(\d+)\s*(?:gebot|gebote|bid|bids)\b", card_text_lower)
                 if m_bids_new:
                     try:
                         bids_count = int(m_bids_new.group(1))
                     except ValueError:
                         pass
+
+            has_sofort_kaufen = any("sofort-kaufen" in t or "oder sofort" in t or "buy it now" in t or "sofort kaufen" in t for t in all_texts)
+            if auction and not has_sofort_kaufen:
+                buy_now = False
+
+            auc_price = None
+            bin_price = None
+            if auction and buy_now:
+                if len(parsed_prices) >= 2:
+                    auc_price = parsed_prices[0]
+                    bin_price = parsed_prices[1]
+                else:
+                    auc_price = price
+                    bin_price = price
+            elif auction:
+                auc_price = price
+            else:
+                bin_price = price
 
             for s in all_spans:
                 txt = s.get_text(strip=True)
@@ -2235,6 +2257,9 @@ def parse_ebay_results(html):
                 "item_id": item_id,
                 "title": title,
                 "price": price,
+                "auc_price": auc_price,
+                "bin_price": bin_price,
+                "_was_hybrid": auction and buy_now,
                 "shipping_cost": shipping_cost,
                 "total_price": price + shipping_cost,
                 "image_url": image_url,
@@ -2768,10 +2793,25 @@ def parse_ebay_api_results(data):
         if seconds_left is not None and seconds_left > 0:
             time_left_str = _format_time_left_from_seconds(seconds_left)
 
+        api_auc_price = _api_float(summary.get("currentBidPrice")) if "AUCTION" in opts else None
+        api_bin_price = _api_float(summary.get("price")) if "FIXED_PRICE" in opts else None
+        if "AUCTION" in opts and "FIXED_PRICE" in opts:
+            auc_price = api_auc_price or price
+            bin_price = api_bin_price or price
+        elif "AUCTION" in opts:
+            auc_price = price
+            bin_price = None
+        else:
+            auc_price = None
+            bin_price = price
+
         items.append({
             "item_id": _api_item_id(summary),
             "title": title,
             "price": price,
+            "auc_price": auc_price,
+            "bin_price": bin_price,
+            "_was_hybrid": "AUCTION" in opts and "FIXED_PRICE" in opts,
             "shipping_cost": shipping_cost,
             "total_price": price + shipping_cost,
             "image_url": image.get("imageUrl", ""),
@@ -3275,19 +3315,47 @@ def _get_api_shipping_and_import(details):
 def _calculate_total(item, settings, details=None):
     """Calculate total price including import duties for non-EU items.
     
-    For non-EU (UK, US, China, etc.) via eBay Global Shipping:
-    - 19% MwSt (VAT) on item price + shipping
-    - ~4% Zoll (customs duty) for electronics
-    - ~5€ GSP handling fee
-    
-    Real example: £419 item + £30.76 shipping → £97.98 Einfuhrabgaben → total £547.74
-    That's ~21.7% on (price+shipping) + small fixed fee.
+    Supports separate calculation for bin_price and auc_price in hybrid listings.
     """
     if details:
+        buying_options = details.get("buyingOptions") or []
+        if buying_options:
+            # If the item was stashed as a pure one, do not restore the other flag
+            is_stashed_bin = item.get("buy_now") and not item.get("auction")
+            is_stashed_auc = item.get("auction") and not item.get("buy_now")
+            if not is_stashed_bin and not is_stashed_auc:
+                item["buy_now"] = "FIXED_PRICE" in buying_options
+                item["auction"] = "AUCTION" in buying_options
+                if item.get("buy_now") and item.get("auction"):
+                    item["_was_hybrid"] = True
+
         api_price = _api_float(details.get("price"))
-        if api_price is not None:
-            item["price"] = api_price
-            
+        api_auc_price = _api_float(details.get("currentBidPrice"))
+
+        # For stashed pure items, only update their relevant active price
+        if item.get("buy_now") and not item.get("auction"):
+            if api_price is not None:
+                item["price"] = api_price
+        elif item.get("auction") and not item.get("buy_now"):
+            if api_auc_price is not None:
+                item["price"] = api_auc_price
+            elif not item.get("_was_hybrid") and api_price is not None:
+                # Only use details price for pure auction if it wasn't hybrid originally
+                item["price"] = api_price
+        else:
+            # General/hybrid/unseparated item: update both prices
+            if item.get("buy_now") and api_price is not None:
+                item["bin_price"] = api_price
+            if item.get("auction") and api_auc_price is not None:
+                item["auc_price"] = api_auc_price
+            elif item.get("auction") and api_price is not None and not item.get("buy_now"):
+                item["auc_price"] = api_price
+
+            if item.get("buy_now") and item.get("bin_price") is not None:
+                item["price"] = item["bin_price"]
+            else:
+                item["price"] = item.get("auc_price") or item.get("price")
+
         api_shipping, _ = _get_api_shipping_and_import(details)
         try:
             existing_shipping = float(item.get("shipping_cost") or 0.0)
@@ -3300,28 +3368,43 @@ def _calculate_total(item, settings, details=None):
         if api_loc:
             item["location"] = api_loc
 
-    total = item["price"] + item["shipping_cost"]
-    if settings.get("warn_non_eu") and item["location"]:
-        if not _is_eu(item["location"]):
+    shipping = item.get("shipping_cost") or 0.0
+
+    def get_import_charges(price_val):
+        if settings.get("warn_non_eu") and item.get("location") and not _is_eu(item["location"]):
             actual_import = None
             if details:
                 _, actual_import = _get_api_shipping_and_import(details)
-                
             if actual_import is not None:
-                import_cost = actual_import
-                item["import_charges"] = round(import_cost, 2)
+                return round(actual_import, 2)
             else:
-                # Import costs: 19% VAT + ~4% customs + ~5€ handling
-                base = item["price"] + item["shipping_cost"]
+                base = price_val + shipping
                 vat = base * 0.19
-                customs = base * 0.04  # electronics ~3.7-4.7%
+                customs = base * 0.04
                 handling = 5.0
-                import_cost = vat + customs + handling
-                item["import_charges"] = round(import_cost, 2)
-                
-            total = item["price"] + item["shipping_cost"] + import_cost
-            
-    item["total_price"] = round(total, 2)
+                return round(vat + customs + handling, 2)
+        return 0.0
+
+    # Calculate Buy It Now total
+    if item.get("buy_now") and item.get("bin_price") is not None:
+        bin_price = item["bin_price"]
+        imp = get_import_charges(bin_price)
+        item["bin_import_charges"] = imp
+        item["bin_total_price"] = round(bin_price + shipping + imp, 2)
+
+    # Calculate Auction total
+    if item.get("auction") and item.get("auc_price") is not None:
+        auc_price = item["auc_price"]
+        imp = get_import_charges(auc_price)
+        item["auc_import_charges"] = imp
+        item["auc_total_price"] = round(auc_price + shipping + imp, 2)
+
+    # Calculate general/default total
+    default_price = item.get("price") or 0.0
+    imp = get_import_charges(default_price)
+    item["import_charges"] = imp
+    item["total_price"] = round(default_price + shipping + imp, 2)
+
     return item
 
 
@@ -3347,7 +3430,20 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         if item_id in banned_ids:
             continue
+        listing_type = filters.get("listing_type", "all")
         item = _calculate_total(item, settings)
+
+        # Select correct price for hybrid listings based on the search/bucket type
+        if item.get("buy_now") and item.get("auction"):
+            if listing_type == "auction":
+                item["price"] = item.get("auc_price") or item["price"]
+                item["total_price"] = item.get("auc_total_price") or item["total_price"]
+                item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
+            elif listing_type in ("buy_now", "buy_now_offer"):
+                item["price"] = item.get("bin_price") or item["price"]
+                item["total_price"] = item.get("bin_total_price") or item["total_price"]
+                item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
+
         if filters.get("location", "de") == "de" and item.get("location"):
             if _is_clearly_non_germany_location(item["location"]):
                 continue
@@ -3370,11 +3466,10 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             if not nearby:
                 continue
 
-        listing_type = filters.get("listing_type", "all")
         if is_statistics and filters.get("_stats_bucket_filter"):
             if listing_type == "auction" and not item.get("auction"):
                 continue
-            if listing_type in ("buy_now", "buy_now_offer") and (item.get("auction") or not item.get("buy_now")):
+            if listing_type in ("buy_now", "buy_now_offer") and not item.get("buy_now"):
                 continue
             if filters.get("best_offer"):
                 if not item.get("best_offer"):
@@ -3384,7 +3479,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         else:
             if listing_type == "auction" and not item.get("auction"):
                 continue
-            if listing_type in ("buy_now", "buy_now_offer") and (item.get("auction") or not item.get("buy_now")):
+            if listing_type in ("buy_now", "buy_now_offer") and not item.get("buy_now"):
                 continue
             if listing_type == "offer" and not item.get("best_offer"):
                 continue
@@ -4509,11 +4604,32 @@ async def process_searches(bot, once=False):
                 stats_filter_search = _statistics_filter_search(search)
                 filtered = filter_results(results, stats_filter_search, config, skip_seen=True, is_statistics=True)
                 
-                # Group filtered items into Buy It Now and Auction
-                bin_no_bo = [item for item in filtered if item.get("buy_now") and not item.get("best_offer")]
-                bin_bo = [item for item in filtered if item.get("buy_now") and item.get("best_offer")]
-                auc_no_bo = [item for item in filtered if item.get("auction") and not item.get("best_offer")]
-                auc_bo = [item for item in filtered if item.get("auction") and item.get("best_offer") and item.get("bids_count") in (0, None)]
+                # Group filtered items into Buy It Now and Auction, handling hybrid listings
+                bin_no_bo = []
+                bin_bo = []
+                auc_no_bo = []
+                auc_bo = []
+                for item in filtered:
+                    if item.get("buy_now"):
+                        bin_item = copy.deepcopy(item)
+                        bin_item["auction"] = False
+                        bin_item["price"] = item.get("bin_price") or item["price"]
+                        bin_item["total_price"] = item.get("bin_total_price") or item["total_price"]
+                        bin_item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
+                        if not item.get("best_offer"):
+                            bin_no_bo.append(bin_item)
+                        else:
+                            bin_bo.append(bin_item)
+                    if item.get("auction"):
+                        auc_item = copy.deepcopy(item)
+                        auc_item["buy_now"] = False
+                        auc_item["price"] = item.get("auc_price") or item["price"]
+                        auc_item["total_price"] = item.get("auc_total_price") or item["total_price"]
+                        auc_item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
+                        if not item.get("best_offer"):
+                            auc_no_bo.append(auc_item)
+                        elif item.get("bids_count") in (0, None):
+                            auc_bo.append(auc_item)
                 
                 # Helper to find the cheapest validated candidate
                 async def find_cheapest_valid(items, search_cfg):
