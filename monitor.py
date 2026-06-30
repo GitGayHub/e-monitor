@@ -3147,7 +3147,11 @@ def _calculate_total(item, settings, details=None):
             item["price"] = api_price
             
         api_shipping, _ = _get_api_shipping_and_import(details)
-        if api_shipping is not None:
+        try:
+            existing_shipping = float(item.get("shipping_cost") or 0.0)
+        except Exception:
+            existing_shipping = 0.0
+        if api_shipping is not None and (api_shipping > 0 or existing_shipping <= 0):
             item["shipping_cost"] = api_shipping
         
         api_loc = _api_location(details) or details.get("itemLocationText", "")

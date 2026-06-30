@@ -45,6 +45,23 @@ class DetailsFilterTest(unittest.TestCase):
         self.assertEqual(item["import_charges"], 126.71)
         self.assertAlmostEqual(item["total_price"], 700.71, places=2)
 
+    def test_zero_detail_shipping_does_not_overwrite_search_shipping(self):
+        item = {
+            "price": 450.0,
+            "shipping_cost": 6.19,
+            "location": "",
+        }
+        details = {
+            "price": {"value": "450.0", "currency": "EUR"},
+            "htmlShippingCost": {"value": "0.00", "currency": "EUR"},
+            "itemLocationText": "Schwaikheim, Deutschland",
+        }
+
+        monitor._calculate_total(item, {"warn_non_eu": True}, details)
+
+        self.assertEqual(item["shipping_cost"], 6.19)
+        self.assertAlmostEqual(item["total_price"], 456.19, places=2)
+
     def test_detail_page_labeled_money_parses_gbp_shipping_and_import(self):
         lines = [
             "Versand:",
