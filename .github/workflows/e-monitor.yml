@@ -18,7 +18,7 @@ on:
 
 concurrency:
   group: e-monitor-v2
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
 
 jobs:
   check_e:
