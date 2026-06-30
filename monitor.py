@@ -488,7 +488,7 @@ CATEGORY_ACCESSORY_WORDS = {
         "hdmi kabel", "hdmi cable", "usb kabel",
         "ssd", "festplatte", "hard drive", "m.2",
         "faceplates", "faceplate", "cover plate",
-        "thumb grip", "thumbstick", "analog stick",
+        "thumb grip", "thumbstick", "analog stick", "fightstick", "fight stick", "arcade stick",
         "lenkrad", "steering wheel", "racing wheel",
         "lüfter", "luefter", "fan", "cooling fan", "cooler", "kühler", "kuehler", "cooling system",
         "staubschutz", "dust plug", "dust cover", "dustproof", "schmutzschutz",
@@ -577,6 +577,7 @@ CONSOLE_GAME_WORDS = (
     "ratchet", "returnal", "demon souls", "demons souls",
     "gran turismo", "final fantasy", "resident evil",
     "hogwarts", "elden ring", "diablo", "cyberpunk",
+    "dragon ball", "fighterz", "fighter z",
     "hell is us", "astro bot", "stellar blade",
     "mortal kombat", "tekken", "street fighter",
     "nba", "madden", "fc 24", "fc 25", "fc24", "fc25", "ea sports",
@@ -767,7 +768,7 @@ def _check_separator(sep):
 
 def _matches_console_query_model(title_norm, query_norm):
     if "ps5" in query_norm and "pro" in query_norm:
-        if _is_ps5_vr_only_title(title_norm):
+        if _is_ps5_vr_only_title(title_norm) or _is_console_game_only_title(title_norm):
             return False
         patterns = [
             r"\b(?:ps5|playstation\s*5|ps\s*5)([^a-z0-9]{0,10})pro\b",
@@ -819,6 +820,8 @@ def _is_ps5_pro_search_query(query_norm):
 
 
 def _has_ps5_pro_console_hint(title_norm):
+    if _is_console_game_only_title(title_norm):
+        return False
     if re.search(r"\b(?:ps5|playstation\s*5|ps\s*5)\s*pro\b", title_norm):
         return True
     return _has_ps5_console_hardware_hint(title_norm)
@@ -832,6 +835,12 @@ def _has_ps5_console_hardware_hint(title_norm):
     if re.search(r"\b(?:2\s*tb|cfi-\d|digital edition|disc edition|disk edition|mit laufwerk|ohne disk laufwerk)\b", title_norm):
         return True
     return False
+
+
+def _is_console_game_only_title(title_norm):
+    if not any(_has_term(title_norm, w) for w in CONSOLE_GAME_WORDS):
+        return False
+    return not _has_ps5_console_hardware_hint(title_norm)
 
 
 def _is_ps5_vr_only_title(title_norm):
@@ -3343,6 +3352,15 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     return variant
 
 
+def _statistics_filter_search(search):
+    stats_filter = copy.deepcopy(search)
+    filters = stats_filter.setdefault("filters", {})
+    filters["listing_type"] = "all"
+    filters.pop("best_offer", None)
+    filters.pop("_stats_bucket_filter", None)
+    return stats_filter
+
+
 def _warmup_session(session, host):
     """Visit homepage and a category index before the search to look like a
     real user navigating the site. Cookies stick to the session, which keeps
@@ -4338,9 +4356,12 @@ async def process_searches(bot, once=False):
                 if fetch_err and not results:
                     blocked_searches.append(search)
                 
-                # Filter results with skip_seen=True (to show already notified items)
-                # and is_statistics=True (to bypass auction time/bid and listing_type filters)
-                filtered = filter_results(results, search, config, skip_seen=True, is_statistics=True)
+                # Filter results with skip_seen=True (to show already notified items).
+                # The stats fetch above already split BIN/Auction/BO buckets; using
+                # the original search here would often keep only the first config row
+                # for a query (usually Sofort) and drop every auction before grouping.
+                stats_filter_search = _statistics_filter_search(search)
+                filtered = filter_results(results, stats_filter_search, config, skip_seen=True, is_statistics=True)
                 
                 # Group filtered items into Buy It Now and Auction
                 bin_no_bo = [item for item in filtered if item.get("buy_now") and not item.get("best_offer")]

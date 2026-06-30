@@ -90,10 +90,53 @@ class DetailsFilterTest(unittest.TestCase):
         vr_only = monitor._normalize("SONY PLAYSTATION PS VR2 PS5 / PS5 PRO VIRTUAL REALITY VIEWER + 2 SENS Controller")
         console = monitor._normalize("Sony PlayStation 5 Pro Konsole 2TB mit PSVR2 Brille")
         digital = monitor._normalize("Sony Playstation 5 PRO, 2TB, Modell CFI-7021 ohne Disk Laufwerk")
+        game = monitor._normalize("Dragon Ball Fighter z Collector's Edition PS4 PS5 Pro 30th PAL Neu")
+        fightstick = monitor._normalize("Fightstick Arcade PDP Victrix PS5 Pro Purple Neu Sealed")
 
         self.assertFalse(monitor._matches_category_query(vr_only, "consoles", query))
+        self.assertFalse(monitor._matches_category_query(game, "consoles", query))
+        self.assertFalse(monitor._matches_category_query(fightstick, "consoles", query))
         self.assertTrue(monitor._matches_category_query(console, "consoles", query))
         self.assertTrue(monitor._matches_category_query(digital, "consoles", query))
+
+    def test_statistics_filter_keeps_auction_from_buy_search_row(self):
+        search = {
+            "query": "Redmagic 11 Pro",
+            "filters": {
+                "category": "all",
+                "listing_type": "buy_now_offer",
+                "max_price": 400,
+            },
+            "exclude_words": [],
+            "include_words": [],
+            "exclude_sellers": [],
+        }
+        item = {
+            "item_id": "398120564552",
+            "title": "RedMagic 11 Pro 24GB RAM 1TB Speicher Gaming Phone",
+            "price": 859.0,
+            "shipping_cost": 6.19,
+            "seller_name": "seller",
+            "seller_feedback": "100%",
+            "item_url": "https://www.ebay.de/itm/398120564552",
+            "location": "",
+            "condition": "Gebraucht",
+            "auction": True,
+            "buy_now": False,
+            "best_offer": False,
+            "bids_count": 0,
+            "time_left": "9 Std",
+        }
+
+        filtered = monitor.filter_results(
+            [item],
+            monitor._statistics_filter_search(search),
+            monitor.config,
+            skip_seen=True,
+            is_statistics=True,
+        )
+
+        self.assertEqual([x["item_id"] for x in filtered], ["398120564552"])
 
 
 if __name__ == "__main__":
