@@ -791,8 +791,6 @@ def _intent_details_match(search, item=None, details=None):
         has_gpu = _has_rtx_5070_ti(text_norm) if intent["gpu"] == "5070ti" else _has_rtx_gpu(text_norm, intent["gpu"])
         return has_gpu and _has_pc_hint(text_norm)
     if kind == "superstrike":
-        if _is_category_blocked_title(text_norm, "mice", "superstrike"):
-            return False
         return "superstrike" in text_norm and ("logitech" in text_norm or "pro x" in text_norm)
     return True
 

@@ -144,6 +144,12 @@ class SearchIntentRuleTests(unittest.TestCase):
         result = monitor.filter_results([mouse, skates, mouseskates], search, cfg, skip_seen=True, is_statistics=True)
         self.assertEqual([x["title"] for x in result], [mouse["title"]])
 
+        noisy_details = {
+            "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus Lunar Eclipse",
+            "description": "Recommended items mention mouse skates, but this listing is the actual Superstrike mouse.",
+        }
+        self.assertTrue(monitor._intent_details_match(search, mouse, noisy_details))
+
     def test_hybrid_bucket_prices(self):
         cfg = DummyConfig()
         hybrid = item(
