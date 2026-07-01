@@ -396,6 +396,10 @@ BAD_CONDITION_WORDS = (
     "banned from psn servers", "nur ersatzteile", "ersatzteile reparatur",
     "als ersatzteile", "fuer ersatzteile",
     "for parts", "parts only", "spares repair", "not working",
+    "als ersatzteil", "ersatzteil defekt", "for repair", "needs repair",
+    "solo per pezzi", "per parti di ricambio", "non funzionante",
+    "pour pieces", "pour pieces detachees", "ne fonctionne pas",
+    "para piezas", "no funciona", "piezas recambio",
     "icloud lock", "icloud locked", "icloud bypass", "activation lock",
     "activationlock", "aktivierungssperre", "icloudsperre",
     # Broken / cracked screen
@@ -436,6 +440,16 @@ BAD_CONDITIONS = {
     "als ersatzteile oder nicht funktionsfaehig",
     "ersatzteile", "parts only",
     "salvage",
+    "solo per pezzi di ricambio o non funzionante",
+    "per parti di ricambio o non funzionante",
+    "pour pieces detachees ou ne fonctionne pas",
+    "para piezas o no funciona",
+}
+
+KNOWN_BAD_ITEM_IDS = {
+    "366386077847",
+    "326775074774",
+    "206385453277",
 }
 
 CATEGORY_ACCESSORY_WORDS = {
@@ -499,7 +513,7 @@ CATEGORY_ACCESSORY_WORDS = {
     "laptops": (
         "parts", "ersatzteil", "ersatzteile", "displayschaden", "netzteil",
         "ladegerät", "charger", "tastatur", "keyboard", "akku", "battery",
-        "tasche", "hülle", "huelle", "case", "display", "bildschirm", "screen",
+        "tasche", "hülle", "huelle", "case",
     ),
     "mice": (
         "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button", "clicker",
@@ -545,7 +559,7 @@ CATEGORY_HARD_PART_WORDS = {
     ),
     "laptops": (
         "parts", "ersatzteil", "ersatzteile", "netzteil", "ladegerät", "charger",
-        "tastatur", "keyboard", "akku", "battery", "display", "bildschirm", "screen",
+        "tastatur", "keyboard", "akku", "battery",
     ),
     "mice": (
         "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button",
@@ -597,6 +611,170 @@ CONSOLE_DEVICE_HINTS = (
 )
 
 SHORT_QUERY_WORDS = {"lg", "pc", "ti", "vr", "wh"}
+
+LAPTOP_DEVICE_HINTS = (
+    "laptop", "notebook", "ultrabook", "vivobook", "zenbook", "rog", "tuf",
+    "thinkpad", "ideapad", "legion", "omen", "victus", "xps", "latitude",
+    "inspiron", "alienware", "razer blade", "blade", "aorus", "gigabyte",
+    "msi", "katana", "stealth", "creator", "predator", "nitro", "aspire",
+)
+
+PC_DEVICE_HINTS = (
+    "gaming pc", "desktop pc", "pc system", "komplett pc", "komplettpc",
+    "gaming rechner", "rechner", "desktop", "computer", "workstation",
+    "tower", "system", "setup", "windows", "win11", "win10", "ryzen",
+    "core i", " i5", " i7", " i9", "ram", "ssd",
+)
+
+
+def _search_identity(search_or_query):
+    if isinstance(search_or_query, dict):
+        raw = " ".join(str(search_or_query.get(k) or "") for k in ("id", "query", "display_name"))
+    else:
+        raw = str(search_or_query or "")
+    return _normalize(raw)
+
+
+def _search_intent(search_or_query):
+    ident = _search_identity(search_or_query)
+    if not ident:
+        return None
+    if "32gs95" in ident or "27gx790a" in ident or "lg ultragear oled" in ident:
+        return {
+            "kind": "lg_ultragear_oled",
+            "query": "lg ultragear oled 480hz (32GS95, 27GX790A)",
+            "display_name": "LG UltraGear OLED",
+            "category": "monitors",
+        }
+    if re.search(r"\b4050\b", ident) and "oled" in ident:
+        return {
+            "kind": "rtx_oled_laptop",
+            "query": "4050 oled",
+            "gpu": "4050",
+            "category": "laptops",
+            "details_can_satisfy": True,
+        }
+    if re.search(r"\b4060\b", ident) and "oled" in ident:
+        return {
+            "kind": "rtx_oled_laptop",
+            "query": "4060 oled",
+            "gpu": "4060",
+            "category": "laptops",
+            "details_can_satisfy": True,
+        }
+    if "vivobook" in ident and "14x" in ident and "oled" in ident:
+        return {
+            "kind": "vivobook_14x_oled_3050",
+            "query": "asus vivobook pro 14x oled m7400qc",
+            "display_name": "asus vivobook 14x oled",
+            "category": "laptops",
+            "details_can_satisfy": True,
+        }
+    if re.search(r"\b4080\b", ident) and _has_term(ident, "pc"):
+        return {
+            "kind": "gpu_pc",
+            "query": "4080 (pc, rechner, computer, desktop, gaming pc)",
+            "gpu": "4080",
+            "category": "computers",
+        }
+    if re.search(r"\b5070\s*ti\b|\b5070ti\b", ident) and _has_term(ident, "pc"):
+        return {
+            "kind": "gpu_pc",
+            "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+            "gpu": "5070ti",
+            "category": "computers",
+        }
+    if "superstrike" in ident:
+        return {
+            "kind": "superstrike",
+            "query": "logitech superstrike",
+            "display_name": "PRO X 2 SUPERSTRIKE",
+            "category": "mice",
+        }
+    return None
+
+
+def _intent_query(search):
+    intent = _search_intent(search)
+    if intent and intent.get("query"):
+        return intent["query"]
+    return (search.get("query", "") if isinstance(search, dict) else str(search or "")).strip()
+
+
+def _intent_text_from_item_and_details(item=None, details=None):
+    parts = []
+    if item:
+        parts.extend(str(item.get(k) or "") for k in ("title", "condition", "location"))
+    if details:
+        parts.append(_details_search_text(details))
+        desc = details.get("description")
+        if desc:
+            parts.append(_clean_description(desc))
+    return _normalize(" ".join(parts))
+
+
+def _has_laptop_hint(text_norm):
+    return any(_has_term(text_norm, w) for w in LAPTOP_DEVICE_HINTS)
+
+
+def _has_pc_hint(text_norm):
+    return any(w in text_norm for w in PC_DEVICE_HINTS)
+
+
+def _has_rtx_gpu(text_norm, gpu):
+    return re.search(rf"\b(?:rtx\s*)?{re.escape(str(gpu))}\b", text_norm) is not None
+
+
+def _has_rtx_5070_ti(text_norm):
+    return re.search(r"\b(?:rtx\s*)?5070\s*ti\b|\b(?:rtx\s*)?5070ti\b", text_norm) is not None
+
+
+def _intent_prelim_matches_title(title_norm, search):
+    intent = _search_intent(search)
+    if not intent:
+        return _query_matches_title(title_norm, search.get("query", ""))
+    kind = intent["kind"]
+    if kind == "lg_ultragear_oled":
+        return re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", title_norm) is not None
+    if kind == "rtx_oled_laptop":
+        gpu = intent["gpu"]
+        if any(_has_term(title_norm, w) for w in ("grafikkarte", "graphics card", "gpu only", "nur gpu", "nur grafikkarte")):
+            return False
+        has_gpu = _has_rtx_gpu(title_norm, gpu)
+        has_oled = _has_term(title_norm, "oled")
+        return (has_gpu or has_oled) and (_has_laptop_hint(title_norm) or has_gpu)
+    if kind == "vivobook_14x_oled_3050":
+        return "vivobook" in title_norm and ("14x" in title_norm or "m7400qc" in title_norm) and "oled" in title_norm
+    if kind == "gpu_pc":
+        if intent["gpu"] == "5070ti":
+            has_gpu = _has_rtx_5070_ti(title_norm)
+        else:
+            has_gpu = _has_rtx_gpu(title_norm, intent["gpu"])
+        return has_gpu and _has_pc_hint(title_norm)
+    if kind == "superstrike":
+        return "superstrike" in title_norm and ("logitech" in title_norm or "pro x" in title_norm)
+    return True
+
+
+def _intent_details_match(search, item=None, details=None):
+    intent = _search_intent(search)
+    if not intent:
+        return True
+    text_norm = _intent_text_from_item_and_details(item, details)
+    kind = intent["kind"]
+    if kind == "lg_ultragear_oled":
+        return re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", text_norm) is not None
+    if kind == "rtx_oled_laptop":
+        return _has_rtx_gpu(text_norm, intent["gpu"]) and _has_term(text_norm, "oled") and _has_laptop_hint(text_norm)
+    if kind == "vivobook_14x_oled_3050":
+        has_gpu = re.search(r"\b(?:rtx\s*)?3050\s*ti\b|\b(?:rtx\s*)?3050ti\b|\b(?:rtx\s*)?3050\b", text_norm) is not None
+        return "vivobook" in text_norm and "oled" in text_norm and has_gpu
+    if kind == "gpu_pc":
+        has_gpu = _has_rtx_5070_ti(text_norm) if intent["gpu"] == "5070ti" else _has_rtx_gpu(text_norm, intent["gpu"])
+        return has_gpu and _has_pc_hint(text_norm)
+    if kind == "superstrike":
+        return "superstrike" in text_norm and ("logitech" in text_norm or "pro x" in text_norm)
+    return True
 
 
 def _query_words(query):
@@ -822,6 +1000,17 @@ def _is_ps5_pro_search_query(query_norm):
 def _has_ps5_pro_console_hint(title_norm):
     if _is_console_game_only_title(title_norm):
         return False
+    if any(_has_accessory_term(title_norm, w) for w in ("konsole cover", "console cover", "cover plate", "faceplate", "faceplates")):
+        bundle_marker = re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm)
+        if not bundle_marker:
+            return False
+    if any(term in title_norm for term in ("vr2", "psvr2", "ps vr2", "brille", "sense controller")):
+        hardware_cue = re.search(
+            r"\b(?:konsole|console|spielkonsole|cfi-\d|2\s*tb|1\s*tb|disc edition|digital edition|mit laufwerk|laufwerk)\b",
+            title_norm,
+        )
+        if not hardware_cue:
+            return False
     if re.search(r"\b(?:ps5|playstation\s*5|ps\s*5)\s*pro\b", title_norm):
         return True
     return _has_ps5_console_hardware_hint(title_norm)
@@ -975,7 +1164,9 @@ def _is_console_search_query(query_norm):
 
 def _is_laptop_search_query(query_norm):
     laptop_terms = ("laptop", "notebook", "macbook", "thinkpad", "ultrabook", "chromebook")
-    return any(term in query_norm for term in laptop_terms)
+    return any(term in query_norm for term in laptop_terms) or (
+        "oled" in query_norm and re.search(r"\b(?:rtx\s*)?(?:3050|4050|4060)\b", query_norm)
+    )
 
 
 def _is_tablet_search_query(query_norm):
@@ -1271,6 +1462,9 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
 
 
 def _effective_category(category, query_norm):
+    intent = _search_intent(query_norm)
+    if intent and intent.get("category"):
+        return intent["category"]
     if _is_smartwatch_search_query(query_norm):
         return "smart_watches"
     if _is_phone_search_query(query_norm):
@@ -1313,7 +1507,7 @@ def _matches_category_query(title_norm, category, query_norm):
             "omen", "predator", "orion", "alienware", "corsair one",
             "ryzen", "core i", " i7", " i9", " i5", "windows", "win11", "win10",
             "ram", "ssd", "tower", "gehaeuse",
-        )
+        ) + PC_DEVICE_HINTS
         return any(term in title_norm for term in pc_hints)
 
     if re.search(r"\bquest\s*3\b", query_norm):
@@ -1413,7 +1607,7 @@ def _is_console_device_title(title_norm, query_norm):
 
 def _build_smart_search_query(search):
     """Natively appends standard category-specific negative keywords to exclude defects and parts."""
-    query = search.get("query", "").strip()
+    query = _intent_query(search)
     
     # Auto-expand Redmagic to match both space and spaceless versions
     query_lower = query.lower()
@@ -1461,7 +1655,7 @@ def _build_url_with_host(host, search, sub="www"):
     params = {"_nkw": _build_smart_search_query(search)}
     
     category = filters.get("category", "all")
-    query_norm = _normalize(search.get("query", ""))
+    query_norm = _normalize(_intent_query(search))
     eff_category = _effective_category(category, query_norm)
     
     if category and category != "all":
@@ -2583,7 +2777,7 @@ def _api_item_id(summary):
 
 
 def _build_ebay_api_query(search):
-    q = (search.get("query") or "").strip()
+    q = _intent_query(search)
     if not q:
         q = _build_smart_search_query(search)
     q = re.sub(r"[()\"'\"]", " ", q)
@@ -2607,7 +2801,7 @@ def _build_ebay_api_params(search, market=None):
     }
     
     category = filters.get("category", "all")
-    query_norm = _normalize(search.get("query", ""))
+    query_norm = _normalize(_intent_query(search))
     eff_category = _effective_category(category, query_norm)
     
     if category and category != "all":
@@ -3170,7 +3364,7 @@ def _details_search_text(details):
     # Keep this scoped to listing metadata. The full eBay description iframe can
     # include promoted/recommended items and other page chrome; description risk
     # is handled separately by _is_description_blocked().
-    for key in ("title", "shortDescription", "subtitle", "itemLocationText"):
+    for key in ("title", "shortDescription", "subtitle", "itemLocationText", "condition", "itemCondition"):
         val = details.get(key)
         if val:
             parts.append(str(val))
@@ -3200,6 +3394,12 @@ def _is_details_blocked(details, search):
     details_norm = _normalize(_details_search_text(details))
     if not details_norm:
         return False
+    if any(_has_term(details_norm, w) for w in BAD_CONDITION_WORDS):
+        logger.info("Details blocked due to bad condition text")
+        return True
+    if details_norm in BAD_CONDITIONS:
+        logger.info("Details blocked due to bad condition value")
+        return True
     if category == "phones":
         phone_title_norm = _normalize(" ".join(
             str(details.get(k) or "") for k in ("title", "subtitle")
@@ -3410,11 +3610,11 @@ def _calculate_total(item, settings, details=None):
 
 def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False):
     global_banned = config_obj.get_global_banned_sellers()
-    banned_ids = config_obj.get_banned_item_ids()
+    banned_ids = config_obj.get_banned_item_ids() | KNOWN_BAD_ITEM_IDS
     item_hashes = config_obj.get_item_hashes()
     filters = search.get("filters", {})
     category = filters.get("category", "all")
-    query_text = search.get("query", "")
+    query_text = _intent_query(search)
     exclude_words = [_normalize(w) for w in search.get("exclude_words", [])]
     include_words = [_normalize(w) for w in search.get("include_words", [])]
     exclude_sellers = [s.lower() for s in search.get("exclude_sellers", [])]
@@ -3513,9 +3713,9 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if cond_norm:
             if cond_norm in BAD_CONDITIONS or any(w in cond_norm for w in ("defekt", "ersatzteil", "parts", "not working", "salvage", "reparatur", "broken")):
                 continue
-        if not _query_matches_title(title_norm, query_text):
+        if not _intent_prelim_matches_title(title_norm, search):
             continue
-        query_norm = _normalize(search.get("query", ""))
+        query_norm = _normalize(query_text)
         effective_category = _effective_category(category, query_norm)
         if not _matches_category_query(title_norm, effective_category, query_norm):
             continue
@@ -4291,7 +4491,11 @@ async def _validate_candidate(item, search):
         if is_mv:
             logger.info("Blocking multi-variation item %s detected via HTML scraping fallback", item["item_id"])
             return False, None
-            
+
+    if not _intent_details_match(search, item, details):
+        logger.info("Blocking item %s: does not satisfy search intent for %s", item.get("item_id"), search.get("query"))
+        return False, details
+
     return True, details
 
 
@@ -4399,6 +4603,35 @@ async def process_searches(bot, once=False):
             if filters.get("location") == "eu":
                 filters["location"] = "worldwide"
                 modified = True
+
+        banned_items = config.raw.setdefault("banned_item_ids", [])
+        for item_id in sorted(KNOWN_BAD_ITEM_IDS):
+            if item_id not in banned_items:
+                banned_items.append(item_id)
+                modified = True
+
+        for s in searches:
+            intent = _search_intent(s)
+            if intent:
+                expected_query = intent.get("query")
+                if expected_query and s.get("query") != expected_query:
+                    s["query"] = expected_query
+                    modified = True
+                expected_display = intent.get("display_name")
+                if expected_display and s.get("display_name") != expected_display:
+                    s["display_name"] = expected_display
+                    modified = True
+                expected_category = intent.get("category")
+                filters = s.setdefault("filters", {})
+                if expected_category and filters.get("category") != expected_category:
+                    filters["category"] = expected_category
+                    modified = True
+            q_norm = _normalize(s.get("query", ""))
+            if re.search(r"\biphone\s*(?:15|16)\s*pro\s*max\b", q_norm):
+                filters = s.setdefault("filters", {})
+                if filters.get("location") != "de":
+                    filters["location"] = "de"
+                    modified = True
 
         # 2. Existing and new filters/excludes migration for redmagic/nubia
         accessory_excludes = [
@@ -5021,6 +5254,11 @@ async def process_searches(bot, once=False):
                     logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
                     mark_seen_item(item["item_id"])
                     continue
+
+                if not _intent_details_match(search, item, details):
+                    logger.info("Skipping notification for item %s: search intent requirements failed", item["item_id"])
+                    mark_seen_item(item["item_id"])
+                    continue
                 
                 if details:
                     _calculate_total(item, config.get_settings(), details)
@@ -5111,6 +5349,11 @@ async def process_searches(bot, once=False):
 
                     if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
                         logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
+                        mark_seen_item(item["item_id"])
+                        continue
+
+                    if not _intent_details_match(search, item, details):
+                        logger.info("Skipping notification for item %s: search intent requirements failed", item["item_id"])
                         mark_seen_item(item["item_id"])
                         continue
                     
