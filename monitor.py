@@ -711,10 +711,25 @@ def _search_intent(search_or_query):
 
 
 def _intent_query(search):
+    if isinstance(search, dict) and search.get("_query_override"):
+        return str(search["_query_override"]).strip()
     intent = _search_intent(search)
     if intent and intent.get("query"):
         return intent["query"]
     return (search.get("query", "") if isinstance(search, dict) else str(search or "")).strip()
+
+
+def _search_query_variants(search):
+    intent = _search_intent(search)
+    if not intent:
+        return [_intent_query(search)]
+    if intent.get("kind") == "superstrike":
+        return [
+            "logitech superstrike",
+            "logitech g pro x 2 superstrike",
+            "logitech pro x2 superstrike",
+        ]
+    return [_intent_query(search)]
 
 
 def _intent_text_from_item_and_details(item=None, details=None):
@@ -3971,6 +3986,8 @@ def _query_cache_key(search):
     keys = ("category", "max_price", "min_price", "condition", "condition_code", "listing_type", "best_offer", "seller_type", "location", "sort", "sort_code", "_ipg")
     source = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
     parts = [f"source={source}", f"market={EBAY_MARKETPLACE_ID}", search.get("query", "").strip().lower()]
+    if search.get("_query_override"):
+        parts.append(f"query_override={str(search.get('_query_override')).strip().lower()}")
     for k in keys:
         parts.append(f"{k}={filters.get(k, '')}")
     return "|".join(parts)
@@ -3995,6 +4012,25 @@ def fetch_ebay_ex(search, force=False):
         logger.info("  %s -> cached (%ds old, %d items, err=%s)",
                     search["query"], int(now - cached[0]), len(items), err)
         return items, err
+
+    variants = _search_query_variants(search)
+    if len(variants) > 1 and not search.get("_variant_child"):
+        merged_items = []
+        errors = []
+        for query in variants:
+            variant = copy.deepcopy(search)
+            variant["_query_override"] = query
+            variant["_variant_child"] = True
+            variant_items, variant_err = fetch_ebay_ex(variant, force=force)
+            if variant_items:
+                merged_items.extend(variant_items)
+            if variant_err:
+                errors.append(variant_err)
+        merged_items = _merge_items_by_id(merged_items)
+        err = None if merged_items else (errors[-1] if errors else None)
+        logger.info("  %s -> %d merged items via %d query variants", search["query"], len(merged_items), len(variants))
+        _ebay_query_cache[cache_key] = (time.time(), merged_items, err)
+        return merged_items, err
 
     if source == "api":
         items, err = fetch_ebay_api_ex(search, force=force)
