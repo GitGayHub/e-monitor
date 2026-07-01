@@ -4541,15 +4541,21 @@ async def process_searches(bot, once=False):
             logger.info(f"🔍 Statistics/Diagnostic mode active ({source_str})...")
             report_entries = []  # list of (sort_key, block_text) for alphabetical ordering
             blocked_searches = []
-            processed_queries = set()
+            processed_base_ids = set()
             
             for search in searches:
                 if not search.get("enabled", True):
                     continue
-                q_norm = search.get("query", "").strip().lower()
-                if q_norm in processed_queries:
+                s_id = search.get("id", "")
+                base_id = s_id
+                if base_id.endswith("_buy"):
+                    base_id = base_id[:-4]
+                elif base_id.endswith("_auc"):
+                    base_id = base_id[:-4]
+                    
+                if base_id in processed_base_ids:
                     continue
-                processed_queries.add(q_norm)
+                processed_base_ids.add(base_id)
                 
                 orig_max_price = search.get("filters", {}).get("limit_price") or search.get("filters", {}).get("max_price")
                 
@@ -4557,12 +4563,17 @@ async def process_searches(bot, once=False):
                 bin_search_cfg = None
                 auc_search_cfg = None
                 for s in searches:
-                    if s.get("query", "").strip().lower() == q_norm:
-                        s_id = s.get("id", "")
+                    s_id_inner = s.get("id", "")
+                    s_base_id = s_id_inner
+                    if s_base_id.endswith("_buy"):
+                        s_base_id = s_base_id[:-4]
+                    elif s_base_id.endswith("_auc"):
+                        s_base_id = s_base_id[:-4]
+                    if s_base_id == base_id:
                         lt = s.get("filters", {}).get("listing_type", "")
-                        if lt in ("buy_now_offer", "buy_now") or s_id.endswith("_buy"):
+                        if lt in ("buy_now_offer", "buy_now") or s_id_inner.endswith("_buy"):
                             bin_search_cfg = s
-                        elif lt == "auction" or s_id.endswith("_auc"):
+                        elif lt == "auction" or s_id_inner.endswith("_auc"):
                             auc_search_cfg = s
                 
                 bin_min_price = bin_search_cfg.get("filters", {}).get("min_price") if bin_search_cfg else None
