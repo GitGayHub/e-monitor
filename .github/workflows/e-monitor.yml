@@ -69,10 +69,6 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           MONITOR_MODE="$(tr -d '\r\n[:space:]' < mode.txt 2>/dev/null || echo normal)"
-          if [ "$MONITOR_MODE" = "statistics" ] && [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            echo "Statistics mode is active; skipping scheduled run. Use workflow_dispatch for a statistics report."
-            exit 0
-          fi
           if [ "$MONITOR_MODE" = "statistics" ]; then
             RUN_ITERATIONS=1
           fi
