@@ -728,6 +728,8 @@ def _search_query_variants(search):
             "logitech superstrike",
             "logitech g pro x 2 superstrike",
             "logitech pro x2 superstrike",
+            "superstrike lunar eclipse",
+            "pro x 2 superstrike lunar eclipse",
         ]
     return [_intent_query(search)]
 
