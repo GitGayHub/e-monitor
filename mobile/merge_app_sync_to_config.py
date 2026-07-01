@@ -48,7 +48,7 @@ def app_search_to_config(search):
         filters["plz_center"] = str(search.get("plzCenter"))
     if search.get("maxDistanceKm") is not None:
         filters["max_distance_km"] = int(search["maxDistanceKm"])
-    return {
+    res = {
         "id": search.get("id") or "",
         "query": search.get("query") or "",
         "filters": filters,
@@ -58,6 +58,9 @@ def app_search_to_config(search):
         "notify": as_bool(search.get("notify"), True),
         "enabled": as_bool(search.get("enabled"), True),
     }
+    if search.get("displayName"):
+        res["display_name"] = search["displayName"]
+    return res
 
 
 def main():
