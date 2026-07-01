@@ -4,11 +4,12 @@ import monitor
 
 
 class DummyConfig:
-    def __init__(self, banned=None):
+    def __init__(self, banned=None, sellers=None):
         self._banned = set(banned or [])
+        self._sellers = list(sellers or [])
 
     def get_global_banned_sellers(self):
-        return []
+        return list(self._sellers)
 
     def get_banned_item_ids(self):
         return set(self._banned)
@@ -51,6 +52,7 @@ class SearchIntentRuleTests(unittest.TestCase):
             "query": "asus vivobook 14x oled",
             "filters": {"category": "laptops", "listing_type": "buy_now_offer", "location": "worldwide"},
         }
+        self.assertIn("_nkw=asus%20vivobook%2014x%20oled", monitor._build_url_with_host("ebay.de", search))
         candidate = item("ASUS Vivobook Pro 14X OLED M7400QC")
         details = {
             "title": "ASUS Vivobook Pro 14X OLED M7400QC",
@@ -95,6 +97,52 @@ class SearchIntentRuleTests(unittest.TestCase):
         cfg = DummyConfig()
         result = monitor.filter_results([banned, foreign, good], search, cfg, skip_seen=True, is_statistics=True)
         self.assertEqual([x["item_id"] for x in result], ["201"])
+
+    def test_samsung_s24_ultra_blocks_refurbished_and_known_seller(self):
+        search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "auction"}}
+        cfg = DummyConfig()
+        known_bad_seller = item(
+            "Samsung Galaxy S24 Ultra 1TB Titanium Gray Android Smartphone sehr gut",
+            item_id="206385453282",
+            auction=True,
+            buy_now=False,
+            seller_name="Talk-Point GmbH",
+            condition="Sehr gut",
+            time_left="6d 16h",
+        )
+        refurbished = item(
+            "Samsung Galaxy S24 Ultra 1TB Titanium Blue Android Smartphone sehr gut",
+            item_id="206385453277",
+            auction=True,
+            buy_now=False,
+            seller_name="ordinary-seller",
+            condition="Sehr gut - Refurbished",
+            time_left="6d 16h",
+        )
+        good = item(
+            "Samsung Galaxy S24 Ultra 256GB Titanium Gray",
+            item_id="200",
+            auction=True,
+            buy_now=False,
+            seller_name="private-seller",
+            condition="Gebraucht",
+            time_left="6d 16h",
+        )
+        result = monitor.filter_results([known_bad_seller, refurbished, good], search, cfg, skip_seen=True, is_statistics=True)
+        self.assertEqual([x["item_id"] for x in result], ["200"])
+
+    def test_superstrike_search_is_wide_but_rejects_accessories(self):
+        search = {"query": "PRO X 2 SUPERSTRIKE", "filters": {"category": "mice", "listing_type": "buy_now_offer"}}
+        url = monitor._build_url_with_host("ebay.de", search)
+        self.assertIn("logitech%20superstrike", url)
+        self.assertNotIn("_sacat=", url)
+
+        cfg = DummyConfig()
+        mouse = item("Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus Lunar Eclipse")
+        skates = item("Corepad Skatez PRO Logitech G PRO X2 SUPERSTRIKE Mausfüße Hyperglide")
+        mouseskates = item("EspTiger ICE V2 Mouseskates Logitech GPX Superlight 2 / Superstrike / SE")
+        result = monitor.filter_results([mouse, skates, mouseskates], search, cfg, skip_seen=True, is_statistics=True)
+        self.assertEqual([x["title"] for x in result], [mouse["title"]])
 
     def test_hybrid_bucket_prices(self):
         cfg = DummyConfig()

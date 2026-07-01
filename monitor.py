@@ -452,6 +452,22 @@ KNOWN_BAD_ITEM_IDS = {
     "206385453277",
 }
 
+KNOWN_BAD_SELLERS = {
+    "talk-point-gmbh",
+    "talk-point gmbh",
+    "talk point gmbh",
+}
+
+REFURBISHED_CONDITION_WORDS = (
+    "refurbished",
+    "generaluberholt",
+    "generalueberholt",
+    "generalüberholt",
+    "renewed",
+    "reconditioned",
+    "wiederaufbereitet",
+)
+
 CATEGORY_ACCESSORY_WORDS = {
     "computers": (
         "grafikkarte", "graphics card",
@@ -665,7 +681,7 @@ def _search_intent(search_or_query):
     if "vivobook" in ident and "14x" in ident and "oled" in ident:
         return {
             "kind": "vivobook_14x_oled_3050",
-            "query": "asus vivobook pro 14x oled m7400qc",
+            "query": "asus vivobook 14x oled",
             "display_name": "asus vivobook 14x oled",
             "category": "laptops",
             "details_can_satisfy": True,
@@ -689,7 +705,7 @@ def _search_intent(search_or_query):
             "kind": "superstrike",
             "query": "logitech superstrike",
             "display_name": "PRO X 2 SUPERSTRIKE",
-            "category": "mice",
+            "category": "all",
         }
     return None
 
@@ -752,6 +768,8 @@ def _intent_prelim_matches_title(title_norm, search):
             has_gpu = _has_rtx_gpu(title_norm, intent["gpu"])
         return has_gpu and _has_pc_hint(title_norm)
     if kind == "superstrike":
+        if _is_category_blocked_title(title_norm, "mice", "superstrike"):
+            return False
         return "superstrike" in title_norm and ("logitech" in title_norm or "pro x" in title_norm)
     return True
 
@@ -773,6 +791,8 @@ def _intent_details_match(search, item=None, details=None):
         has_gpu = _has_rtx_5070_ti(text_norm) if intent["gpu"] == "5070ti" else _has_rtx_gpu(text_norm, intent["gpu"])
         return has_gpu and _has_pc_hint(text_norm)
     if kind == "superstrike":
+        if _is_category_blocked_title(text_norm, "mice", "superstrike"):
+            return False
         return "superstrike" in text_norm and ("logitech" in text_norm or "pro x" in text_norm)
     return True
 
@@ -3401,6 +3421,9 @@ def _is_details_blocked(details, search):
         logger.info("Details blocked due to bad condition value")
         return True
     if category == "phones":
+        if any(_has_term(details_norm, w) for w in REFURBISHED_CONDITION_WORDS):
+            logger.info("Phone details blocked due to refurbished condition")
+            return True
         phone_title_norm = _normalize(" ".join(
             str(details.get(k) or "") for k in ("title", "subtitle")
         ))
@@ -3610,6 +3633,7 @@ def _calculate_total(item, settings, details=None):
 
 def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False):
     global_banned = config_obj.get_global_banned_sellers()
+    global_banned_norm = {_normalize(s) for s in global_banned}
     banned_ids = config_obj.get_banned_item_ids() | KNOWN_BAD_ITEM_IDS
     item_hashes = config_obj.get_item_hashes()
     filters = search.get("filters", {})
@@ -3618,6 +3642,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     exclude_words = [_normalize(w) for w in search.get("exclude_words", [])]
     include_words = [_normalize(w) for w in search.get("include_words", [])]
     exclude_sellers = [s.lower() for s in search.get("exclude_sellers", [])]
+    exclude_sellers_norm = {_normalize(s) for s in exclude_sellers}
     settings = config_obj.get_settings()
 
     filtered = []
@@ -3702,16 +3727,18 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 if not (is_best_offer or is_ending_soon):
                     continue
                 
-        seller_lower = item["seller_name"].lower()
-        if seller_lower in [s.lower() for s in global_banned]:
+        seller_norm = _normalize(item["seller_name"])
+        if seller_norm in global_banned_norm or seller_norm in KNOWN_BAD_SELLERS:
             continue
-        if seller_lower in exclude_sellers:
+        if seller_norm in exclude_sellers_norm:
             continue
         title_norm = _normalize(item["title"])
         # Block items with bad conditions (Defekt, Als Ersatzteile, etc.)
         cond_norm = _normalize(item.get("condition", ""))
         if cond_norm:
             if cond_norm in BAD_CONDITIONS or any(w in cond_norm for w in ("defekt", "ersatzteil", "parts", "not working", "salvage", "reparatur", "broken")):
+                continue
+            if _effective_category(category, _normalize(query_text)) == "phones" and any(_has_term(cond_norm, w) for w in REFURBISHED_CONDITION_WORDS):
                 continue
         if not _intent_prelim_matches_title(title_norm, search):
             continue
@@ -4608,6 +4635,13 @@ async def process_searches(bot, once=False):
         for item_id in sorted(KNOWN_BAD_ITEM_IDS):
             if item_id not in banned_items:
                 banned_items.append(item_id)
+                modified = True
+        banned_sellers = config.raw.setdefault("global_banned_sellers", [])
+        banned_sellers_norm = {_normalize(s) for s in banned_sellers}
+        for seller in sorted(KNOWN_BAD_SELLERS):
+            if _normalize(seller) not in banned_sellers_norm:
+                banned_sellers.append(seller)
+                banned_sellers_norm.add(_normalize(seller))
                 modified = True
 
         for s in searches:
