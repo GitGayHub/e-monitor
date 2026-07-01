@@ -133,8 +133,7 @@ jobs:
           print(f'Log: {entry}')
           PY
 
-            python config_crypt.py encrypt config.json config.json.enc
-            git add seen_ids.json config.json.enc price_history.db run_log.json || true
+            git add seen_ids.json price_history.db run_log.json || true
             [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
             [ -f details_test_output.json ] && git add details_test_output.json
             [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
@@ -168,8 +167,7 @@ jobs:
           set -e
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
-          python config_crypt.py encrypt config.json config.json.enc
-          git add seen_ids.json config.json.enc price_history.db run_log.json || true
+          git add seen_ids.json price_history.db run_log.json || true
           [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
           [ -f details_test_output.json ] && git add details_test_output.json
           [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
