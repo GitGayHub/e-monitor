@@ -4644,14 +4644,11 @@ async def process_searches(bot, once=False):
                 
                 # Helper to find the cheapest validated candidate
                 async def find_cheapest_valid(items, search_cfg):
-                    valid_items = []
                     for item in items[:30]:
                         is_valid, _ = await _validate_candidate(item, search_cfg)
                         if is_valid:
-                            valid_items.append(item)
-                    if not valid_items:
-                        return None
-                    return min(valid_items, key=lambda x: float(x.get("total_price") or 0))
+                            return item
+                    return None
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
                 cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=total_price_key), search)
