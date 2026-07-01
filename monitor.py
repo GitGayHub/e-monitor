@@ -4760,7 +4760,13 @@ async def process_searches(bot, once=False):
                         
                         verdict_info = f"{v_emoji} {v_text}"
 
-                        padded_price = total_price_str.rjust(max_len)
+                        num_digits = len(str(int(total_price_val))) if total_price_val else 0
+                        if num_digits >= 3:
+                            padded_price = total_price_str.rjust(max_len + 1)
+                            after_price_spaces = " "
+                        else:
+                            padded_price = total_price_str.rjust(max_len)
+                            after_price_spaces = "  "
                         
                         time_line = ""
                         if is_auction:
@@ -4769,7 +4775,7 @@ async def process_searches(bot, once=False):
                                 time_emoji = "🟢" if is_under_one_hour(t_left) else "⚠️"
                                 time_line = f"{time_emoji} {_shorten_time_left(t_left)}"
 
-                        row_lines.append(f"{emoji} <code>{label}{padded_price}  │ </code>{verdict_info}")
+                        row_lines.append(f"{emoji} <code>{label}{padded_price}{after_price_spaces}│ </code>{verdict_info}")
                         if time_line:
                             row_lines.append(f"<code>{time_line}</code>")
 
