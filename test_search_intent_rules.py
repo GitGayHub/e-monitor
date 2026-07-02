@@ -334,6 +334,30 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual(selected["item_id"], "117236309864")
         self.assertEqual(selected["total_price"], 436.19)
 
+    def test_german_item_ignores_geo_inflated_shipping_from_details(self):
+        search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "buy_now_offer"}}
+        candidate = item(
+            "Samsung Galaxy S24 Ultra - 256 GB - Titan Schwarz Graphite",
+            item_id="117236309864",
+            price=672,
+            total_price=672,
+            buy_now=True,
+            auction=False,
+            location="Erkner, Deutschland",
+        )
+        details = {
+            "title": candidate["title"],
+            "price": {"value": "430.0", "currency": "EUR"},
+            "htmlShippingCost": {"value": "242.40", "currency": "EUR"},
+            "itemLocationText": "Erkner, Deutschland",
+        }
+        with patch.object(monitor, "_fetch_item_details", return_value=details):
+            ok, _ = asyncio.run(monitor._validate_candidate(candidate, search))
+        self.assertTrue(ok)
+        self.assertEqual(candidate["price"], 430.0)
+        self.assertEqual(candidate["shipping_cost"], 0)
+        self.assertEqual(candidate["total_price"], 430.0)
+
     def test_cheapest_selection_stops_when_card_price_is_too_far(self):
         search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "buy_now_offer"}}
         cheap = item("Samsung Galaxy S24 Ultra 256 GB Grau", item_id="1", price=450, total_price=450)

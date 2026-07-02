@@ -3590,6 +3590,24 @@ def _is_clearly_non_germany_location(location_text):
     return re.search(r"\b(?:at|fr|it|es|nl|be|pl|pt|gr|cz|se|dk|fi|hu|ro|bg|hr|sk|si|lt|lv|ee|lu|ch|no|gb|uk|us|cn|jp|tr|in|au|ca)\b", loc) is not None
 
 
+def _is_germany_location(location_text):
+    code = _country_code_from_location(location_text)
+    if code:
+        return code == "DE"
+    loc = _normalize(location_text)
+    return _has_term(loc, "deutschland") or _has_term(loc, "germany")
+
+
+def _looks_like_geo_shipping_for_german_item(shipping_cost, location_text):
+    if shipping_cost is None:
+        return False
+    try:
+        shipping = float(shipping_cost)
+    except (TypeError, ValueError):
+        return False
+    return shipping > 80.0 and _is_germany_location(location_text)
+
+
 def _get_api_shipping_and_import(details):
     shipping_cost = _api_float(details.get("htmlShippingCost"))
     import_charges = _api_float(details.get("htmlImportCharges"))
@@ -3658,17 +3676,23 @@ def _calculate_total(item, settings, details=None):
             else:
                 item["price"] = item.get("auc_price") or item.get("price")
 
+        api_loc = _api_location(details) or details.get("itemLocationText", "")
+        if api_loc:
+            item["location"] = api_loc
+
         api_shipping, _ = _get_api_shipping_and_import(details)
         try:
             existing_shipping = float(item.get("shipping_cost") or 0.0)
         except Exception:
             existing_shipping = 0.0
-        if api_shipping is not None and (api_shipping > 0 or existing_shipping <= 0):
+        if _looks_like_geo_shipping_for_german_item(api_shipping, item.get("location", "")):
+            logger.info(
+                "Ignoring geo-inflated shipping %.2f for German item %s",
+                float(api_shipping),
+                item.get("item_id"),
+            )
+        elif api_shipping is not None and (api_shipping > 0 or existing_shipping <= 0):
             item["shipping_cost"] = api_shipping
-        
-        api_loc = _api_location(details) or details.get("itemLocationText", "")
-        if api_loc:
-            item["location"] = api_loc
 
     shipping = item.get("shipping_cost") or 0.0
 
