@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock, patch
 
 import monitor
 
@@ -175,8 +176,109 @@ class SearchIntentRuleTests(unittest.TestCase):
         )
         buy_search = {"query": "5070 Ti PC", "filters": {"category": "computers", "listing_type": "buy_now_offer"}}
         auc_search = {"query": "5070 Ti PC", "filters": {"category": "computers", "listing_type": "auction"}}
-        self.assertEqual(monitor.filter_results([hybrid.copy()], buy_search, cfg, skip_seen=True, is_statistics=True)[0]["total_price"], 3200)
-        self.assertEqual(monitor.filter_results([hybrid.copy()], auc_search, cfg, skip_seen=True, is_statistics=True)[0]["total_price"], 2200)
+        buy_result = monitor.filter_results([hybrid.copy()], buy_search, cfg, skip_seen=True, is_statistics=True)[0]
+        auc_result = monitor.filter_results([hybrid.copy()], auc_search, cfg, skip_seen=True, is_statistics=True)[0]
+        self.assertEqual(buy_result["total_price"], 3200)
+        self.assertTrue(buy_result["buy_now"])
+        self.assertFalse(buy_result["auction"])
+        self.assertEqual(auc_result["total_price"], 2200)
+        self.assertFalse(auc_result["buy_now"])
+        self.assertTrue(auc_result["auction"])
+
+    def test_merge_preserves_hybrid_auction_price_from_later_bucket(self):
+        bin_seen_first = item(
+            "Gaming PC RTX 5070 Ti Ryzen 7 32GB RAM",
+            item_id="5070",
+            buy_now=True,
+            auction=True,
+            price=3832,
+            bin_price=3832,
+            auc_price=3832,
+            bin_total_price=3832,
+            auc_total_price=3832,
+        )
+        auction_seen_later = item(
+            "Gaming PC RTX 5070 Ti Ryzen 7 32GB RAM",
+            item_id="5070",
+            buy_now=False,
+            auction=True,
+            price=2200,
+            bin_price=None,
+            auc_price=2200,
+            bin_total_price=None,
+            auc_total_price=2200,
+            bids_count=3,
+            time_left="3d 18h",
+        )
+        merged = monitor._merge_items_by_id([bin_seen_first], [auction_seen_later])[0]
+        self.assertEqual(merged["bin_price"], 3832)
+        self.assertEqual(merged["auc_price"], 2200)
+        self.assertEqual(merged["bin_total_price"], 3832)
+        self.assertEqual(merged["auc_total_price"], 2200)
+        self.assertTrue(merged["buy_now"])
+        self.assertTrue(merged["auction"])
+
+    def test_hybrid_auction_details_price_mismatch_ignores_bin_price(self):
+        auction_item = item(
+            "Gaming PC RTX 5070 Ti Ryzen 7 32GB RAM",
+            buy_now=False,
+            auction=True,
+            price=2200,
+            auc_price=2200,
+            _was_hybrid=True,
+        )
+        details_with_only_bin_price = {"price": {"value": "3832", "currency": "EUR"}}
+        mismatch, _, _ = monitor._details_price_mismatch(auction_item, details_with_only_bin_price)
+        self.assertFalse(mismatch)
+
+        details_with_wrong_bid = {
+            "price": {"value": "3832", "currency": "EUR"},
+            "currentBidPrice": {"value": "3832", "currency": "EUR"},
+        }
+        mismatch, scraped, api = monitor._details_price_mismatch(auction_item, details_with_wrong_bid)
+        self.assertTrue(mismatch)
+        self.assertEqual(scraped, 2200)
+        self.assertEqual(api, 3832)
+
+    def test_stable_version_ignores_runtime_state_commits(self):
+        fake_log = "\n".join([
+            "2000000000\x00Update monitor state",
+            "1990000000\x00Checkpoint monitor state",
+            "1980000000\x00Fix hybrid auction pricing",
+        ])
+        monitor._STABLE_VERSION_CACHE = None
+        try:
+            with patch.object(monitor.subprocess, "run", return_value=Mock(stdout=fake_log)):
+                self.assertEqual(
+                    monitor._get_stable_version_string(),
+                    monitor._format_version_timestamp(1980000000),
+                )
+        finally:
+            monitor._STABLE_VERSION_CACHE = None
+
+    def test_stable_version_deepens_shallow_runtime_history(self):
+        shallow_log = "2000000000\x00Update monitor state"
+        deep_log = "\n".join([
+            "2000000000\x00Update monitor state",
+            "1980000000\x00Fix hybrid auction pricing",
+        ])
+        log_outputs = [shallow_log, deep_log]
+
+        def fake_run(args, **kwargs):
+            if "fetch" in args:
+                return Mock(stdout="")
+            return Mock(stdout=log_outputs.pop(0))
+
+        monitor._STABLE_VERSION_CACHE = None
+        try:
+            with patch.object(monitor.subprocess, "run", side_effect=fake_run) as mocked_run:
+                self.assertEqual(
+                    monitor._get_stable_version_string(),
+                    monitor._format_version_timestamp(1980000000),
+                )
+                self.assertTrue(any("fetch" in call.args[0] for call in mocked_run.call_args_list))
+        finally:
+            monitor._STABLE_VERSION_CACHE = None
 
     def test_ebay_de_location_param_stays_germany(self):
         url = monitor._build_url_with_host("ebay.de", {

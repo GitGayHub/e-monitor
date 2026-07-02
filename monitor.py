@@ -3646,6 +3646,29 @@ def _calculate_total(item, settings, details=None):
     return item
 
 
+def _details_relevant_price_for_item(item, details):
+    if not details:
+        return None
+    if item.get("auction") and not item.get("buy_now"):
+        bid_price = _api_float(details.get("currentBidPrice"))
+        if bid_price is not None:
+            return bid_price
+        if item.get("_was_hybrid"):
+            return None
+    return _api_float(details.get("price"))
+
+
+def _details_price_mismatch(item, details):
+    details_price = _details_relevant_price_for_item(item, details)
+    if details_price is None:
+        return False, None, None
+    try:
+        item_price = float(item["price"])
+    except (KeyError, TypeError, ValueError):
+        return False, None, details_price
+    return abs(details_price - item_price) > 1.0, item_price, details_price
+
+
 def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False):
     global_banned = config_obj.get_global_banned_sellers()
     global_banned_norm = {_normalize(s) for s in global_banned}
@@ -3676,13 +3699,17 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # Select correct price for hybrid listings based on the search/bucket type
         if item.get("buy_now") and item.get("auction"):
             if listing_type == "auction":
+                item["_was_hybrid"] = True
                 item["price"] = item.get("auc_price") or item["price"]
                 item["total_price"] = item.get("auc_total_price") or item["total_price"]
                 item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
+                item["buy_now"] = False
             elif listing_type in ("buy_now", "buy_now_offer"):
+                item["_was_hybrid"] = True
                 item["price"] = item.get("bin_price") or item["price"]
                 item["total_price"] = item.get("bin_total_price") or item["total_price"]
                 item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
+                item["auction"] = False
 
         if filters.get("location", "de") == "de" and item.get("location"):
             if _is_clearly_non_germany_location(item["location"]):
@@ -3795,12 +3822,81 @@ def fetch_ebay(search, force=False):
 
 
 
+def _valid_price_value(value):
+    try:
+        if value is None:
+            return None
+        value = float(value)
+        if value <= 0:
+            return None
+        return value
+    except (TypeError, ValueError):
+        return None
+
+
+def _prefer_lower_price(current, candidate):
+    current_val = _valid_price_value(current)
+    candidate_val = _valid_price_value(candidate)
+    if candidate_val is None:
+        return current
+    if current_val is None or candidate_val < current_val:
+        return candidate
+    return current
+
+
+def _prefer_present(current, candidate):
+    return candidate if current in (None, "", 0) and candidate not in (None, "", 0) else current
+
+
+def _merge_same_item(existing, incoming):
+    merged = copy.deepcopy(existing)
+    incoming = incoming or {}
+
+    merged["buy_now"] = bool(existing.get("buy_now") or incoming.get("buy_now"))
+    merged["auction"] = bool(existing.get("auction") or incoming.get("auction"))
+    merged["best_offer"] = bool(existing.get("best_offer") or incoming.get("best_offer"))
+    merged["_was_hybrid"] = bool(
+        existing.get("_was_hybrid")
+        or incoming.get("_was_hybrid")
+        or (merged["buy_now"] and merged["auction"])
+    )
+
+    merged["bin_price"] = _prefer_lower_price(existing.get("bin_price"), incoming.get("bin_price"))
+    merged["auc_price"] = _prefer_lower_price(existing.get("auc_price"), incoming.get("auc_price"))
+    merged["bin_total_price"] = _prefer_lower_price(existing.get("bin_total_price"), incoming.get("bin_total_price"))
+    merged["auc_total_price"] = _prefer_lower_price(existing.get("auc_total_price"), incoming.get("auc_total_price"))
+
+    if merged.get("auction") and merged.get("buy_now"):
+        if _valid_price_value(merged.get("bin_price")) is None:
+            merged["bin_price"] = _prefer_present(merged.get("bin_price"), incoming.get("price"))
+        if _valid_price_value(merged.get("auc_price")) is None:
+            merged["auc_price"] = _prefer_present(merged.get("auc_price"), incoming.get("price"))
+        if _valid_price_value(merged.get("bin_total_price")) is None and _valid_price_value(merged.get("bin_price")) is not None:
+            merged["bin_total_price"] = float(merged["bin_price"]) + float(merged.get("shipping_cost") or 0)
+        if _valid_price_value(merged.get("auc_total_price")) is None and _valid_price_value(merged.get("auc_price")) is not None:
+            merged["auc_total_price"] = float(merged["auc_price"]) + float(merged.get("shipping_cost") or 0)
+
+    for key in ("title", "image_url", "url", "condition", "seller_name", "seller_type", "location", "time_left"):
+        merged[key] = _prefer_present(merged.get(key), incoming.get(key))
+    for key in ("seller_rating_count", "seller_rating_percent", "bids_count"):
+        merged[key] = max(existing.get(key) or 0, incoming.get(key) or 0)
+    merged["top_rated"] = bool(existing.get("top_rated") or incoming.get("top_rated"))
+    merged["is_pickup_only"] = bool(existing.get("is_pickup_only") or incoming.get("is_pickup_only"))
+    merged["is_multivariation"] = bool(existing.get("is_multivariation") or incoming.get("is_multivariation"))
+
+    return merged
+
+
 def _merge_items_by_id(*groups):
     merged = {}
     for group in groups:
         for item in group or []:
             item_id = item.get("item_id")
-            if item_id and item_id not in merged:
+            if not item_id:
+                continue
+            if item_id in merged:
+                merged[item_id] = _merge_same_item(merged[item_id], item)
+            else:
                 merged[item_id] = item
     return list(merged.values())
 
@@ -4145,6 +4241,95 @@ def _get_version_string():
             "июля", "августа", "сентября", "октября", "ноября", "декабря",
         ]
         return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
+
+_VERSION_STATE_COMMIT_PREFIXES = (
+    "Update monitor state",
+    "Checkpoint monitor state",
+    "Sync state after run",
+    "Switch monitor mode",
+    "Toggle auto-monitoring mode",
+)
+
+
+def _format_version_timestamp(timestamp):
+    from datetime import datetime, timezone, timedelta
+    dt = datetime.fromtimestamp(int(timestamp), timezone(timedelta(hours=2)))
+    months = [
+        "\u044f\u043d\u0432\u0430\u0440\u044f",
+        "\u0444\u0435\u0432\u0440\u0430\u043b\u044f",
+        "\u043c\u0430\u0440\u0442\u0430",
+        "\u0430\u043f\u0440\u0435\u043b\u044f",
+        "\u043c\u0430\u044f",
+        "\u0438\u044e\u043d\u044f",
+        "\u0438\u044e\u043b\u044f",
+        "\u0430\u0432\u0433\u0443\u0441\u0442\u0430",
+        "\u0441\u0435\u043d\u0442\u044f\u0431\u0440\u044f",
+        "\u043e\u043a\u0442\u044f\u0431\u0440\u044f",
+        "\u043d\u043e\u044f\u0431\u0440\u044f",
+        "\u0434\u0435\u043a\u0430\u0431\u0440\u044f",
+    ]
+    return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]}"
+
+
+def _version_commit_is_runtime_noise(subject):
+    return any((subject or "").startswith(prefix) for prefix in _VERSION_STATE_COMMIT_PREFIXES)
+
+
+_STABLE_VERSION_CACHE = None
+
+
+def _git_version_log(repo_dir):
+    res = subprocess.run(
+        ["git", "-C", repo_dir, "log", "--max-count=300", "--format=%ct%x00%s"],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return res.stdout or ""
+
+
+def _stable_version_from_log(log_text):
+    first_timestamp = None
+    for line in (log_text or "").splitlines():
+        if not line.strip():
+            continue
+        parts = line.split("\x00", 1)
+        timestamp = parts[0].strip()
+        subject = parts[1].strip() if len(parts) > 1 else ""
+        if first_timestamp is None:
+            first_timestamp = timestamp
+        if not _version_commit_is_runtime_noise(subject):
+            return _format_version_timestamp(timestamp), True
+    if first_timestamp is not None:
+        return _format_version_timestamp(first_timestamp), False
+    return None, False
+
+
+def _get_stable_version_string():
+    global _STABLE_VERSION_CACHE
+    if _STABLE_VERSION_CACHE:
+        return _STABLE_VERSION_CACHE
+    try:
+        repo_dir = os.path.dirname(os.path.abspath(__file__))
+        version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
+        if not meaningful:
+            subprocess.run(
+                ["git", "-C", repo_dir, "fetch", "--deepen=300", "--quiet", "origin", "main"],
+                capture_output=True,
+                text=True,
+                timeout=25,
+            )
+            version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
+        if version:
+            _STABLE_VERSION_CACHE = version
+            return version
+    except Exception:
+        pass
+    return f"{_format_version_timestamp(time.time())} (live)"
+
+
+_get_version_string = _get_stable_version_string
+
 
 def get_category_emoji(cat_name):
     cat_name = (cat_name or "").strip().lower()
@@ -5193,7 +5378,7 @@ async def process_searches(bot, once=False):
                               "июля", "августа", "сентября", "октября", "ноября", "декабря"]
                     return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
             
-            footer_str += f"\nℹ️ <i>Версия: {_get_version_string()}</i>\n🔎 Поиск: full html"
+            footer_str += f"\nℹ️ <i>Версия: {_get_stable_version_string()}</i>\n🔎 Поиск: full html"
 
             report_lines.append(footer_str)
 
@@ -5301,18 +5486,13 @@ async def process_searches(bot, once=False):
                         logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
                         mark_seen_item(item["item_id"])
                         continue
-                    # Block constructor/bait listings (price mismatch between search results and API details)
-                    api_price_val = details.get("price", {}).get("value")
-                    if api_price_val:
-                        try:
-                            api_price = float(api_price_val)
-                            scraped_price = float(item["price"])
-                            if abs(api_price - scraped_price) > 1.0:
-                                logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
-                                mark_seen_item(item["item_id"])
-                                continue
-                        except Exception as pe:
-                            logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
+                    # Block constructor/bait listings, but do not compare a
+                    # hybrid auction bid against the listing's Buy-It-Now price.
+                    mismatch, scraped_price, api_price = _details_price_mismatch(item, details)
+                    if mismatch:
+                        logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
+                        mark_seen_item(item["item_id"])
+                        continue
                     desc = details.get("description", "")
 
                 if details and _is_details_blocked(details, search):
@@ -5398,18 +5578,13 @@ async def process_searches(bot, once=False):
                             logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
                             mark_seen_item(item["item_id"])
                             continue
-                        # Block constructor/bait listings (price mismatch between search results and API details)
-                        api_price_val = details.get("price", {}).get("value")
-                        if api_price_val:
-                            try:
-                                api_price = float(api_price_val)
-                                scraped_price = float(item["price"])
-                                if abs(api_price - scraped_price) > 1.0:
-                                    logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
-                                    mark_seen_item(item["item_id"])
-                                    continue
-                            except Exception as pe:
-                                logger.warning("Error comparing prices for item %s: %s", item["item_id"], pe)
+                        # Block constructor/bait listings, but do not compare a
+                        # hybrid auction bid against the listing's Buy-It-Now price.
+                        mismatch, scraped_price, api_price = _details_price_mismatch(item, details)
+                        if mismatch:
+                            logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
+                            mark_seen_item(item["item_id"])
+                            continue
                         desc = details.get("description", "")
 
                     if details and _is_details_blocked(details, search):
