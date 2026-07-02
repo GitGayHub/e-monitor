@@ -3775,7 +3775,8 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     seen_batch_ids = set()
     for item in items:
         if item.get("is_multivariation"):
-            continue
+            if not is_statistics:
+                continue
         item_id = item["item_id"]
         if item_id in seen_batch_ids:
             continue
@@ -3890,7 +3891,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if effective_category == "consoles":
             if not _matches_console_query_model(title_norm, query_norm):
                 continue
-        if any(w in title_norm for w in exclude_words):
+        if any(_has_term(title_norm, w) for w in exclude_words):
             continue
         if include_words and not any(w in title_norm for w in include_words):
             continue
@@ -4791,9 +4792,10 @@ async def _validate_candidate(item, search):
                     logger.debug("Item %s in unexpected category %s (allowed: %s) — passing anyway",
                                  item.get("item_id"), cat_id, allowed_set)
 
-        # Block SELLER_DEFINED_VARIATIONS
+        # Block SELLER_DEFINED_VARIATIONS for notifications, allow for statistics
         if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
-            return False, details
+            if not search.get("_allow_multivariation"):
+                return False, details
             
         scraped_price = None
         try:
@@ -5282,10 +5284,12 @@ async def process_searches(bot, once=False):
                             auc_bo.append(auc_item)
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
-                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), search)
-                cheapest_bin_bo = await _select_cheapest_valid_candidate(sorted(bin_bo, key=total_price_key), search)
-                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(sorted(auc_no_bo, key=total_price_key), search)
-                cheapest_auc_bo = await _select_cheapest_valid_candidate(sorted(auc_bo, key=total_price_key), search)
+                stats_search_with_mv = copy.deepcopy(search)
+                stats_search_with_mv["_allow_multivariation"] = True
+                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), stats_search_with_mv)
+                cheapest_bin_bo = await _select_cheapest_valid_candidate(sorted(bin_bo, key=total_price_key), stats_search_with_mv)
+                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(sorted(auc_no_bo, key=total_price_key), stats_search_with_mv)
+                cheapest_auc_bo = await _select_cheapest_valid_candidate(sorted(auc_bo, key=total_price_key), stats_search_with_mv)
                 
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):
