@@ -4839,6 +4839,7 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
         limit = _live_validation_limit(search_cfg)
     price_window = _live_validation_price_window(search_cfg)
     valid_items = []
+    query_norm = _normalize(search_cfg.get("query", ""))
     for item in items[:limit]:
         if valid_items:
             best_total = min(float(x.get("total_price") or 0) for x in valid_items)
@@ -4848,9 +4849,29 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
         is_valid, _ = await _validate_candidate(item, search_cfg)
         if is_valid:
             valid_items.append(item)
+            if "samsung s24 ultra" in query_norm:
+                logger.info(
+                    "Samsung stats candidate %s valid price=%s ship=%s total=%s location=%s best_offer=%s",
+                    item.get("item_id"),
+                    item.get("price"),
+                    item.get("shipping_cost"),
+                    item.get("total_price"),
+                    item.get("location"),
+                    item.get("best_offer"),
+                )
+        elif "samsung s24 ultra" in query_norm:
+            logger.info("Samsung stats candidate %s rejected", item.get("item_id"))
     if not valid_items:
         return None
-    return min(valid_items, key=lambda x: float(x.get("total_price") or 0))
+    selected = min(valid_items, key=lambda x: float(x.get("total_price") or 0))
+    if "samsung s24 ultra" in query_norm:
+        logger.info(
+            "Samsung stats selected %s total=%s price=%s",
+            selected.get("item_id"),
+            selected.get("total_price"),
+            selected.get("price"),
+        )
+    return selected
 
 
 _allowed_api_targets_this_run = set()
