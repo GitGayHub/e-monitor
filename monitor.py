@@ -4817,9 +4817,34 @@ async def _validate_candidate(item, search):
     return True, details
 
 
-async def _select_cheapest_valid_candidate(items, search_cfg, limit=30):
+def _live_validation_price_window(search_cfg):
+    filters = search_cfg.get("filters", {}) or {}
+    category = _effective_category(filters.get("category", "all"), _normalize(search_cfg.get("query", "")))
+    if category in ("phones", "computers", "laptops"):
+        return 300.0
+    if category in ("consoles", "monitors"):
+        return 200.0
+    return 100.0
+
+
+def _live_validation_limit(search_cfg):
+    query_norm = _normalize(search_cfg.get("query", ""))
+    if "samsung s24 ultra" in query_norm:
+        return 20
+    return 12
+
+
+async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
+    if limit is None:
+        limit = _live_validation_limit(search_cfg)
+    price_window = _live_validation_price_window(search_cfg)
     valid_items = []
     for item in items[:limit]:
+        if valid_items:
+            best_total = min(float(x.get("total_price") or 0) for x in valid_items)
+            card_total = float(item.get("total_price") or 0)
+            if card_total > best_total + price_window:
+                break
         is_valid, _ = await _validate_candidate(item, search_cfg)
         if is_valid:
             valid_items.append(item)

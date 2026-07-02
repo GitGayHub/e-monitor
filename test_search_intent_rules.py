@@ -334,6 +334,15 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual(selected["item_id"], "117236309864")
         self.assertEqual(selected["total_price"], 436.19)
 
+    def test_cheapest_selection_stops_when_card_price_is_too_far(self):
+        search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "buy_now_offer"}}
+        cheap = item("Samsung Galaxy S24 Ultra 256 GB Grau", item_id="1", price=450, total_price=450)
+        far = item("Samsung Galaxy S24 Ultra 1TB", item_id="2", price=900, total_price=900)
+        with patch.object(monitor, "_fetch_item_details", return_value={"title": cheap["title"], "price": {"value": "450", "currency": "EUR"}}) as fetch:
+            selected = asyncio.run(monitor._select_cheapest_valid_candidate([cheap, far], search))
+        self.assertEqual(selected["item_id"], "1")
+        self.assertEqual(fetch.call_count, 1)
+
     def test_stable_version_ignores_runtime_state_commits(self):
         fake_log = "\n".join([
             "2000000000\x00Update monitor state",
