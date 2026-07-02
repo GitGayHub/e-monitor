@@ -4783,14 +4783,20 @@ async def _validate_candidate(item, search):
         if _is_details_blocked(details, search):
             return False, details
 
-        # Block constructor/bait listings (skip for auctions and check in converted currency)
+        # Block constructor/bait listings (skip for auctions and check in converted currency).
+        # Details page price is authoritative when it is lower than the search card:
+        # eBay search can keep stale or inflated card prices, and blocking those
+        # items hides real cheaper BIN offers from statistics.
         if scraped_price is not None and not item.get("auction"):
             try:
                 api_price = float(item["price"])
-                if abs(api_price - scraped_price) > 1.0:
+                if api_price > scraped_price + 1.0:
                     logger.info("Blocking item %s: price mismatch (search: %s, details: %s)", 
                                 item["item_id"], scraped_price, api_price)
                     return False, details
+                if api_price + 1.0 < scraped_price:
+                    logger.info("Correcting item %s price from search card %s to details %s",
+                                item["item_id"], scraped_price, api_price)
             except Exception:
                 pass
                 
@@ -4809,6 +4815,17 @@ async def _validate_candidate(item, search):
         return False, details
 
     return True, details
+
+
+async def _select_cheapest_valid_candidate(items, search_cfg, limit=30):
+    valid_items = []
+    for item in items[:limit]:
+        is_valid, _ = await _validate_candidate(item, search_cfg)
+        if is_valid:
+            valid_items.append(item)
+    if not valid_items:
+        return None
+    return min(valid_items, key=lambda x: float(x.get("total_price") or 0))
 
 
 _allowed_api_targets_this_run = set()
@@ -5194,19 +5211,11 @@ async def process_searches(bot, once=False):
                         elif item.get("bids_count") in (0, None):
                             auc_bo.append(auc_item)
                 
-                # Helper to find the cheapest validated candidate
-                async def find_cheapest_valid(items, search_cfg):
-                    for item in items[:30]:
-                        is_valid, _ = await _validate_candidate(item, search_cfg)
-                        if is_valid:
-                            return item
-                    return None
-                
                 total_price_key = lambda x: float(x.get("total_price") or 0)
-                cheapest_bin_no_bo = await find_cheapest_valid(sorted(bin_no_bo, key=total_price_key), search)
-                cheapest_bin_bo = await find_cheapest_valid(sorted(bin_bo, key=total_price_key), search)
-                cheapest_auc_no_bo = await find_cheapest_valid(sorted(auc_no_bo, key=total_price_key), search)
-                cheapest_auc_bo = await find_cheapest_valid(sorted(auc_bo, key=total_price_key), search)
+                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), search)
+                cheapest_bin_bo = await _select_cheapest_valid_candidate(sorted(bin_bo, key=total_price_key), search)
+                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(sorted(auc_no_bo, key=total_price_key), search)
+                cheapest_auc_bo = await _select_cheapest_valid_candidate(sorted(auc_bo, key=total_price_key), search)
                 
                 # Emojis and verdict helper
                 def get_verdict_str(price_val):

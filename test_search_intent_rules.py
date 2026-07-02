@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch
+import asyncio
 
 import monitor
 
@@ -273,6 +274,65 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual(auction_item["price"], 2720)
         self.assertEqual(auction_item["total_price"], 2720)
         self.assertEqual(auction_item["auc_total_price"], 2720)
+
+    def test_validate_accepts_lower_details_price_for_buy_now(self):
+        search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "buy_now_offer"}}
+        candidate = item(
+            "Samsung Galaxy S24 Ultra - 256 GB - Titan Schwarz Graphite",
+            item_id="117236309864",
+            price=672,
+            total_price=672,
+            buy_now=True,
+            auction=False,
+            location="Erkner, Deutschland",
+        )
+        details = {
+            "title": "Samsung Galaxy S24 Ultra - 256 GB - Titan Schwarz Graphite",
+            "price": {"value": "430.0", "currency": "EUR"},
+            "htmlShippingCost": {"value": "6.19", "currency": "EUR"},
+            "itemLocationText": "Erkner, Deutschland",
+        }
+        with patch.object(monitor, "_fetch_item_details", return_value=details):
+            ok, _ = asyncio.run(monitor._validate_candidate(candidate, search))
+        self.assertTrue(ok)
+        self.assertEqual(candidate["price"], 430.0)
+        self.assertEqual(candidate["total_price"], 436.19)
+
+    def test_cheapest_selection_uses_price_after_live_validation(self):
+        search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "buy_now_offer"}}
+        first_by_card = item(
+            "Samsung Galaxy S24 Ultra 256 GB Grau",
+            item_id="236905989506",
+            price=450,
+            total_price=456.19,
+            buy_now=True,
+            auction=False,
+        )
+        cheaper_after_details = item(
+            "Samsung Galaxy S24 Ultra - 256 GB - Titan Schwarz Graphite",
+            item_id="117236309864",
+            price=672,
+            total_price=672,
+            buy_now=True,
+            auction=False,
+        )
+        details_by_id = {
+            "236905989506": {
+                "title": first_by_card["title"],
+                "price": {"value": "450.0", "currency": "EUR"},
+                "htmlShippingCost": {"value": "6.19", "currency": "EUR"},
+            },
+            "117236309864": {
+                "title": cheaper_after_details["title"],
+                "price": {"value": "430.0", "currency": "EUR"},
+                "htmlShippingCost": {"value": "6.19", "currency": "EUR"},
+            },
+        }
+
+        with patch.object(monitor, "_fetch_item_details", side_effect=lambda item_id: details_by_id[item_id]):
+            selected = asyncio.run(monitor._select_cheapest_valid_candidate([first_by_card, cheaper_after_details], search))
+        self.assertEqual(selected["item_id"], "117236309864")
+        self.assertEqual(selected["total_price"], 436.19)
 
     def test_stable_version_ignores_runtime_state_commits(self):
         fake_log = "\n".join([
