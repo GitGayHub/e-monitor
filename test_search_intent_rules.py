@@ -240,6 +240,40 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual(scraped, 2200)
         self.assertEqual(api, 3832)
 
+    def test_html_current_bid_price_is_extracted_from_hybrid_listing(self):
+        html = """
+        <html><body>
+        <script>
+        window.__ITEM__ = {
+          "price":{"value":"3808.00","currency":"EUR"},
+          "currentBidPrice":{"value":2720,"currency":"EUR"}
+        };
+        </script>
+        <div class="x-bid-price">EUR 2.720,00</div>
+        <button>Sofort-Kaufen</button>
+        </body></html>
+        """
+        self.assertEqual(monitor._extract_html_current_bid_price(html), 2720)
+
+    def test_hybrid_auction_recalculates_from_html_current_bid_not_bin_price(self):
+        auction_item = item(
+            "Gaming PC RTX 5070 Ti Ryzen 7 32GB RAM",
+            buy_now=False,
+            auction=True,
+            price=3832,
+            auc_price=3832,
+            _was_hybrid=True,
+        )
+        details = {
+            "price": {"value": "3808", "currency": "EUR"},
+            "currentBidPrice": {"value": "2720", "currency": "EUR"},
+            "buyingOptions": ["AUCTION", "FIXED_PRICE"],
+        }
+        monitor._calculate_total(auction_item, {"warn_non_eu": False}, details)
+        self.assertEqual(auction_item["price"], 2720)
+        self.assertEqual(auction_item["total_price"], 2720)
+        self.assertEqual(auction_item["auc_total_price"], 2720)
+
     def test_stable_version_ignores_runtime_state_commits(self):
         fake_log = "\n".join([
             "2000000000\x00Update monitor state",

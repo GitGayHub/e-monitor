@@ -2678,6 +2678,58 @@ def _parse_labeled_money(lines, label_patterns):
     return None
 
 
+def _extract_html_current_bid_price(html, soup=None):
+    """Extract the live auction bid from eBay item HTML."""
+    if not html:
+        return None
+
+    def from_currency_value(raw_value, currency="EUR"):
+        try:
+            value = float(str(raw_value).replace(",", "."))
+        except (TypeError, ValueError):
+            return None
+        return round(value * _currency_rate(currency or "EUR"), 2)
+
+    # eBay often embeds a dedicated currentBidPrice object even when the main
+    # Product offer price is the Sofort-Kaufen value on hybrid listings.
+    for field in ("currentBidPrice", "bidPrice"):
+        pattern = rf'["\']{field}["\']\s*:\s*\{{(?P<body>.{{0,800}}?)\}}'
+        for match in re.finditer(pattern, html, re.IGNORECASE | re.DOTALL):
+            body = match.group("body")
+            values = list(re.finditer(r'["\']value["\']\s*:\s*["\']?([0-9][0-9.,]*)["\']?', body, re.IGNORECASE))
+            if not values:
+                continue
+            currency_match = re.search(r'["\']currency["\']\s*:\s*["\']([A-Z]{3})["\']', body, re.IGNORECASE)
+            currency = currency_match.group(1) if currency_match else "EUR"
+            for value_match in values:
+                price = from_currency_value(value_match.group(1), currency)
+                if price and price > 0:
+                    return price
+
+    if soup is None:
+        soup = BeautifulSoup(html, "html.parser")
+
+    for node in soup.find_all(class_=lambda c: c and "bid-price" in " ".join(c if isinstance(c, list) else [c]).lower()):
+        price = _parse_price(node.get_text(" ", strip=True))
+        if price and price > 0:
+            return price
+
+    page_lines = [line.strip() for line in soup.get_text("\n", strip=True).splitlines() if line.strip()]
+    bid_label = re.compile(r"\b(?:gebot|gebote|bids?|bid)\b", re.IGNORECASE)
+    buy_now_label = re.compile(r"\b(?:sofort|buy it now)\b", re.IGNORECASE)
+    for idx, line in enumerate(page_lines):
+        if not bid_label.search(line) or buy_now_label.search(line):
+            continue
+        for candidate in page_lines[idx: idx + 4]:
+            if buy_now_label.search(candidate):
+                break
+            if re.search(r"(?:eur|gbp|usd|\$|[0-9][0-9.,]+\s*(?:eur|gbp|usd))", candidate, re.IGNORECASE):
+                price = _parse_price(candidate)
+                if price and price > 0:
+                    return price
+    return None
+
+
 EBAY_API_CURRENCY_BY_MARKETPLACE = {
     "EBAY_DE": "EUR",
     "EBAY_AT": "EUR",
@@ -3115,6 +3167,7 @@ def _fetch_item_details_html(item_id):
 
     price_val = None
     currency = "EUR"
+    current_bid_price = None
     end_date_iso = None
 
     schema_scripts = soup.find_all("script", type="application/ld+json")
@@ -3186,6 +3239,8 @@ def _fetch_item_details_html(item_id):
             if m_curr:
                 currency = m_curr.group(1)
 
+    current_bid_price = _extract_html_current_bid_price(html, soup)
+
     desc_html = ""
     desc_ifr = soup.find("iframe", id="desc_ifr") or soup.find("iframe", name="desc_ifr")
     if not desc_ifr:
@@ -3256,6 +3311,13 @@ def _fetch_item_details_html(item_id):
         result["htmlImportCharges"] = _money_obj_eur(import_charges)
     if price_val is not None:
         result["price"] = {"value": str(price_val), "currency": currency}
+    if current_bid_price is not None:
+        result["currentBidPrice"] = _money_obj_eur(current_bid_price)
+        buying_options = ["AUCTION"]
+        lower_html = html.lower()
+        if price_val is not None and ("sofort-kaufen" in lower_html or "buy it now" in lower_html):
+            buying_options.append("FIXED_PRICE")
+        result["buyingOptions"] = buying_options
 
     return result
 
@@ -3296,7 +3358,7 @@ def _fetch_item_details(item_id):
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
         if html_details:
-            for key in ("description", "itemLocationText", "title", "itemEndDate", "price", "htmlShippingCost", "htmlImportCharges"):
+            for key in ("description", "itemLocationText", "title", "itemEndDate", "price", "currentBidPrice", "buyingOptions", "htmlShippingCost", "htmlImportCharges"):
                 if html_details.get(key) and not data.get(key):
                     data[key] = html_details[key]
         return data
@@ -3577,9 +3639,11 @@ def _calculate_total(item, settings, details=None):
         elif item.get("auction") and not item.get("buy_now"):
             if api_auc_price is not None:
                 item["price"] = api_auc_price
+                item["auc_price"] = api_auc_price
             elif not item.get("_was_hybrid") and api_price is not None:
                 # Only use details price for pure auction if it wasn't hybrid originally
                 item["price"] = api_price
+                item["auc_price"] = api_price
         else:
             # General/hybrid/unseparated item: update both prices
             if item.get("buy_now") and api_price is not None:
