@@ -112,7 +112,9 @@ jobs:
           telegram_failed = (
               'failed to send message via bot' in lower
               or 'ошибка отправки' in lower
-              or ('telegram' in lower and ('error' in lower or 'exception' in lower))
+              or 'telegram send failed' in lower
+              or 'telegram error' in lower
+              or 'telegram exception' in lower
           )
 
           entry = {

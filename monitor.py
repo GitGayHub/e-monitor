@@ -5408,6 +5408,8 @@ async def process_searches(bot, once=False):
                     parse_mode="HTML",
                     force_backup=force_backup
                 )
+                if sent:
+                    logger.info("Diagnostic report part %d/%d sent to Telegram", i + 1, len(chunks))
                 if not sent:
                     logger.error(f"Ошибка отправки части {i+1} диагностического отчета")
                 await asyncio.sleep(1.0)
