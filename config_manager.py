@@ -38,6 +38,48 @@ DEFAULT_SEARCH = {
 }
 
 
+def _normalize_config_text(value):
+    return str(value or "").casefold().replace("_", " ")
+
+
+def _is_sony_headphone_search(search):
+    text = " ".join(
+        _normalize_config_text(search.get(key))
+        for key in ("id", "query", "display_name")
+    )
+    return any(
+        marker in text
+        for marker in (
+            "sony wh",
+            "wh-1000xm",
+            "wh 1000xm",
+            "sony ult wear",
+            "wh-ult900n",
+            "wh ult900n",
+        )
+    )
+
+
+def _migrate_searches(data):
+    """Apply safe config migrations after loading decrypted config.json.
+
+    Sony WH / ULT Wear searches must be fetched without eBay's strict headphone
+    category parameter. eBay often indexes fresh headphone auctions in a parent or
+    neighbouring electronics category first, so `_sacat=112529` can return zero
+    cards even when a matching auction exists. The monitor still validates these
+    searches as headphones later via `_effective_category()` and title filters.
+    """
+    changed = False
+    for search in data.get("searches", []):
+        if not isinstance(search, dict):
+            continue
+        filters = search.setdefault("filters", {})
+        if _is_sony_headphone_search(search) and filters.get("category") != "all":
+            filters["category"] = "all"
+            changed = True
+    return changed
+
+
 class ConfigManager:
     def __init__(self, path=None):
         self._path = path or CONFIG_PATH
@@ -59,6 +101,9 @@ class ConfigManager:
             for k, v in DEFAULT_CONFIG["settings"].items():
                 if k not in self._data["settings"]:
                     self._data["settings"][k] = v
+        if _migrate_searches(self._data):
+            self.save()
+            logger.info("Migrated Sony headphone searches to all-category eBay fetch")
 
     def save(self):
         try:
