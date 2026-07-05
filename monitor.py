@@ -6035,6 +6035,13 @@ async def run_once():
 
     # Run state synchronization when running under GitHub Actions
     if os.environ.get("GITHUB_ACTIONS") == "true":
+        logger.info("Running under GitHub Actions: executing seller check...")
+        try:
+            import check_seller
+            check_seller.check_seller()
+        except Exception as e:
+            logger.error(f"Failed to run seller check: {e}")
+
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
             import subprocess
