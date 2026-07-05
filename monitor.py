@@ -6033,19 +6033,12 @@ async def run_once():
 
     # Run state synchronization when running under GitHub Actions
     if os.environ.get("GITHUB_ACTIONS") == "true":
-        logger.info("Running under GitHub Actions: executing item check...")
+        logger.info("Running under GitHub Actions: executing filters test...")
         try:
-            import check_item
-            check_item.check_item()
+            import test_filters
+            test_filters.test_filters()
         except Exception as e:
-            logger.error(f"Failed to run item check: {e}")
-            
-        logger.info("Running under GitHub Actions: executing query test...")
-        try:
-            import test_query
-            test_query.test_query()
-        except Exception as e:
-            logger.error(f"Failed to run query test: {e}")
+            logger.error(f"Failed to run filters test: {e}")
 
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
