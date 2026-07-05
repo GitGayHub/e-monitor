@@ -5597,6 +5597,26 @@ async def process_searches(bot, once=False):
 
             filtered = filter_results(results, search, config)
 
+            # --- TEMP DEBUG for xm6 ---
+            if search.get("id") == "sony_wh_1000xm6_auc" and len(filtered) == 0 and results:
+                settings_tmp = config.get_settings()
+                limit_or_max_tmp = search.get("filters", {}).get("limit_price") or search.get("filters", {}).get("max_price")
+                listing_type_tmp = search.get("filters", {}).get("listing_type", "all")
+                for it_tmp in results[:10]:
+                    _calculate_total(it_tmp, settings_tmp)
+                    price_ok = limit_or_max_tmp is None or it_tmp.get("total_price", 0) <= limit_or_max_tmp
+                    type_ok = listing_type_tmp != "auction" or it_tmp.get("auction")
+                    ending_ok = True
+                    if it_tmp.get("auction") and not it_tmp.get("buy_now"):
+                        tl = it_tmp.get("time_left", "")
+                        mins = _parse_time_left_to_minutes(tl) if tl else None
+                        ending_ok = mins is not None and mins <= 1440
+                    logger.info("  XM6_DBG [%s] price=%.0f limit=%s price_ok=%s type_ok=%s ending_ok=%s tl=%s title=%s",
+                                it_tmp.get("item_id"), it_tmp.get("total_price", 0), limit_or_max_tmp,
+                                price_ok, type_ok, ending_ok, it_tmp.get("time_left", "-"),
+                                it_tmp.get("title", "")[:50])
+            # --- END TEMP DEBUG ---
+
             sofort = [r for r in filtered if r["buy_now"]]
             preisvorschlag = [r for r in filtered if r["best_offer"]]
             auctions = [r for r in filtered if r["auction"]]
