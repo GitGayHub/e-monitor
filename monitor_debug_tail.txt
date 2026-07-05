@@ -1,29 +1,45 @@
-2026-07-05 07:16:33,016 - Running under GitHub Actions: executing filters test...
+2026-07-05 07:31:44,738 -   logitech superlight 2 -> cached (2s old, 60 items, err=None)
+2026-07-05 07:31:45,019 -   logitech superlight 2: 0 results, 0 new
+2026-07-05 07:31:45,019 -   logitech superlight 2 -> cached (2s old, 2 items, err=None)
+2026-07-05 07:31:45,296 -   logitech superlight 2: 0 results, 0 new
+2026-07-05 07:31:45,296 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
+2026-07-05 07:31:46,150 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 51 items via ebay.de
+2026-07-05 07:31:46,429 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
+2026-07-05 07:31:46,430 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
+2026-07-05 07:31:47,019 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 1 items via ebay.de
+2026-07-05 07:31:47,294 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
+2026-07-05 07:31:47,294 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
+2026-07-05 07:31:48,062 -   lg ultragear oled 480hz (32GS95, 27GX790A) -> 22 items via ebay.de
+2026-07-05 07:31:48,357 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results, 0 new
+2026-07-05 07:31:48,357 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
+2026-07-05 07:31:49,028 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
+2026-07-05 07:31:49,030 - === Done ===
+2026-07-05 07:31:49,030 - Running under GitHub Actions: executing filters test...
 === TEST FILTERS ===
 Search: Sony WH-1000XM6
 Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
-2026-07-05 07:16:33,063 - Fetching: Sony WH-1000XM6
-2026-07-05 07:16:33,064 - eBay session ready (impersonate=chrome124)
-2026-07-05 07:16:37,490 -   Sony WH-1000XM6 -> 5 items via ebay.de
+2026-07-05 07:31:49,083 - Fetching: Sony WH-1000XM6
+2026-07-05 07:31:49,084 - eBay session ready (impersonate=chrome124)
+2026-07-05 07:31:52,877 -   Sony WH-1000XM6 -> 5 items via ebay.de
 
 Fetched items: 5 (Error: None)
 
 --- All fetched items ---
-  [127957438007] auction=True buy_now=False price=51.0 total=51.0 time_left= title=Sony WH-1000XM6 Wireless Noise Cancelling Kopfhörer
+  [127957438007] auction=True buy_now=False price=52.0 total=52.0 time_left= title=Sony WH-1000XM6 Wireless Noise Cancelling Kopfhörer
   [287437732702] auction=True buy_now=False price=200.0 total=200.0 time_left= title=Sony WH-1000XM6 – Premium Noise-Cancelling Kopfhörer - NEU u
   [127944346118] auction=True buy_now=False price=215.0 total=215.0 time_left= title=Sony WH-1000XM6 Platinsilber Kabellose Bluetooth Kopfhörer m
   [800261014891] auction=True buy_now=False price=370.0 total=376.19 time_left= title=Sony 1000X Serie | Kabellose Noise Cancelling-Kopfhörer WH-1
   [267717665620] auction=True buy_now=False price=290.0 total=295.79 time_left= title=Sony WH-1000XM6 Kopfhörer (neu)
 
 --- Filter reasons ---
-  [127957438007] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=51.0 | Sony WH-1000XM6 Wireless Noise Cancelling Kopfhöre
+  [127957438007] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=52.0 | Sony WH-1000XM6 Wireless Noise Cancelling Kopfhöre
   [287437732702] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=200.0 | Sony WH-1000XM6 – Premium Noise-Cancelling Kopfhör
   [127944346118] BLOCKED: PRICE_OVER_LIMIT (215.0 > 200), NO_TIME_LEFT (would be filtered out) | total=215.0 | Sony WH-1000XM6 Platinsilber Kabellose Bluetooth K
   [800261014891] BLOCKED: PRICE_OVER_LIMIT (376.19 > 200), NO_TIME_LEFT (would be filtered out) | total=376.19 | Sony 1000X Serie | Kabellose Noise Cancelling-Kopf
   [267717665620] BLOCKED: PRICE_OVER_LIMIT (295.79 > 200), NO_TIME_LEFT (would be filtered out) | total=295.79 | Sony WH-1000XM6 Kopfhörer (neu)
 
 Full filter_results: 0 pass out of 5
-2026-07-05 07:16:37,501 - Running under GitHub Actions: executing git_sync.py state push...
+2026-07-05 07:31:52,885 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
@@ -35,199 +51,183 @@ Pulling & Rebasing with remote to avoid conflicts...
 Pushing to origin...
 === [git_sync] Push successful! ===
 ===== E MONITOR ITERATION 2/2 =====
-iteration_start=2026-07-05 07:18:39 UTC
-2026-07-05 07:18:41,056 - ╔══════════════════════════════════════════════╗
-2026-07-05 07:18:41,056 - ║              eBay Monitor Bot               ║
-2026-07-05 07:18:41,056 - ╠══════════════════════════════════════════════╣
-2026-07-05 07:18:41,056 -   Mode:       ONE-SHOT
-2026-07-05 07:18:41,056 -   Repo:       GitGayHub/e-monitor
-2026-07-05 07:18:41,056 -   GH Token:   ✅ GitGayHub
-2026-07-05 07:18:41,056 -   GH Actions: 🔄 in_progress 3m ago (E Monitor)
-2026-07-05 07:18:41,056 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-07-05 07:18:41,056 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-07-05 07:18:41,056 -   Chat ID:    5326338543
-2026-07-05 07:18:41,056 - ╠══════════════════════════════════════════════╣
-2026-07-05 07:18:41,056 -   Searches:   46 (808 excl, 8 incl words)
-2026-07-05 07:18:41,056 -   Bans:       1 sellers, 14 items
-2026-07-05 07:18:41,056 -   Seen:       1 ids
-2026-07-05 07:18:41,056 - ╚══════════════════════════════════════════════╝
-2026-07-05 07:18:46,391 - eBay API budget this run: M=8 (API calls in last 24h: 4235/5000)
-2026-07-05 07:18:46,466 - Top 8 priority API targets queued: ['logitech_superlight_2_c_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_IT', 'logitech_superlight_2_c_buy:EBAY_ES', 'logitech_superlight_2_c_auc:EBAY_GB', 'logitech_superlight_2_c_auc:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_GB', 'logitech_superlight_2_c_buy:EBAY_FR', 'logitech_superlight_2_c_auc:EBAY_ES']
-2026-07-05 07:18:46,469 - Fetching: Redmagic 11 Pro
-2026-07-05 07:18:46,470 - eBay session ready (impersonate=chrome124)
-2026-07-05 07:19:03,562 -   Redmagic 11 Pro -> 61 items via ebay.de
-2026-07-05 07:19:03,960 -   Redmagic 11 Pro: 0 results, 0 new
-2026-07-05 07:19:03,961 - Fetching: Redmagic 11 Pro
-2026-07-05 07:19:04,661 -   Redmagic 11 Pro -> 2 items via ebay.de
-2026-07-05 07:19:04,928 -   Redmagic 11 Pro: 0 results, 0 new
-2026-07-05 07:19:04,929 - Fetching: Redmagic 11S Pro
-2026-07-05 07:19:05,727 -   Redmagic 11S Pro -> 16 items via ebay.de
-2026-07-05 07:19:06,031 -   Redmagic 11S Pro: 0 results, 0 new
-2026-07-05 07:19:06,031 - Fetching: Redmagic 11S Pro
-2026-07-05 07:19:06,571 -   Redmagic 11S Pro: 0 results
-2026-07-05 07:19:06,572 - Fetching: Nubia Z80 Ultra
-2026-07-05 07:19:07,512 -   Nubia Z80 Ultra -> 50 items via ebay.de
-2026-07-05 07:19:07,926 -   Nubia Z80 Ultra: 0 results, 0 new
-2026-07-05 07:19:07,926 - Fetching: Nubia Z80 Ultra
-2026-07-05 07:19:08,549 -   Nubia Z80 Ultra: 0 results
-2026-07-05 07:19:08,549 - Fetching: Nubia Z80 Ultra Leading
-2026-07-05 07:19:09,160 -   Nubia Z80 Ultra Leading: 0 results
-2026-07-05 07:19:09,160 - Fetching: Nubia Z80 Ultra Leading
-2026-07-05 07:19:09,817 -   Nubia Z80 Ultra Leading: 0 results
-2026-07-05 07:19:09,817 - Fetching: Nubia Z70 Ultra
-2026-07-05 07:19:10,893 -   Nubia Z70 Ultra -> 61 items via ebay.de
-2026-07-05 07:19:11,305 -   Nubia Z70 Ultra: 0 results, 0 new
-2026-07-05 07:19:11,305 - Fetching: Nubia Z70 Ultra
-2026-07-05 07:19:11,931 -   Nubia Z70 Ultra -> 1 items via ebay.de
-2026-07-05 07:19:12,221 -   Nubia Z70 Ultra: 0 results, 0 new
-2026-07-05 07:19:12,221 - Fetching: Nubia Z70S Ultra
-2026-07-05 07:19:12,967 -   Nubia Z70S Ultra -> 19 items via ebay.de
-2026-07-05 07:19:13,269 -   Nubia Z70S Ultra: 0 results, 0 new
-2026-07-05 07:19:13,270 - Fetching: Nubia Z70S Ultra
-2026-07-05 07:19:13,844 -   Nubia Z70S Ultra: 0 results
-2026-07-05 07:19:13,844 - Fetching: iPhone 16 Pro Max
-2026-07-05 07:19:14,904 -   iPhone 16 Pro Max -> 60 items via ebay.de
-2026-07-05 07:19:15,199 -   iPhone 16 Pro Max: 0 results, 0 new
-2026-07-05 07:19:15,199 - Fetching: iPhone 16 Pro Max
-2026-07-05 07:19:16,170 -   iPhone 16 Pro Max -> 16 items via ebay.de
-2026-07-05 07:19:16,470 -   iPhone 16 Pro Max: 0 results, 0 new
-2026-07-05 07:19:16,470 - Fetching: (playstation 5 pro, ps5 pro)
-2026-07-05 07:19:17,594 -   (playstation 5 pro, ps5 pro) -> 50 items via ebay.de
-2026-07-05 07:19:17,867 -   (playstation 5 pro, ps5 pro): 0 results, 0 new
-2026-07-05 07:19:17,867 - Fetching: (playstation 5 pro, ps5 pro)
-2026-07-05 07:19:18,611 -   (playstation 5 pro, ps5 pro) -> 18 items via ebay.de
-2026-07-05 07:19:18,879 -   (playstation 5 pro, ps5 pro): 0 results, 0 new
-2026-07-05 07:19:18,880 - Fetching: Pixel 5
-2026-07-05 07:19:21,305 -   Pixel 5 -> 17 items via ebay.de
-2026-07-05 07:19:21,576 -   Pixel 5: 0 results, 0 new
-2026-07-05 07:19:21,576 - Fetching: Pixel 5
-2026-07-05 07:19:22,279 -   Pixel 5 -> 1 items via ebay.de
-2026-07-05 07:19:22,600 -   Pixel 5: 0 results, 0 new
-2026-07-05 07:19:22,600 - Fetching: Sony WH-1000XM6
-2026-07-05 07:19:32,383 -   Sony WH-1000XM6 -> 60 items via ebay.de
-2026-07-05 07:19:32,659 -   Sony WH-1000XM6: 0 results, 0 new
-2026-07-05 07:19:32,659 - Fetching: Sony WH-1000XM6
-2026-07-05 07:19:33,381 -   Sony WH-1000XM6 -> 5 items via ebay.de
-2026-07-05 07:19:33,381 -   XM6_DBG [127957438007] price=51 limit=200 price_ok=True type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 Wireless Noise Cancelling Kopfhöre
-2026-07-05 07:19:33,381 -   XM6_DBG [287437732702] price=200 limit=200 price_ok=True type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 – Premium Noise-Cancelling Kopfhör
-2026-07-05 07:19:33,381 -   XM6_DBG [127944346118] price=215 limit=200 price_ok=False type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 Platinsilber Kabellose Bluetooth K
-2026-07-05 07:19:33,381 -   XM6_DBG [800261014891] price=376 limit=200 price_ok=False type_ok=True ending_ok=False tl= title=Sony 1000X Serie | Kabellose Noise Cancelling-Kopf
-2026-07-05 07:19:33,381 -   XM6_DBG [267717665620] price=296 limit=200 price_ok=False type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 Kopfhörer (neu)
-2026-07-05 07:19:33,649 -   Sony WH-1000XM6: 0 results, 0 new
-2026-07-05 07:19:33,649 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 07:19:34,706 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
-2026-07-05 07:19:34,992 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
-2026-07-05 07:19:34,993 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 07:19:35,538 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 1 items via ebay.de
-2026-07-05 07:19:35,820 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
-2026-07-05 07:19:35,821 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 07:19:36,853 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 49 items via ebay.de
-2026-07-05 07:19:37,154 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
-2026-07-05 07:19:37,154 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 07:19:37,717 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 3 items via ebay.de
-2026-07-05 07:19:38,003 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
-2026-07-05 07:19:38,003 - Fetching: iPhone 15 Pro Max
-2026-07-05 07:19:39,198 -   iPhone 15 Pro Max -> 60 items via ebay.de
-2026-07-05 07:19:39,487 -   iPhone 15 Pro Max: 0 results, 0 new
-2026-07-05 07:19:39,487 - Fetching: iPhone 15 Pro Max
-2026-07-05 07:19:41,455 -   iPhone 15 Pro Max -> 36 items via ebay.de
-2026-07-05 07:19:41,741 -   iPhone 15 Pro Max: 0 results, 0 new
-2026-07-05 07:19:41,741 - Fetching: samsung s24 ultra
-2026-07-05 07:19:42,749 -   samsung s24 ultra -> 60 items via ebay.de
-2026-07-05 07:19:43,102 -   samsung s24 ultra: 0 results, 0 new
-2026-07-05 07:19:43,102 - Fetching: samsung s24 ultra
-2026-07-05 07:19:44,085 -   samsung s24 ultra -> 35 items via ebay.de
-2026-07-05 07:19:44,353 -   samsung s24 ultra: 0 results, 0 new
-2026-07-05 07:19:44,354 - Fetching: 4050 oled
-2026-07-05 07:19:45,187 -   4050 oled -> 15 items via ebay.de
-2026-07-05 07:19:45,457 -   4050 oled: 0 results, 0 new
-2026-07-05 07:19:45,457 - Fetching: 4050 oled
-2026-07-05 07:19:45,905 -   4050 oled -> 1 items via ebay.de
-2026-07-05 07:19:46,171 -   4050 oled: 0 results, 0 new
-2026-07-05 07:19:46,172 - Fetching: 4060 oled
-2026-07-05 07:19:46,801 -   4060 oled -> 6 items via ebay.de
-2026-07-05 07:19:47,068 -   4060 oled: 0 results, 0 new
-2026-07-05 07:19:47,068 - Fetching: 4060 oled
-2026-07-05 07:19:47,561 -   4060 oled: 0 results
-2026-07-05 07:19:47,561 - Fetching: asus vivobook 14x oled
-2026-07-05 07:19:48,217 -   asus vivobook 14x oled -> 6 items via ebay.de
-2026-07-05 07:19:48,501 -   asus vivobook 14x oled: 0 results, 0 new
-2026-07-05 07:19:48,501 - Fetching: asus vivobook 14x oled
-2026-07-05 07:19:48,998 -   asus vivobook 14x oled: 0 results
-2026-07-05 07:19:48,998 - Fetching: logitech superstrike
-2026-07-05 07:19:49,770 -   logitech superstrike -> 26 items via ebay.de
-2026-07-05 07:19:49,770 - Fetching: logitech superstrike
-2026-07-05 07:19:50,473 -   logitech superstrike -> 23 items via ebay.de
-2026-07-05 07:19:50,473 - Fetching: logitech superstrike
-2026-07-05 07:19:51,272 -   logitech superstrike -> 24 items via ebay.de
-2026-07-05 07:19:51,272 - Fetching: logitech superstrike
-2026-07-05 07:19:51,858 -   logitech superstrike -> 11 items via ebay.de
-2026-07-05 07:19:51,858 - Fetching: logitech superstrike
-2026-07-05 07:19:52,522 -   logitech superstrike -> 11 items via ebay.de
-2026-07-05 07:19:52,524 -   logitech superstrike -> 26 merged items via 5 query variants
-2026-07-05 07:19:52,820 -   logitech superstrike: 0 results, 0 new
-2026-07-05 07:19:52,820 - Fetching: logitech superstrike
-2026-07-05 07:19:53,456 -   logitech superstrike -> 1 items via ebay.de
-2026-07-05 07:19:53,456 - Fetching: logitech superstrike
-2026-07-05 07:19:53,985 - Fetching: logitech superstrike
-2026-07-05 07:19:54,509 -   logitech superstrike -> 1 items via ebay.de
-2026-07-05 07:19:54,509 - Fetching: logitech superstrike
-2026-07-05 07:19:55,018 - Fetching: logitech superstrike
-2026-07-05 07:19:55,578 -   logitech superstrike -> 1 merged items via 5 query variants
-2026-07-05 07:19:55,861 -   logitech superstrike: 0 results, 0 new
-2026-07-05 07:19:55,861 - Fetching: logitech superlight 2
-2026-07-05 07:19:56,680 -   logitech superlight 2 -> 60 items via ebay.de
-2026-07-05 07:19:56,977 -   logitech superlight 2: 0 results, 0 new
-2026-07-05 07:19:56,977 - Fetching: logitech superlight 2
-2026-07-05 07:19:57,567 -   logitech superlight 2 -> 2 items via ebay.de
-2026-07-05 07:19:57,862 -   logitech superlight 2: 0 results, 0 new
-2026-07-05 07:19:57,862 - Fetching: logitech superlight 2 dex
-2026-07-05 07:19:58,763 -   logitech superlight 2 dex -> 51 items via ebay.de
-2026-07-05 07:19:59,057 -   logitech superlight 2 dex: 0 results, 0 new
-2026-07-05 07:19:59,057 - Fetching: logitech superlight 2 dex
-2026-07-05 07:19:59,598 -   logitech superlight 2 dex: 0 results
-2026-07-05 07:19:59,598 -   logitech superlight 2 -> cached (2s old, 60 items, err=None)
-2026-07-05 07:19:59,872 -   logitech superlight 2: 0 results, 0 new
-2026-07-05 07:19:59,873 -   logitech superlight 2 -> cached (2s old, 2 items, err=None)
-2026-07-05 07:20:00,137 -   logitech superlight 2: 0 results, 0 new
-2026-07-05 07:20:00,137 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
-2026-07-05 07:20:00,968 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 51 items via ebay.de
-2026-07-05 07:20:01,234 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
-2026-07-05 07:20:01,234 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
-2026-07-05 07:20:01,778 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 1 items via ebay.de
-2026-07-05 07:20:02,044 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
-2026-07-05 07:20:02,045 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
-2026-07-05 07:20:02,826 -   lg ultragear oled 480hz (32GS95, 27GX790A) -> 22 items via ebay.de
-2026-07-05 07:20:03,117 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results, 0 new
-2026-07-05 07:20:03,118 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
-2026-07-05 07:20:03,669 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
-2026-07-05 07:20:03,671 - === Done ===
-2026-07-05 07:20:03,671 - Running under GitHub Actions: executing filters test...
+iteration_start=2026-07-05 07:34:01 UTC
+2026-07-05 07:34:02,741 - ╔══════════════════════════════════════════════╗
+2026-07-05 07:34:02,741 - ║              eBay Monitor Bot               ║
+2026-07-05 07:34:02,741 - ╠══════════════════════════════════════════════╣
+2026-07-05 07:34:02,741 -   Mode:       ONE-SHOT
+2026-07-05 07:34:02,741 -   Repo:       GitGayHub/e-monitor
+2026-07-05 07:34:02,741 -   GH Token:   ✅ GitGayHub
+2026-07-05 07:34:02,741 -   GH Actions: 🔄 in_progress 3m ago (E Monitor)
+2026-07-05 07:34:02,741 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-07-05 07:34:02,741 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-07-05 07:34:02,741 -   Chat ID:    5326338543
+2026-07-05 07:34:02,741 - ╠══════════════════════════════════════════════╣
+2026-07-05 07:34:02,741 -   Searches:   46 (808 excl, 8 incl words)
+2026-07-05 07:34:02,742 -   Bans:       1 sellers, 14 items
+2026-07-05 07:34:02,742 -   Seen:       1 ids
+2026-07-05 07:34:02,742 - ╚══════════════════════════════════════════════╝
+2026-07-05 07:34:08,274 - eBay API budget this run: M=15 (API calls in last 24h: 3800/5000)
+2026-07-05 07:34:08,348 - Top 15 priority API targets queued: ['4080_pc_auc:EBAY_DE', 'samsung_s24_ultra_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_IT', 'logitech_superlight_2_c_auc:EBAY_ES', 'logitech_superlight_2_c_buy:EBAY_ES', 'logitech_superlight_2_c_auc:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_GB', 'logitech_superlight_2_c_buy:EBAY_GB', 'iphone_15_pro_max_buy:EBAY_DE', 'iphone_15_pro_max_auc:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE', 'samsung_s24_ultra_auc:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_FR', 'logitech_superlight_2_c_buy:EBAY_FR', 'logitech_superlight_2_c_auc:EBAY_IT']
+2026-07-05 07:34:08,350 - Fetching: Redmagic 11 Pro
+2026-07-05 07:34:08,351 - eBay session ready (impersonate=chrome124)
+2026-07-05 07:34:13,409 -   Redmagic 11 Pro -> 61 items via ebay.de
+2026-07-05 07:34:13,808 -   Redmagic 11 Pro: 0 results, 0 new
+2026-07-05 07:34:13,808 - Fetching: Redmagic 11 Pro
+2026-07-05 07:34:14,587 -   Redmagic 11 Pro -> 2 items via ebay.de
+2026-07-05 07:34:14,858 -   Redmagic 11 Pro: 0 results, 0 new
+2026-07-05 07:34:14,858 - Fetching: Redmagic 11S Pro
+2026-07-05 07:34:15,683 -   Redmagic 11S Pro -> 16 items via ebay.de
+2026-07-05 07:34:15,984 -   Redmagic 11S Pro: 0 results, 0 new
+2026-07-05 07:34:15,985 - Fetching: Redmagic 11S Pro
+2026-07-05 07:34:16,671 -   Redmagic 11S Pro: 0 results
+2026-07-05 07:34:16,671 - Fetching: Nubia Z80 Ultra
+2026-07-05 07:34:17,832 -   Nubia Z80 Ultra -> 50 items via ebay.de
+2026-07-05 07:34:18,245 -   Nubia Z80 Ultra: 0 results, 0 new
+2026-07-05 07:34:18,245 - Fetching: Nubia Z80 Ultra
+2026-07-05 07:34:18,957 -   Nubia Z80 Ultra: 0 results
+2026-07-05 07:34:18,957 - Fetching: Nubia Z80 Ultra Leading
+2026-07-05 07:34:19,555 -   Nubia Z80 Ultra Leading: 0 results
+2026-07-05 07:34:19,555 - Fetching: Nubia Z80 Ultra Leading
+2026-07-05 07:34:20,238 -   Nubia Z80 Ultra Leading: 0 results
+2026-07-05 07:34:20,238 - Fetching: Nubia Z70 Ultra
+2026-07-05 07:34:21,492 -   Nubia Z70 Ultra -> 61 items via ebay.de
+2026-07-05 07:34:21,912 -   Nubia Z70 Ultra: 0 results, 0 new
+2026-07-05 07:34:21,912 - Fetching: Nubia Z70 Ultra
+2026-07-05 07:34:22,553 -   Nubia Z70 Ultra -> 1 items via ebay.de
+2026-07-05 07:34:22,845 -   Nubia Z70 Ultra: 0 results, 0 new
+2026-07-05 07:34:22,846 - Fetching: Nubia Z70S Ultra
+2026-07-05 07:34:23,620 -   Nubia Z70S Ultra -> 19 items via ebay.de
+2026-07-05 07:34:23,927 -   Nubia Z70S Ultra: 0 results, 0 new
+2026-07-05 07:34:23,927 - Fetching: Nubia Z70S Ultra
+2026-07-05 07:34:24,492 -   Nubia Z70S Ultra: 0 results
+2026-07-05 07:34:24,493 - Fetching: iPhone 16 Pro Max
+2026-07-05 07:34:25,657 -   iPhone 16 Pro Max -> 60 items via ebay.de
+2026-07-05 07:34:25,950 -   iPhone 16 Pro Max: 0 results, 0 new
+2026-07-05 07:34:25,951 - Fetching: iPhone 16 Pro Max
+2026-07-05 07:34:26,827 -   iPhone 16 Pro Max -> 16 items via ebay.de
+2026-07-05 07:34:27,131 -   iPhone 16 Pro Max: 0 results, 0 new
+2026-07-05 07:34:27,131 - Fetching: (playstation 5 pro, ps5 pro)
+2026-07-05 07:34:28,135 -   (playstation 5 pro, ps5 pro) -> 50 items via ebay.de
+2026-07-05 07:34:28,433 -   (playstation 5 pro, ps5 pro): 0 results, 0 new
+2026-07-05 07:34:28,433 - Fetching: (playstation 5 pro, ps5 pro)
+2026-07-05 07:34:29,138 -   (playstation 5 pro, ps5 pro) -> 18 items via ebay.de
+2026-07-05 07:34:29,427 -   (playstation 5 pro, ps5 pro): 0 results, 0 new
+2026-07-05 07:34:29,428 - Fetching: Pixel 5
+2026-07-05 07:34:30,181 -   Pixel 5 -> 17 items via ebay.de
+2026-07-05 07:34:30,480 -   Pixel 5: 0 results, 0 new
+2026-07-05 07:34:30,480 - Fetching: Pixel 5
+2026-07-05 07:34:31,070 -   Pixel 5 -> 1 items via ebay.de
+2026-07-05 07:34:31,421 -   Pixel 5: 0 results, 0 new
+2026-07-05 07:34:31,421 - Fetching: Sony WH-1000XM6
+2026-07-05 07:34:32,343 -   Sony WH-1000XM6 -> 60 items via ebay.de
+2026-07-05 07:34:32,619 -   Sony WH-1000XM6: 0 results, 0 new
+2026-07-05 07:34:32,620 - Fetching: Sony WH-1000XM6
+2026-07-05 07:34:33,267 -   Sony WH-1000XM6 -> 5 items via ebay.de
+2026-07-05 07:34:33,268 -   XM6_DBG [127957438007] price=52 limit=200 price_ok=True type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 Wireless Noise Cancelling Kopfhöre
+2026-07-05 07:34:33,268 -   XM6_DBG [287437732702] price=200 limit=200 price_ok=True type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 – Premium Noise-Cancelling Kopfhör
+2026-07-05 07:34:33,268 -   XM6_DBG [127944346118] price=215 limit=200 price_ok=False type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 Platinsilber Kabellose Bluetooth K
+2026-07-05 07:34:33,268 -   XM6_DBG [800261014891] price=376 limit=200 price_ok=False type_ok=True ending_ok=False tl= title=Sony 1000X Serie | Kabellose Noise Cancelling-Kopf
+2026-07-05 07:34:33,268 -   XM6_DBG [267717665620] price=296 limit=200 price_ok=False type_ok=True ending_ok=False tl= title=Sony WH-1000XM6 Kopfhörer (neu)
+2026-07-05 07:34:33,542 -   Sony WH-1000XM6: 0 results, 0 new
+2026-07-05 07:34:33,542 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 07:34:34,496 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
+2026-07-05 07:34:34,765 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
+2026-07-05 07:34:34,766 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 07:34:35,338 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 1 items via ebay.de
+2026-07-05 07:34:35,622 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
+2026-07-05 07:34:35,622 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 07:34:36,560 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 49 items via ebay.de
+2026-07-05 07:34:36,854 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
+2026-07-05 07:34:36,854 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 07:34:37,473 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 3 items via ebay.de
+2026-07-05 07:34:37,761 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results, 0 new
+2026-07-05 07:34:37,761 - Fetching: iPhone 15 Pro Max
+2026-07-05 07:34:38,917 -   iPhone 15 Pro Max -> 60 items via ebay.de
+2026-07-05 07:34:39,208 -   iPhone 15 Pro Max: 0 results, 0 new
+2026-07-05 07:34:39,208 - Fetching: iPhone 15 Pro Max
+2026-07-05 07:34:40,278 -   iPhone 15 Pro Max -> 36 items via ebay.de
+2026-07-05 07:34:40,578 -   iPhone 15 Pro Max: 0 results, 0 new
+2026-07-05 07:34:40,578 - Fetching: samsung s24 ultra
+2026-07-05 07:34:41,790 -   samsung s24 ultra -> 60 items via ebay.de
+2026-07-05 07:34:42,086 -   samsung s24 ultra: 0 results, 0 new
+2026-07-05 07:34:42,086 - Fetching: samsung s24 ultra
+2026-07-05 07:34:43,261 -   samsung s24 ultra -> 35 items via ebay.de
+2026-07-05 07:34:43,553 -   samsung s24 ultra: 0 results, 0 new
+2026-07-05 07:34:43,553 - Fetching: 4050 oled
+2026-07-05 07:34:44,368 -   4050 oled -> 15 items via ebay.de
+2026-07-05 07:34:44,661 -   4050 oled: 0 results, 0 new
+2026-07-05 07:34:44,661 - Fetching: 4050 oled
+2026-07-05 07:34:45,248 -   4050 oled -> 1 items via ebay.de
+2026-07-05 07:34:45,536 -   4050 oled: 0 results, 0 new
+2026-07-05 07:34:45,536 - Fetching: 4060 oled
+2026-07-05 07:34:46,367 -   4060 oled -> 6 items via ebay.de
+2026-07-05 07:34:46,658 -   4060 oled: 0 results, 0 new
+2026-07-05 07:34:46,658 - Fetching: 4060 oled
+2026-07-05 07:34:47,261 -   4060 oled: 0 results
+2026-07-05 07:34:47,261 - Fetching: asus vivobook 14x oled
+2026-07-05 07:34:48,101 -   asus vivobook 14x oled -> 6 items via ebay.de
+2026-07-05 07:34:48,399 -   asus vivobook 14x oled: 0 results, 0 new
+2026-07-05 07:34:48,399 - Fetching: asus vivobook 14x oled
+2026-07-05 07:34:49,037 -   asus vivobook 14x oled: 0 results
+2026-07-05 07:34:49,037 - Fetching: logitech superstrike
+2026-07-05 07:34:49,843 -   logitech superstrike -> 26 items via ebay.de
+2026-07-05 07:34:49,843 - Fetching: logitech superstrike
+2026-07-05 07:34:50,674 -   logitech superstrike -> 23 items via ebay.de
+2026-07-05 07:34:50,675 - Fetching: logitech superstrike
+2026-07-05 07:34:51,541 -   logitech superstrike -> 24 items via ebay.de
+2026-07-05 07:34:51,541 - Fetching: logitech superstrike
+2026-07-05 07:34:52,302 -   logitech superstrike -> 11 items via ebay.de
+2026-07-05 07:34:52,302 - Fetching: logitech superstrike
+2026-07-05 07:34:52,994 -   logitech superstrike -> 11 items via ebay.de
+2026-07-05 07:34:52,995 -   logitech superstrike -> 26 merged items via 5 query variants
+2026-07-05 07:34:53,296 -   logitech superstrike: 0 results, 0 new
+2026-07-05 07:34:53,296 - Fetching: logitech superstrike
+2026-07-05 07:34:53,978 -   logitech superstrike -> 1 items via ebay.de
+2026-07-05 07:34:53,979 - Fetching: logitech superstrike
+2026-07-05 07:34:54,517 - Fetching: logitech superstrike
+2026-07-05 07:34:55,123 -   logitech superstrike -> 1 items via ebay.de
+2026-07-05 07:34:55,123 - Fetching: logitech superstrike
+2026-07-05 07:34:56,009 - Fetching: logitech superstrike
+2026-07-05 07:34:56,694 -   logitech superstrike -> 1 merged items via 5 query variants
+2026-07-05 07:34:56,980 -   logitech superstrike: 0 results, 0 new
+2026-07-05 07:34:56,981 - Fetching: logitech superlight 2
+2026-07-05 07:34:57,955 -   logitech superlight 2 -> 60 items via ebay.de
+2026-07-05 07:34:58,261 -   logitech superlight 2: 0 results, 0 new
+2026-07-05 07:34:58,261 - Fetching: logitech superlight 2
+2026-07-05 07:34:58,926 -   logitech superlight 2 -> 2 items via ebay.de
+2026-07-05 07:34:59,215 -   logitech superlight 2: 0 results, 0 new
+2026-07-05 07:34:59,216 - Fetching: logitech superlight 2 dex
+2026-07-05 07:35:00,396 -   logitech superlight 2 dex -> 51 items via ebay.de
+2026-07-05 07:35:00,692 -   logitech superlight 2 dex: 0 results, 0 new
+2026-07-05 07:35:00,692 - Fetching: logitech superlight 2 dex
+2026-07-05 07:35:01,315 -   logitech superlight 2 dex: 0 results
+2026-07-05 07:35:01,315 -   logitech superlight 2 -> cached (3s old, 60 items, err=None)
+2026-07-05 07:35:01,615 -   logitech superlight 2: 0 results, 0 new
+2026-07-05 07:35:01,615 -   logitech superlight 2 -> cached (2s old, 2 items, err=None)
+2026-07-05 07:35:01,886 -   logitech superlight 2: 0 results, 0 new
+2026-07-05 07:35:01,886 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
+2026-07-05 07:35:02,948 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 51 items via ebay.de
+2026-07-05 07:35:03,246 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
+2026-07-05 07:35:03,246 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
+2026-07-05 07:35:04,186 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 1 items via ebay.de
+2026-07-05 07:35:04,494 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
+2026-07-05 07:35:04,495 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
+2026-07-05 07:35:05,543 -   lg ultragear oled 480hz (32GS95, 27GX790A) -> 22 items via ebay.de
+2026-07-05 07:35:05,837 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results, 0 new
+2026-07-05 07:35:05,838 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
+2026-07-05 07:35:06,618 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
+2026-07-05 07:35:06,620 - === Done ===
+2026-07-05 07:35:06,620 - Running under GitHub Actions: executing filters test...
 === TEST FILTERS ===
 Search: Sony WH-1000XM6
 Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
-2026-07-05 07:20:03,674 - Fetching: Sony WH-1000XM6
-2026-07-05 07:20:03,674 - eBay session ready (impersonate=chrome124)
-2026-07-05 07:20:08,301 -   Sony WH-1000XM6 -> 5 items via ebay.de
+2026-07-05 07:35:06,623 - Fetching: Sony WH-1000XM6
+2026-07-05 07:35:06,624 - eBay session ready (impersonate=chrome124)
 
-Fetched items: 5 (Error: None)
-
---- All fetched items ---
-  [127957438007] auction=True buy_now=False price=51.0 total=51.0 time_left= title=Sony WH-1000XM6 Wireless Noise Cancelling Kopfhörer
-  [287437732702] auction=True buy_now=False price=200.0 total=200.0 time_left= title=Sony WH-1000XM6 – Premium Noise-Cancelling Kopfhörer - NEU u
-  [127944346118] auction=True buy_now=False price=215.0 total=215.0 time_left= title=Sony WH-1000XM6 Platinsilber Kabellose Bluetooth Kopfhörer m
-  [800261014891] auction=True buy_now=False price=370.0 total=376.19 time_left= title=Sony 1000X Serie | Kabellose Noise Cancelling-Kopfhörer WH-1
-  [267717665620] auction=True buy_now=False price=290.0 total=295.79 time_left= title=Sony WH-1000XM6 Kopfhörer (neu)
-
---- Filter reasons ---
-  [127957438007] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=51.0 | Sony WH-1000XM6 Wireless Noise Cancelling Kopfhöre
-  [287437732702] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=200.0 | Sony WH-1000XM6 – Premium Noise-Cancelling Kopfhör
-  [127944346118] BLOCKED: PRICE_OVER_LIMIT (215.0 > 200), NO_TIME_LEFT (would be filtered out) | total=215.0 | Sony WH-1000XM6 Platinsilber Kabellose Bluetooth K
-  [800261014891] BLOCKED: PRICE_OVER_LIMIT (376.19 > 200), NO_TIME_LEFT (would be filtered out) | total=376.19 | Sony 1000X Serie | Kabellose Noise Cancelling-Kopf
-  [267717665620] BLOCKED: PRICE_OVER_LIMIT (295.79 > 200), NO_TIME_LEFT (would be filtered out) | total=295.79 | Sony WH-1000XM6 Kopfhörer (neu)
-
-Full filter_results: 0 pass out of 5
-2026-07-05 07:20:08,309 - Running under GitHub Actions: executing git_sync.py state push...
+Fetched items: 0 (Error: None)
+No items found to test filters on.
+2026-07-05 07:35:11,155 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
