@@ -6048,6 +6048,13 @@ async def run_once():
             test_sacat.test_sacat()
         except Exception as e:
             logger.error(f"Failed to run sacat test: {e}")
+            
+        logger.info("Running under GitHub Actions: executing params test...")
+        try:
+            import test_params
+            test_params.test_params()
+        except Exception as e:
+            logger.error(f"Failed to run params test: {e}")
 
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
