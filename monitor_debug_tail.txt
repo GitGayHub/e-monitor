@@ -1,34 +1,23 @@
-2026-07-05 03:46:58,230 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 51 items via ebay.de
-2026-07-05 03:46:58,527 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
-2026-07-05 03:46:58,527 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
-2026-07-05 03:46:59,216 -   Sony ULT (Wear, 900N, WH-ULT900N) -> 1 items via ebay.de
-2026-07-05 03:46:59,510 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results, 0 new
-2026-07-05 03:46:59,511 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
-2026-07-05 03:47:00,533 -   lg ultragear oled 480hz (32GS95, 27GX790A) -> 22 items via ebay.de
-2026-07-05 03:47:00,832 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results, 0 new
-2026-07-05 03:47:00,832 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
-2026-07-05 03:47:01,646 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
-2026-07-05 03:47:01,648 - === Done ===
-2026-07-05 03:47:01,648 - Running under GitHub Actions: executing seller check...
-=== CHECK SELLER ===
-2026-07-05 03:47:01,698 - eBay session ready (impersonate=chrome124)
-Active items for plako_plak: 0
-Completed/Sold items for plako_plak: 0
-2026-07-05 03:47:06,708 - Running under GitHub Actions: executing sacat test...
-=== TEST SACAT ===
-Results WITH _sacat=293: 0
-Results WITHOUT category restriction: 0
-2026-07-05 03:47:12,789 - Running under GitHub Actions: executing params test...
-=== TEST PARAMS ===
-Test 'Base': parsed 0 items
-Test 'With Negatives': parsed 0 items
-Test 'With Condition': parsed 0 items
-Test 'With Location (Worldwide)': parsed 0 items
-Test 'With Location (DE)': parsed 0 items
-Test 'With Auction': parsed 0 items
-Test 'With BIN': parsed 0 items
-Test 'Full Auction (negatives + cond + loc + auc)': parsed 0 items
-2026-07-05 03:47:27,573 - Running under GitHub Actions: executing git_sync.py state push...
+  - plako_plak present: True
+    * plako item price: 2.5
+Test 'With Condition': parsed 60 items
+  - plako_plak present: True
+    * plako item price: 2.5
+Test 'With Location (Worldwide)': parsed 60 items
+  - plako_plak present: True
+    * plako item price: 2.5
+Test 'With Location (DE)': parsed 60 items
+  - plako_plak present: True
+    * plako item price: 2.5
+Test 'With Auction': parsed 33 items
+  - plako_plak present: True
+    * plako item price: 2.5
+Test 'With BIN': parsed 60 items
+  - plako_plak present: False
+Test 'Full Auction (negatives + cond + loc + auc)': parsed 5 items
+  - plako_plak present: True
+    * plako item price: 2.5
+2026-07-05 03:47:30,424 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
@@ -38,186 +27,197 @@ Merged config.json successfully.
 Committing local state changes...
 Pulling & Rebasing with remote to avoid conflicts...
 Pushing to origin...
+Push failed (attempt 1/5): To https://github.com/GitGayHub/e-monitor
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at a277fb8d03131669f5bd1960e3c18f3dae754178 but expected 24ea6888b5ab7ba46e7ddca86b4c45e30cc8fa80)
+error: failed to push some refs to 'https://github.com/GitGayHub/e-monitor'. Retrying fetch and merge...
+Merged seen_ids.json: 0 local + 0 remote -> 0 total
+Merged run_log.json: 300 local + 300 remote -> 300 total
+Merged config.json successfully.
+Committing local state changes...
+Pulling & Rebasing with remote to avoid conflicts...
+Pushing to origin...
 === [git_sync] Push successful! ===
 ===== E MONITOR ITERATION 2/2 =====
-iteration_start=2026-07-05 03:49:36 UTC
-2026-07-05 03:49:38,117 - ╔══════════════════════════════════════════════╗
-2026-07-05 03:49:38,117 - ║              eBay Monitor Bot               ║
-2026-07-05 03:49:38,117 - ╠══════════════════════════════════════════════╣
-2026-07-05 03:49:38,117 -   Mode:       ONE-SHOT
-2026-07-05 03:49:38,117 -   Repo:       GitGayHub/e-monitor
-2026-07-05 03:49:38,117 -   GH Token:   ✅ GitGayHub
-2026-07-05 03:49:38,117 -   GH Actions: ✅ success 4m ago (Android App Sync)
-2026-07-05 03:49:38,117 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-07-05 03:49:38,117 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-07-05 03:49:38,117 -   Chat ID:    5326338543
-2026-07-05 03:49:38,117 - ╠══════════════════════════════════════════════╣
-2026-07-05 03:49:38,117 -   Searches:   46 (808 excl, 8 incl words)
-2026-07-05 03:49:38,117 -     * Query: 'Redmagic 11 Pro' | ID: 'redmagic_11_pro_buy' | Filters: {'min_price': 50, 'limit_price': 400, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Redmagic 11 Pro' | ID: 'redmagic_11_pro_auc' | Filters: {'min_price': None, 'limit_price': 400, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Redmagic 11S Pro' | ID: 'redmagic_11s_pro_buy' | Filters: {'min_price': 50, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Redmagic 11S Pro' | ID: 'redmagic_11s_pro_auc' | Filters: {'min_price': None, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Nubia Z80 Ultra' | ID: 'nubia_z80_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 375, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Nubia Z80 Ultra' | ID: 'nubia_z80_ultra_auc' | Filters: {'min_price': None, 'limit_price': 375, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Nubia Z80 Ultra Leading' | ID: 'nubia_z80_ultra_leading_buy' | Filters: {'min_price': 50, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Nubia Z80 Ultra Leading' | ID: 'nubia_z80_ultra_leading_auc' | Filters: {'min_price': None, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,117 -     * Query: 'Nubia Z70 Ultra' | ID: 'nubia_z70_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,118 -     * Query: 'Nubia Z70 Ultra' | ID: 'nubia_z70_ultra_auc' | Filters: {'min_price': None, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,118 -     * Query: 'Nubia Z70S Ultra' | ID: 'nubia_z70s_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,118 -     * Query: 'Nubia Z70S Ultra' | ID: 'nubia_z70s_ultra_auc' | Filters: {'min_price': None, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,118 -     * Query: 'iPhone 16 Pro Max' | ID: 'iphone_16_pro_max_buy' | Filters: {'min_price': 50, 'limit_price': 675, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: 'iPhone 16 Pro Max' | ID: 'iphone_16_pro_max_auc' | Filters: {'min_price': None, 'limit_price': 675, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: '(playstation 5 pro, ps5 pro)' | ID: 'ps5_pro_buy' | Filters: {'min_price': 300, 'limit_price': 550, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'consoles'}
-2026-07-05 03:49:38,118 -     * Query: '(playstation 5 pro, ps5 pro)' | ID: 'ps5_pro_auc' | Filters: {'min_price': 300, 'limit_price': 550, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'consoles'}
-2026-07-05 03:49:38,118 -     * Query: 'Pixel 5' | ID: 'pixel_5_buy' | Filters: {'min_price': 50, 'limit_price': 70, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: 'Pixel 5' | ID: 'pixel_5_auc' | Filters: {'min_price': None, 'limit_price': 70, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: 'Sony WH-1000XM6' | ID: 'sony_wh_1000xm6_buy' | Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
-2026-07-05 03:49:38,118 -     * Query: 'Sony WH-1000XM6' | ID: 'sony_wh_1000xm6_auc' | Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
-2026-07-05 03:49:38,118 -     * Query: '5070 ti (pc, rechner, computer, desktop, gaming pc)' | ID: '5070_ti_pc_buy' | Filters: {'min_price': None, 'limit_price': 1300, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
-2026-07-05 03:49:38,118 -     * Query: '5070 ti (pc, rechner, computer, desktop, gaming pc)' | ID: '5070_ti_pc_auc' | Filters: {'min_price': None, 'limit_price': 1300, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
-2026-07-05 03:49:38,118 -     * Query: '4080 (pc, rechner, computer, desktop, gaming pc)' | ID: '4080_pc_buy' | Filters: {'min_price': None, 'limit_price': 1200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
-2026-07-05 03:49:38,118 -     * Query: '4080 (pc, rechner, computer, desktop, gaming pc)' | ID: '4080_pc_auc' | Filters: {'min_price': None, 'limit_price': 1200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
-2026-07-05 03:49:38,118 -     * Query: 'iPhone 15 Pro Max' | ID: 'iphone_15_pro_max_buy' | Filters: {'min_price': 50, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: 'iPhone 15 Pro Max' | ID: 'iphone_15_pro_max_auc' | Filters: {'min_price': None, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: 'samsung s24 ultra' | ID: 'samsung_s24_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 350, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: 'samsung s24 ultra' | ID: 'samsung_s24_ultra_auc' | Filters: {'min_price': None, 'limit_price': 350, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
-2026-07-05 03:49:38,118 -     * Query: '4050 oled' | ID: '4050_oled_buy' | Filters: {'min_price': None, 'limit_price': 625, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
-2026-07-05 03:49:38,118 -     * Query: '4050 oled' | ID: '4050_oled_auc' | Filters: {'min_price': None, 'limit_price': 625, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
-2026-07-05 03:49:38,118 -     * Query: '4060 oled' | ID: '4060_oled_buy' | Filters: {'min_price': None, 'limit_price': 750, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
-2026-07-05 03:49:38,118 -     * Query: '4060 oled' | ID: '4060_oled_auc' | Filters: {'min_price': None, 'limit_price': 750, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
-2026-07-05 03:49:38,118 -     * Query: 'asus vivobook 14x oled' | ID: 'asus_vivobook_14x_oled_buy' | Filters: {'min_price': None, 'limit_price': 425, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
-2026-07-05 03:49:38,118 -     * Query: 'asus vivobook 14x oled' | ID: 'asus_vivobook_14x_oled_auc' | Filters: {'min_price': None, 'limit_price': 425, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superstrike' | ID: 'logitech_superstrike_buy' | Filters: {'min_price': None, 'limit_price': 85, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superstrike' | ID: 'logitech_superstrike_auc' | Filters: {'min_price': None, 'limit_price': 85, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_std_buy' | Filters: {'min_price': None, 'limit_price': 45, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_std_auc' | Filters: {'min_price': None, 'limit_price': 45, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superlight 2 dex' | ID: 'logitech_superlight_2_dex_buy' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superlight 2 dex' | ID: 'logitech_superlight_2_dex_auc' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_c_buy' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
-2026-07-05 03:49:38,118 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_c_auc' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
-2026-07-05 03:49:38,118 -     * Query: 'Sony ULT (Wear, 900N, WH-ULT900N)' | ID: 'sony_ult_wear_buy' | Filters: {'min_price': None, 'limit_price': 30, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
-2026-07-05 03:49:38,118 -     * Query: 'Sony ULT (Wear, 900N, WH-ULT900N)' | ID: 'sony_ult_wear_auc' | Filters: {'min_price': None, 'limit_price': 30, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
-2026-07-05 03:49:38,118 -     * Query: 'lg ultragear oled 480hz (32GS95, 27GX790A)' | ID: 'lg_ultragear_oled_480hz_buy' | Filters: {'min_price': None, 'limit_price': 430, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'monitors'}
-2026-07-05 03:49:38,118 -     * Query: 'lg ultragear oled 480hz (32GS95, 27GX790A)' | ID: 'lg_ultragear_oled_480hz_auc' | Filters: {'min_price': None, 'limit_price': 430, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'monitors'}
-2026-07-05 03:49:38,118 -   Bans:       1 sellers, 14 items
-2026-07-05 03:49:38,119 -   Seen:       0 ids
-2026-07-05 03:49:38,119 - ╚══════════════════════════════════════════════╝
-2026-07-05 03:49:43,659 - eBay API budget this run: M=8 (API calls in last 24h: 4374/5000)
-2026-07-05 03:49:43,733 - Top 8 priority API targets queued: ['logitech_superlight_2_c_auc:EBAY_ES', 'logitech_superlight_2_c_auc:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_GB', 'logitech_superlight_2_c_buy:EBAY_FR', 'logitech_superlight_2_c_buy:EBAY_ES', 'logitech_superlight_2_c_buy:EBAY_IT', 'logitech_superlight_2_c_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_GB']
-2026-07-05 03:49:43,735 - Fetching: Redmagic 11 Pro
-2026-07-05 03:49:43,736 - eBay session ready (impersonate=chrome124)
-2026-07-05 03:49:47,931 -   Redmagic 11 Pro: 0 results
-2026-07-05 03:49:47,931 - Fetching: Redmagic 11 Pro
-2026-07-05 03:49:48,390 -   Redmagic 11 Pro: 0 results
-2026-07-05 03:49:48,390 - Fetching: Redmagic 11S Pro
-2026-07-05 03:49:49,049 -   Redmagic 11S Pro: 0 results
-2026-07-05 03:49:49,049 - Fetching: Redmagic 11S Pro
-2026-07-05 03:49:49,577 -   Redmagic 11S Pro: 0 results
-2026-07-05 03:49:49,578 - Fetching: Nubia Z80 Ultra
-2026-07-05 03:49:50,388 -   Nubia Z80 Ultra: 0 results
-2026-07-05 03:49:50,388 - Fetching: Nubia Z80 Ultra
-2026-07-05 03:49:50,990 -   Nubia Z80 Ultra: 0 results
-2026-07-05 03:49:50,990 - Fetching: Nubia Z80 Ultra Leading
-2026-07-05 03:49:51,870 -   Nubia Z80 Ultra Leading: 0 results
-2026-07-05 03:49:51,870 - Fetching: Nubia Z80 Ultra Leading
-2026-07-05 03:49:52,546 -   Nubia Z80 Ultra Leading: 0 results
-2026-07-05 03:49:52,546 - Fetching: Nubia Z70 Ultra
-2026-07-05 03:49:53,466 -   Nubia Z70 Ultra: 0 results
-2026-07-05 03:49:53,466 - Fetching: Nubia Z70 Ultra
-2026-07-05 03:49:53,975 -   Nubia Z70 Ultra: 0 results
-2026-07-05 03:49:53,975 - Fetching: Nubia Z70S Ultra
-2026-07-05 03:49:54,573 -   Nubia Z70S Ultra: 0 results
-2026-07-05 03:49:54,574 - Fetching: Nubia Z70S Ultra
-2026-07-05 03:49:55,250 -   Nubia Z70S Ultra: 0 results
-2026-07-05 03:49:55,250 - Fetching: iPhone 16 Pro Max
-2026-07-05 03:49:56,103 -   iPhone 16 Pro Max: 0 results
-2026-07-05 03:49:56,103 - Fetching: iPhone 16 Pro Max
-2026-07-05 03:49:56,746 -   iPhone 16 Pro Max: 0 results
-2026-07-05 03:49:56,746 - Fetching: (playstation 5 pro, ps5 pro)
-2026-07-05 03:49:57,637 -   (playstation 5 pro, ps5 pro): 0 results
-2026-07-05 03:49:57,637 - Fetching: (playstation 5 pro, ps5 pro)
-2026-07-05 03:49:58,279 -   (playstation 5 pro, ps5 pro): 0 results
-2026-07-05 03:49:58,279 - Fetching: Pixel 5
-2026-07-05 03:49:59,080 -   Pixel 5: 0 results
-2026-07-05 03:49:59,080 - Fetching: Pixel 5
-2026-07-05 03:49:59,700 -   Pixel 5: 0 results
-2026-07-05 03:49:59,700 - Fetching: Sony WH-1000XM6
-2026-07-05 03:50:00,546 -   Sony WH-1000XM6: 0 results
-2026-07-05 03:50:00,546 - Fetching: Sony WH-1000XM6
-2026-07-05 03:50:01,186 -   Sony WH-1000XM6: 0 results
-2026-07-05 03:50:01,186 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 03:50:02,139 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results
-2026-07-05 03:50:02,139 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 03:50:02,709 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results
-2026-07-05 03:50:02,709 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 03:50:03,492 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results
-2026-07-05 03:50:03,493 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
-2026-07-05 03:50:04,221 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results
-2026-07-05 03:50:04,222 - Fetching: iPhone 15 Pro Max
-2026-07-05 03:50:05,289 -   iPhone 15 Pro Max: 0 results
-2026-07-05 03:50:05,290 - Fetching: iPhone 15 Pro Max
-2026-07-05 03:50:06,142 -   iPhone 15 Pro Max: 0 results
-2026-07-05 03:50:06,142 - Fetching: samsung s24 ultra
-2026-07-05 03:50:07,190 -   samsung s24 ultra: 0 results
-2026-07-05 03:50:07,190 - Fetching: samsung s24 ultra
-2026-07-05 03:50:08,030 -   samsung s24 ultra: 0 results
-2026-07-05 03:50:08,030 - Fetching: 4050 oled
-2026-07-05 03:50:08,818 -   4050 oled: 0 results
-2026-07-05 03:50:08,819 - Fetching: 4050 oled
-2026-07-05 03:50:09,392 -   4050 oled: 0 results
-2026-07-05 03:50:09,393 - Fetching: 4060 oled
-2026-07-05 03:50:09,969 -   4060 oled: 0 results
-2026-07-05 03:50:09,969 - Fetching: 4060 oled
-2026-07-05 03:50:10,415 -   4060 oled: 0 results
-2026-07-05 03:50:10,415 - Fetching: asus vivobook 14x oled
-2026-07-05 03:50:11,120 -   asus vivobook 14x oled: 0 results
-2026-07-05 03:50:11,121 - Fetching: asus vivobook 14x oled
-2026-07-05 03:50:11,611 -   asus vivobook 14x oled: 0 results
-2026-07-05 03:50:11,611 - Fetching: logitech superstrike
-2026-07-05 03:50:12,283 - Fetching: logitech superstrike
-2026-07-05 03:50:12,956 - Fetching: logitech superstrike
-2026-07-05 03:50:13,639 - Fetching: logitech superstrike
-2026-07-05 03:50:14,315 - Fetching: logitech superstrike
-2026-07-05 03:50:15,017 -   logitech superstrike -> 0 merged items via 5 query variants
-2026-07-05 03:50:15,017 -   logitech superstrike: 0 results
-2026-07-05 03:50:15,017 - Fetching: logitech superstrike
-2026-07-05 03:50:15,671 - Fetching: logitech superstrike
-2026-07-05 03:50:16,182 - Fetching: logitech superstrike
-2026-07-05 03:50:16,708 - Fetching: logitech superstrike
-2026-07-05 03:50:17,208 - Fetching: logitech superstrike
-2026-07-05 03:50:17,694 -   logitech superstrike -> 0 merged items via 5 query variants
-2026-07-05 03:50:17,694 -   logitech superstrike: 0 results
-2026-07-05 03:50:17,695 - Fetching: logitech superlight 2
-2026-07-05 03:50:18,522 -   logitech superlight 2: 0 results
-2026-07-05 03:50:18,522 - Fetching: logitech superlight 2
-2026-07-05 03:50:18,997 -   logitech superlight 2: 0 results
-2026-07-05 03:50:18,998 - Fetching: logitech superlight 2 dex
-2026-07-05 03:50:19,868 -   logitech superlight 2 dex: 0 results
-2026-07-05 03:50:19,869 - Fetching: logitech superlight 2 dex
-2026-07-05 03:50:20,385 -   logitech superlight 2 dex: 0 results
-2026-07-05 03:50:20,385 -   logitech superlight 2 -> cached (1s old, 0 items, err=None)
-2026-07-05 03:50:20,385 -   logitech superlight 2: 0 results
-2026-07-05 03:50:20,385 -   logitech superlight 2 -> cached (1s old, 0 items, err=None)
-2026-07-05 03:50:20,385 -   logitech superlight 2: 0 results
-2026-07-05 03:50:20,386 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
-2026-07-05 03:50:21,165 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results
-2026-07-05 03:50:21,165 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
-2026-07-05 03:50:21,630 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results
-2026-07-05 03:50:21,630 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
-2026-07-05 03:50:22,294 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
-2026-07-05 03:50:22,294 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
-2026-07-05 03:50:22,764 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
-2026-07-05 03:50:22,766 - === Done ===
-2026-07-05 03:50:22,767 - Running under GitHub Actions: executing seller check...
+iteration_start=2026-07-05 03:49:44 UTC
+2026-07-05 03:49:45,674 - ╔══════════════════════════════════════════════╗
+2026-07-05 03:49:45,674 - ║              eBay Monitor Bot               ║
+2026-07-05 03:49:45,674 - ╠══════════════════════════════════════════════╣
+2026-07-05 03:49:45,674 -   Mode:       ONE-SHOT
+2026-07-05 03:49:45,674 -   Repo:       GitGayHub/e-monitor
+2026-07-05 03:49:45,674 -   GH Token:   ✅ GitGayHub
+2026-07-05 03:49:45,674 -   GH Actions: ✅ success 4m ago (Android App Sync)
+2026-07-05 03:49:45,675 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-07-05 03:49:45,675 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-07-05 03:49:45,675 -   Chat ID:    5326338543
+2026-07-05 03:49:45,675 - ╠══════════════════════════════════════════════╣
+2026-07-05 03:49:45,675 -   Searches:   46 (808 excl, 8 incl words)
+2026-07-05 03:49:45,675 -     * Query: 'Redmagic 11 Pro' | ID: 'redmagic_11_pro_buy' | Filters: {'min_price': 50, 'limit_price': 400, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Redmagic 11 Pro' | ID: 'redmagic_11_pro_auc' | Filters: {'min_price': None, 'limit_price': 400, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Redmagic 11S Pro' | ID: 'redmagic_11s_pro_buy' | Filters: {'min_price': 50, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Redmagic 11S Pro' | ID: 'redmagic_11s_pro_auc' | Filters: {'min_price': None, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z80 Ultra' | ID: 'nubia_z80_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 375, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z80 Ultra' | ID: 'nubia_z80_ultra_auc' | Filters: {'min_price': None, 'limit_price': 375, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z80 Ultra Leading' | ID: 'nubia_z80_ultra_leading_buy' | Filters: {'min_price': 50, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z80 Ultra Leading' | ID: 'nubia_z80_ultra_leading_auc' | Filters: {'min_price': None, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z70 Ultra' | ID: 'nubia_z70_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z70 Ultra' | ID: 'nubia_z70_ultra_auc' | Filters: {'min_price': None, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z70S Ultra' | ID: 'nubia_z70s_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,675 -     * Query: 'Nubia Z70S Ultra' | ID: 'nubia_z70s_ultra_auc' | Filters: {'min_price': None, 'limit_price': 325, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,676 -     * Query: 'iPhone 16 Pro Max' | ID: 'iphone_16_pro_max_buy' | Filters: {'min_price': 50, 'limit_price': 675, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: 'iPhone 16 Pro Max' | ID: 'iphone_16_pro_max_auc' | Filters: {'min_price': None, 'limit_price': 675, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: '(playstation 5 pro, ps5 pro)' | ID: 'ps5_pro_buy' | Filters: {'min_price': 300, 'limit_price': 550, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'consoles'}
+2026-07-05 03:49:45,676 -     * Query: '(playstation 5 pro, ps5 pro)' | ID: 'ps5_pro_auc' | Filters: {'min_price': 300, 'limit_price': 550, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'consoles'}
+2026-07-05 03:49:45,676 -     * Query: 'Pixel 5' | ID: 'pixel_5_buy' | Filters: {'min_price': 50, 'limit_price': 70, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: 'Pixel 5' | ID: 'pixel_5_auc' | Filters: {'min_price': None, 'limit_price': 70, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: 'Sony WH-1000XM6' | ID: 'sony_wh_1000xm6_buy' | Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
+2026-07-05 03:49:45,676 -     * Query: 'Sony WH-1000XM6' | ID: 'sony_wh_1000xm6_auc' | Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
+2026-07-05 03:49:45,676 -     * Query: '5070 ti (pc, rechner, computer, desktop, gaming pc)' | ID: '5070_ti_pc_buy' | Filters: {'min_price': None, 'limit_price': 1300, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
+2026-07-05 03:49:45,676 -     * Query: '5070 ti (pc, rechner, computer, desktop, gaming pc)' | ID: '5070_ti_pc_auc' | Filters: {'min_price': None, 'limit_price': 1300, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
+2026-07-05 03:49:45,676 -     * Query: '4080 (pc, rechner, computer, desktop, gaming pc)' | ID: '4080_pc_buy' | Filters: {'min_price': None, 'limit_price': 1200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
+2026-07-05 03:49:45,676 -     * Query: '4080 (pc, rechner, computer, desktop, gaming pc)' | ID: '4080_pc_auc' | Filters: {'min_price': None, 'limit_price': 1200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'computers'}
+2026-07-05 03:49:45,676 -     * Query: 'iPhone 15 Pro Max' | ID: 'iphone_15_pro_max_buy' | Filters: {'min_price': 50, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: 'iPhone 15 Pro Max' | ID: 'iphone_15_pro_max_auc' | Filters: {'min_price': None, 'limit_price': 450, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'de', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: 'samsung s24 ultra' | ID: 'samsung_s24_ultra_buy' | Filters: {'min_price': 50, 'limit_price': 350, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: 'samsung s24 ultra' | ID: 'samsung_s24_ultra_auc' | Filters: {'min_price': None, 'limit_price': 350, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'phones'}
+2026-07-05 03:49:45,676 -     * Query: '4050 oled' | ID: '4050_oled_buy' | Filters: {'min_price': None, 'limit_price': 625, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
+2026-07-05 03:49:45,676 -     * Query: '4050 oled' | ID: '4050_oled_auc' | Filters: {'min_price': None, 'limit_price': 625, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
+2026-07-05 03:49:45,676 -     * Query: '4060 oled' | ID: '4060_oled_buy' | Filters: {'min_price': None, 'limit_price': 750, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
+2026-07-05 03:49:45,676 -     * Query: '4060 oled' | ID: '4060_oled_auc' | Filters: {'min_price': None, 'limit_price': 750, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
+2026-07-05 03:49:45,676 -     * Query: 'asus vivobook 14x oled' | ID: 'asus_vivobook_14x_oled_buy' | Filters: {'min_price': None, 'limit_price': 425, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
+2026-07-05 03:49:45,676 -     * Query: 'asus vivobook 14x oled' | ID: 'asus_vivobook_14x_oled_auc' | Filters: {'min_price': None, 'limit_price': 425, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'laptops'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superstrike' | ID: 'logitech_superstrike_buy' | Filters: {'min_price': None, 'limit_price': 85, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superstrike' | ID: 'logitech_superstrike_auc' | Filters: {'min_price': None, 'limit_price': 85, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_std_buy' | Filters: {'min_price': None, 'limit_price': 45, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_std_auc' | Filters: {'min_price': None, 'limit_price': 45, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superlight 2 dex' | ID: 'logitech_superlight_2_dex_buy' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superlight 2 dex' | ID: 'logitech_superlight_2_dex_auc' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_c_buy' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
+2026-07-05 03:49:45,677 -     * Query: 'logitech superlight 2' | ID: 'logitech_superlight_2_c_auc' | Filters: {'min_price': None, 'limit_price': 65, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'mice'}
+2026-07-05 03:49:45,677 -     * Query: 'Sony ULT (Wear, 900N, WH-ULT900N)' | ID: 'sony_ult_wear_buy' | Filters: {'min_price': None, 'limit_price': 30, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
+2026-07-05 03:49:45,677 -     * Query: 'Sony ULT (Wear, 900N, WH-ULT900N)' | ID: 'sony_ult_wear_auc' | Filters: {'min_price': None, 'limit_price': 30, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'headphones'}
+2026-07-05 03:49:45,677 -     * Query: 'lg ultragear oled 480hz (32GS95, 27GX790A)' | ID: 'lg_ultragear_oled_480hz_buy' | Filters: {'min_price': None, 'limit_price': 430, 'max_price': 2500, 'condition': 'any', 'listing_type': 'buy_now_offer', 'seller_type': 'any', 'location': 'worldwide', 'category': 'monitors'}
+2026-07-05 03:49:45,677 -     * Query: 'lg ultragear oled 480hz (32GS95, 27GX790A)' | ID: 'lg_ultragear_oled_480hz_auc' | Filters: {'min_price': None, 'limit_price': 430, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'monitors'}
+2026-07-05 03:49:45,677 -   Bans:       1 sellers, 14 items
+2026-07-05 03:49:45,677 -   Seen:       0 ids
+2026-07-05 03:49:45,677 - ╚══════════════════════════════════════════════╝
+2026-07-05 03:49:51,211 - eBay API budget this run: M=8 (API calls in last 24h: 4374/5000)
+2026-07-05 03:49:51,287 - Top 8 priority API targets queued: ['logitech_superlight_2_c_buy:EBAY_IT', 'logitech_superlight_2_c_buy:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_FR', 'logitech_superlight_2_c_buy:EBAY_GB', 'logitech_superlight_2_c_auc:EBAY_GB', 'logitech_superlight_2_c_buy:EBAY_ES', 'logitech_superlight_2_c_auc:EBAY_ES']
+2026-07-05 03:49:51,289 - Fetching: Redmagic 11 Pro
+2026-07-05 03:49:51,290 - eBay session ready (impersonate=chrome124)
+2026-07-05 03:49:55,064 - eBay ebay.de challenge page for 'Redmagic 11 Pro' (impersonate=chrome124)
+2026-07-05 03:49:55,066 - eBay session ready (impersonate=chrome120)
+2026-07-05 03:50:06,313 -   Redmagic 11 Pro: 0 results
+2026-07-05 03:50:06,314 - Fetching: Redmagic 11 Pro
+2026-07-05 03:50:06,947 -   Redmagic 11 Pro: 0 results
+2026-07-05 03:50:06,947 - Fetching: Redmagic 11S Pro
+2026-07-05 03:50:07,596 -   Redmagic 11S Pro: 0 results
+2026-07-05 03:50:07,596 - Fetching: Redmagic 11S Pro
+2026-07-05 03:50:08,145 -   Redmagic 11S Pro: 0 results
+2026-07-05 03:50:08,146 - Fetching: Nubia Z80 Ultra
+2026-07-05 03:50:09,030 -   Nubia Z80 Ultra: 0 results
+2026-07-05 03:50:09,031 - Fetching: Nubia Z80 Ultra
+2026-07-05 03:50:09,557 -   Nubia Z80 Ultra: 0 results
+2026-07-05 03:50:09,557 - Fetching: Nubia Z80 Ultra Leading
+2026-07-05 03:50:10,040 -   Nubia Z80 Ultra Leading: 0 results
+2026-07-05 03:50:10,040 - Fetching: Nubia Z80 Ultra Leading
+2026-07-05 03:50:10,520 -   Nubia Z80 Ultra Leading: 0 results
+2026-07-05 03:50:10,520 - Fetching: Nubia Z70 Ultra
+2026-07-05 03:50:11,375 -   Nubia Z70 Ultra: 0 results
+2026-07-05 03:50:11,375 - Fetching: Nubia Z70 Ultra
+2026-07-05 03:50:11,918 -   Nubia Z70 Ultra: 0 results
+2026-07-05 03:50:11,918 - Fetching: Nubia Z70S Ultra
+2026-07-05 03:50:12,586 -   Nubia Z70S Ultra: 0 results
+2026-07-05 03:50:12,586 - Fetching: Nubia Z70S Ultra
+2026-07-05 03:50:13,083 -   Nubia Z70S Ultra: 0 results
+2026-07-05 03:50:13,083 - Fetching: iPhone 16 Pro Max
+2026-07-05 03:50:13,983 -   iPhone 16 Pro Max: 0 results
+2026-07-05 03:50:13,983 - Fetching: iPhone 16 Pro Max
+2026-07-05 03:50:14,679 -   iPhone 16 Pro Max: 0 results
+2026-07-05 03:50:14,679 - Fetching: (playstation 5 pro, ps5 pro)
+2026-07-05 03:50:15,605 -   (playstation 5 pro, ps5 pro): 0 results
+2026-07-05 03:50:15,605 - Fetching: (playstation 5 pro, ps5 pro)
+2026-07-05 03:50:16,258 -   (playstation 5 pro, ps5 pro): 0 results
+2026-07-05 03:50:16,258 - Fetching: Pixel 5
+2026-07-05 03:50:16,933 -   Pixel 5: 0 results
+2026-07-05 03:50:16,933 - Fetching: Pixel 5
+2026-07-05 03:50:17,513 -   Pixel 5: 0 results
+2026-07-05 03:50:17,513 - Fetching: Sony WH-1000XM6
+2026-07-05 03:50:18,380 -   Sony WH-1000XM6: 0 results
+2026-07-05 03:50:18,380 - Fetching: Sony WH-1000XM6
+2026-07-05 03:50:19,055 -   Sony WH-1000XM6: 0 results
+2026-07-05 03:50:19,055 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 03:50:19,823 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results
+2026-07-05 03:50:19,824 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 03:50:20,382 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results
+2026-07-05 03:50:20,383 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 03:50:21,164 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results
+2026-07-05 03:50:21,165 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-07-05 03:50:21,769 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results
+2026-07-05 03:50:21,769 - Fetching: iPhone 15 Pro Max
+2026-07-05 03:50:22,750 -   iPhone 15 Pro Max: 0 results
+2026-07-05 03:50:22,750 - Fetching: iPhone 15 Pro Max
+2026-07-05 03:50:23,536 -   iPhone 15 Pro Max: 0 results
+2026-07-05 03:50:23,536 - Fetching: samsung s24 ultra
+2026-07-05 03:50:24,550 -   samsung s24 ultra: 0 results
+2026-07-05 03:50:24,550 - Fetching: samsung s24 ultra
+2026-07-05 03:50:25,311 -   samsung s24 ultra: 0 results
+2026-07-05 03:50:25,311 - Fetching: 4050 oled
+2026-07-05 03:50:26,001 -   4050 oled: 0 results
+2026-07-05 03:50:26,001 - Fetching: 4050 oled
+2026-07-05 03:50:26,501 -   4050 oled: 0 results
+2026-07-05 03:50:26,501 - Fetching: 4060 oled
+2026-07-05 03:50:27,113 -   4060 oled: 0 results
+2026-07-05 03:50:27,114 - Fetching: 4060 oled
+2026-07-05 03:50:27,605 -   4060 oled: 0 results
+2026-07-05 03:50:27,606 - Fetching: asus vivobook 14x oled
+2026-07-05 03:50:28,255 -   asus vivobook 14x oled: 0 results
+2026-07-05 03:50:28,256 - Fetching: asus vivobook 14x oled
+2026-07-05 03:50:28,746 -   asus vivobook 14x oled: 0 results
+2026-07-05 03:50:28,747 - Fetching: logitech superstrike
+2026-07-05 03:50:29,357 - Fetching: logitech superstrike
+2026-07-05 03:50:29,859 - Fetching: logitech superstrike
+2026-07-05 03:50:30,530 - Fetching: logitech superstrike
+2026-07-05 03:50:31,108 - Fetching: logitech superstrike
+2026-07-05 03:50:31,773 -   logitech superstrike -> 0 merged items via 5 query variants
+2026-07-05 03:50:31,774 -   logitech superstrike: 0 results
+2026-07-05 03:50:31,774 - Fetching: logitech superstrike
+2026-07-05 03:50:32,341 - Fetching: logitech superstrike
+2026-07-05 03:50:32,733 - Fetching: logitech superstrike
+2026-07-05 03:50:33,259 - Fetching: logitech superstrike
+2026-07-05 03:50:33,746 - Fetching: logitech superstrike
+2026-07-05 03:50:34,249 -   logitech superstrike -> 0 merged items via 5 query variants
+2026-07-05 03:50:34,250 -   logitech superstrike: 0 results
+2026-07-05 03:50:34,250 - Fetching: logitech superlight 2
+2026-07-05 03:50:35,056 -   logitech superlight 2: 0 results
+2026-07-05 03:50:35,056 - Fetching: logitech superlight 2
+2026-07-05 03:50:35,574 -   logitech superlight 2: 0 results
+2026-07-05 03:50:35,574 - Fetching: logitech superlight 2 dex
+2026-07-05 03:50:36,432 -   logitech superlight 2 dex: 0 results
+2026-07-05 03:50:36,433 - Fetching: logitech superlight 2 dex
+2026-07-05 03:50:36,889 -   logitech superlight 2 dex: 0 results
+2026-07-05 03:50:36,889 -   logitech superlight 2 -> cached (1s old, 0 items, err=None)
+2026-07-05 03:50:36,890 -   logitech superlight 2: 0 results
+2026-07-05 03:50:36,890 -   logitech superlight 2 -> cached (1s old, 0 items, err=None)
+2026-07-05 03:50:36,890 -   logitech superlight 2: 0 results
+2026-07-05 03:50:36,890 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
+2026-07-05 03:50:37,641 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results
+2026-07-05 03:50:37,642 - Fetching: Sony ULT (Wear, 900N, WH-ULT900N)
+2026-07-05 03:50:38,117 -   Sony ULT (Wear, 900N, WH-ULT900N): 0 results
+2026-07-05 03:50:38,117 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
+2026-07-05 03:50:38,861 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
+2026-07-05 03:50:38,862 - Fetching: lg ultragear oled 480hz (32GS95, 27GX790A)
+2026-07-05 03:50:39,403 -   lg ultragear oled 480hz (32GS95, 27GX790A): 0 results
+2026-07-05 03:50:39,405 - === Done ===
+2026-07-05 03:50:39,405 - Running under GitHub Actions: executing seller check...
 === CHECK SELLER ===
-2026-07-05 03:50:22,770 - eBay session ready (impersonate=chrome124)
+2026-07-05 03:50:39,410 - eBay session ready (impersonate=chrome124)
 Active items for plako_plak: 0
 Completed/Sold items for plako_plak: 0
-2026-07-05 03:50:27,418 - Running under GitHub Actions: executing sacat test...
+2026-07-05 03:50:44,059 - Running under GitHub Actions: executing sacat test...
 === TEST SACAT ===
 Results WITH _sacat=293: 0
 Results WITHOUT category restriction: 0
-2026-07-05 03:50:32,588 - Running under GitHub Actions: executing params test...
+2026-07-05 03:50:49,449 - Running under GitHub Actions: executing params test...
 === TEST PARAMS ===
 Test 'Base': parsed 0 items
 Test 'With Negatives': parsed 0 items
@@ -227,7 +227,7 @@ Test 'With Location (DE)': parsed 0 items
 Test 'With Auction': parsed 0 items
 Test 'With BIN': parsed 0 items
 Test 'Full Auction (negatives + cond + loc + auc)': parsed 0 items
-2026-07-05 03:50:44,647 - Running under GitHub Actions: executing git_sync.py state push...
+2026-07-05 03:51:03,809 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
