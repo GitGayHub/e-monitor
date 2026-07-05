@@ -6033,13 +6033,6 @@ async def run_once():
 
     # Run state synchronization when running under GitHub Actions
     if os.environ.get("GITHUB_ACTIONS") == "true":
-        logger.info("Running under GitHub Actions: executing diagnostics...")
-        try:
-            import diagnose
-            diagnose.run_diagnostics()
-        except Exception as e:
-            logger.error(f"Failed to run diagnostics: {e}")
-
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
             import subprocess
