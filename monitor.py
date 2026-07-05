@@ -6041,6 +6041,13 @@ async def run_once():
             check_seller.check_seller()
         except Exception as e:
             logger.error(f"Failed to run seller check: {e}")
+            
+        logger.info("Running under GitHub Actions: executing sacat test...")
+        try:
+            import test_sacat
+            test_sacat.test_sacat()
+        except Exception as e:
+            logger.error(f"Failed to run sacat test: {e}")
 
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
