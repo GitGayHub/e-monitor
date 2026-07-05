@@ -6015,8 +6015,6 @@ def _log_startup_banner(mode):
     logger.info("╠══════════════════════════════════════════════╣")
     logger.info("  Searches:   %d (%d excl, %d incl words)",
                 len(searches), _count_search_words("exclude_words"), _count_search_words("include_words"))
-    for s in config.get_searches():
-        logger.info("    * Query: '%s' | ID: '%s' | Filters: %s", s.get('query'), s.get('id'), s.get('filters'))
     logger.info("  Bans:       %d sellers, %d items",
                 len(config.get_global_banned_sellers()), len(config.get_banned_item_ids()))
     logger.info("  Seen:       %d ids", len(seen_ids))
@@ -6035,27 +6033,6 @@ async def run_once():
 
     # Run state synchronization when running under GitHub Actions
     if os.environ.get("GITHUB_ACTIONS") == "true":
-        logger.info("Running under GitHub Actions: executing seller check...")
-        try:
-            import check_seller
-            check_seller.check_seller()
-        except Exception as e:
-            logger.error(f"Failed to run seller check: {e}")
-            
-        logger.info("Running under GitHub Actions: executing sacat test...")
-        try:
-            import test_sacat
-            test_sacat.test_sacat()
-        except Exception as e:
-            logger.error(f"Failed to run sacat test: {e}")
-            
-        logger.info("Running under GitHub Actions: executing params test...")
-        try:
-            import test_params
-            test_params.test_params()
-        except Exception as e:
-            logger.error(f"Failed to run params test: {e}")
-
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
             import subprocess
