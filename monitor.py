@@ -6015,6 +6015,8 @@ def _log_startup_banner(mode):
     logger.info("╠══════════════════════════════════════════════╣")
     logger.info("  Searches:   %d (%d excl, %d incl words)",
                 len(searches), _count_search_words("exclude_words"), _count_search_words("include_words"))
+    for s in config.get_searches():
+        logger.info("    * Query: '%s' | ID: '%s' | Filters: %s", s.get('query'), s.get('id'), s.get('filters'))
     logger.info("  Bans:       %d sellers, %d items",
                 len(config.get_global_banned_sellers()), len(config.get_banned_item_ids()))
     logger.info("  Seen:       %d ids", len(seen_ids))
