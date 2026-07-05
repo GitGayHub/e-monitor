@@ -541,7 +541,10 @@ CATEGORY_ACCESSORY_WORDS = {
         "adapter", "akku", "battery", "ersatzteil", "ersatzteile", "spare part", "spare parts",
         "reparatur", "tasche", "case", "box", "mod", "3d print", "3d gedruckt", "gewicht", "weight",
         "ladekabel", "cover", "hülle", "huelle", "tastenfeld", "tastenkappe", "tastenkappen",
-        "taste", "panel", "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten"
+        "taste", "panel", "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten",
+        "skatez", "skate", "glide", "foot", "mausgleiter", "gleitpad", "gleitpads", "gleiter",
+        "mausersatzfüße", "mausersatzfuesse", "ersatzfüße", "ersatzfuesse", "ersatzfuss", "ersatzfuß",
+        "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck"
     ),
 }
 
@@ -589,6 +592,9 @@ CATEGORY_HARD_PART_WORDS = {
         "reparatur", "mod", "3d print", "3d gedruckt", "gewicht", "weight", "ladekabel",
         "cover", "tastenfeld", "tastenkappe", "tastenkappen", "taste", "panel",
         "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten",
+        "skatez", "skate", "glide", "foot", "mausgleiter", "gleitpad", "gleitpads", "gleiter",
+        "mausersatzfüße", "mausersatzfuesse", "ersatzfüße", "ersatzfuesse", "ersatzfuss", "ersatzfuß",
+        "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck",
     ),
 }
 
@@ -6024,6 +6030,18 @@ async def run_once():
     await process_searches(bot, once=True)
     save_seen_ids()
     logger.info("=== Done ===")
+
+    # Run state synchronization when running under GitHub Actions
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        logger.info("Running under GitHub Actions: executing git_sync.py state push...")
+        try:
+            import subprocess
+            sync_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "git_sync.py")
+            res = subprocess.run([sys.executable, sync_script])
+            if res.returncode != 0:
+                logger.error(f"git_sync.py failed with return code {res.returncode}")
+        except Exception as e:
+            logger.error(f"Failed to run git_sync.py: {e}")
 
 
 async def run_continuous():

@@ -298,34 +298,16 @@ def sync_from_remote():
         print(f"  Git remote: {remote_url.stdout.strip()}")
     else:
         print("  ⚠️ Git remote: not configured")
-    fetch = git("fetch", "--prune", visible=True)
-    if fetch.returncode != 0:
-        print("\n⚠️ WARNING: git fetch failed — starting bot with local state.")
-        return
-
-    if not drop_local_state_commits():
-        print("WARNING: could not clean local state commits — continuing with normal rebase.")
-
-    state_snapshot = protect_state_for_sync()
+    
+    print("Running git_sync.py to fetch and merge latest state...")
     try:
-        upstream = upstream_ref()
-        if upstream:
-            result = subprocess.run(GIT_BASE + ["rebase", "--autostash", upstream], cwd=REPO)
-        else:
-            result = subprocess.run(GIT_BASE + ["pull", "--rebase", "--autostash"], cwd=REPO)
-        if result.returncode != 0:
-            if in_rebase():
-                print("INFO: state conflict during rebase, auto-resolving...")
-                if not resolve_state_rebase():
-                    print("WARNING: could not auto-resolve rebase, aborting and continuing without sync.")
-                    git("rebase", "--abort", visible=True)
-            else:
-                print("\nWARNING: git pull failed — starting bot with local state.")
-    finally:
-        if state_snapshot:
-            restore_files(state_snapshot)
-            print("INFO: local state restored after git sync.")
-        decrypt_config_in_launcher()
+        res = subprocess.run([sys.executable, os.path.join(REPO, "git_sync.py")], cwd=REPO)
+        if res.returncode != 0:
+            print("WARNING: git_sync.py exited with error code", res.returncode)
+    except Exception as e:
+        print("WARNING: failed to run git_sync.py:", e)
+        
+    decrypt_config_in_launcher()
 
 
 acquire_lock()
@@ -359,19 +341,10 @@ finally:
     print("\n=== [3/3] Pushing state updates to GitHub ===")
     try:
         encrypt_config_in_launcher()
-        git("add", *STATE_SYNC)
-        if git_has_staged(STATE_SYNC):
-            commit = git("commit", "-m", "Sync state after run", "--", *STATE_SYNC, visible=True)
-            if commit.returncode != 0:
-                print("WARNING: git commit failed — state left as working-tree changes.")
-                raise SystemExit(0)
-            push = git("push", visible=True)
-            if push.returncode != 0:
-                print("WARNING: git push failed — remote not updated.")
-                undo_last_state_commit()
-            else:
-                print("Done.")
+        res = subprocess.run([sys.executable, os.path.join(REPO, "git_sync.py")], cwd=REPO)
+        if res.returncode != 0:
+            print("WARNING: git_sync.py exited with error code", res.returncode)
         else:
-            print("No state changes to push.")
+            print("Done.")
     except Exception as e:
         print(f"WARNING: state sync skipped: {e}")
