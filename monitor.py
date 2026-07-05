@@ -6036,7 +6036,7 @@ async def run_once():
         logger.info("Running under GitHub Actions: executing filters test...")
         try:
             import test_filters
-            test_filters.test_filters()
+            await test_filters.test_filters()
         except Exception as e:
             logger.error(f"Failed to run filters test: {e}")
 

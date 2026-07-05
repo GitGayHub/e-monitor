@@ -115,8 +115,8 @@ async def test_filters_async():
         passes_rules = monitor._passes_notification_price_and_auction_rules(item, search)
         print(f"    * Passes notification rules: {passes_rules}")
 
-def test_filters():
-    asyncio.run(test_filters_async())
+async def test_filters():
+    await test_filters_async()
 
 if __name__ == "__main__":
-    test_filters()
+    asyncio.run(test_filters_async())
