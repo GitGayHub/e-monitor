@@ -23,7 +23,8 @@ def get_git_exe():
     return "git"
 
 GIT_EXE = get_git_exe()
-GIT_BASE = [GIT_EXE, "-c", f"safe.directory={REPO_DIR.replace('\\', '/')}"]
+_REPO_SAFE = REPO_DIR.replace('\\', '/')
+GIT_BASE = [GIT_EXE, "-c", f"safe.directory={_REPO_SAFE}"]
 
 def git_run(*args, capture=True):
     cmd = GIT_BASE + list(args)
