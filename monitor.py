@@ -6039,6 +6039,13 @@ async def run_once():
             check_item.check_item()
         except Exception as e:
             logger.error(f"Failed to run item check: {e}")
+            
+        logger.info("Running under GitHub Actions: executing query test...")
+        try:
+            import test_query
+            test_query.test_query()
+        except Exception as e:
+            logger.error(f"Failed to run query test: {e}")
 
         logger.info("Running under GitHub Actions: executing git_sync.py state push...")
         try:
