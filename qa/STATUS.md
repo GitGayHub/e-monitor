@@ -9,14 +9,14 @@
 
 | Field | Value |
 |-------|--------|
-| Phase | **audit_in_progress** |
-| Active task | **#2** → product index `1` (Redmagic 11S Pro) |
+| Phase | **code_fix_shipped_after_full_audit** |
+| Active task | re-run stats after fix; verify not all empty |
 | Last update | 2026-07-16 |
-| Stats source | **GitHub Actions logs** run `29538930987` via `qa/fetch_stats_from_github.py` (no Telegram UI) |
-| Parsed catalog | `qa/inbox/stats_parsed.json` — **23 products** |
-| Next product index | `1` |
-| Products done | `1` (redmagic_11_pro → overall **ok**) |
-| Open P0/P1 findings | `0` |
+| Stats source | GH Actions logs run `29538930987` |
+| Parsed catalog | 23 products — **all script buckets empty that run** |
+| Next product index | 0 (full re-audit after next stats) |
+| Products done | full pass reviewed (see FULL_AUDIT_REPORT.md) |
+| Open P0/P1 findings | **many gap_missed** (script --- vs eBay stock) |
 | mode.txt note | remote may be `statistics` for stats runs; prod alerts → `normal` |
 
 ## Blockers
