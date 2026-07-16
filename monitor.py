@@ -2272,10 +2272,13 @@ def _min_plausible_device_price(search):
     filters = (search.get("filters") if isinstance(search, dict) else {}) or {}
     category = _effective_category(filters.get("category", "all"), query_norm)
 
+    # Market floor for full WH-1000XM4/5/6 units (~200€+). 4–30€ is always pads/bait.
     if re.search(r"\b(?:wh[\s-]*1000\s*xm|1000\s*xm\s*[456]|ult\s*wear|ult900)\b", query_norm):
-        return 50.0
+        return 80.0
+    if "xm6" in query_norm or "xm5" in query_norm or "xm4" in query_norm:
+        return 80.0
     if category == "headphones" or "sony wh" in query_norm:
-        return 40.0
+        return 50.0
     if category == "phones" or _is_phone_search_query(query_norm):
         return 40.0
     if category == "consoles":
@@ -5849,6 +5852,11 @@ async def process_searches(bot, once=False):
                             auc_bo.append(auc_item)
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
+                # Drop bait floors again after bucket split (defense in depth).
+                bin_no_bo = [x for x in bin_no_bo if not _is_implausibly_cheap_device(x, search)]
+                bin_bo = [x for x in bin_bo if not _is_implausibly_cheap_device(x, search)]
+                auc_no_bo = [x for x in auc_no_bo if not _is_implausibly_cheap_device(x, search)]
+                auc_bo = [x for x in auc_bo if not _is_implausibly_cheap_device(x, search)]
                 # Same validation as normal alerts — no multi-variation exceptions.
                 stats_search_cfg = copy.deepcopy(search)
                 cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), stats_search_cfg)
@@ -5858,7 +5866,13 @@ async def process_searches(bot, once=False):
 
                 def get_verdict_for_item(item):
                     """🟢 = default mode would alert; 🟡 = price ok but wait 24h; 🟣 = over limit."""
+                    if not item:
+                        return "❌ Не найдено"
+                    if _is_implausibly_cheap_device(item, search):
+                        return "❌ Фейк/часть"
                     eligible, reason = _notify_eligibility(item, search)
+                    if reason == "too_cheap":
+                        return "❌ Фейк/часть"
                     if reason == "over_limit":
                         return "🟣 Дорого"
                     if reason == "wait_24h":
@@ -5967,6 +5981,8 @@ async def process_searches(bot, once=False):
                             v_emoji, v_text = "🟡", "Ждёт 24ч"
                         elif raw_verdict.startswith("🟣"):
                             v_emoji, v_text = "🟣", "Дорого"
+                        elif raw_verdict.startswith("❌"):
+                            v_emoji, v_text = "❌", "Фейк/часть"
                         else:
                             v_emoji, v_text = "🟣", "Дорого"
 

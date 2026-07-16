@@ -577,10 +577,10 @@ class SearchIntentRuleTests(unittest.TestCase):
 
         # Ending within 24h under limit → alertable
         soon = item(
-            "Sony WH-1000XM6",
+            "Sony WH-1000XM6 Kopfhörer",
             item_id="3",
-            price=50,
-            total_price=50,
+            price=120,
+            total_price=120,
             buy_now=False,
             auction=True,
             best_offer=False,
