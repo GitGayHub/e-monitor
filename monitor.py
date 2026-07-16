@@ -1691,11 +1691,26 @@ def _matches_category_query(title_norm, category, query_norm):
         )
 
     if "sony wh" in query_norm or "sony ult wear" in query_norm:
-        # Block confirmed spare parts, pass everything else (including lazy titles)
-        part_words = ("ersatz", "ersatzteil", "spare", "replacement", "oem",
-                     "linke", "rechte", "left ear", "right ear")
-        if any(_has_term(title_norm, w) for w in part_words):
-            return any(term in title_norm for term in ("kopfhoerer", "headphones", "over-ear", "over ear"))
+        # Block confirmed spare parts / cases / pads, pass full headphones
+        part_words = (
+            "ersatz", "ersatzteil", "spare", "replacement", "oem",
+            "linke", "rechte", "left ear", "right ear",
+            "ohrpolster", "earpad", "ear pad", "earpads", "ear cushions",
+            "hülle", "huelle", "case", "tasche", "silikon", "schutzhülle",
+            "kabel", "cable", "stand", "halterung", "only", "nur ",
+        )
+        if any(_has_term(title_norm, w) for w in part_words) or re.search(
+            r"\b(?:for|fuer|für|compatibel|kompatibel)\b.*\b(?:sony|wh[\s-]*1000|xm[456])\b",
+            title_norm,
+        ):
+            # Allow only if title still clearly is the full headset (rare)
+            if not any(
+                term in title_norm
+                for term in ("kopfhoerer", "headphones", "over-ear", "over ear", "headset")
+            ):
+                return False
+            if any(_has_term(title_norm, w) for w in ("ohrpolster", "earpad", "earpads", "case", "hülle", "huelle")):
+                return False
         return True
 
     is_ps5_pro_query = _is_ps5_pro_search_query(query_norm)
@@ -2044,10 +2059,12 @@ def _notify_eligibility(item, search):
     """Shared verdict for normal notify + statistics green.
 
     Returns (eligible: bool, reason: str) where reason is one of:
-      notify | over_limit | wait_24h | missing
+      notify | over_limit | wait_24h | missing | too_cheap
     """
     if not item:
         return False, "missing"
+    if _is_implausibly_cheap_device(item, search):
+        return False, "too_cheap"
     if not _price_within_limit(item, search):
         return False, "over_limit"
     if item.get("auction") and not item.get("buy_now"):
@@ -2243,6 +2260,44 @@ def _price_within_limit(item, search):
         return float(item.get("total_price") or 0) <= float(limit_or_max)
     except (TypeError, ValueError):
         return False
+
+
+def _min_plausible_device_price(search):
+    """Reject earpad/case/bait floors that are not a real device for this query.
+
+    Fake 'from 4€' / multi-SKU listings often survive as fixed 4–30€ cards.
+    Real WH-1000XM6 units start well above that on the market.
+    """
+    query_norm = _normalize(_intent_query(search) if isinstance(search, dict) else search)
+    filters = (search.get("filters") if isinstance(search, dict) else {}) or {}
+    category = _effective_category(filters.get("category", "all"), query_norm)
+
+    if re.search(r"\b(?:wh[\s-]*1000\s*xm|1000\s*xm\s*[456]|ult\s*wear|ult900)\b", query_norm):
+        return 50.0
+    if category == "headphones" or "sony wh" in query_norm:
+        return 40.0
+    if category == "phones" or _is_phone_search_query(query_norm):
+        return 40.0
+    if category == "consoles":
+        return 80.0
+    if category == "monitors":
+        return 60.0
+    if category in ("laptops", "computers"):
+        return 100.0
+    if category == "mice" or "superstrike" in query_norm or "superlight" in query_norm:
+        return 35.0
+    return 0.0
+
+
+def _is_implausibly_cheap_device(item, search):
+    floor = _min_plausible_device_price(search)
+    if floor <= 0:
+        return False
+    try:
+        total = float(item.get("total_price") or item.get("price") or 0)
+    except (TypeError, ValueError):
+        return False
+    return total > 0 and total < floor
 
 
 def _is_statistics_mode(config_obj):
@@ -2576,14 +2631,26 @@ def parse_ebay_results(html):
             price_elements = [el for el in card.select("span.s-card__price, span.s-item__price") if not _is_nested_in_card(el, card)]
             price_texts = [el.get_text(strip=True) for el in price_elements]
             price_text_combined = " ".join(price_texts)
-            is_multivariation = "bis" in price_text_combined.lower() or "to" in price_text_combined.lower()
-            
+            price_lower = price_text_combined.lower()
+            # "EUR 4,00 bis EUR 250,00" / "from … to …" / "ab 4 €" = multi-SKU bait
+            is_multivariation = bool(
+                "bis" in price_lower
+                or re.search(r"\bto\b", price_lower)
+                or re.search(r"\bab\s*(?:eur|€|\$)?\s*\d", price_lower)
+                or re.search(r"\bfrom\s*(?:eur|€|\$)?\s*\d", price_lower)
+                or re.search(r"(?:eur|€|\$)\s*\d+[.,]\d+\s*[-–—]\s*(?:eur|€|\$)?\s*\d", price_lower)
+            )
+
             parsed_prices = []
             for pt in price_texts:
                 p_val = _parse_price(pt)
                 if p_val is not None:
                     parsed_prices.append(p_val)
-            
+            if not is_multivariation and len(parsed_prices) >= 2:
+                lo, hi = min(parsed_prices), max(parsed_prices)
+                if hi >= lo * 1.5 and hi - lo >= 15:
+                    is_multivariation = True
+
             price = parsed_prices[0] if parsed_prices else None
             if price is None:
                 continue
@@ -4055,6 +4122,9 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         listing_type = filters.get("listing_type", "all")
         item = _calculate_total(item, settings)
+        # Drop earpad/case/bait floors before stats picks them as "cheapest"
+        if _is_implausibly_cheap_device(item, search):
+            continue
 
         # Select correct price for hybrid listings based on the search/bucket type
         if item.get("buy_now") and item.get("auction"):
@@ -5049,6 +5119,15 @@ def _is_item_page_multivariation(item_id):
 
 
 async def _validate_candidate(item, search):
+    # Cheap floor check on card price before spending details budget
+    try:
+        card_price = float(item.get("total_price") or item.get("price") or 0)
+    except (TypeError, ValueError):
+        card_price = 0.0
+    cheap = _is_implausibly_cheap_device(item, search) or (
+        card_price > 0 and card_price < _min_plausible_device_price(search)
+    )
+
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
         # Update time_left from live API details
@@ -5111,6 +5190,28 @@ async def _validate_candidate(item, search):
         if is_mv:
             logger.info("Blocking multi-variation item %s detected via HTML scraping fallback", item["item_id"])
             return False, None
+        # No details + absurdly low price for this device → never accept as floor
+        if cheap:
+            logger.info(
+                "Blocking item %s: no details and implausibly cheap (%.0f€) for %s",
+                item.get("item_id"), card_price, search.get("query"),
+            )
+            return False, None
+
+    # Extra multi-SKU HTML check for suspicious floors (API sometimes omits itemGroupType)
+    if cheap or _is_implausibly_cheap_device(item, search):
+        is_mv = await asyncio.to_thread(_is_item_page_multivariation, item["item_id"])
+        if is_mv:
+            logger.info("Blocking multi-variation item %s (HTML check, cheap floor)", item.get("item_id"))
+            return False, details
+        if _is_implausibly_cheap_device(item, search):
+            logger.info(
+                "Blocking item %s: price %.0f€ below device floor for %s",
+                item.get("item_id"),
+                float(item.get("total_price") or item.get("price") or 0),
+                search.get("query"),
+            )
+            return False, details
 
     if not _intent_details_match(search, item, details):
         logger.info("Blocking item %s: does not satisfy search intent for %s", item.get("item_id"), search.get("query"))

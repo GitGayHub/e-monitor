@@ -533,10 +533,10 @@ class SearchIntentRuleTests(unittest.TestCase):
         }
         # Regular auction under limit but 9 days left → NOT alertable (not green)
         long_auc = item(
-            "Sony WH-1000XM6",
+            "Sony WH-1000XM6 Kopfhörer",
             item_id="1",
-            price=6,
-            total_price=6,
+            price=120,
+            total_price=120,
             buy_now=False,
             auction=True,
             best_offer=False,
@@ -545,6 +545,20 @@ class SearchIntentRuleTests(unittest.TestCase):
         ok, reason = monitor._notify_eligibility(long_auc, search)
         self.assertFalse(ok)
         self.assertEqual(reason, "wait_24h")
+        # Absurd 6€ floor is bait, not a real XM6
+        bait_auc = item(
+            "Sony WH-1000XM6",
+            item_id="1b",
+            price=6,
+            total_price=6,
+            buy_now=False,
+            auction=True,
+            best_offer=False,
+            time_left="9д 12ч",
+        )
+        ok, reason = monitor._notify_eligibility(bait_auc, search)
+        self.assertFalse(ok)
+        self.assertEqual(reason, "too_cheap")
 
         # Auktion+ under limit → alertable (green)
         bo = item(
@@ -618,6 +632,36 @@ class SearchIntentRuleTests(unittest.TestCase):
         prepared = monitor._prepare_monitor_fetch_search(search)
         self.assertEqual(prepared["filters"]["sort"], "price_asc")
         self.assertGreaterEqual(prepared["filters"]["_ipg"], 240)
+
+    def test_xm6_rejects_implausible_4_euro_floor(self):
+        search = {
+            "query": "Sony WH-1000XM6",
+            "filters": {"limit_price": 200, "listing_type": "buy_now_offer", "category": "all"},
+        }
+        bait = item(
+            "Sony WH-1000XM6",
+            item_id="fake4",
+            price=4,
+            total_price=4,
+            buy_now=True,
+        )
+        real = item(
+            "Sony WH-1000XM6 – Premium Noise Cancelling Over-Ear Kopfhörer",
+            item_id="real246",
+            price=246,
+            total_price=246,
+            buy_now=True,
+        )
+        self.assertTrue(monitor._is_implausibly_cheap_device(bait, search))
+        self.assertFalse(monitor._is_implausibly_cheap_device(real, search))
+        ok, reason = monitor._notify_eligibility(bait, search)
+        self.assertFalse(ok)
+        self.assertEqual(reason, "too_cheap")
+        cfg = DummyConfig()
+        result = monitor.filter_results(
+            [bait, real], search, cfg, skip_seen=True, is_statistics=True
+        )
+        self.assertEqual([x["item_id"] for x in result], ["real246"])
 
 
 if __name__ == "__main__":
