@@ -17,14 +17,17 @@ on:
   workflow_dispatch:
 
 concurrency:
-  # One auto run at a time; cancel stale scheduled/push runs so seen_ids cannot race.
+  # One auto run at a time. Do NOT cancel-in-progress: statistics mode needs
+  # ~15–40 min for all products; a 5‑min cron would otherwise kill it mid-run
+  # and Telegram never gets the diagnostic report.
   group: ${{ github.event_name == 'workflow_dispatch' && format('e-monitor-v2-manual-{0}', github.run_id) || 'e-monitor-v2-auto' }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   check_e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Statistics (4 buckets × every product + live details) exceeds 20 min.
+    timeout-minutes: 45
     permissions:
       contents: write
 
