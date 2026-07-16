@@ -48,3 +48,7 @@
 4) 4 buckets + Playwright + aliases; VALIDITY.md
 5) results/<slug>.json + findings.csv + STATUS + push
 ```
+
+### 2026-07-17T00:50:17.3890579+02:00 — verification wait started
+- Forced stats re-run (local monitor --once + GH).
+
