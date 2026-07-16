@@ -44,10 +44,11 @@ Never commit `set_env.bat` or plaintext `config.json`.
 
 If you are mid **manual stats vs eBay** audit (or starting it on this PC):
 
-1. Read **[qa/STATUS.md](./qa/STATUS.md)** and **[qa/README.md](./qa/README.md)**.
-2. Paste latest Telegram statistics into `qa/inbox/stats_paste.txt`.
-3. `python qa/parse_stats_paste.py`
-4. Agent uses Playwright + `qa/WORKFLOW.md` — do not expect `bebranoid-telegram` to load e-monitor stats.
+1. Tell the agent: **«продолжи»** → it must run **[qa/FIRST_TASK.md](./qa/FIRST_TASK.md)** (task #1).
+2. Or read **[qa/STATUS.md](./qa/STATUS.md)** / **[qa/README.md](./qa/README.md)** yourself.
+3. Paste latest Telegram statistics into `qa/inbox/stats_paste.txt`.
+4. `python qa/parse_stats_paste.py`
+5. Playwright + `qa/WORKFLOW.md` — `bebranoid-telegram` does **not** load e-monitor stats.
 
 ## 3. Grok MCP (so the agent can browse eBay etc.)
 

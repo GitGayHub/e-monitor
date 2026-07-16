@@ -12,9 +12,9 @@
 1. `git pull` репо `e-monitor`.
 2. MCP: **Playwright** обязателен (см. [MCP_SETUP.md](../MCP_SETUP.md), [SETUP_OTHER_PC.md](../SETUP_OTHER_PC.md)).  
    `bebranoid-telegram` **не** читает stats-бот — только музыка Bebranoid.
-3. Прочитай [STATUS.md](./STATUS.md) — с какой позиции продолжать.
-4. Вставь свежий stats (см. ниже) → `python qa/parse_stats_paste.py`.
-5. Аудит по [WORKFLOW.md](./WORKFLOW.md), результаты в `qa/results/`.
+3. Скажи агенту: **«продолжи»** — он берёт **[FIRST_TASK.md](./FIRST_TASK.md)** (задача №1 = первая позиция stats).
+4. Или вручную: [STATUS.md](./STATUS.md) → paste stats → `python qa/parse_stats_paste.py` → [WORKFLOW.md](./WORKFLOW.md).
+5. Результаты в `qa/results/`.
 
 ---
 

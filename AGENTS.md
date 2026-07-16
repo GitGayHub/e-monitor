@@ -20,7 +20,8 @@ See **[SETUP_OTHER_PC.md](./SETUP_OTHER_PC.md)** (full checklist) and **[MCP_SET
 
 Manual eBay vs Telegram statistics report (4 buckets × multi-query aliases):
 
-- Start: **[qa/README.md](./qa/README.md)** and **[qa/STATUS.md](./qa/STATUS.md)**
+- **If user says «продолжи» / continue / «дальше QA»** → execute **[qa/FIRST_TASK.md](./qa/FIRST_TASK.md)** immediately (task #1 = first stats product, 4 buckets).
+- Status / handoff: **[qa/STATUS.md](./qa/STATUS.md)** · overview **[qa/README.md](./qa/README.md)**
 - Protocol: `qa/WORKFLOW.md`, validity `qa/VALIDITY.md`, aliases `qa/query_aliases.json`
 - Paste stats → `qa/inbox/stats_paste.txt` → `python qa/parse_stats_paste.py`
 - Playwright required for eBay. **bebranoid-telegram does not read e-monitor bot messages.**

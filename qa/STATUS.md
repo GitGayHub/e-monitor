@@ -2,41 +2,44 @@
 
 Обновляй этот файл в конце каждой сессии и **коммить**, чтобы другой ПК продолжил.
 
+> **Активная задача:** [FIRST_TASK.md](./FIRST_TASK.md) — позиция №1 stats vs eBay.  
+> Пользователь говорит «продолжи» → делать FIRST_TASK, не спрашивать заново весь план.
+
 ## Snapshot
 
 | Field | Value |
 |-------|--------|
-| Phase | **prep_done** — протокол готов, массовый audit ещё не стартовал |
+| Phase | **ready_for_task_1** — prep done, audit not started |
+| Active task | **#1** → [FIRST_TASK.md](./FIRST_TASK.md) |
 | Last update | 2026-07-16 |
 | Stats source | _empty — нужен paste в `qa/inbox/stats_paste.txt`_ |
-| Parsed catalog | _нет — запусти `python qa/parse_stats_paste.py`_ |
-| Next product index | `0` (первая позиция после parse) |
+| Parsed catalog | _нет — `python qa/parse_stats_paste.py`_ |
+| Next product index | `0` (**первая позиция = задача №1**) |
 | Products done | `0` |
 | Open P0/P1 findings | `0` |
-| mode.txt note | может быть `statistics` на remote; для prod alerts → `normal` |
+| mode.txt note | remote может быть `statistics`; для prod alerts → `normal` |
 
 ## Blockers
 
-1. Нет свежего Telegram stats paste (MCP telegram не читает e-monitor bot).
+1. Нет свежего Telegram stats paste (MCP telegram **не** читает e-monitor bot) — при «продолжи» **запросить paste**, затем audit.
 2. На новом ПК: Playwright chromium + пути в `.grok/config.toml`.
 
 ## Session log
 
-### 2026-07-16 — prep
+### 2026-07-16 — prep + first task pinned
 
-- Создана папка `qa/`: workflow, validity, aliases, parser, templates, results.
-- Идея аудита согласована: позиция → 4 корзины → multi-query eBay → compare → findings.
-- Коммит на GitHub для продолжения с другого ПК.
-- **Audit eBay ещё не выполнялся.**
+- Папка `qa/`: workflow, validity, aliases, parser, templates, results.
+- Добавлен **`qa/FIRST_TASK.md`** — явная задача №1 для handoff («продолжи» с другого ПК).
+- **Audit eBay ещё не выполнялся** — next_index=0.
 
-## Next agent instructions (copy-paste)
+## Next agent instructions (если сказали «продолжи»)
 
 ```text
-Продолжи QA stats audit из qa/STATUS.md.
 1) git pull
-2) Если есть qa/inbox/stats_paste.txt — parse_stats_paste.py
-3) Иначе попроси paste stats из Telegram
-4) Начни с next_index, протокол qa/WORKFLOW.md, validity qa/VALIDITY.md
-5) Пиши results + STATUS, коммить handoff
-Не меняй mode/logic без находок. Playwright для eBay.
+2) Открыть qa/FIRST_TASK.md и выполнить задачу №1 целиком
+3) qa/STATUS.md + qa/WORKFLOW.md + qa/VALIDITY.md
+4) Stats: paste → python qa/parse_stats_paste.py (или попросить paste)
+5) Позиция next_index (0): 4 корзины, Playwright eBay, multi-query aliases
+6) results/<slug>.json + findings.csv + обновить STATUS + push
+Не чинить monitor.py в рамках task1 без явных gaps и необходимости.
 ```
