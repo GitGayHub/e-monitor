@@ -1963,6 +1963,41 @@ def _passes_notification_price_and_auction_rules(item, search):
     return True
 
 
+def _notify_eligibility(item, search):
+    """Shared verdict for normal notify + statistics green.
+
+    Returns (eligible: bool, reason: str) where reason is one of:
+      notify | over_limit | wait_24h | missing
+    """
+    if not item:
+        return False, "missing"
+    if not _price_within_limit(item, search):
+        return False, "over_limit"
+    if item.get("auction") and not item.get("buy_now"):
+        if item.get("best_offer"):
+            return True, "notify"
+        minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
+        if minutes is not None and minutes <= 1440:
+            return True, "notify"
+        return False, "wait_24h"
+    return True, "notify"
+
+
+def _prepare_monitor_fetch_search(search):
+    """Same eBay fetch profile for normal alerts and statistics.
+
+    Statistics used price_asc + large page size and found real cheap deals;
+    default newest-first often never saw them. Keep one pipeline.
+    """
+    prepared = copy.deepcopy(search)
+    filters = prepared.setdefault("filters", {})
+    # Cheapest-first so page-1 matches what stats used to show.
+    filters["sort"] = "price_asc"
+    filters["_ipg"] = max(int(filters.get("_ipg") or 0), 240)
+    # Soft notify limit stays in limit_price; do not shrink eBay _udhi here.
+    return prepared
+
+
 def _format_time_left_from_seconds(total_seconds):
     if total_seconds <= 0:
         return "0мин"
@@ -3932,9 +3967,9 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     filtered = []
     seen_batch_ids = set()
     for item in items:
+        # Multi-variation bait (price "from X") is never a real deal for either mode.
         if item.get("is_multivariation"):
-            if not is_statistics:
-                continue
+            continue
         item_id = str(item.get("item_id") or "")
         item["item_id"] = item_id
         if not item_id or item_id in seen_batch_ids:
@@ -3968,9 +4003,10 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         # Check limit_price (or max_price if limit_price not set) for all items.
         # If the item (even an auction) is already more expensive than our target limit, filter it out.
+        # Statistics keeps over-limit items so the report can show "🟣 Дорого".
         limit_or_max = filters.get("limit_price") or filters.get("max_price")
         if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
-            if not skip_seen:
+            if not skip_seen and not is_statistics:
                 continue
             
         if item.get("is_pickup_only"):
@@ -4001,10 +4037,11 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             if filters.get("best_offer") and not item.get("best_offer"):
                 continue
             
-        # Auction notifications:
-        # A) Best Offer auctions can be sent immediately when the configured
-        #    price limit is satisfied.
-        # B) Regular auctions must also end within 24 hours (1 day inclusive).
+        # Auction notify rules (same for normal + statistics filtering of "alertable"):
+        # A) Best Offer auctions: ok when price limit is satisfied.
+        # B) Regular auctions: only when ending within 24 hours.
+        # Statistics still keeps non-alertable auctions so the report can show
+        # "🟡 Ждёт 24ч" instead of green — controlled later via _notify_eligibility.
         if not is_statistics:
             if item.get("auction") and not item.get("buy_now"):
                 is_best_offer = item.get("best_offer")
@@ -4160,7 +4197,8 @@ def _auction_sweep_search(search):
 
 
 def _statistics_search_variant(search, listing_type, min_price=None, best_offer=False):
-    variant = copy.deepcopy(search)
+    # Same base fetch profile as normal monitoring (price_asc + large page).
+    variant = _prepare_monitor_fetch_search(search)
     filters = variant.setdefault("filters", {})
     filters["_stats_category"] = filters.get("category", "all")
     effective_category = _effective_category(filters.get("category", "all"), _normalize(variant.get("query", "")))
@@ -4169,10 +4207,9 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     filters["listing_type"] = listing_type
     filters["best_offer"] = bool(best_offer)
     filters["min_price"] = min_price
+    # Keep a wide eBay ceiling so sort=price_asc surfaces real floor prices;
+    # soft limit_price is applied in filter / green verdict, not as _udhi.
     filters["max_price"] = None
-    filters["sort"] = "price_asc"
-    filters.pop("sort_code", None)
-    filters["_ipg"] = 240
     filters["_stats_bucket_filter"] = True
     suffix = "bo" if best_offer else "all"
     variant["id"] = f"{search.get('id', 'search')}__stats_{listing_type}_{suffix}"
@@ -4953,11 +4990,12 @@ async def _validate_candidate(item, search):
                     logger.debug("Item %s in unexpected category %s (allowed: %s) — passing anyway",
                                  item.get("item_id"), cat_id, allowed_set)
 
-        # Block SELLER_DEFINED_VARIATIONS for notifications, allow for statistics
+        # Multi-variation / seller-defined SKU matrices: fake "from 4€" bait.
+        # Same rule for statistics and normal so reports match alerts.
         if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
-            if not search.get("_allow_multivariation"):
-                return False, details
-            
+            logger.info("Blocking multi-variation item %s (SELLER_DEFINED_VARIATIONS)", item.get("item_id"))
+            return False, details
+
         scraped_price = None
         try:
             scraped_price = float(item["price"])
@@ -5017,8 +5055,10 @@ def _live_validation_price_window(search_cfg):
 def _live_validation_limit(search_cfg):
     query_norm = _normalize(search_cfg.get("query", ""))
     if "samsung s24 ultra" in query_norm:
-        return 20
-    return 12
+        return 25
+    # Multi-variation bait often fills the first page; scan deeper so real
+    # floor prices (e.g. headphones ~200€) are not missed for a random 4€ SKU.
+    return 30
 
 
 async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
@@ -5027,12 +5067,18 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
     price_window = _live_validation_price_window(search_cfg)
     valid_items = []
     query_norm = _normalize(search_cfg.get("query", ""))
-    for item in items[:limit]:
+    checked = 0
+    for item in items:
+        if checked >= limit:
+            break
+        if item.get("is_multivariation"):
+            continue
         if valid_items:
             best_total = min(float(x.get("total_price") or 0) for x in valid_items)
             card_total = float(item.get("total_price") or 0)
             if card_total > best_total + price_window:
                 break
+        checked += 1
         is_valid, _ = await _validate_candidate(item, search_cfg)
         if is_valid:
             valid_items.append(item)
@@ -5625,19 +5671,29 @@ async def process_searches(bot, once=False):
                             auc_bo.append(auc_item)
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
-                stats_search_with_mv = copy.deepcopy(search)
-                stats_search_with_mv["_allow_multivariation"] = True
-                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), stats_search_with_mv)
-                cheapest_bin_bo = await _select_cheapest_valid_candidate(sorted(bin_bo, key=total_price_key), stats_search_with_mv)
-                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(sorted(auc_no_bo, key=total_price_key), stats_search_with_mv)
-                cheapest_auc_bo = await _select_cheapest_valid_candidate(sorted(auc_bo, key=total_price_key), stats_search_with_mv)
-                
-                # Emojis and verdict helper
-                def get_verdict_str(price_val):
-                    if orig_max_price and price_val > orig_max_price:
+                # Same validation as normal alerts — no multi-variation exceptions.
+                stats_search_cfg = copy.deepcopy(search)
+                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), stats_search_cfg)
+                cheapest_bin_bo = await _select_cheapest_valid_candidate(sorted(bin_bo, key=total_price_key), stats_search_cfg)
+                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(sorted(auc_no_bo, key=total_price_key), stats_search_cfg)
+                cheapest_auc_bo = await _select_cheapest_valid_candidate(sorted(auc_bo, key=total_price_key), stats_search_cfg)
+
+                def get_verdict_for_item(item):
+                    """🟢 = default mode would alert; 🟡 = price ok but wait 24h; 🟣 = over limit."""
+                    eligible, reason = _notify_eligibility(item, search)
+                    if reason == "over_limit":
                         return "🟣 Дорого"
-                    else:
+                    if reason == "wait_24h":
+                        return "🟡 Ждёт 24ч"
+                    if eligible:
                         return "🟢 Подходит"
+                    return "🟣 Дорого"
+
+                def get_verdict_str(price_val):
+                    # Legacy helper for price-only checks; prefer get_verdict_for_item.
+                    if orig_max_price and price_val is not None and price_val > orig_max_price:
+                        return "🟣 Дорого"
+                    return "🟢 Подходит"
                 
                 def get_short_url(item_id):
                     return f"https://www.ebay.de/itm/{item_id}"
@@ -5725,15 +5781,17 @@ async def process_searches(bot, once=False):
                     row_lines = []
                     if item:
                         url = get_short_url(item["item_id"])
-                        raw_verdict = get_verdict_str(total_price_val)
-                        
+                        raw_verdict = get_verdict_for_item(item)
+
                         if raw_verdict.startswith("🟢"):
                             v_emoji, v_text = "🟢", "Подходит"
+                        elif raw_verdict.startswith("🟡"):
+                            v_emoji, v_text = "🟡", "Ждёт 24ч"
                         elif raw_verdict.startswith("🟣"):
                             v_emoji, v_text = "🟣", "Дорого"
                         else:
-                            v_emoji, v_text = "🟢", "Подходит"
-                        
+                            v_emoji, v_text = "🟣", "Дорого"
+
                         verdict_info = f"{v_emoji} {v_text}"
 
                         num_digits = len(str(int(total_price_val))) if total_price_val else 0
@@ -5910,14 +5968,17 @@ async def process_searches(bot, once=False):
         blocked_searches = []  # Searches that failed due to block/rate_limit/cooldown
 
         for search in searches:
-            results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, search)
+            # Same eBay sort/page profile as statistics so alerts match green rows.
+            fetch_search = _prepare_monitor_fetch_search(search)
+            results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
             if fetch_err:
                 if fetch_err in ("blocked", "rate_limit", "cooldown"):
                     blocked_searches.append(search)
                 logger.warning("  %s: fetch error %s", search["query"], fetch_err)
                 continue
-            sweep = _auction_sweep_search(search)
+            sweep = _auction_sweep_search(fetch_search)
             if sweep:
+                sweep = _prepare_monitor_fetch_search(sweep)
                 auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep)
                 if auction_err:
                     logger.warning("  %s: auction sweep error %s", search["query"], auction_err)
@@ -5968,7 +6029,8 @@ async def process_searches(bot, once=False):
         if blocked_searches and _ebay_api_configured():
             logger.info("=== API retry for %d blocked search(es) ===", len(blocked_searches))
             for search in blocked_searches:
-                api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, search)
+                fetch_search = _prepare_monitor_fetch_search(search)
+                api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, fetch_search)
                 if api_err:
                     logger.warning("  %s: API retry failed: %s", search["query"], api_err)
                     continue

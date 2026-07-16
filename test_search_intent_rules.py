@@ -479,6 +479,99 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertTrue(monitor._intent_prelim_matches_title(good, search))
         self.assertFalse(monitor._intent_prelim_matches_title(g60sd, search))
 
+    def test_notify_eligibility_matches_stats_green_rules(self):
+        search = {
+            "query": "Sony WH-1000XM6",
+            "filters": {"limit_price": 200, "listing_type": "auction", "category": "all"},
+        }
+        # Regular auction under limit but 9 days left → NOT alertable (not green)
+        long_auc = item(
+            "Sony WH-1000XM6",
+            item_id="1",
+            price=6,
+            total_price=6,
+            buy_now=False,
+            auction=True,
+            best_offer=False,
+            time_left="9д 12ч",
+        )
+        ok, reason = monitor._notify_eligibility(long_auc, search)
+        self.assertFalse(ok)
+        self.assertEqual(reason, "wait_24h")
+
+        # Auktion+ under limit → alertable (green)
+        bo = item(
+            "Sony WH-1000XM6",
+            item_id="2",
+            price=150,
+            total_price=150,
+            buy_now=False,
+            auction=True,
+            best_offer=True,
+            time_left="4д 4ч",
+        )
+        ok, reason = monitor._notify_eligibility(bo, search)
+        self.assertTrue(ok)
+        self.assertEqual(reason, "notify")
+
+        # Ending within 24h under limit → alertable
+        soon = item(
+            "Sony WH-1000XM6",
+            item_id="3",
+            price=50,
+            total_price=50,
+            buy_now=False,
+            auction=True,
+            best_offer=False,
+            time_left="5ч",
+        )
+        ok, reason = monitor._notify_eligibility(soon, search)
+        self.assertTrue(ok)
+
+        # Over limit BIN → over_limit
+        buy = item("Sony WH-1000XM6", item_id="4", price=246, total_price=246, buy_now=True)
+        ok, reason = monitor._notify_eligibility(buy, search)
+        self.assertFalse(ok)
+        self.assertEqual(reason, "over_limit")
+
+    def test_filter_blocks_multivariation_in_statistics(self):
+        cfg = DummyConfig()
+        search = {
+            "query": "Sony WH-1000XM6",
+            "filters": {"limit_price": 200, "listing_type": "all", "category": "all"},
+        }
+        bait = item(
+            "Sony WH-1000XM6",
+            item_id="mv1",
+            price=4,
+            total_price=4,
+            buy_now=True,
+            is_multivariation=True,
+        )
+        real = item(
+            "Sony WH-1000XM6 Kopfhörer",
+            item_id="real1",
+            price=246,
+            total_price=246,
+            buy_now=True,
+        )
+        result = monitor.filter_results(
+            [bait, real], search, cfg, skip_seen=True, is_statistics=True
+        )
+        ids = [x["item_id"] for x in result]
+        self.assertNotIn("mv1", ids)
+        self.assertIn("real1", ids)
+
+    def test_prepare_monitor_fetch_uses_price_asc(self):
+        search = {
+            "id": "sony_wh_1000xm6_buy",
+            "query": "Sony WH-1000XM6",
+            "filters": {"listing_type": "buy_now_offer", "limit_price": 200, "max_price": 2500},
+        }
+        prepared = monitor._prepare_monitor_fetch_search(search)
+        self.assertEqual(prepared["filters"]["sort"], "price_asc")
+        self.assertGreaterEqual(prepared["filters"]["_ipg"], 240)
+
 
 if __name__ == "__main__":
     unittest.main()
