@@ -40,6 +40,15 @@ copy set_env.example.bat set_env.bat
 
 Never commit `set_env.bat` or plaintext `config.json`.
 
+## 2b. Continue QA stats audit (optional)
+
+If you are mid **manual stats vs eBay** audit (or starting it on this PC):
+
+1. Read **[qa/STATUS.md](./qa/STATUS.md)** and **[qa/README.md](./qa/README.md)**.
+2. Paste latest Telegram statistics into `qa/inbox/stats_paste.txt`.
+3. `python qa/parse_stats_paste.py`
+4. Agent uses Playwright + `qa/WORKFLOW.md` — do not expect `bebranoid-telegram` to load e-monitor stats.
+
 ## 3. Grok MCP (so the agent can browse eBay etc.)
 
 Install **Node.js 20+**, then:

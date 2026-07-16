@@ -1,0 +1,226 @@
+{
+  "_meta": {
+    "description": "Alternate eBay search strings people use. Base query from config/stats is always included first.",
+    "usage": "Match family by substring on normalized query; merge aliases; dedupe case-insensitively.",
+    "notes": [
+      "Keep lists short (high-signal first).",
+      "Do not replace config query — only expand manual search.",
+      "Add product families as audit discovers gaps."
+    ]
+  },
+  "default_patterns": {
+    "strip_brand_keep_model": true,
+    "also_try_compact": true,
+    "comment": "If no family match: try base, base without brand tokens, compact spaces"
+  },
+  "families": [
+    {
+      "id": "iphone",
+      "match_any": ["iphone", "apple iphone"],
+      "aliases_from_query": true,
+      "extra_templates": [
+        "{model}",
+        "iphone {model}",
+        "apple iphone {model}",
+        "{model_compact}"
+      ],
+      "examples": {
+        "iPhone 16 Pro Max": [
+          "iphone 16 pro max",
+          "16 pro max",
+          "iphone 16 promax",
+          "16promax",
+          "apple iphone 16 pro max"
+        ],
+        "iPhone 15 Pro": [
+          "iphone 15 pro",
+          "15 pro",
+          "iphone 15pro"
+        ]
+      },
+      "avoid_confusing_with": [
+        "pro max vs pro",
+        "plus vs non-plus",
+        "e vs non-e"
+      ]
+    },
+    {
+      "id": "samsung_galaxy",
+      "match_any": ["samsung", "galaxy s", "galaxy z", "galaxy a"],
+      "examples": {
+        "Samsung Galaxy S24 Ultra": [
+          "samsung s24 ultra",
+          "s24 ultra",
+          "galaxy s24 ultra",
+          "sm-s928"
+        ],
+        "Samsung Galaxy S25 Ultra": [
+          "s25 ultra",
+          "galaxy s25 ultra",
+          "samsung s25 ultra"
+        ]
+      }
+    },
+    {
+      "id": "pixel",
+      "match_any": ["pixel", "google pixel"],
+      "examples": {
+        "Google Pixel 9 Pro": [
+          "pixel 9 pro",
+          "google pixel 9 pro",
+          "pixel9 pro"
+        ],
+        "Pixel 9 Pro XL": [
+          "pixel 9 pro xl",
+          "pixel 9 proxl"
+        ]
+      }
+    },
+    {
+      "id": "redmagic",
+      "match_any": ["redmagic", "red magic", "nubia"],
+      "examples": {
+        "REDMAGIC 10S Pro": [
+          "redmagic 10s pro",
+          "red magic 10s pro",
+          "redmagic 10s",
+          "nubia redmagic 10s pro"
+        ],
+        "REDMAGIC 11 Pro": [
+          "redmagic 11 pro",
+          "red magic 11 pro"
+        ]
+      },
+      "avoid_confusing_with": [
+        "9S vs 10S vs 11",
+        "Pro vs non-Pro",
+        "leading version"
+      ]
+    },
+    {
+      "id": "playstation",
+      "match_any": ["playstation", "ps5", "ps4", "ps5 pro"],
+      "examples": {
+        "PlayStation 5 Pro": [
+          "ps5 pro",
+          "playstation 5 pro",
+          "play station 5 pro",
+          "sony ps5 pro"
+        ],
+        "PlayStation 5": [
+          "ps5",
+          "playstation 5",
+          "ps5 slim",
+          "ps5 disc"
+        ]
+      },
+      "avoid_confusing_with": [
+        "PS5 vs PS5 Pro",
+        "digital vs disc",
+        "portal / pulse headset only"
+      ]
+    },
+    {
+      "id": "xbox",
+      "match_any": ["xbox", "series x", "series s"],
+      "examples": {
+        "Xbox Series X": [
+          "xbox series x",
+          "series x",
+          "xbox x"
+        ]
+      }
+    },
+    {
+      "id": "switch",
+      "match_any": ["nintendo switch", "switch oled", "switch 2"],
+      "examples": {
+        "Nintendo Switch OLED": [
+          "switch oled",
+          "nintendo switch oled"
+        ],
+        "Nintendo Switch 2": [
+          "switch 2",
+          "nintendo switch 2"
+        ]
+      }
+    },
+    {
+      "id": "macbook",
+      "match_any": ["macbook", "mac book"],
+      "examples": {
+        "MacBook Pro 14": [
+          "macbook pro 14",
+          "mbp 14",
+          "macbook pro 14 m3",
+          "macbook pro 14 m4"
+        ]
+      }
+    },
+    {
+      "id": "airpods",
+      "match_any": ["airpods", "air pods"],
+      "examples": {
+        "AirPods Pro 2": [
+          "airpods pro 2",
+          "airpods pro2",
+          "apple airpods pro 2"
+        ],
+        "AirPods Max": [
+          "airpods max",
+          "apple airpods max"
+        ]
+      }
+    },
+    {
+      "id": "xm_headphones",
+      "match_any": ["wh-1000xm", "wf-1000xm", "sony xm5", "sony xm6", "xm5", "xm6"],
+      "examples": {
+        "Sony WH-1000XM5": [
+          "wh-1000xm5",
+          "sony xm5",
+          "1000xm5",
+          "sony wh1000xm5"
+        ],
+        "Sony WH-1000XM6": [
+          "wh-1000xm6",
+          "sony xm6",
+          "1000xm6"
+        ]
+      },
+      "avoid_confusing_with": [
+        "XM4 vs XM5 vs XM6",
+        "WF in-ear vs WH over-ear",
+        "plush / fake listings"
+      ]
+    },
+    {
+      "id": "dji",
+      "match_any": ["dji", "mini 4", "air 3", "action 5"],
+      "examples": {
+        "DJI Mini 4 Pro": [
+          "dji mini 4 pro",
+          "mini 4 pro"
+        ]
+      }
+    },
+    {
+      "id": "monitors",
+      "match_any": ["monitor", "odyssey", "ultragear", "alienware aw"],
+      "examples": {
+        "Samsung Odyssey": [
+          "odyssey g9",
+          "samsung odyssey"
+        ]
+      },
+      "note": "Model codes in parens e.g. (32GS95) are strong search keys — always try raw code alone."
+    }
+  ],
+  "generic_rules": [
+    "Always try exact config/stats query first.",
+    "If query contains parentheses model codes, search the code alone.",
+    "German sellers: keep English model names; optional umlaut variants rare for electronics.",
+    "For 'Pro Max' never accept bare 'Pro' as same product.",
+    "Log every alias tried in results JSON even if empty."
+  ]
+}

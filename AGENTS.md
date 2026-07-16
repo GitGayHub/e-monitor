@@ -16,6 +16,15 @@
 
 See **[SETUP_OTHER_PC.md](./SETUP_OTHER_PC.md)** (full checklist) and **[MCP_SETUP.md](./MCP_SETUP.md)**.
 
+## QA stats audit (scale handoff)
+
+Manual eBay vs Telegram statistics report (4 buckets × multi-query aliases):
+
+- Start: **[qa/README.md](./qa/README.md)** and **[qa/STATUS.md](./qa/STATUS.md)**
+- Protocol: `qa/WORKFLOW.md`, validity `qa/VALIDITY.md`, aliases `qa/query_aliases.json`
+- Paste stats → `qa/inbox/stats_paste.txt` → `python qa/parse_stats_paste.py`
+- Playwright required for eBay. **bebranoid-telegram does not read e-monitor bot messages.**
+
 ## MCP
 
 - Repo template: **[.grok/config.toml](./.grok/config.toml)** (edit absolute Bebranoid paths).
