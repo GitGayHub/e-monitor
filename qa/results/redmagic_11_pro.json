@@ -1,0 +1,109 @@
+{
+  "schema": "e-monitor-qa-result/v1",
+  "slug": "redmagic_11_pro",
+  "display": "Redmagic 11 Pro",
+  "stats_index": 0,
+  "audited_at": "2026-07-16T22:40:00Z",
+  "auditor": "agent",
+  "stats_source": "github_actions_logs run 29538930987",
+  "limit_line": "💸 Лимит: 🎯 400€ ⬆️ 2500€ ⬇️ 50€",
+  "aliases_tried": [
+    "redmagic 11 pro",
+    "red magic 11 pro",
+    "nubia redmagic 11 pro",
+    "\"redmagic 11 pro\""
+  ],
+  "buckets": {
+    "sofort": {
+      "script": {
+        "price_eur": null,
+        "verdict": "❌ Не найдено",
+        "url": null,
+        "item_id": null
+      },
+      "manual_best": {
+        "price_eur": null,
+        "total_eur": null,
+        "title": null,
+        "url": null,
+        "item_id": null,
+        "query_used": "redmagic 11 pro / red magic 11 pro / nubia redmagic 11 pro",
+        "notes": "Top results are accessories (Hülle, Folie, Ladekabel 4–15€). No valid full phone under 400€ on BIN price_asc."
+      },
+      "verdict": "ok",
+      "severity": null,
+      "notes": "Script empty matches manual: no alertable BIN device under limit."
+    },
+    "sofort_plus": {
+      "script": {
+        "price_eur": null,
+        "verdict": "❌ Не найдено",
+        "url": null,
+        "item_id": null
+      },
+      "manual_best": {
+        "price_eur": null,
+        "total_eur": null,
+        "title": null,
+        "url": null,
+        "item_id": null,
+        "query_used": "same aliases",
+        "notes": "Same accessory flood; no valid BO BIN phone under 400€ observed."
+      },
+      "verdict": "ok",
+      "severity": null,
+      "notes": ""
+    },
+    "auktion": {
+      "script": {
+        "price_eur": null,
+        "verdict": "❌ Не найдено",
+        "url": null,
+        "item_id": null
+      },
+      "manual_best": {
+        "price_eur": 519.36,
+        "total_eur": 519.36,
+        "title": "Nubia Red Magic 11 Pro (Dual SIM 12GB RAM 256GB 5G) Frost Used Free Postage",
+        "url": "https://www.ebay.de/itm/327257689079",
+        "item_id": "327257689079",
+        "query_used": "redmagic 11 pro LH_Auction price_asc",
+        "notes": "Valid phone title but 519€ > limit 400€ → not green/alertable. Cheaper auction hits are Apple Magic Keyboard noise for '11 pro'."
+      },
+      "verdict": "ok",
+      "severity": null,
+      "notes": "Script empty is correct for limit 400€; only valid device found is over limit (🟣 territory)."
+    },
+    "auktion_plus": {
+      "script": {
+        "price_eur": null,
+        "verdict": "❌ Не найдено",
+        "url": null,
+        "item_id": null
+      },
+      "manual_best": {
+        "price_eur": null,
+        "total_eur": null,
+        "title": null,
+        "url": null,
+        "item_id": null,
+        "query_used": null,
+        "notes": "No separate cheaper Auktion+ device under 400€ found."
+      },
+      "verdict": "ok",
+      "severity": null,
+      "notes": ""
+    }
+  },
+  "overall": "ok",
+  "suggested_code_fix": null,
+  "_verdict_enum": [
+    "pending",
+    "ok",
+    "ok_filtered",
+    "gap_cheaper",
+    "gap_missed",
+    "blocked_ebay",
+    "skipped"
+  ]
+}

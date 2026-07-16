@@ -66,7 +66,31 @@ startup_timeout_sec = 20
 tool_timeout_sec = 180
 ```
 
-## 4. tasks (Grok built-in / session MCP)
+## 4. e-monitor-stats (quiet stats for QA — **recommended**)
+
+Reads the **same statistics blocks** the bot logs on GitHub Actions before
+sending Telegram. **Does not open Telegram** and does not steal focus.
+
+```toml
+[mcp_servers.e-monitor-stats]
+command = "C:/PATH/TO/e-monitor/.venv/Scripts/python.exe"
+args = ["C:/PATH/TO/e-monitor/qa/mcp_stats_server.py"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 180
+```
+
+CLI equivalent (no MCP):
+
+```powershell
+python qa/fetch_stats_from_github.py
+python qa/parse_stats_paste.py
+```
+
+Needs `GITHUB_TOKEN` / git remote token. Tools: `stats_fetch_github`,
+`stats_read_parsed`, `stats_product`, `stats_read_status`.
+
+## 5. tasks (Grok built-in / session MCP)
 
 Often auto-connected in Grok sessions for task lists. No separate install if
 your Grok build already exposes the `tasks` server. If missing, ignore — the

@@ -2,44 +2,49 @@
 
 Обновляй этот файл в конце каждой сессии и **коммить**, чтобы другой ПК продолжил.
 
-> **Активная задача:** [FIRST_TASK.md](./FIRST_TASK.md) — позиция №1 stats vs eBay.  
-> Пользователь говорит «продолжи» → делать FIRST_TASK, не спрашивать заново весь план.
+> **Активная задача:** позиция **#2** (next_index=1) — после закрытой #1 Redmagic 11 Pro.  
+> Пользователь «продолжи» → audit next product, не спрашивать paste если `stats_parsed.json` свежий.
 
 ## Snapshot
 
 | Field | Value |
 |-------|--------|
-| Phase | **ready_for_task_1** — prep done, audit not started |
-| Active task | **#1** → [FIRST_TASK.md](./FIRST_TASK.md) |
+| Phase | **audit_in_progress** |
+| Active task | **#2** → product index `1` (Redmagic 11S Pro) |
 | Last update | 2026-07-16 |
-| Stats source | _empty — нужен paste в `qa/inbox/stats_paste.txt`_ |
-| Parsed catalog | _нет — `python qa/parse_stats_paste.py`_ |
-| Next product index | `0` (**первая позиция = задача №1**) |
-| Products done | `0` |
+| Stats source | **GitHub Actions logs** run `29538930987` via `qa/fetch_stats_from_github.py` (no Telegram UI) |
+| Parsed catalog | `qa/inbox/stats_parsed.json` — **23 products** |
+| Next product index | `1` |
+| Products done | `1` (redmagic_11_pro → overall **ok**) |
 | Open P0/P1 findings | `0` |
-| mode.txt note | remote может быть `statistics`; для prod alerts → `normal` |
+| mode.txt note | remote may be `statistics` for stats runs; prod alerts → `normal` |
 
 ## Blockers
 
-1. Нет свежего Telegram stats paste (MCP telegram **не** читает e-monitor bot) — при «продолжи» **запросить paste**, затем audit.
-2. На новом ПК: Playwright chromium + пути в `.grok/config.toml`.
+1. ~~Нет stats paste~~ — **решено**: stats из GH Actions logs (то же, что бот логирует перед Telegram).
+2. Playwright required for eBay manual checks.
+3. Telegram MCP **не** нужен для stats — не трогать UI Telegram пользователя.
 
 ## Session log
 
 ### 2026-07-16 — prep + first task pinned
 
 - Папка `qa/`: workflow, validity, aliases, parser, templates, results.
-- Добавлен **`qa/FIRST_TASK.md`** — явная задача №1 для handoff («продолжи» с другого ПК).
-- **Audit eBay ещё не выполнялся** — next_index=0.
+- **`qa/FIRST_TASK.md`** pinned.
 
-## Next agent instructions (если сказали «продолжи»)
+### 2026-07-16 — GH stats fetch + task #1 done
+
+- Added `qa/fetch_stats_from_github.py` — pulls Actions logs, extracts `Generated statistics block`.
+- Added `qa/mcp_stats_server.py` — quiet MCP tools (fetch/read stats without Telegram window).
+- Parsed **23 products** from run 29538930987.
+- **Task #1 Redmagic 11 Pro**: all 4 buckets script `Не найдено`; manual eBay also no valid phone under 400€ (only accessories or 519€ over limit) → **overall ok**, no finding.
+
+## Next agent instructions
 
 ```text
 1) git pull
-2) Открыть qa/FIRST_TASK.md и выполнить задачу №1 целиком
-3) qa/STATUS.md + qa/WORKFLOW.md + qa/VALIDITY.md
-4) Stats: paste → python qa/parse_stats_paste.py (или попросить paste)
-5) Позиция next_index (0): 4 корзины, Playwright eBay, multi-query aliases
-6) results/<slug>.json + findings.csv + обновить STATUS + push
-Не чинить monitor.py в рамках task1 без явных gaps и необходимости.
+2) If stats_parsed.json missing/stale: python qa/fetch_stats_from_github.py && python qa/parse_stats_paste.py
+3) Product index = next_index (1 = Redmagic 11S Pro)
+4) 4 buckets + Playwright + aliases; VALIDITY.md
+5) results/<slug>.json + findings.csv + STATUS + push
 ```

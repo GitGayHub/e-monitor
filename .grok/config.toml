@@ -28,3 +28,13 @@ args = ["C:/VibeCoding/Bebranoid/mcp-bebranoid-verify/server.js"]
 enabled = true
 startup_timeout_sec = 20
 tool_timeout_sec = 180
+
+# Read e-monitor statistics from GitHub Actions logs (same as Telegram report).
+# Does NOT open or control the user's Telegram desktop — silent/background.
+# CHANGE python path / repo path on another PC if needed.
+[mcp_servers.e-monitor-stats]
+command = "C:/VibeCoding/e-monitor/.venv/Scripts/python.exe"
+args = ["C:/VibeCoding/e-monitor/qa/mcp_stats_server.py"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 180
