@@ -153,7 +153,15 @@ class SearchIntentRuleTests(unittest.TestCase):
         mouse = item("Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus Lunar Eclipse")
         skates = item("Corepad Skatez PRO Logitech G PRO X2 SUPERSTRIKE Mausfüße Hyperglide")
         mouseskates = item("EspTiger ICE V2 Mouseskates Logitech GPX Superlight 2 / Superstrike / SE")
-        result = monitor.filter_results([mouse, skates, mouseskates], search, cfg, skip_seen=True, is_statistics=True)
+        plush = item(
+            "Logitech G Superstrike Pro X2 Mouse Plushie Plush PAX EAST 2026 Exclusive",
+            item_id="157860216770",
+            price=32,
+            total_price=32,
+        )
+        result = monitor.filter_results(
+            [mouse, skates, mouseskates, plush], search, cfg, skip_seen=True, is_statistics=True
+        )
         self.assertEqual([x["title"] for x in result], [mouse["title"]])
 
         noisy_details = {
@@ -161,6 +169,45 @@ class SearchIntentRuleTests(unittest.TestCase):
             "description": "Recommended items mention mouse skates, but this listing is the actual Superstrike mouse.",
         }
         self.assertTrue(monitor._intent_details_match(search, mouse, noisy_details))
+        self.assertFalse(monitor._matches_superstrike_mouse(monitor._normalize(plush["title"])))
+
+    def test_redmagic_11_pro_rejects_9s_with_loose_11_in_title(self):
+        """eBay title can list other devices in parentheses; model is next to brand."""
+        query = monitor._normalize("Redmagic 11 Pro")
+        # Live listing: RedMagic 9S Pro ... (8 Gen 3 10 11 GPD Ayn)
+        wrong = monitor._normalize(
+            "ZTE RedMagic 9S Pro 16/512GB Gaming Phone (8 Gen 3 10 11 GPD Ayn)"
+        )
+        good = monitor._normalize("ZTE Nubia RedMagic 11 Pro 16/512GB Gaming Phone")
+        eleven_s = monitor._normalize("RedMagic 11S Pro 16/512GB")
+        self.assertFalse(monitor._matches_redmagic_query(wrong, query))
+        self.assertFalse(monitor._matches_phone_query_model(wrong, query))
+        self.assertFalse(monitor._query_matches_title(wrong, "Redmagic 11 Pro"))
+        self.assertTrue(monitor._matches_redmagic_query(good, query))
+        self.assertTrue(monitor._matches_phone_query_model(good, query))
+        self.assertFalse(monitor._matches_redmagic_query(eleven_s, query))
+
+        cfg = DummyConfig()
+        search = {
+            "query": "Redmagic 11 Pro",
+            "filters": {"category": "all", "listing_type": "buy_now_offer", "limit_price": 400},
+        }
+        bad_item = item(
+            "ZTE RedMagic 9S Pro 16/512GB Gaming Phone (8 Gen 3 10 11 GPD Ayn)",
+            item_id="117302336230",
+            price=259,
+            total_price=259,
+        )
+        good_item = item(
+            "ZTE Nubia RedMagic 11 Pro 16/512GB Gaming Phone",
+            item_id="200",
+            price=350,
+            total_price=350,
+        )
+        result = monitor.filter_results(
+            [bad_item, good_item], search, cfg, skip_seen=True, is_statistics=True
+        )
+        self.assertEqual([x["item_id"] for x in result], ["200"])
 
     def test_hybrid_bucket_prices(self):
         cfg = DummyConfig()

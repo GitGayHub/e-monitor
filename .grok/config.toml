@@ -1,0 +1,30 @@
+# Project-scoped MCP servers for e-monitor (Grok reads [mcp_servers] from repo .grok/config.toml).
+# Absolute paths below are for the original Windows machine — edit on a new PC.
+
+# Headless Chromium only — never opens a visible window
+[mcp_servers.playwright]
+command = "npx"
+args = [
+    "-y",
+    "@playwright/mcp@latest",
+    "--headless",
+    "--browser",
+    "chromium",
+]
+enabled = true
+startup_timeout_sec = 120
+tool_timeout_sec = 120
+
+# Requires Bebranoid repo (or a copy of mcp-telegram-session) on this machine
+[mcp_servers.bebranoid-telegram]
+command = "node"
+args = ["C:/VibeCoding/Bebranoid/mcp-telegram-session/server.js"]
+enabled = true
+startup_timeout_sec = 15
+
+[mcp_servers.bebranoid-verify]
+command = "node"
+args = ["C:/VibeCoding/Bebranoid/mcp-bebranoid-verify/server.js"]
+enabled = true
+startup_timeout_sec = 20
+tool_timeout_sec = 180

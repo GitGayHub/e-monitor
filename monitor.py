@@ -544,7 +544,10 @@ CATEGORY_ACCESSORY_WORDS = {
         "taste", "panel", "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten",
         "skatez", "skate", "glide", "foot", "mausgleiter", "gleitpad", "gleitpads", "gleiter",
         "mausersatzfüße", "mausersatzfuesse", "ersatzfüße", "ersatzfuesse", "ersatzfuss", "ersatzfuß",
-        "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck"
+        "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck",
+        # Merch / toys that mention the mouse name (e.g. Superstrike plushie)
+        "plush", "plushie", "plusch", "pluschtier", "pluesch", "plueschtier",
+        "kuscheltier", "stofftier", "spielzeug", "toy", "mascot", "maskottchen",
     ),
 }
 
@@ -595,6 +598,8 @@ CATEGORY_HARD_PART_WORDS = {
         "skatez", "skate", "glide", "foot", "mausgleiter", "gleitpad", "gleitpads", "gleiter",
         "mausersatzfüße", "mausersatzfuesse", "ersatzfüße", "ersatzfuesse", "ersatzfuss", "ersatzfuß",
         "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck",
+        "plush", "plushie", "plusch", "pluschtier", "pluesch", "plueschtier",
+        "kuscheltier", "stofftier", "spielzeug", "toy", "mascot", "maskottchen",
     ),
 }
 
@@ -826,9 +831,7 @@ def _intent_prelim_matches_title(title_norm, search):
             has_gpu = _has_rtx_gpu(title_norm, intent["gpu"])
         return has_gpu and _has_pc_hint(title_norm)
     if kind == "superstrike":
-        if _is_category_blocked_title(title_norm, "mice", "superstrike"):
-            return False
-        return "superstrike" in title_norm and ("logitech" in title_norm or "pro x" in title_norm)
+        return _matches_superstrike_mouse(title_norm)
     return True
 
 
@@ -851,7 +854,82 @@ def _intent_details_match(search, item=None, details=None):
         has_gpu = _has_rtx_5070_ti(text_norm) if intent["gpu"] == "5070ti" else _has_rtx_gpu(text_norm, intent["gpu"])
         return has_gpu and _has_pc_hint(text_norm)
     if kind == "superstrike":
-        return "superstrike" in text_norm and ("logitech" in text_norm or "pro x" in text_norm)
+        # Use listing title only — description often mentions skates as related products.
+        title_only = _normalize((item or {}).get("title") or "")
+        if title_only:
+            return _matches_superstrike_mouse(title_only)
+        return _matches_superstrike_mouse(text_norm)
+    return True
+
+
+def _is_plush_or_toy_title(title_norm):
+    return bool(
+        re.search(
+            r"\b(?:plush(?:ie)?|plusch(?:tier)?|pluesch(?:tier)?|kuscheltier|stofftier|"
+            r"mascot|maskottchen|pluschi)\b",
+            title_norm or "",
+        )
+        or (
+            _has_term(title_norm, "spielzeug")
+            and not any(_has_term(title_norm, w) for w in ("maus", "mouse", "gaming"))
+        )
+    )
+
+
+def _matches_superstrike_mouse(title_norm):
+    """Real Superstrike mouse only — not merch plushies that say 'Mouse Plushie'."""
+    t = title_norm or ""
+    if _is_plush_or_toy_title(t):
+        return False
+    if re.search(r"\bmouse\s+plush|\bplush\s+mouse|\bmaus\s+plusch|\bplusch\s+maus\b", t):
+        return False
+    if "superstrike" not in t:
+        return False
+    if not ("logitech" in t or "pro x" in t):
+        return False
+    if _is_category_blocked_title(t, "mice", "superstrike"):
+        return False
+    return True
+
+
+def _parse_redmagic_model(text_norm):
+    """First RedMagic model glued to the brand: (num, is_s_variant, tier).
+
+    Title like 'RedMagic 9S Pro ... (10 11 GPD)' → ('9', True, 'pro').
+    Loose '11' later in the title must NOT count as the phone model.
+    """
+    m = re.search(
+        r"\b(?:red\s*magic|redmagic)\s*(\d{1,2})\s*(s)?(?:\s*|-)?(pro|air)?\b",
+        text_norm or "",
+    )
+    if not m:
+        return None
+    return (m.group(1), bool(m.group(2)), (m.group(3) or "").lower())
+
+
+def _matches_redmagic_query(title_norm, query_norm):
+    if any(
+        _has_term(title_norm, w)
+        for w in ("magic the gathering", "mtg", "karten", "orlando magic", "tablet")
+    ):
+        return False
+    q = _parse_redmagic_model(query_norm)
+    if not q:
+        return _has_term(title_norm, "redmagic") or "red magic" in (title_norm or "")
+    t = _parse_redmagic_model(title_norm)
+    if not t:
+        return False
+    q_num, q_s, q_tier = q
+    t_num, t_s, t_tier = t
+    if t_num != q_num:
+        return False
+    # Redmagic 11 Pro ≠ Redmagic 11S Pro
+    if q_s != t_s:
+        return False
+    if q_tier and t_tier and q_tier != t_tier:
+        return False
+    if q_tier == "pro" and t_tier != "pro":
+        return False
     return True
 
 
@@ -892,6 +970,11 @@ def _query_match_plan(query):
 
 
 def _query_matches_title(title_norm, query):
+    query_norm = _normalize(query)
+    # RedMagic model must sit next to the brand — bare "11" later in the title
+    # (compat list / chipset) is not a match for "Redmagic 11 Pro".
+    if "redmagic" in query_norm or "red magic" in query_norm:
+        return _matches_redmagic_query(title_norm, query_norm)
     required_words, alternative_groups = _query_match_plan(query)
     if required_words and not all(_has_query_word(title_norm, w) for w in required_words):
         return False
@@ -1209,14 +1292,8 @@ def _matches_phone_query_model(title_norm, query_norm):
     pixel = re.search(r"\bpixel\s+(\d[a-z]?)\b", query_norm)
     if pixel:
         return re.search(rf"\b(?:google\s+)?pixel\s+{re.escape(pixel.group(1))}\b", title_norm) is not None
-    if "redmagic" in query_norm:
-        if any(_has_term(title_norm, w) for w in ("magic the gathering", "mtg", "karten", "orlando magic", "tablet")):
-            return False
-        return _has_term(title_norm, "redmagic") or "red magic" in title_norm
-    if "red magic" in query_norm:
-        if any(_has_term(title_norm, w) for w in ("magic the gathering", "mtg", "karten", "orlando magic", "tablet")):
-            return False
-        return "red magic" in title_norm or _has_term(title_norm, "redmagic")
+    if "redmagic" in query_norm or "red magic" in query_norm:
+        return _matches_redmagic_query(title_norm, query_norm)
     return True
 
 
