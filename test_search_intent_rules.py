@@ -414,43 +414,97 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual(selected["item_id"], "1")
         self.assertEqual(fetch.call_count, 1)
 
-    def test_stable_version_ignores_runtime_state_commits(self):
-        fake_log = "\n".join([
-            "2000000000\x00Update monitor state",
-            "1990000000\x00Checkpoint monitor state",
-            "1980000000\x00Fix hybrid auction pricing",
-        ])
+    def test_stable_version_uses_last_code_path_commit(self):
+        """Version follows last commit that touched logic files, not state tip."""
+        code_hit = f"1980000000\x00Fix hybrid auction pricing"
+
+        def fake_run(args, **kwargs):
+            # git log -1 -- monitor.py ... → code commit
+            if args and args[-1] in monitor._VERSION_CODE_PATHS or (
+                "--" in args and any(p in args for p in monitor._VERSION_CODE_PATHS)
+            ):
+                return Mock(returncode=0, stdout=code_hit + "\n")
+            return Mock(returncode=0, stdout="")
+
         monitor._STABLE_VERSION_CACHE = None
         try:
-            with patch.object(monitor.subprocess, "run", return_value=Mock(stdout=fake_log)):
-                self.assertEqual(
-                    monitor._get_stable_version_string(),
-                    monitor._format_version_timestamp(1980000000),
-                )
+            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
+                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=None):
+                    self.assertEqual(
+                        monitor._get_stable_version_string(),
+                        monitor._format_version_timestamp(1980000000),
+                    )
         finally:
             monitor._STABLE_VERSION_CACHE = None
 
-    def test_stable_version_deepens_shallow_runtime_history(self):
-        shallow_log = "2000000000\x00Update monitor state"
-        deep_log = "\n".join([
+    def test_stable_version_ignores_runtime_state_commits(self):
+        """Subject scan skips state/mode commits until a real logic message."""
+        fake_log = "\n".join([
             "2000000000\x00Update monitor state",
+            "1990000000\x00Checkpoint monitor state",
+            "1985000000\x00Toggle auto-monitoring mode to statistics",
             "1980000000\x00Fix hybrid auction pricing",
         ])
-        log_outputs = [shallow_log, deep_log]
 
         def fake_run(args, **kwargs):
-            if "fetch" in args:
-                return Mock(stdout="")
-            return Mock(stdout=log_outputs.pop(0))
+            # No code-path hit (shallow tip is state-only)
+            if "--" in (args or []):
+                return Mock(returncode=0, stdout="")
+            if "log" in (args or []):
+                return Mock(returncode=0, stdout=fake_log + "\n")
+            return Mock(returncode=0, stdout="")
 
         monitor._STABLE_VERSION_CACHE = None
         try:
-            with patch.object(monitor.subprocess, "run", side_effect=fake_run) as mocked_run:
-                self.assertEqual(
-                    monitor._get_stable_version_string(),
-                    monitor._format_version_timestamp(1980000000),
+            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
+                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=None):
+                    self.assertEqual(
+                        monitor._get_stable_version_string(),
+                        monitor._format_version_timestamp(1980000000),
+                    )
+        finally:
+            monitor._STABLE_VERSION_CACHE = None
+
+    def test_stable_version_uses_github_api_on_shallow_state_history(self):
+        """When local history is only state commits, API provides last code change."""
+
+        def fake_run(args, **kwargs):
+            if "fetch" in (args or []):
+                return Mock(returncode=0, stdout="")
+            # Only noise locally
+            if "log" in (args or []):
+                if "--" in (args or []):
+                    return Mock(returncode=0, stdout="")
+                return Mock(
+                    returncode=0,
+                    stdout="2000000000\x00Update monitor state\n1990000000\x00Checkpoint monitor state\n",
                 )
-                self.assertTrue(any("fetch" in call.args[0] for call in mocked_run.call_args_list))
+            return Mock(returncode=0, stdout="")
+
+        monitor._STABLE_VERSION_CACHE = None
+        try:
+            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
+                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=1980000000):
+                    self.assertEqual(
+                        monitor._get_stable_version_string(),
+                        monitor._format_version_timestamp(1980000000),
+                    )
+        finally:
+            monitor._STABLE_VERSION_CACHE = None
+
+    def test_stable_version_never_uses_wall_clock_live(self):
+        """Must not show run-end time or the old '(live)' suffix."""
+
+        def fake_run(args, **kwargs):
+            return Mock(returncode=1, stdout="", stderr="fail")
+
+        monitor._STABLE_VERSION_CACHE = None
+        try:
+            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
+                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=None):
+                    ver = monitor._get_stable_version_string()
+            self.assertEqual(ver, "неизвестно")
+            self.assertNotIn("live", ver.lower())
         finally:
             monitor._STABLE_VERSION_CACHE = None
 

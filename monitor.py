@@ -4650,32 +4650,9 @@ def fetch_ebay_ex(search, force=False):
     return [], "cooldown"
 
 
-def _get_version_string():
-    try:
-        import subprocess
-        from datetime import datetime, timezone, timedelta
-        repo_dir = os.path.dirname(os.path.abspath(__file__))
-        res = subprocess.run(
-            ["git", "-C", repo_dir, "log", "-1", "--format=%ct"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        timestamp = int(res.stdout.strip())
-        dt = datetime.fromtimestamp(timestamp, timezone(timedelta(hours=2)))
-        months = [
-            "января", "февраля", "марта", "апреля", "мая", "июня",
-            "июля", "августа", "сентября", "октября", "ноября", "декабря",
-        ]
-        return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]}"
-    except Exception:
-        from datetime import datetime, timezone, timedelta
-        dt = datetime.now(timezone(timedelta(hours=2)))
-        months = [
-            "января", "февраля", "марта", "апреля", "мая", "июня",
-            "июля", "августа", "сентября", "октября", "ноября", "декабря",
-        ]
-        return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
+# Version = timestamp of last *logical* code change (bugfix / feature),
+# never "when this run finished" and never state/mode sync commits.
+# "(live)" was a broken fallback that showed wall-clock "now" — removed.
 
 _VERSION_STATE_COMMIT_PREFIXES = (
     "Update monitor state",
@@ -4683,6 +4660,28 @@ _VERSION_STATE_COMMIT_PREFIXES = (
     "Sync state after run",
     "Switch monitor mode",
     "Toggle auto-monitoring mode",
+    "Update Android sync manifest",
+)
+
+# Paths that count as logic. State-only commits do not touch these.
+_VERSION_CODE_PATHS = (
+    "monitor.py",
+    "settings_handlers.py",
+    "config_manager.py",
+    "config_crypt.py",
+    "run_launcher.py",
+    "price_history.py",
+    "plz_distance.py",
+    "merge_state.py",
+    "git_sync.py",
+    "autostart_patch.py",
+    "monitor_runtime_patch.py",
+    "sitecustomize.py",
+    "requirements.txt",
+    "run.ps1",
+    ".github/workflows/e-monitor.yml",
+    ".github/workflows/mobile-sync.yml",
+    ".github/workflows/reveal.yml",
 )
 
 
@@ -4690,18 +4689,8 @@ def _format_version_timestamp(timestamp):
     from datetime import datetime, timezone, timedelta
     dt = datetime.fromtimestamp(int(timestamp), timezone(timedelta(hours=2)))
     months = [
-        "\u044f\u043d\u0432\u0430\u0440\u044f",
-        "\u0444\u0435\u0432\u0440\u0430\u043b\u044f",
-        "\u043c\u0430\u0440\u0442\u0430",
-        "\u0430\u043f\u0440\u0435\u043b\u044f",
-        "\u043c\u0430\u044f",
-        "\u0438\u044e\u043d\u044f",
-        "\u0438\u044e\u043b\u044f",
-        "\u0430\u0432\u0433\u0443\u0441\u0442\u0430",
-        "\u0441\u0435\u043d\u0442\u044f\u0431\u0440\u044f",
-        "\u043e\u043a\u0442\u044f\u0431\u0440\u044f",
-        "\u043d\u043e\u044f\u0431\u0440\u044f",
-        "\u0434\u0435\u043a\u0430\u0431\u0440\u044f",
+        "января", "февраля", "марта", "апреля", "мая", "июня",
+        "июля", "августа", "сентября", "октября", "ноября", "декабря",
     ]
     return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]}"
 
@@ -4713,57 +4702,170 @@ def _version_commit_is_runtime_noise(subject):
 _STABLE_VERSION_CACHE = None
 
 
-def _git_version_log(repo_dir):
+def _git_version_log(repo_dir, max_count=400):
     res = subprocess.run(
-        ["git", "-C", repo_dir, "log", "--max-count=300", "--format=%ct%x00%s"],
+        ["git", "-C", repo_dir, "log", f"--max-count={max_count}", "--format=%ct%x00%s"],
         capture_output=True,
         text=True,
         check=True,
+        timeout=20,
     )
     return res.stdout or ""
 
 
+def _git_last_code_commit(repo_dir):
+    """Last commit that touched logic paths (not state/mode files)."""
+    res = subprocess.run(
+        ["git", "-C", repo_dir, "log", "-1", "--format=%ct%x00%s", "--", *_VERSION_CODE_PATHS],
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+    if res.returncode != 0:
+        return None, None
+    line = (res.stdout or "").strip().splitlines()
+    if not line:
+        return None, None
+    parts = line[0].split("\x00", 1)
+    try:
+        ts = int(parts[0].strip())
+    except (TypeError, ValueError):
+        return None, None
+    subject = parts[1].strip() if len(parts) > 1 else ""
+    return ts, subject
+
+
 def _stable_version_from_log(log_text):
-    first_timestamp = None
+    """Walk commit subjects; return (formatted, meaningful). Never treat noise as meaningful."""
     for line in (log_text or "").splitlines():
         if not line.strip():
             continue
         parts = line.split("\x00", 1)
         timestamp = parts[0].strip()
         subject = parts[1].strip() if len(parts) > 1 else ""
-        if first_timestamp is None:
-            first_timestamp = timestamp
+        if not timestamp:
+            continue
         if not _version_commit_is_runtime_noise(subject):
             return _format_version_timestamp(timestamp), True
-    if first_timestamp is not None:
-        return _format_version_timestamp(first_timestamp), False
     return None, False
 
 
+def _github_last_code_commit_timestamp():
+    """Shallow clones only see state tips — ask GitHub for last commit per code path."""
+    repo = (GITHUB_REPO or "").strip()
+    if not repo or "/" not in repo:
+        return None
+    token = (GITHUB_TOKEN or "").strip()
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "e-monitor-version",
+    }
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    best_ts = None
+    for path in _VERSION_CODE_PATHS:
+        try:
+            url = f"https://api.github.com/repos/{repo}/commits"
+            resp = requests.get(
+                url,
+                headers=headers,
+                params={"path": path, "per_page": 1},
+                timeout=12,
+            )
+            if resp.status_code != 200:
+                continue
+            data = resp.json()
+            if not data:
+                continue
+            # Prefer author date of the commit (when the change was made).
+            date_str = (
+                (data[0].get("commit") or {}).get("author") or {}
+            ).get("date") or (
+                (data[0].get("commit") or {}).get("committer") or {}
+            ).get("date")
+            if not date_str:
+                continue
+            from datetime import datetime, timezone
+            # 2026-07-16T07:00:00Z
+            dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+            ts = int(dt.timestamp())
+            if best_ts is None or ts > best_ts:
+                best_ts = ts
+        except Exception:
+            continue
+    return best_ts
+
+
 def _get_stable_version_string():
+    """
+    Version label for Telegram footers.
+
+    Semantics: time of the last *logical* code change (e.g. bugfix on the 16th
+    at 07:00 stays 07:00 16 … on every later run until the next real code change).
+
+    Does NOT use wall-clock "now" and never appends "(live)".
+    """
     global _STABLE_VERSION_CACHE
     if _STABLE_VERSION_CACHE:
         return _STABLE_VERSION_CACHE
+
+    repo_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # 1) Local git: last commit that touched code paths (survives long state-only tails
+    #    as long as that commit is present in the local object graph).
+    #    Path is truth: even a mis-titled commit that edited monitor.py is a logic version.
     try:
-        repo_dir = os.path.dirname(os.path.abspath(__file__))
-        version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
-        if not meaningful:
-            subprocess.run(
-                ["git", "-C", repo_dir, "fetch", "--deepen=300", "--quiet", "origin", "main"],
-                capture_output=True,
-                text=True,
-                timeout=25,
-            )
-            version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
-        if version:
-            _STABLE_VERSION_CACHE = version
-            return version
+        ts, _subject = _git_last_code_commit(repo_dir)
+        if ts is not None:
+            _STABLE_VERSION_CACHE = _format_version_timestamp(ts)
+            return _STABLE_VERSION_CACHE
     except Exception:
         pass
-    return f"{_format_version_timestamp(time.time())} (live)"
+
+    # 2) Local subject scan (recent history may include a real fix).
+    try:
+        version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
+        if meaningful and version:
+            _STABLE_VERSION_CACHE = version
+            return _STABLE_VERSION_CACHE
+    except Exception:
+        pass
+
+    # 3) GitHub API — works on Actions shallow checkouts after thousands of state commits.
+    try:
+        api_ts = _github_last_code_commit_timestamp()
+        if api_ts is not None:
+            _STABLE_VERSION_CACHE = _format_version_timestamp(api_ts)
+            return _STABLE_VERSION_CACHE
+    except Exception:
+        pass
+
+    # 4) Optional deepen once, then retry path log (local shallow clones).
+    try:
+        subprocess.run(
+            ["git", "-C", repo_dir, "fetch", "--deepen=400", "--quiet", "origin", "main"],
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        ts, subject = _git_last_code_commit(repo_dir)
+        if ts is not None:
+            _STABLE_VERSION_CACHE = _format_version_timestamp(ts)
+            return _STABLE_VERSION_CACHE
+        version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
+        if meaningful and version:
+            _STABLE_VERSION_CACHE = version
+            return _STABLE_VERSION_CACHE
+    except Exception:
+        pass
+
+    # Never invent "now" — better honest unknown than a fake run-end version.
+    _STABLE_VERSION_CACHE = "неизвестно"
+    return _STABLE_VERSION_CACHE
 
 
-_get_version_string = _get_stable_version_string
+def _get_version_string():
+    return _get_stable_version_string()
 
 
 def get_category_emoji(cat_name):
@@ -6098,26 +6200,7 @@ async def process_searches(bot, once=False):
             
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
-            
-            def _get_version_string():
-                try:
-                    import subprocess
-                    from datetime import datetime, timezone, timedelta
-                    # Run in REPO dir to get the correct commit
-                    repo_dir = os.path.dirname(os.path.abspath(__file__))
-                    res = subprocess.run(["git", "-C", repo_dir, "log", "-1", "--format=%ct"], capture_output=True, text=True, check=True)
-                    timestamp = int(res.stdout.strip())
-                    dt = datetime.fromtimestamp(timestamp, timezone(timedelta(hours=2)))
-                    months = ["января", "февраля", "марта", "апреля", "мая", "июня", 
-                              "июля", "августа", "сентября", "октября", "ноября", "декабря"]
-                    return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]}"
-                except Exception:
-                    from datetime import datetime, timezone, timedelta
-                    dt = datetime.now(timezone(timedelta(hours=2)))
-                    months = ["января", "февраля", "марта", "апреля", "мая", "июня", 
-                              "июля", "августа", "сентября", "октября", "ноября", "декабря"]
-                    return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]} (live)"
-            
+            # Version = last logical code change, not run end time (see _get_stable_version_string).
             footer_str += f"\nℹ️ <i>Версия: {_get_stable_version_string()}</i>\n🔎 Поиск: full html"
 
             report_lines.append(footer_str)
