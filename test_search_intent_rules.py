@@ -414,97 +414,78 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual(selected["item_id"], "1")
         self.assertEqual(fetch.call_count, 1)
 
-    def test_stable_version_uses_last_code_path_commit(self):
-        """Version follows last commit that touched logic files, not state tip."""
-        code_hit = f"1980000000\x00Fix hybrid auction pricing"
-
-        def fake_run(args, **kwargs):
-            # git log -1 -- monitor.py ... → code commit
-            if args and args[-1] in monitor._VERSION_CODE_PATHS or (
-                "--" in args and any(p in args for p in monitor._VERSION_CODE_PATHS)
-            ):
-                return Mock(returncode=0, stdout=code_hit + "\n")
-            return Mock(returncode=0, stdout="")
+    def test_stable_version_reads_logic_version_file(self):
+        """Version is the stamp in logic_version.txt, not git HEAD / run time."""
+        import tempfile
+        from pathlib import Path
 
         monitor._STABLE_VERSION_CACHE = None
         try:
-            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
-                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=None):
-                    self.assertEqual(
-                        monitor._get_stable_version_string(),
-                        monitor._format_version_timestamp(1980000000),
-                    )
-        finally:
-            monitor._STABLE_VERSION_CACHE = None
-
-    def test_stable_version_ignores_runtime_state_commits(self):
-        """Subject scan skips state/mode commits until a real logic message."""
-        fake_log = "\n".join([
-            "2000000000\x00Update monitor state",
-            "1990000000\x00Checkpoint monitor state",
-            "1985000000\x00Toggle auto-monitoring mode to statistics",
-            "1980000000\x00Fix hybrid auction pricing",
-        ])
-
-        def fake_run(args, **kwargs):
-            # No code-path hit (shallow tip is state-only)
-            if "--" in (args or []):
-                return Mock(returncode=0, stdout="")
-            if "log" in (args or []):
-                return Mock(returncode=0, stdout=fake_log + "\n")
-            return Mock(returncode=0, stdout="")
-
-        monitor._STABLE_VERSION_CACHE = None
-        try:
-            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
-                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=None):
-                    self.assertEqual(
-                        monitor._get_stable_version_string(),
-                        monitor._format_version_timestamp(1980000000),
-                    )
-        finally:
-            monitor._STABLE_VERSION_CACHE = None
-
-    def test_stable_version_uses_github_api_on_shallow_state_history(self):
-        """When local history is only state commits, API provides last code change."""
-
-        def fake_run(args, **kwargs):
-            if "fetch" in (args or []):
-                return Mock(returncode=0, stdout="")
-            # Only noise locally
-            if "log" in (args or []):
-                if "--" in (args or []):
-                    return Mock(returncode=0, stdout="")
-                return Mock(
-                    returncode=0,
-                    stdout="2000000000\x00Update monitor state\n1990000000\x00Checkpoint monitor state\n",
+            with tempfile.TemporaryDirectory() as tmp:
+                Path(tmp, "logic_version.txt").write_text(
+                    "1980000000\n# comment\n", encoding="utf-8"
                 )
-            return Mock(returncode=0, stdout="")
+                with patch.object(monitor, "_logic_version_path", return_value=str(Path(tmp, "logic_version.txt"))):
+                    # re-bind reader path via open of our temp file
+                    with patch.object(
+                        monitor,
+                        "_read_logic_version_timestamp",
+                        return_value=1980000000,
+                    ):
+                        self.assertEqual(
+                            monitor._get_stable_version_string(),
+                            monitor._format_version_timestamp(1980000000),
+                        )
+            # Second call uses cache even if reader would fail
+            self.assertEqual(
+                monitor._get_stable_version_string(),
+                monitor._format_version_timestamp(1980000000),
+            )
+        finally:
+            monitor._STABLE_VERSION_CACHE = None
 
+    def test_stable_version_stable_across_state_commit_times(self):
+        """State commit times must not move the version stamp."""
         monitor._STABLE_VERSION_CACHE = None
         try:
-            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
-                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=1980000000):
-                    self.assertEqual(
-                        monitor._get_stable_version_string(),
-                        monitor._format_version_timestamp(1980000000),
-                    )
+            with patch.object(monitor, "_read_logic_version_timestamp", return_value=1980000000):
+                v1 = monitor._get_stable_version_string()
+            monitor._STABLE_VERSION_CACHE = None
+            with patch.object(monitor, "_read_logic_version_timestamp", return_value=1980000000):
+                v2 = monitor._get_stable_version_string()
+            self.assertEqual(v1, v2)
+            self.assertEqual(v1, monitor._format_version_timestamp(1980000000))
+            # Simulated later state commit epoch must not appear
+            self.assertNotEqual(v1, monitor._format_version_timestamp(2000000000))
         finally:
             monitor._STABLE_VERSION_CACHE = None
 
     def test_stable_version_never_uses_wall_clock_live(self):
-        """Must not show run-end time or the old '(live)' suffix."""
-
-        def fake_run(args, **kwargs):
-            return Mock(returncode=1, stdout="", stderr="fail")
-
+        """Missing file -> unknown; never '(live)' and never time.time()."""
         monitor._STABLE_VERSION_CACHE = None
         try:
-            with patch.object(monitor.subprocess, "run", side_effect=fake_run):
-                with patch.object(monitor, "_github_last_code_commit_timestamp", return_value=None):
-                    ver = monitor._get_stable_version_string()
-            self.assertEqual(ver, "неизвестно")
+            with patch.object(
+                monitor,
+                "_read_logic_version_timestamp",
+                side_effect=FileNotFoundError("missing"),
+            ):
+                ver = monitor._get_stable_version_string()
+            self.assertEqual(ver, "unknown")
             self.assertNotIn("live", ver.lower())
+        finally:
+            monitor._STABLE_VERSION_CACHE = None
+
+    def test_repo_logic_version_file_is_parseable(self):
+        """Committed logic_version.txt must parse and format cleanly."""
+        monitor._STABLE_VERSION_CACHE = None
+        try:
+            ts = monitor._read_logic_version_timestamp()
+            self.assertIsInstance(ts, int)
+            self.assertGreater(ts, 1_700_000_000)
+            ver = monitor._get_stable_version_string()
+            self.assertNotIn("live", ver.lower())
+            self.assertNotEqual(ver, "unknown")
+            self.assertRegex(ver, r"^\d{2}:\d{2} \d{1,2} ")
         finally:
             monitor._STABLE_VERSION_CACHE = None
 

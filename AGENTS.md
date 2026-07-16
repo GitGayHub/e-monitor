@@ -6,6 +6,12 @@
 - `statistics` = diagnostic report only (do not leave on for production).
 - Telegram footer `GitHub автомониторинг` = Actions runner; `Локальный` = `run.ps1`. Not the same as statistics mode.
 
+## Version (Telegram «Версия»)
+
+- Source of truth: **`logic_version.txt`** (unix UTC seconds on the first line).
+- Bump it when you change bot **logic** (filters, bugfixes, notify rules). Do **not** bump on state/mode/sync commits.
+- Never derive version from `git log` HEAD — Actions shallow clones make that equal the last state commit.
+
 ## Onboarding another PC
 
 See **[SETUP_OTHER_PC.md](./SETUP_OTHER_PC.md)** (full checklist) and **[MCP_SETUP.md](./MCP_SETUP.md)**.

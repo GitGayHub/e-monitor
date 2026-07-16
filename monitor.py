@@ -4650,217 +4650,80 @@ def fetch_ebay_ex(search, force=False):
     return [], "cooldown"
 
 
-# Version = timestamp of last *logical* code change (bugfix / feature),
-# never "when this run finished" and never state/mode sync commits.
-# "(live)" was a broken fallback that showed wall-clock "now" — removed.
+# Version label for Telegram = contents of logic_version.txt only.
+#
+# Why not git log / HEAD / "(live)" wall-clock:
+# - Actions checkout is depth=1. On a shallow tip, `git log -- <path>` treats the
+#   single commit as introducing every file, so path-based "last code commit"
+#   collapses to the latest *state* commit time (changes every run). That is
+#   what produced drifting 20:40 / 21:16 / 21:44 "versions".
+# - State sync (Update/Checkpoint monitor state, mode toggles) must never bump
+#   the version. They never touch logic_version.txt.
+#
+# Bump logic_version.txt (unix UTC seconds on the first line) whenever you change
+# bot logic / filters / bugfixes. Leave it alone for state-only commits.
 
-_VERSION_STATE_COMMIT_PREFIXES = (
-    "Update monitor state",
-    "Checkpoint monitor state",
-    "Sync state after run",
-    "Switch monitor mode",
-    "Toggle auto-monitoring mode",
-    "Update Android sync manifest",
-)
-
-# Paths that count as logic. State-only commits do not touch these.
-_VERSION_CODE_PATHS = (
-    "monitor.py",
-    "settings_handlers.py",
-    "config_manager.py",
-    "config_crypt.py",
-    "run_launcher.py",
-    "price_history.py",
-    "plz_distance.py",
-    "merge_state.py",
-    "git_sync.py",
-    "autostart_patch.py",
-    "monitor_runtime_patch.py",
-    "sitecustomize.py",
-    "requirements.txt",
-    "run.ps1",
-    ".github/workflows/e-monitor.yml",
-    ".github/workflows/mobile-sync.yml",
-    ".github/workflows/reveal.yml",
-)
+LOGIC_VERSION_FILENAME = "logic_version.txt"
+_STABLE_VERSION_CACHE = None
 
 
 def _format_version_timestamp(timestamp):
     from datetime import datetime, timezone, timedelta
     dt = datetime.fromtimestamp(int(timestamp), timezone(timedelta(hours=2)))
+    # Unicode escapes so month names survive any file encoding mishap on push.
     months = [
-        "января", "февраля", "марта", "апреля", "мая", "июня",
-        "июля", "августа", "сентября", "октября", "ноября", "декабря",
+        "\u044f\u043d\u0432\u0430\u0440\u044f",
+        "\u0444\u0435\u0432\u0440\u0430\u043b\u044f",
+        "\u043c\u0430\u0440\u0442\u0430",
+        "\u0430\u043f\u0440\u0435\u043b\u044f",
+        "\u043c\u0430\u044f",
+        "\u0438\u044e\u043d\u044f",
+        "\u0438\u044e\u043b\u044f",
+        "\u0430\u0432\u0433\u0443\u0441\u0442\u0430",
+        "\u0441\u0435\u043d\u0442\u044f\u0431\u0440\u044f",
+        "\u043e\u043a\u0442\u044f\u0431\u0440\u044f",
+        "\u043d\u043e\u044f\u0431\u0440\u044f",
+        "\u0434\u0435\u043a\u0430\u0431\u0440\u044f",
     ]
     return f"{dt.strftime('%H:%M')} {dt.day} {months[dt.month - 1]}"
 
 
-def _version_commit_is_runtime_noise(subject):
-    return any((subject or "").startswith(prefix) for prefix in _VERSION_STATE_COMMIT_PREFIXES)
+def _logic_version_path(repo_dir=None):
+    base = repo_dir or os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, LOGIC_VERSION_FILENAME)
 
 
-_STABLE_VERSION_CACHE = None
-
-
-def _git_version_log(repo_dir, max_count=400):
-    res = subprocess.run(
-        ["git", "-C", repo_dir, "log", f"--max-count={max_count}", "--format=%ct%x00%s"],
-        capture_output=True,
-        text=True,
-        check=True,
-        timeout=20,
-    )
-    return res.stdout or ""
-
-
-def _git_last_code_commit(repo_dir):
-    """Last commit that touched logic paths (not state/mode files)."""
-    res = subprocess.run(
-        ["git", "-C", repo_dir, "log", "-1", "--format=%ct%x00%s", "--", *_VERSION_CODE_PATHS],
-        capture_output=True,
-        text=True,
-        timeout=20,
-    )
-    if res.returncode != 0:
-        return None, None
-    line = (res.stdout or "").strip().splitlines()
-    if not line:
-        return None, None
-    parts = line[0].split("\x00", 1)
-    try:
-        ts = int(parts[0].strip())
-    except (TypeError, ValueError):
-        return None, None
-    subject = parts[1].strip() if len(parts) > 1 else ""
-    return ts, subject
-
-
-def _stable_version_from_log(log_text):
-    """Walk commit subjects; return (formatted, meaningful). Never treat noise as meaningful."""
-    for line in (log_text or "").splitlines():
-        if not line.strip():
-            continue
-        parts = line.split("\x00", 1)
-        timestamp = parts[0].strip()
-        subject = parts[1].strip() if len(parts) > 1 else ""
-        if not timestamp:
-            continue
-        if not _version_commit_is_runtime_noise(subject):
-            return _format_version_timestamp(timestamp), True
-    return None, False
-
-
-def _github_last_code_commit_timestamp():
-    """Shallow clones only see state tips — ask GitHub for last commit per code path."""
-    repo = (GITHUB_REPO or "").strip()
-    if not repo or "/" not in repo:
-        return None
-    token = (GITHUB_TOKEN or "").strip()
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "e-monitor-version",
-    }
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-    best_ts = None
-    for path in _VERSION_CODE_PATHS:
-        try:
-            url = f"https://api.github.com/repos/{repo}/commits"
-            resp = requests.get(
-                url,
-                headers=headers,
-                params={"path": path, "per_page": 1},
-                timeout=12,
-            )
-            if resp.status_code != 200:
+def _read_logic_version_timestamp(repo_dir=None):
+    """Parse first token of logic_version.txt as unix UTC seconds."""
+    path = _logic_version_path(repo_dir)
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
                 continue
-            data = resp.json()
-            if not data:
-                continue
-            # Prefer author date of the commit (when the change was made).
-            date_str = (
-                (data[0].get("commit") or {}).get("author") or {}
-            ).get("date") or (
-                (data[0].get("commit") or {}).get("committer") or {}
-            ).get("date")
-            if not date_str:
-                continue
-            from datetime import datetime, timezone
-            # 2026-07-16T07:00:00Z
-            dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-            ts = int(dt.timestamp())
-            if best_ts is None or ts > best_ts:
-                best_ts = ts
-        except Exception:
-            continue
-    return best_ts
+            token = line.split()[0]
+            return int(token)
+    raise ValueError(f"no timestamp in {path}")
 
 
 def _get_stable_version_string():
     """
     Version label for Telegram footers.
 
-    Semantics: time of the last *logical* code change (e.g. bugfix on the 16th
-    at 07:00 stays 07:00 16 … on every later run until the next real code change).
-
-    Does NOT use wall-clock "now" and never appends "(live)".
+    Always the stamp from logic_version.txt (last intentional logic change).
+    Never HEAD time, never run-end time, never '(live)'.
     """
     global _STABLE_VERSION_CACHE
     if _STABLE_VERSION_CACHE:
         return _STABLE_VERSION_CACHE
-
-    repo_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # 1) Local git: last commit that touched code paths (survives long state-only tails
-    #    as long as that commit is present in the local object graph).
-    #    Path is truth: even a mis-titled commit that edited monitor.py is a logic version.
     try:
-        ts, _subject = _git_last_code_commit(repo_dir)
-        if ts is not None:
-            _STABLE_VERSION_CACHE = _format_version_timestamp(ts)
-            return _STABLE_VERSION_CACHE
-    except Exception:
-        pass
-
-    # 2) Local subject scan (recent history may include a real fix).
-    try:
-        version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
-        if meaningful and version:
-            _STABLE_VERSION_CACHE = version
-            return _STABLE_VERSION_CACHE
-    except Exception:
-        pass
-
-    # 3) GitHub API — works on Actions shallow checkouts after thousands of state commits.
-    try:
-        api_ts = _github_last_code_commit_timestamp()
-        if api_ts is not None:
-            _STABLE_VERSION_CACHE = _format_version_timestamp(api_ts)
-            return _STABLE_VERSION_CACHE
-    except Exception:
-        pass
-
-    # 4) Optional deepen once, then retry path log (local shallow clones).
-    try:
-        subprocess.run(
-            ["git", "-C", repo_dir, "fetch", "--deepen=400", "--quiet", "origin", "main"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        ts, subject = _git_last_code_commit(repo_dir)
-        if ts is not None:
-            _STABLE_VERSION_CACHE = _format_version_timestamp(ts)
-            return _STABLE_VERSION_CACHE
-        version, meaningful = _stable_version_from_log(_git_version_log(repo_dir))
-        if meaningful and version:
-            _STABLE_VERSION_CACHE = version
-            return _STABLE_VERSION_CACHE
-    except Exception:
-        pass
-
-    # Never invent "now" — better honest unknown than a fake run-end version.
-    _STABLE_VERSION_CACHE = "неизвестно"
+        ts = _read_logic_version_timestamp()
+        _STABLE_VERSION_CACHE = _format_version_timestamp(ts)
+        return _STABLE_VERSION_CACHE
+    except Exception as exc:
+        logger.warning("logic_version.txt unreadable: %s", exc)
+    # Honest unknown — never wall-clock "now" and never '(live)'.
+    _STABLE_VERSION_CACHE = "unknown"
     return _STABLE_VERSION_CACHE
 
 
