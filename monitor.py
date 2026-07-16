@@ -221,7 +221,7 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "leather case", "gel skin", "charging cable", "usb-c", "usb c",
     "charger", "metal frame", "bracket", "hybridglas", "flexibleglass",
     "schutzglas", "hartglas", "displayfolie", "panzerfolie", "privacy",
-    "datenschutz", "grizzglass", "hülle", "huelle", "h?lle", "magcase",
+    "datenschutz", "grizzglass", "hülle", "huelle", "hulle", "h?lle", "magcase",
     "clearcase", "klarsichtcase", "hardglass", "objektivschutz",
     "silverprotection", "silky matt", "3mk", "original display",
     "display defekt", "display gewechselt", "teildefekt", "icloud sperre",
@@ -237,8 +237,10 @@ PHONE_HARD_ACCESSORY_WORDS = (
     "car mount", "car holder", "unterlage",
     # Additional case / custom descriptors / brands
     "transparent", "tasche", "ledertasche", "gürteltasche", "gurteltasche", "schale",
-    "ledercase", "lederhülle", "lederhuelle", "silikonhülle", "silikonhuelle",
-    "silicon case", "schutzhüllen", "schutzhuellen", "schutzh?llen", "handyhüllen", "handyhuellen", "handyh?llen",
+    "ledercase", "lederhülle", "lederhuelle", "lederhulle", "silikonhülle", "silikonhuelle", "silikonhulle",
+    "silicon case", "schutzhüllen", "schutzhuellen", "schutzhullen", "schutzh?llen",
+    "handyhüllen", "handyhuellen", "handyhullen", "handyh?llen",
+    "displayglas", "digitizer", "touch digitizer", "ersatzdisplay",
     "panzerfolie", "schutzglas", "glasfolie", "motiv", "design", "muster", "print",
     "displayschutz", "kameraschutz", "linsenschutz", "displayschutzfolie", "kameraschutzfolie",
     "displayschutzglas", "kameraschutzglas", "hardcover", "sto?fest", "stossfest", "dexnor", "spigen", "otterbox", "torras",
@@ -2089,6 +2091,22 @@ def _prepare_monitor_fetch_search(search):
     filters["sort"] = "price_asc"
     filters["_ipg"] = max(int(filters.get("_ipg") or 0), 240)
     # Soft notify limit stays in limit_price; do not shrink eBay _udhi here.
+    # Raise _udlo so price_asc is not 100% Hüllen/Folien before real devices.
+    query_norm = _normalize(_intent_query(prepared))
+    category = _effective_category(filters.get("category", "all"), query_norm)
+    device_floor = _min_plausible_device_price(prepared)
+    search_floor = device_floor
+    if category == "phones" or _is_phone_search_query(query_norm):
+        search_floor = max(device_floor, 120.0)
+    elif category == "headphones" or "sony wh" in query_norm:
+        search_floor = max(device_floor, 80.0)
+    cur_min = filters.get("min_price")
+    try:
+        cur_min_f = float(cur_min) if cur_min is not None else 0.0
+    except (TypeError, ValueError):
+        cur_min_f = 0.0
+    if search_floor and search_floor > cur_min_f:
+        filters["min_price"] = search_floor
     return prepared
 
 
@@ -3319,46 +3337,60 @@ def fetch_ebay_api_ex(search, force=False):
             # Discard so we don't query it again in this run
             _allowed_api_targets_this_run.discard((search_id, market))
         
-        # Query API and record run timestamp
+        # Query API and record run timestamp (retry 429 — stats was showing empty
+        # while eBay still had phones, purely due to rate limits).
         params = _build_ebay_api_params(search, market=market)
         url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
         country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(market, "DE")
-        try:
-            req = urllib.request.Request(
-                url,
-                headers={
-                    "Authorization": f"Bearer {token}",
-                    "Accept": "application/json",
-                    "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-                    "X-EBAY-C-MARKETPLACE-ID": market,
-                    "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
-                },
-            )
-            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
-                data = json.loads(resp.read().decode("utf-8", errors="replace"))
-            items = parse_ebay_api_results(data)
-            
-            # Record run timestamp on success
+        market_ok = False
+        for attempt in range(3):
             try:
-                record_api_call()
-                record_search_run(search.get("id", ""), market)
-            except Exception as ex:
-                logger.warning("Error recording search run: %s", ex)
-                
-            for item in items:
-                if item["item_id"] not in seen_item_ids:
-                    seen_item_ids.add(item["item_id"])
-                    all_items.append(item)
-        except urllib.error.HTTPError as e:
-            try:
-                body = e.read().decode("utf-8", errors="replace")
-                logger.warning("eBay API HTTP %s for '%s' on %s: %s", e.code, search["query"], market, body[:300])
-            except Exception:
-                pass
-            last_err = _ebay_api_http_error(e.code)
-        except Exception as e:
-            logger.warning("eBay API network error for '%s' on %s: %s", search["query"], market, e)
-            last_err = "api_network"
+                req = urllib.request.Request(
+                    url,
+                    headers={
+                        "Authorization": f"Bearer {token}",
+                        "Accept": "application/json",
+                        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                        "X-EBAY-C-MARKETPLACE-ID": market,
+                        "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
+                    },
+                )
+                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
+                    data = json.loads(resp.read().decode("utf-8", errors="replace"))
+                items = parse_ebay_api_results(data)
+
+                try:
+                    record_api_call()
+                    record_search_run(search.get("id", ""), market)
+                except Exception as ex:
+                    logger.warning("Error recording search run: %s", ex)
+
+                for item in items:
+                    if item["item_id"] not in seen_item_ids:
+                        seen_item_ids.add(item["item_id"])
+                        all_items.append(item)
+                market_ok = True
+                break
+            except urllib.error.HTTPError as e:
+                try:
+                    body = e.read().decode("utf-8", errors="replace")
+                    logger.warning(
+                        "eBay API HTTP %s for '%s' on %s (try %d/3): %s",
+                        e.code, search["query"], market, attempt + 1, body[:300],
+                    )
+                except Exception:
+                    pass
+                last_err = _ebay_api_http_error(e.code)
+                if e.code == 429 and attempt < 2:
+                    time.sleep(2.5 * (attempt + 1))
+                    continue
+                break
+            except Exception as e:
+                logger.warning("eBay API network error for '%s' on %s: %s", search["query"], market, e)
+                last_err = "api_network"
+                break
+        if not market_ok and last_err is None:
+            last_err = "api_error"
 
     logger.info("  %s -> %d items via eBay Browse API (markets: %s)", search["query"], len(all_items), ", ".join(markets))
     if all_items:
@@ -4351,16 +4383,31 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     variant = _prepare_monitor_fetch_search(search)
     filters = variant.setdefault("filters", {})
     filters["_stats_category"] = filters.get("category", "all")
-    effective_category = _effective_category(filters.get("category", "all"), _normalize(variant.get("query", "")))
+    query_norm = _normalize(variant.get("query", ""))
+    effective_category = _effective_category(filters.get("category", "all"), query_norm)
     if effective_category == "consoles":
         filters["category"] = "all"
     filters["listing_type"] = listing_type
     filters["best_offer"] = bool(best_offer)
-    filters["min_price"] = min_price
+    # price_asc without a real _udlo fills page 1 with 4–20€ Hüllen/Folien.
+    # Raise eBay search floor so actual devices (and over-limit 🟣) appear.
+    device_floor = _min_plausible_device_price(search)
+    search_floor = device_floor
+    if effective_category == "phones" or _is_phone_search_query(query_norm):
+        search_floor = max(device_floor, 120.0)
+    elif effective_category == "headphones" or "sony wh" in query_norm:
+        search_floor = max(device_floor, 80.0)
+    if min_price is not None:
+        try:
+            search_floor = max(float(min_price), float(search_floor or 0))
+        except (TypeError, ValueError):
+            pass
+    filters["min_price"] = search_floor if search_floor and search_floor > 0 else min_price
     # Keep a wide eBay ceiling so sort=price_asc surfaces real floor prices;
     # soft limit_price is applied in filter / green verdict, not as _udhi.
     filters["max_price"] = None
     filters["_stats_bucket_filter"] = True
+    filters["_ipg"] = max(int(filters.get("_ipg") or 0), 240)
     suffix = "bo" if best_offer else "all"
     variant["id"] = f"{search.get('id', 'search')}__stats_{listing_type}_{suffix}"
     return variant
@@ -5200,11 +5247,16 @@ def _live_validation_price_window(search_cfg):
 
 def _live_validation_limit(search_cfg):
     query_norm = _normalize(search_cfg.get("query", ""))
+    filters = (search_cfg.get("filters") if isinstance(search_cfg, dict) else {}) or {}
+    category = _effective_category(filters.get("category", "all"), query_norm)
     if "samsung s24 ultra" in query_norm:
-        return 25
-    # Multi-variation bait often fills the first page; scan deeper so real
-    # floor prices (e.g. headphones ~200€) are not missed for a random 4€ SKU.
-    return 30
+        return 40
+    # Accessory noise used to burn a short budget before real phones appear.
+    if category == "phones" or _is_phone_search_query(query_norm):
+        return 80
+    if category == "headphones" or "sony wh" in query_norm:
+        return 50
+    return 40
 
 
 async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
@@ -5219,37 +5271,43 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
             break
         if item.get("is_multivariation"):
             continue
+        card_total = float(item.get("total_price") or item.get("price") or 0)
+        # Only stop early once we already have a VALID device and the rest is far more expensive.
         if valid_items:
             best_total = min(float(x.get("total_price") or 0) for x in valid_items)
-            card_total = float(item.get("total_price") or 0)
             if card_total > best_total + price_window:
                 break
         checked += 1
         is_valid, _ = await _validate_candidate(item, search_cfg)
         if is_valid:
             valid_items.append(item)
-            if "samsung s24 ultra" in query_norm:
-                logger.info(
-                    "Samsung stats candidate %s valid price=%s ship=%s total=%s location=%s best_offer=%s",
-                    item.get("item_id"),
-                    item.get("price"),
-                    item.get("shipping_cost"),
-                    item.get("total_price"),
-                    item.get("location"),
-                    item.get("best_offer"),
-                )
-        elif "samsung s24 ultra" in query_norm:
-            logger.info("Samsung stats candidate %s rejected", item.get("item_id"))
+            logger.info(
+                "Stats candidate OK [%s] total=%.0f title=%s",
+                item.get("item_id"),
+                float(item.get("total_price") or 0),
+                (item.get("title") or "")[:60],
+            )
+        else:
+            logger.debug(
+                "Stats candidate reject [%s] total=%.0f title=%s",
+                item.get("item_id"),
+                card_total,
+                (item.get("title") or "")[:60],
+            )
     if not valid_items:
+        logger.info(
+            "Stats candidate: no valid of %d checked for %s",
+            checked,
+            search_cfg.get("query"),
+        )
         return None
     selected = min(valid_items, key=lambda x: float(x.get("total_price") or 0))
-    if "samsung s24 ultra" in query_norm:
-        logger.info(
-            "Samsung stats selected %s total=%s price=%s",
-            selected.get("item_id"),
-            selected.get("total_price"),
-            selected.get("price"),
-        )
+    logger.info(
+        "Stats selected [%s] total=%.0f for %s",
+        selected.get("item_id"),
+        float(selected.get("total_price") or 0),
+        search_cfg.get("query"),
+    )
     return selected
 
 
