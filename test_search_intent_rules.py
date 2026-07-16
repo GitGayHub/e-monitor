@@ -414,6 +414,71 @@ class SearchIntentRuleTests(unittest.TestCase):
         })
         self.assertIn("LH_PrefLoc=1", url)
 
+    def test_seen_state_migrates_list_and_stages(self):
+        legacy = monitor._normalize_seen_payload(["111", "222"])
+        self.assertTrue(legacy["111"]["initial"])
+        self.assertFalse(legacy["111"]["final_hour"])
+        staged = monitor._normalize_seen_payload({
+            "111": {"initial": True, "final_hour": True},
+            "333": {"initial": True, "final_hour": False},
+        })
+        self.assertTrue(staged["111"]["final_hour"])
+        self.assertFalse(staged["333"]["final_hour"])
+
+    def test_notify_candidates_initial_and_final_hour(self):
+        monitor.seen_state.clear()
+        fresh = item(
+            "Apple iPhone 16 Pro Max 256GB",
+            item_id="9001",
+            price=600,
+            total_price=600,
+            buy_now=False,
+            auction=True,
+            best_offer=True,
+            time_left="6д 23ч",
+        )
+        already = item(
+            "Apple iPhone 16 Pro Max 256GB",
+            item_id="9002",
+            price=600,
+            total_price=600,
+            buy_now=False,
+            auction=True,
+            best_offer=False,
+            time_left="45мин",
+        )
+        too_early = item(
+            "Apple iPhone 16 Pro Max 256GB",
+            item_id="9003",
+            price=600,
+            total_price=600,
+            buy_now=False,
+            auction=True,
+            best_offer=False,
+            time_left="5ч",
+        )
+        monitor.seen_state["9002"] = {"initial": True, "final_hour": False}
+        monitor.seen_state["9003"] = {"initial": True, "final_hour": False}
+        cands = monitor._notify_candidates_from_filtered([fresh, already, too_early])
+        by_id = {c[0]["item_id"]: c[1] for c in cands}
+        self.assertEqual(by_id.get("9001"), "initial")
+        self.assertEqual(by_id.get("9002"), "final_hour")
+        self.assertNotIn("9003", by_id)
+
+    def test_samsung_odyssey_g6_500hz_intent_match(self):
+        search = {
+            "query": "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+            "filters": {"category": "monitors", "listing_type": "auction"},
+        }
+        intent = monitor._search_intent(search)
+        self.assertEqual(intent["kind"], "samsung_odyssey_oled_g6")
+        good = monitor._normalize("Samsung Odyssey OLED G6 G60SF 27 500Hz QHD")
+        g60sd = monitor._normalize("Samsung Odyssey OLED G6 G60SD 360Hz")
+        self.assertTrue(monitor._matches_samsung_odyssey_g6_500hz(good))
+        self.assertFalse(monitor._matches_samsung_odyssey_g6_500hz(g60sd))
+        self.assertTrue(monitor._intent_prelim_matches_title(good, search))
+        self.assertFalse(monitor._intent_prelim_matches_title(g60sd, search))
+
 
 if __name__ == "__main__":
     unittest.main()

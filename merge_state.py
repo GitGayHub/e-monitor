@@ -3,32 +3,53 @@ import sys
 import json
 import shutil
 
+def _normalize_seen_state(data):
+    state = {}
+    if isinstance(data, list):
+        for x in data:
+            iid = str(x).strip()
+            if iid:
+                state[iid] = {"initial": True, "final_hour": False}
+    elif isinstance(data, dict):
+        for k, v in data.items():
+            iid = str(k).strip()
+            if not iid:
+                continue
+            if isinstance(v, dict):
+                state[iid] = {
+                    "initial": bool(v.get("initial")),
+                    "final_hour": bool(v.get("final_hour")),
+                }
+            else:
+                state[iid] = {"initial": True, "final_hour": False}
+    return state
+
+
 def merge_json_lists(path_origin, path_local):
-    # Load origin
+    """Merge seen_ids: supports legacy list and stage-dict formats."""
+    origin = {}
+    local = {}
     if os.path.exists(path_origin):
         try:
             with open(path_origin, "r", encoding="utf-8") as f:
-                origin = json.load(f)
+                origin = _normalize_seen_state(json.load(f))
         except Exception:
-            origin = []
-    else:
-        origin = []
-        
-    # Load local
+            origin = {}
     if os.path.exists(path_local):
         try:
             with open(path_local, "r", encoding="utf-8") as f:
-                local = json.load(f)
+                local = _normalize_seen_state(json.load(f))
         except Exception:
-            local = []
-    else:
-        local = []
+            local = {}
 
-    if not isinstance(origin, list): origin = []
-    if not isinstance(local, list): local = []
-    
-    # Merge and deduplicate
-    merged = sorted(list(set(origin) | set(local)))
+    merged = {}
+    for iid in set(origin) | set(local):
+        a = origin.get(iid) or {}
+        b = local.get(iid) or {}
+        merged[iid] = {
+            "initial": bool(a.get("initial") or b.get("initial")),
+            "final_hour": bool(a.get("final_hour") or b.get("final_hour")),
+        }
     return merged
 
 def merge_run_logs(path_origin, path_local):

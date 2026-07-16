@@ -668,6 +668,22 @@ def _search_intent(search_or_query):
             "display_name": "LG UltraGear OLED",
             "category": "monitors",
         }
+    if (
+        "g60sf" in ident
+        or "ls27fg602" in ident
+        or (
+            "odyssey" in ident
+            and "g6" in ident
+            and ("500hz" in ident or "500 hz" in ident or re.search(r"\b500\b", ident))
+        )
+        or ("samsung odyssey oled g6" in ident)
+    ):
+        return {
+            "kind": "samsung_odyssey_oled_g6",
+            "query": "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+            "display_name": "Samsung Odyssey OLED G6 500Hz",
+            "category": "monitors",
+        }
     if re.search(r"\b4050\b", ident) and "oled" in ident:
         return {
             "kind": "rtx_oled_laptop",
@@ -714,6 +730,23 @@ def _search_intent(search_or_query):
             "category": "all",
         }
     return None
+
+
+def _matches_samsung_odyssey_g6_500hz(text_norm):
+    """True for Odyssey OLED G6 500Hz (G60SF / LS27FG602), not 360Hz G60SD or 240Hz G61SD."""
+    t = text_norm or ""
+    if re.search(r"\bg60sf\b", t) or re.search(r"\bls27fg602[a-z0-9]*\b", t):
+        return True
+    # Explicit non-500Hz sibling models without a 500Hz claim
+    if re.search(r"\b(?:g60sd|g61sd|ls27dg60[12]|ls27dg61)\b", t) and not re.search(
+        r"\b500\s*hz\b|\b500hz\b", t
+    ):
+        return False
+    has_odyssey_g6 = ("odyssey" in t and re.search(r"\bg6\b", t)) or re.search(
+        r"\bodyssey\s*oled\s*g6\b", t
+    )
+    has_500 = re.search(r"\b500\s*hz\b|\b500hz\b", t) is not None
+    return bool(has_odyssey_g6 and has_500)
 
 
 def _intent_query(search):
@@ -775,6 +808,8 @@ def _intent_prelim_matches_title(title_norm, search):
     kind = intent["kind"]
     if kind == "lg_ultragear_oled":
         return re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", title_norm) is not None
+    if kind == "samsung_odyssey_oled_g6":
+        return _matches_samsung_odyssey_g6_500hz(title_norm)
     if kind == "rtx_oled_laptop":
         gpu = intent["gpu"]
         if any(_has_term(title_norm, w) for w in ("grafikkarte", "graphics card", "gpu only", "nur gpu", "nur grafikkarte")):
@@ -805,6 +840,8 @@ def _intent_details_match(search, item=None, details=None):
     kind = intent["kind"]
     if kind == "lg_ultragear_oled":
         return re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", text_norm) is not None
+    if kind == "samsung_odyssey_oled_g6":
+        return _matches_samsung_odyssey_g6_500hz(text_norm)
     if kind == "rtx_oled_laptop":
         return _has_rtx_gpu(text_norm, intent["gpu"]) and _has_term(text_norm, "oled") and _has_laptop_hint(text_norm)
     if kind == "vivobook_14x_oled_3050":
@@ -1777,8 +1814,39 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 config = ConfigManager()
 init_db()
 
-seen_ids = set()
+# item_id -> {"initial": bool, "final_hour": bool}
+# "initial" = first notify (or permanently skipped after validation reject)
+# "final_hour" = second notify when ≤1h left and price still in limit
+seen_state = {}
 process_lock = asyncio.Lock()
+
+
+def _empty_seen_entry():
+    return {"initial": False, "final_hour": False}
+
+
+class _SeenIdsProxy:
+    """Backward-compatible set-like view over seen_state keys with initial=True."""
+
+    def __contains__(self, item_id):
+        entry = seen_state.get(str(item_id) if item_id is not None else "")
+        return bool(entry and entry.get("initial"))
+
+    def add(self, item_id):
+        mark_seen_item(item_id, stage="initial")
+
+    def clear(self):
+        seen_state.clear()
+
+    def __len__(self):
+        return sum(1 for e in seen_state.values() if e.get("initial"))
+
+    def __iter__(self):
+        return (k for k, e in seen_state.items() if e.get("initial"))
+
+
+# Kept for settings_handlers / external imports that still use seen_ids.add(...)
+seen_ids = _SeenIdsProxy()
 
 EU_COUNTRIES = {
     "deutschland", "germany", "de", "frankreich", "france", "fr", "italien", "italy", "it",
@@ -1954,30 +2022,115 @@ def _item_hash(seller, title, price):
     return hashlib.md5(raw.encode()).hexdigest()[:16]
 
 
+def _normalize_seen_payload(data):
+    """Migrate list-of-ids or dict stages into seen_state dict."""
+    state = {}
+    if isinstance(data, list):
+        for x in data:
+            iid = str(x).strip()
+            if iid:
+                state[iid] = {"initial": True, "final_hour": False}
+    elif isinstance(data, dict):
+        for k, v in data.items():
+            iid = str(k).strip()
+            if not iid:
+                continue
+            if isinstance(v, dict):
+                state[iid] = {
+                    "initial": bool(v.get("initial")),
+                    "final_hour": bool(v.get("final_hour")),
+                }
+            else:
+                # Bare true / legacy values mean initial notify done
+                state[iid] = {"initial": True, "final_hour": False}
+    return state
+
+
 def load_seen_ids():
-    global seen_ids
+    global seen_state
     if os.path.exists(SEEN_IDS_FILE):
         try:
-            with open(SEEN_IDS_FILE, "r") as f:
+            with open(SEEN_IDS_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                seen_ids = set(data) if isinstance(data, list) else set()
+            seen_state = _normalize_seen_payload(data)
         except (json.JSONDecodeError, IOError):
-            seen_ids = set()
+            seen_state = {}
+    else:
+        seen_state = {}
 
 
 def save_seen_ids():
-    lst = list(seen_ids)
-    if len(lst) > 15000:
-        lst = lst[-10000:]
-    with open(SEEN_IDS_FILE, "w") as f:
-        json.dump(lst, f)
+    # Cap growth: drop oldest-inserted keys (dict preserves insertion order)
+    keys = list(seen_state.keys())
+    if len(keys) > 15000:
+        for old_key in keys[: len(keys) - 10000]:
+            seen_state.pop(old_key, None)
+    payload = {
+        k: {
+            "initial": bool(v.get("initial")),
+            "final_hour": bool(v.get("final_hour")),
+        }
+        for k, v in seen_state.items()
+    }
+    with open(SEEN_IDS_FILE, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False)
 
 
-def mark_seen_item(item_id):
+def mark_seen_item(item_id, stage="initial"):
+    """Mark a notification stage for an item. stage: 'initial' | 'final_hour'."""
     if not item_id:
         return
-    seen_ids.add(str(item_id))
+    iid = str(item_id).strip()
+    if not iid:
+        return
+    entry = seen_state.setdefault(iid, _empty_seen_entry())
+    if stage == "final_hour":
+        entry["final_hour"] = True
+        entry["initial"] = True
+    else:
+        entry["initial"] = True
     save_seen_ids()
+
+
+def unmark_seen_stage(item_id, stage="initial"):
+    """Undo a reserved stage after a failed Telegram send (allows retry)."""
+    if not item_id:
+        return
+    iid = str(item_id).strip()
+    entry = seen_state.get(iid)
+    if not entry:
+        return
+    if stage == "final_hour":
+        entry["final_hour"] = False
+    else:
+        entry["initial"] = False
+    if not entry.get("initial") and not entry.get("final_hour"):
+        seen_state.pop(iid, None)
+    save_seen_ids()
+
+
+def get_seen_entry(item_id):
+    iid = str(item_id).strip() if item_id is not None else ""
+    if not iid:
+        return _empty_seen_entry()
+    entry = seen_state.get(iid)
+    if not entry:
+        return _empty_seen_entry()
+    return {
+        "initial": bool(entry.get("initial")),
+        "final_hour": bool(entry.get("final_hour")),
+    }
+
+
+def _price_within_limit(item, search):
+    filters = search.get("filters", {}) or {}
+    limit_or_max = filters.get("limit_price") or filters.get("max_price")
+    if limit_or_max is None:
+        return True
+    try:
+        return float(item.get("total_price") or 0) <= float(limit_or_max)
+    except (TypeError, ValueError):
+        return False
 
 
 def _is_statistics_mode(config_obj):
@@ -1992,10 +2145,9 @@ def _is_statistics_mode(config_obj):
 
 
 def clear_monitoring_state():
-    global seen_ids
-    seen_ids.clear()
-    save_seen_ids()
-    logger.info("🧹 Сброс мониторинга: seen_ids очищен")
+    # Do not wipe production dedup state after statistics reports.
+    # (Previously this cleared seen_ids and caused mass re-notifies.)
+    logger.info("Statistics finished: keeping seen_state (%d ids)", len(seen_state))
 
 
 def _git_commit_and_push(files_to_sync, commit_msg):
@@ -2198,7 +2350,7 @@ def _clean_time_left(txt):
             t = t[5:]
         t = re.sub(r"\s*\(.*?\)", "", t)
         minutes = _parse_time_left_to_minutes(t)
-        if minutes > 0:
+        if minutes is not None and minutes > 0:
             return _format_time_left_from_seconds(minutes * 60)
         return t.strip()
         
@@ -2489,7 +2641,7 @@ def parse_ebay_results(html):
                     location = re.sub(r"^located in\s+", "", txt, flags=re.IGNORECASE).strip()
 
             items.append({
-                "item_id": item_id,
+                "item_id": str(item_id) if item_id is not None else "",
                 "title": title,
                 "price": price,
                 "auc_price": auc_price,
@@ -3783,8 +3935,9 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if item.get("is_multivariation"):
             if not is_statistics:
                 continue
-        item_id = item["item_id"]
-        if item_id in seen_batch_ids:
+        item_id = str(item.get("item_id") or "")
+        item["item_id"] = item_id
+        if not item_id or item_id in seen_batch_ids:
             continue
         if item_id in banned_ids:
             continue
@@ -4449,9 +4602,9 @@ def get_category_emoji(cat_name):
     return mapping.get(cat_name, "📦")
 
 
-async def send_notification(bot, item, search, stats_7d=None):
+async def send_notification(bot, item, search, stats_7d=None, notify_stage="initial"):
     item_url = item.get("url") or ""
-    item_id = item.get("item_id")
+    item_id = str(item.get("item_id") or "")
     if item_id:
         if "ebay.de" in item_url:
             item_url = f"https://www.ebay.de/itm/{item_id}"
@@ -4502,6 +4655,8 @@ async def send_notification(bot, item, search, stats_7d=None):
         query_esc += " ♾️"
         
     header = f"{cat_emoji} <b>{query_esc}</b>"
+    if notify_stage == "final_hour":
+        header = f"⏰ <b>1 ЧАС ДО КОНЦА</b>\n{header}"
     if outlier:
         header = f"🚨 {header}"
     if item.get("is_pickup_only"):
@@ -4977,6 +5132,134 @@ def initialize_api_budget_and_queue(searches):
                 [f"{tid}:{m}" for tid, m in _allowed_api_targets_this_run])
 
 
+def _notify_candidates_from_filtered(filtered):
+    """Pick items for initial notify or final-hour re-notify (≤1h, already initial)."""
+    candidates = []
+    for r in filtered:
+        iid = str(r.get("item_id") or "")
+        if not iid:
+            continue
+        r["item_id"] = iid
+        entry = get_seen_entry(iid)
+        if not entry.get("initial"):
+            candidates.append((r, "initial"))
+            continue
+        # Second notify: pure auctions still in flight, ≤ ~90 min hint from search card
+        if entry.get("final_hour"):
+            continue
+        if not (r.get("auction") and not r.get("buy_now")):
+            continue
+        minutes = _parse_time_left_to_minutes(r.get("time_left", ""))
+        if minutes is not None and minutes > 90:
+            continue
+        candidates.append((r, "final_hour"))
+    return candidates
+
+
+async def _process_notify_candidate(bot, item, search, stats_7d, stage):
+    """Validate details and send one notification stage. Returns True if sent."""
+    item["item_id"] = str(item.get("item_id") or "")
+    h = _item_hash(item["seller_name"], item["title"], item["price"])
+    details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
+    desc = ""
+    if details:
+        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
+        if seconds_left is not None and seconds_left > 0:
+            item["time_left"] = _format_time_left_from_seconds(seconds_left)
+        cat_id = details.get("categoryId")
+        search_cat = search.get("filters", {}).get("category", "all")
+        if search_cat in ALLOWED_SUBCATEGORIES:
+            allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
+            if cat_id and cat_id not in allowed_set:
+                cat_path_ids = details.get("categoryIdPath", "").split("|")
+                if not any(cid in allowed_set for cid in cat_path_ids):
+                    logger.info(
+                        "Skipping notification for item %s: category %s not allowed for search %s",
+                        item["item_id"], cat_id, search_cat,
+                    )
+                    if stage == "initial":
+                        mark_seen_item(item["item_id"], stage="initial")
+                    return False
+
+        if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
+            logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
+            if stage == "initial":
+                mark_seen_item(item["item_id"], stage="initial")
+            return False
+
+        mismatch, scraped_price, api_price = _details_price_mismatch(item, details)
+        if mismatch:
+            logger.info(
+                "Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)",
+                item["item_id"], scraped_price, api_price,
+            )
+            if stage == "initial":
+                mark_seen_item(item["item_id"], stage="initial")
+            return False
+        desc = details.get("description", "")
+
+    if details and _is_details_blocked(details, search):
+        logger.info("Skipping notification for item %s: blocked by details check", item["item_id"])
+        if stage == "initial":
+            mark_seen_item(item["item_id"], stage="initial")
+        return False
+
+    if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
+        logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
+        if stage == "initial":
+            mark_seen_item(item["item_id"], stage="initial")
+        return False
+
+    if not _intent_details_match(search, item, details):
+        logger.info("Skipping notification for item %s: search intent requirements failed", item["item_id"])
+        if stage == "initial":
+            mark_seen_item(item["item_id"], stage="initial")
+        return False
+
+    if details:
+        _calculate_total(item, config.get_settings(), details)
+        h = _item_hash(item["seller_name"], item["title"], item["price"])
+
+    if stage == "final_hour":
+        if not _price_within_limit(item, search):
+            logger.info(
+                "Skipping final-hour notify for item %s: price no longer within limit",
+                item["item_id"],
+            )
+            return False
+        minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
+        if minutes is None or minutes > 60:
+            logger.info(
+                "Skipping final-hour notify for item %s: time_left=%s (need ≤60 min)",
+                item["item_id"], item.get("time_left"),
+            )
+            return False
+        if not (item.get("auction") and not item.get("buy_now")):
+            return False
+    else:
+        if not _passes_notification_price_and_auction_rules(item, search):
+            logger.info(
+                "Skipping notification for item %s: price/auction rules failed after details refresh",
+                item["item_id"],
+            )
+            mark_seen_item(item["item_id"], stage="initial")
+            return False
+
+    # Reserve stage before send to prevent double-notify across overlapping runs
+    mark_seen_item(item["item_id"], stage=stage)
+    sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
+    if sent:
+        if stage == "initial" and not item.get("auction"):
+            config.add_item_hash(h)
+        return True
+    logger.warning(
+        "Notification failed; will retry item %s stage=%s on next run",
+        item["item_id"], stage,
+    )
+    unmark_seen_stage(item["item_id"], stage=stage)
+    return False
+
+
 async def process_searches(bot, once=False):
     async with process_lock:
         searches = config.get_searches()
@@ -5113,11 +5396,63 @@ async def process_searches(bot, once=False):
                 if search.get("query") != "(playstation 5 pro, ps5 pro)":
                     search["query"] = "(playstation 5 pro, ps5 pro)"
                     modified = True
+                filters = search.setdefault("filters", {})
+                if filters.get("limit_price") != 750:
+                    filters["limit_price"] = 750
+                    modified = True
+                if filters.get("max_price") != 2500:
+                    filters["max_price"] = 2500
+                    modified = True
                 excludes = search.setdefault("exclude_words", [])
                 cleaned = [w for w in excludes if _normalize(w) not in ps5_safe_bundle_words]
                 if cleaned != excludes:
                     search["exclude_words"] = cleaned
                     modified = True
+
+        # Ensure Samsung Odyssey OLED G6 500Hz searches exist
+        def ensure_odyssey_g6_search(new_id, listing_type, min_price):
+            nonlocal modified
+            if new_id in by_id:
+                search = by_id[new_id]
+            else:
+                search = {
+                    "id": new_id,
+                    "query": "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+                    "display_name": "Samsung Odyssey OLED G6 500Hz",
+                    "filters": {},
+                    "exclude_words": [],
+                    "include_words": [],
+                    "exclude_sellers": [],
+                    "notify": True,
+                    "enabled": True,
+                }
+                searches.append(search)
+                by_id[new_id] = search
+                modified = True
+            if search.get("query") != "samsung odyssey oled g6 500hz (G60SF, LS27FG602)":
+                search["query"] = "samsung odyssey oled g6 500hz (G60SF, LS27FG602)"
+                modified = True
+            if search.get("display_name") != "Samsung Odyssey OLED G6 500Hz":
+                search["display_name"] = "Samsung Odyssey OLED G6 500Hz"
+                modified = True
+            filters = search.setdefault("filters", {})
+            expected = {
+                "min_price": min_price,
+                "limit_price": 400,
+                "max_price": 2500,
+                "condition": "any",
+                "listing_type": listing_type,
+                "seller_type": "any",
+                "location": "worldwide",
+                "category": "monitors",
+            }
+            for key, value in expected.items():
+                if filters.get(key) != value:
+                    filters[key] = value
+                    modified = True
+
+        ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_buy", "buy_now_offer", None)
+        ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_auc", "auction", None)
 
         def ensure_z70s_search(source_id, new_id, listing_type, min_price):
             nonlocal modified
@@ -5597,26 +5932,6 @@ async def process_searches(bot, once=False):
 
             filtered = filter_results(results, search, config)
 
-            # --- TEMP DEBUG for xm6 ---
-            if search.get("id") == "sony_wh_1000xm6_auc" and len(filtered) == 0 and results:
-                settings_tmp = config.get_settings()
-                limit_or_max_tmp = search.get("filters", {}).get("limit_price") or search.get("filters", {}).get("max_price")
-                listing_type_tmp = search.get("filters", {}).get("listing_type", "all")
-                for it_tmp in results[:10]:
-                    _calculate_total(it_tmp, settings_tmp)
-                    price_ok = limit_or_max_tmp is None or it_tmp.get("total_price", 0) <= limit_or_max_tmp
-                    type_ok = listing_type_tmp != "auction" or it_tmp.get("auction")
-                    ending_ok = True
-                    if it_tmp.get("auction") and not it_tmp.get("buy_now"):
-                        tl = it_tmp.get("time_left", "")
-                        mins = _parse_time_left_to_minutes(tl) if tl else None
-                        ending_ok = mins is not None and mins <= 1440
-                    logger.info("  XM6_DBG [%s] price=%.0f limit=%s price_ok=%s type_ok=%s ending_ok=%s tl=%s title=%s",
-                                it_tmp.get("item_id"), it_tmp.get("total_price", 0), limit_or_max_tmp,
-                                price_ok, type_ok, ending_ok, it_tmp.get("time_left", "-"),
-                                it_tmp.get("title", "")[:50])
-            # --- END TEMP DEBUG ---
-
             sofort = [r for r in filtered if r["buy_now"]]
             preisvorschlag = [r for r in filtered if r["best_offer"]]
             auctions = [r for r in filtered if r["auction"]]
@@ -5632,76 +5947,15 @@ async def process_searches(bot, once=False):
 
             stats_7d = get_stats_7d(search["id"])
 
-            new_items = [r for r in filtered if r["item_id"] not in seen_ids]
-            logger.info("  %s: %d results, %d new", search["query"], len(filtered), len(new_items))
+            candidates = _notify_candidates_from_filtered(filtered)
+            logger.info(
+                "  %s: %d results, %d candidates (initial/final_hour)",
+                search["query"], len(filtered), len(candidates),
+            )
 
-            for item in sorted(new_items, key=lambda x: x["total_price"]):
-                h = _item_hash(item["seller_name"], item["title"], item["price"])
-                details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
-                desc = ""
-                if details:
-                    # Update time_left from live API details
-                    seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
-                    if seconds_left is not None and seconds_left > 0:
-                        item["time_left"] = _format_time_left_from_seconds(seconds_left)
-                    # Block incorrect subcategories (accessories/parts) to prevent false positives
-                    cat_id = details.get("categoryId")
-                    search_cat = search.get("filters", {}).get("category", "all")
-                    if search_cat in ALLOWED_SUBCATEGORIES:
-                        allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
-                        if cat_id and cat_id not in allowed_set:
-                            cat_path_ids = details.get("categoryIdPath", "").split("|")
-                            if not any(cid in allowed_set for cid in cat_path_ids):
-                                logger.info("Skipping notification for item %s: category %s not allowed for search %s", item["item_id"], cat_id, search_cat)
-                                mark_seen_item(item["item_id"])
-                                continue
-
-                    # Block SELLER_DEFINED_VARIATIONS
-                    if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
-                        logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
-                        mark_seen_item(item["item_id"])
-                        continue
-                    # Block constructor/bait listings, but do not compare a
-                    # hybrid auction bid against the listing's Buy-It-Now price.
-                    mismatch, scraped_price, api_price = _details_price_mismatch(item, details)
-                    if mismatch:
-                        logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
-                        mark_seen_item(item["item_id"])
-                        continue
-                    desc = details.get("description", "")
-
-                if details and _is_details_blocked(details, search):
-                    logger.info("Skipping notification for item %s: blocked by details check", item["item_id"])
-                    mark_seen_item(item["item_id"])
-                    continue
-
-                if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
-                    logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
-                    mark_seen_item(item["item_id"])
-                    continue
-
-                if not _intent_details_match(search, item, details):
-                    logger.info("Skipping notification for item %s: search intent requirements failed", item["item_id"])
-                    mark_seen_item(item["item_id"])
-                    continue
-                
-                if details:
-                    _calculate_total(item, config.get_settings(), details)
-                    h = _item_hash(item["seller_name"], item["title"], item["price"])
-
-                if not _passes_notification_price_and_auction_rules(item, search):
-                    logger.info("Skipping notification for item %s: price/auction rules failed after details refresh", item["item_id"])
-                    mark_seen_item(item["item_id"])
-                    continue
-
-                sent = await send_notification(bot, item, search, stats_7d)
-                if sent:
+            for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
+                if await _process_notify_candidate(bot, item, search, stats_7d, stage):
                     total_new += 1
-                    if not item.get("auction"):
-                        config.add_item_hash(h)
-                    mark_seen_item(item["item_id"])
-                else:
-                    logger.warning("Notification failed; will retry item %s on next run", item["item_id"])
                 await asyncio.sleep(0.5)
 
             if not once:
@@ -5724,76 +5978,15 @@ async def process_searches(bot, once=False):
 
                 filtered = filter_results(api_items, search, config)
                 stats_7d = get_stats_7d(search["id"])
-                new_items = [r for r in filtered if r["item_id"] not in seen_ids]
-                logger.info("  %s: API retry %d results, %d new", search["query"], len(filtered), len(new_items))
+                candidates = _notify_candidates_from_filtered(filtered)
+                logger.info(
+                    "  %s: API retry %d results, %d candidates",
+                    search["query"], len(filtered), len(candidates),
+                )
 
-                for item in sorted(new_items, key=lambda x: x["total_price"]):
-                    h = _item_hash(item["seller_name"], item["title"], item["price"])
-                    details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
-                    desc = ""
-                    if details:
-                        # Update time_left from live API details
-                        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
-                        if seconds_left is not None and seconds_left > 0:
-                            item["time_left"] = _format_time_left_from_seconds(seconds_left)
-                        # Block incorrect subcategories (accessories/parts) to prevent false positives
-                        cat_id = details.get("categoryId")
-                        search_cat = search.get("filters", {}).get("category", "all")
-                        if search_cat in ALLOWED_SUBCATEGORIES:
-                            allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
-                            if cat_id and cat_id not in allowed_set:
-                                cat_path_ids = details.get("categoryIdPath", "").split("|")
-                                if not any(cid in allowed_set for cid in cat_path_ids):
-                                    logger.info("Skipping notification for item %s: category %s not allowed for search %s", item["item_id"], cat_id, search_cat)
-                                    mark_seen_item(item["item_id"])
-                                    continue
-
-                        # Block SELLER_DEFINED_VARIATIONS
-                        if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
-                            logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
-                            mark_seen_item(item["item_id"])
-                            continue
-                        # Block constructor/bait listings, but do not compare a
-                        # hybrid auction bid against the listing's Buy-It-Now price.
-                        mismatch, scraped_price, api_price = _details_price_mismatch(item, details)
-                        if mismatch:
-                            logger.info("Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)", item["item_id"], scraped_price, api_price)
-                            mark_seen_item(item["item_id"])
-                            continue
-                        desc = details.get("description", "")
-
-                    if details and _is_details_blocked(details, search):
-                        logger.info("Skipping notification for item %s: blocked by details check", item["item_id"])
-                        mark_seen_item(item["item_id"])
-                        continue
-
-                    if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
-                        logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
-                        mark_seen_item(item["item_id"])
-                        continue
-
-                    if not _intent_details_match(search, item, details):
-                        logger.info("Skipping notification for item %s: search intent requirements failed", item["item_id"])
-                        mark_seen_item(item["item_id"])
-                        continue
-                    
-                    if details:
-                        _calculate_total(item, config.get_settings(), details)
-                        h = _item_hash(item["seller_name"], item["title"], item["price"])
-
-                    if not _passes_notification_price_and_auction_rules(item, search):
-                        logger.info("Skipping notification for item %s: price/auction rules failed after details refresh", item["item_id"])
-                        mark_seen_item(item["item_id"])
-                        continue
-
-                    sent = await send_notification(bot, item, search, stats_7d)
-                    if sent:
+                for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
+                    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
                         total_new += 1
-                        if not item.get("auction"):
-                            config.add_item_hash(h)
-                        mark_seen_item(item["item_id"])
-                    else:
-                        logger.warning("Notification failed; will retry item %s on next run", item["item_id"])
                     await asyncio.sleep(0.5)
 
         save_seen_ids()

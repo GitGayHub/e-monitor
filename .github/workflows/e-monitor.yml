@@ -17,8 +17,9 @@ on:
   workflow_dispatch:
 
 concurrency:
+  # One auto run at a time; cancel stale scheduled/push runs so seen_ids cannot race.
   group: ${{ github.event_name == 'workflow_dispatch' && format('e-monitor-v2-manual-{0}', github.run_id) || 'e-monitor-v2-auto' }}
-  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+  cancel-in-progress: true
 
 jobs:
   check_e:
@@ -141,8 +142,21 @@ jobs:
             [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
             if ! git diff --cached --quiet; then
               git commit -m "Checkpoint monitor state"
-              git pull --rebase --autostash origin main || true
-              git push || (git pull --rebase --autostash origin main && git push) || true
+              # seen_ids must reach origin so the next run does not re-notify.
+              push_ok=0
+              for attempt in 1 2 3 4 5; do
+                git pull --rebase --autostash origin main || true
+                if git push; then
+                  push_ok=1
+                  break
+                fi
+                echo "Checkpoint push failed (attempt $attempt/5), retrying..."
+                sleep 3
+              done
+              if [ "$push_ok" -ne 1 ]; then
+                echo "ERROR: failed to push checkpoint state after 5 attempts" >&2
+                exit 1
+              fi
             fi
 
             if [ "$i" -lt "$RUN_ITERATIONS" ]; then
@@ -178,7 +192,19 @@ jobs:
             exit 0
           fi
           git commit -m "Update monitor state"
-          git pull --rebase --autostash origin main || true
-          git push || (git pull --rebase --autostash origin main && git push) || true
+          push_ok=0
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main || true
+            if git push; then
+              push_ok=1
+              break
+            fi
+            echo "Final state push failed (attempt $attempt/5), retrying..."
+            sleep 3
+          done
+          if [ "$push_ok" -ne 1 ]; then
+            echo "ERROR: failed to push final monitor state after 5 attempts" >&2
+            exit 1
+          fi
 
 # Trigger: 2026-07-01T07:22:00Z

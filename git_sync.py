@@ -49,33 +49,64 @@ def get_remote_file_content(filename):
             return res.stdout
     return None
 
+def _normalize_seen_state(data):
+    """list of ids or stage-dict -> {id: {initial, final_hour}}."""
+    state = {}
+    if isinstance(data, list):
+        for x in data:
+            iid = str(x).strip()
+            if iid:
+                state[iid] = {"initial": True, "final_hour": False}
+    elif isinstance(data, dict):
+        for k, v in data.items():
+            iid = str(k).strip()
+            if not iid:
+                continue
+            if isinstance(v, dict):
+                state[iid] = {
+                    "initial": bool(v.get("initial")),
+                    "final_hour": bool(v.get("final_hour")),
+                }
+            else:
+                state[iid] = {"initial": True, "final_hour": False}
+    return state
+
+
 def merge_seen_ids():
     local_path = os.path.join(REPO_DIR, "seen_ids.json")
-    local_data = []
+    local_data = {}
     if os.path.exists(local_path):
         try:
             with open(local_path, "r", encoding="utf-8") as f:
-                local_data = json.load(f)
+                local_data = _normalize_seen_state(json.load(f))
         except Exception:
-            local_data = []
-            
+            local_data = {}
+
     remote_bytes = get_remote_file_content("seen_ids.json")
-    remote_data = []
+    remote_data = {}
     if remote_bytes:
         try:
-            remote_data = json.loads(remote_bytes.decode("utf-8", errors="replace"))
+            remote_data = _normalize_seen_state(
+                json.loads(remote_bytes.decode("utf-8", errors="replace"))
+            )
         except Exception:
-            remote_data = []
-            
-    if not isinstance(local_data, list): local_data = []
-    if not isinstance(remote_data, list): remote_data = []
-    
-    merged = sorted(list(set(local_data) | set(remote_data)))
-    
-    # Save back
+            remote_data = {}
+
+    merged = {}
+    for iid in set(local_data) | set(remote_data):
+        a = local_data.get(iid) or {}
+        b = remote_data.get(iid) or {}
+        merged[iid] = {
+            "initial": bool(a.get("initial") or b.get("initial")),
+            "final_hour": bool(a.get("final_hour") or b.get("final_hour")),
+        }
+
     with open(local_path, "w", encoding="utf-8") as f:
         json.dump(merged, f, ensure_ascii=False)
-    print(f"Merged seen_ids.json: {len(local_data)} local + {len(remote_data)} remote -> {len(merged)} total")
+    print(
+        f"Merged seen_ids.json: {len(local_data)} local + {len(remote_data)} remote "
+        f"-> {len(merged)} total (stage format)"
+    )
 
 def merge_run_logs():
     local_path = os.path.join(REPO_DIR, "run_log.json")
