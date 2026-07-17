@@ -2881,11 +2881,19 @@ def parse_ebay_results(html):
             time_left = ""
             bids_count = None
             for txt in all_texts:
-                if "preisvorschlag" in txt or "best offer" in txt:
+                tl = (txt or "").lower()
+                if "preisvorschlag" in tl or "best offer" in tl:
                     best_offer = True
-                if ("gebot" in txt and "angebot" not in txt) or "bid" in txt or "ставк" in txt:
+                if (
+                    ("gebot" in tl and "angebot" not in tl)
+                    or "bid" in tl
+                    or "ставк" in tl
+                    or "auktion" in tl
+                    or "höchstgebot" in tl
+                    or "hochstgebot" in tl
+                ):
                     auction = True
-                    m_bids = re.search(r"(\d+)\s*(?:gebot|bid|ставк)", txt)
+                    m_bids = re.search(r"(\d+)\s*(?:gebot|bid|ставк)", tl)
                     if m_bids:
                         try:
                             bids_count = int(m_bids.group(1))
@@ -2896,6 +2904,9 @@ def parse_ebay_results(html):
                 re.search(r"\b\d+\s*(?:gebot|gebote|bid|bids)\b", card_text_lower)
                 or "endet in" in card_text_lower
                 or "ends in" in card_text_lower
+                or "auktion" in card_text_lower
+                or "höchstgebot" in card_text_lower
+                or re.search(r"\bnoch\s+\d", card_text_lower)
             ):
                 auction = True
                 m_bids_new = re.search(r"(\d+)\s*(?:gebot|gebote|bid|bids)\b", card_text_lower)
@@ -2905,7 +2916,10 @@ def parse_ebay_results(html):
                     except ValueError:
                         pass
 
-            has_sofort_kaufen = any("sofort-kaufen" in t or "oder sofort" in t or "buy it now" in t or "sofort kaufen" in t for t in all_texts)
+            has_sofort_kaufen = any(
+                "sofort-kaufen" in t or "oder sofort" in t or "buy it now" in t or "sofort kaufen" in t
+                for t in all_texts
+            )
             if auction and not has_sofort_kaufen:
                 buy_now = False
 
@@ -4707,38 +4721,57 @@ def _parse_search_body(body, host, query):
         return [], "parse"
     if items:
         return items, None
-    low = (body or "")[:8000].lower()
+    raw = body or ""
+    low = raw[:12000].lower()
     has_result_container = (
-        'class="srp-results' in (body or "")
-        or "srp-river-results" in (body or "")
-        or 'class="srp-list' in (body or "")
-        or "data-listingid" in (body or "")
-        or "s-card" in (body or "")
-        or "s-item" in (body or "")
+        'class="srp-results' in raw
+        or "srp-river-results" in raw
+        or 'class="srp-list' in raw
+        or "data-listingid" in raw
+        or "li.s-card" in raw
+        or 'class="s-item' in raw
+        or "s-item__" in raw
+        or "s-card__" in raw
     )
     has_no_results_marker = (
         "kein ergebnis" in low
+        or "keine treffer" in low
         or "no exact matches" in low
         or "0 ergebnisse" in low
         or "0 results" in low
         or "we couldn" in low
+        or "no results found" in low
+        or "es wurden keine ergebnisse" in low
     )
-    body_len = len(body or "")
-    # Datacenter/GH soft-block: fat HTML with no cards and no honest empty marker.
-    if body_len > 5000 and not has_result_container and not has_no_results_marker:
+    body_len = len(raw)
+    itm_links = len(re.findall(r"/itm/\d{9,15}", raw))
+    # Honest empty SERP (model not listed yet, etc.) — NEVER call this eBay block.
+    if has_no_results_marker:
+        return [], None
+    # Datacenter stealth shell: fat HTML, no result markup, no empty marker.
+    if body_len > 5000 and not has_result_container and itm_links == 0:
         logger.warning(
             "eBay %s stealth empty body_len=%d for '%s'", host, body_len, query
         )
         return [], "blocked"
-    if not has_result_container and not has_no_results_marker:
+    if not has_result_container and itm_links == 0 and not has_no_results_marker:
         logger.warning("eBay %s empty (likely stealth block) for '%s'", host, query)
         return [], "blocked"
-    if has_result_container and not has_no_results_marker and body_len > 8000:
-        # Page claims listings but parse got 0 — treat as block (markup change / bot shell).
-        logger.warning(
-            "eBay %s unparseable results shell body_len=%d for '%s'", host, body_len, query
+    # Result chrome present but 0 parseable cards / only placeholder itm links.
+    # Real empty stock often looks like this — treat as empty, not block.
+    if has_result_container and itm_links <= 2:
+        logger.info(
+            "eBay %s empty results page (container, itm=%d) for '%s'",
+            host, itm_links, query,
         )
-        return [], "blocked"
+        return [], None
+    # Many /itm/ links but parser got 0 — markup drift; try harder upstream, not "no stock".
+    if itm_links > 2:
+        logger.warning(
+            "eBay %s unparseable listings itm=%d body_len=%d for '%s'",
+            host, itm_links, body_len, query,
+        )
+        return [], "parse"
     return [], None
 
 
@@ -5050,14 +5083,18 @@ def fetch_ebay_ex(search, force=False):
                 its, e = _do_fetch_one(host, search, referer=referer)
                 if its:
                     return its, None, host
-                # Soft empty (err None, 0 items) on CI is almost never real stock —
-                # keep rotating fingerprints / hosts.
+                # Soft empty (err None): on GH rotate once more; do NOT permanently
+                # rewrite genuine empty as blocked (Z80 LV / unlisted models).
                 if e is None and not its:
-                    e = "blocked" if _on_github_actions() else e
-                if e is None and not its:
-                    return [], None, host
+                    last = last or None
+                    if _on_github_actions() and attempt < attempts_per_host - 1:
+                        reset_ebay_session(rotate=True)
+                        continue
+                    # Last attempt on this host with clean empty — try next host.
+                    reset_ebay_session(rotate=True)
+                    break
                 last = e
-                if e in ("blocked", "rate_limit"):
+                if e in ("blocked", "rate_limit", "parse"):
                     # Last attempt for this host? Roll over to the next host.
                     if attempt == attempts_per_host - 1:
                         reset_ebay_session(rotate=True)
@@ -5065,10 +5102,11 @@ def fetch_ebay_ex(search, force=False):
                     # Otherwise rotate fingerprint and try the same host again.
                     reset_ebay_session(rotate=True)
                     continue
-                # network/parse: still try next host
+                # network: still try next host
                 reset_ebay_session(rotate=True)
                 break
-        return [], last or "blocked", None
+        # Prefer None (empty) over inventing "blocked" when every host soft-emptied.
+        return [], last, None
 
     items, err, host = _try_chain()
     if items:
@@ -5079,25 +5117,28 @@ def fetch_ebay_ex(search, force=False):
         return items, None
 
     # HTML last resort: real Chromium (helps GitHub Actions datacenter IPs).
-    if err in (None, "blocked", "rate_limit", "parse", "network") or not items:
-        pw_url = _build_url_with_host("ebay.de", search)
-        pw_items, pw_err = _do_fetch_playwright(pw_url, search.get("query", ""))
-        if pw_items:
-            _ebay_consecutive_blocks = 0
-            _ebay_query_cache[cache_key] = (time.time(), pw_items, None)
-            return pw_items, None
-        # Clean Playwright page with 0 items = real empty stock, NOT "eBay block".
-        # Soft-empty→blocked conversion above was for curl shells only; after a real
-        # Chromium pass we must not lie with ⚠️ eBay block / Rate limit.
-        if pw_err is None:
-            _ebay_consecutive_blocks = 0
-            _ebay_query_cache[cache_key] = (time.time(), [], None)
-            return [], None
-        if pw_err not in ("no_playwright",):
+    # Always try PW when chain empty — including clean empty — to confirm stock.
+    if not items:
+        pw_urls = [
+            _build_url_with_host("ebay.de", search, sub="www"),
+            _build_url_with_host("ebay.de", search, sub="m"),
+        ]
+        pw_err = None
+        for pw_url in pw_urls:
+            pw_items, pw_err = _do_fetch_playwright(pw_url, search.get("query", ""))
+            if pw_items:
+                _ebay_consecutive_blocks = 0
+                _ebay_query_cache[cache_key] = (time.time(), pw_items, None)
+                return pw_items, None
+            # Clean empty from Chromium = real empty stock.
+            if pw_err is None:
+                _ebay_consecutive_blocks = 0
+                _ebay_query_cache[cache_key] = (time.time(), [], None)
+                return [], None
+            if pw_err in ("no_playwright",):
+                break
+        if pw_err and pw_err not in ("no_playwright",):
             err = pw_err or err
-        elif err == "blocked" and pw_err == "no_playwright":
-            # no PW available; keep prior err
-            pass
 
     if err is None and not items:
         # Genuine empty after all HTML strategies
@@ -6388,7 +6429,7 @@ async def process_searches(bot, once=False):
                             fetch_errors.append(err)
 
                 async def _auction_fill_hard():
-                    """One solid auction path: newest + open category, then direct Playwright.
+                    """Auction path: PW-first on GH (curl soft-empty is useless for auctions).
 
                     Returns (items, err). err is None on genuine empty.
                     """
@@ -6400,34 +6441,33 @@ async def process_searches(bot, once=False):
                     base["filters"]["category"] = "all"
                     base["filters"]["sort"] = "newest"
                     base["filters"].pop("sort_code", None)
+                    q = base.get("query") or search.get("query") or ""
+
+                    # GitHub: skip curl chain — go Chromium first (www then m.).
+                    if _on_github_actions():
+                        for sub in ("www", "m"):
+                            pw_url = _build_url_with_host("ebay.de", base, sub=sub)
+                            pw_items, pw_err = await asyncio.to_thread(
+                                _do_fetch_playwright, pw_url, q
+                            )
+                            pw_items = _tag_items_for_search(pw_items or [], base)
+                            if pw_items:
+                                auc_only = [it for it in pw_items if it.get("auction")] or pw_items
+                                logger.info(
+                                    "  %s: auction PW-%s %d items",
+                                    search["query"], sub, len(auc_only),
+                                )
+                                return auc_only, None
+                            if pw_err is None:
+                                return [], None
+                            if pw_err == "no_playwright":
+                                break
+                            await asyncio.sleep(1.0)
 
                     items, err = await _stats_one_fetch("Auction fill", base)
                     if items:
                         auc_only = [it for it in items if it.get("auction")] or items
                         return auc_only, None
-                    if err is None:
-                        return [], None
-
-                    # Direct Chromium (skip another full curl chain).
-                    if _on_github_actions():
-                        await asyncio.sleep(1.5)
-                        _clear_gh_fetch_pressure(had_results=False)
-                        reset_ebay_session(rotate=True)
-                        pw_url = _build_url_with_host("ebay.de", base)
-                        pw_items, pw_err = await asyncio.to_thread(
-                            _do_fetch_playwright, pw_url, base.get("query") or search.get("query") or ""
-                        )
-                        pw_items = _tag_items_for_search(pw_items or [], base)
-                        if pw_items:
-                            auc_only = [it for it in pw_items if it.get("auction")] or pw_items
-                            logger.info(
-                                "  %s: auction fill via direct Playwright (%d items)",
-                                search["query"], len(auc_only),
-                            )
-                            return auc_only, None
-                        if pw_err is None:
-                            return [], None
-                        return [], pw_err or err
                     return [], err
 
                 mixed_items, mixed_err = await _stats_one_fetch("mixed stats", mixed_search)
