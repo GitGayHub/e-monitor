@@ -17,10 +17,11 @@ on:
   workflow_dispatch:
 
 concurrency:
-  # One auto run at a time. Do NOT cancel-in-progress: statistics mode needs
-  # ~15–40 min for all products; a 5‑min cron would otherwise kill it mid-run
-  # and Telegram never gets the diagnostic report.
-  group: ${{ github.event_name == 'workflow_dispatch' && format('e-monitor-v2-manual-{0}', github.run_id) || 'e-monitor-v2-auto' }}
+  # Exactly ONE e-monitor at a time (push/schedule/manual share the group).
+  # Parallel runners (old unique-per-dispatch groups) hammer eBay and turn
+  # half of statistics into soft-blocks. Do NOT cancel-in-progress:
+  # statistics needs ~15–40 min; a 5‑min cron must wait, not kill mid-run.
+  group: e-monitor-v2
   cancel-in-progress: false
 
 jobs:
