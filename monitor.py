@@ -2251,7 +2251,7 @@ def _prepare_monitor_fetch_search(search):
     filters = prepared.setdefault("filters", {})
     # Cheapest-first so page-1 matches what stats used to show.
     filters["sort"] = "price_asc"
-    filters["_ipg"] = max(int(filters.get("_ipg") or 0), 240)
+    filters["_ipg"] = 60 if _on_github_actions() else max(int(filters.get("_ipg") or 0), 120)
     # Soft notify limit stays in limit_price; do not shrink eBay _udhi here.
     # Raise _udlo so price_asc is not 100% Hüllen/Folien before real devices.
     query_norm = _normalize(_intent_query(prepared))
@@ -4620,7 +4620,8 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     # soft limit_price is applied in filter / green verdict, not as _udhi.
     filters["max_price"] = None
     filters["_stats_bucket_filter"] = True
-    filters["_ipg"] = max(int(filters.get("_ipg") or 0), 240)
+    # 240 ipg is ignored/odd on some eBay edges and can yield empty shells on CI.
+    filters["_ipg"] = 60 if _on_github_actions() else max(int(filters.get("_ipg") or 0), 120)
     suffix = "bo" if best_offer else "all"
     variant["id"] = f"{search.get('id', 'search')}__stats_{listing_type}_{suffix}"
     return variant
@@ -4635,6 +4636,10 @@ def _statistics_filter_search(search):
     return stats_filter
 
 
+def _on_github_actions():
+    return bool(os.environ.get("GITHUB_ACTIONS") or os.environ.get("CI"))
+
+
 def _warmup_session(session, host):
     """Visit homepage and a category index before the search to look like a
     real user navigating the site. Cookies stick to the session, which keeps
@@ -4647,130 +4652,242 @@ def _warmup_session(session, host):
             timeout=HTTP_TIMEOUT,
             headers=None if _HAS_CURL_CFFI else {"Referer": ""},
         )
-        time.sleep(random.uniform(0.6, 1.4))
-        # Touch the cell phones category like a real shopper would.
-        session.get(
+        time.sleep(random.uniform(0.8, 1.8) if _on_github_actions() else random.uniform(0.6, 1.4))
+        # Touch electronics + phones like a real shopper (more cookies / consent).
+        for path in (
             f"{home}b/Cell-Phones-Smartphones/9355/bn_320094",
-            timeout=HTTP_TIMEOUT,
-            headers={"Referer": home},
-        )
-        time.sleep(random.uniform(0.4, 1.0))
+            f"https://www.{host}/sch/i.html?_nkw=test&_sacat=0",
+        ):
+            try:
+                session.get(path, timeout=HTTP_TIMEOUT, headers={"Referer": home})
+                time.sleep(random.uniform(0.3, 0.9))
+            except Exception:
+                pass
     except Exception as e:
         logger.debug("warmup on %s failed (non-fatal): %s", host, e)
 
 
+_CHALLENGE_MARKERS = (
+    "pardon our interruption",
+    "bitte entschuldigen sie die störung",
+    "bitte entschuldigen sie die storung",
+    "splashui/captcha",
+    "are you a robot",
+    "automated access",
+    "/splashui/",
+    "verify you are a human",
+    "checking your browser",
+    "access denied",
+    "security measure",
+    "unusual traffic",
+)
+
+
+def _is_challenge_html(body, final_url=""):
+    low = (body or "")[:12000].lower()
+    fu = (final_url or "").lower()
+    return "/splashui/" in fu or any(m in low for m in _CHALLENGE_MARKERS)
+
+
+def _parse_search_body(body, host, query):
+    try:
+        items = parse_ebay_results(body or "")
+    except Exception as e:
+        logger.error("Parse error for '%s' on %s: %s", query, host, e)
+        return [], "parse"
+    if items:
+        return items, None
+    low = (body or "")[:8000].lower()
+    has_result_container = (
+        'class="srp-results' in (body or "")
+        or "srp-river-results" in (body or "")
+        or 'class="srp-list' in (body or "")
+        or "data-listingid" in (body or "")
+        or "s-card" in (body or "")
+        or "s-item" in (body or "")
+    )
+    has_no_results_marker = (
+        "kein ergebnis" in low
+        or "no exact matches" in low
+        or "0 ergebnisse" in low
+        or "0 results" in low
+        or "we couldn" in low
+    )
+    body_len = len(body or "")
+    # Datacenter/GH soft-block: fat HTML with no cards and no honest empty marker.
+    if body_len > 5000 and not has_result_container and not has_no_results_marker:
+        logger.warning(
+            "eBay %s stealth empty body_len=%d for '%s'", host, body_len, query
+        )
+        return [], "blocked"
+    if not has_result_container and not has_no_results_marker:
+        logger.warning("eBay %s empty (likely stealth block) for '%s'", host, query)
+        return [], "blocked"
+    if has_result_container and not has_no_results_marker and body_len > 8000:
+        # Page claims listings but parse got 0 — treat as block (markup change / bot shell).
+        logger.warning(
+            "eBay %s unparseable results shell body_len=%d for '%s'", host, body_len, query
+        )
+        return [], "blocked"
+    return [], None
+
+
+def _do_fetch_playwright(url, query=""):
+    """Real Chromium HTML fetch — last HTML hope on blocked datacenter IPs (GH Actions)."""
+    if os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").strip().lower() in ("0", "false", "no"):
+        return [], "no_playwright"
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        logger.info("playwright not installed — skip browser HTML fallback")
+        return [], "no_playwright"
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(
+                headless=True,
+                args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
+            )
+            context = browser.new_context(
+                locale="de-DE",
+                timezone_id="Europe/Berlin",
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+                ),
+                viewport={"width": 1365, "height": 900},
+            )
+            page = context.new_page()
+            page.add_init_script(
+                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+            )
+            # Warm homepage first for cookies
+            try:
+                page.goto("https://www.ebay.de/", wait_until="domcontentloaded", timeout=25000)
+                page.wait_for_timeout(800)
+            except Exception:
+                pass
+            page.goto(url, wait_until="domcontentloaded", timeout=35000)
+            page.wait_for_timeout(2200)
+            # dismiss cookie banner if present
+            for sel in (
+                "button#gdpr-banner-accept",
+                "button[data-testid='gdpr-banner-accept']",
+                "#consent-page .btn-primary",
+            ):
+                try:
+                    page.locator(sel).first.click(timeout=1200)
+                    page.wait_for_timeout(500)
+                except Exception:
+                    pass
+            body = page.content()
+            final = page.url
+            browser.close()
+        if _is_challenge_html(body, final):
+            logger.warning("Playwright still got challenge for '%s'", query)
+            return [], "blocked"
+        items, err = _parse_search_body(body, "playwright", query)
+        if items:
+            logger.info("  %s -> %d items via Playwright HTML", query, len(items))
+        return items, err
+    except Exception as e:
+        logger.warning("Playwright HTML fetch failed for '%s': %s", query, e)
+        return [], "network"
+
+
+def _http_get_search(session, url, common_headers):
+    resp = session.get(url, timeout=HTTP_TIMEOUT, headers=common_headers)
+    sc = resp.status_code
+    body = resp.text or ""
+    final_url = getattr(resp, "url", "") or ""
+    return sc, body, final_url
+
+
 def _do_fetch_one(host, search, referer=None):
-    """Single attempt against a specific host. Returns (items, error)."""
+    """Single attempt against a specific host. Returns (items, error).
+
+    On GH/datacenter IPs www often soft-empties or challenges; we always try
+    m.<host> before giving up this host.
+    """
     global _ebay_session_warmed
+    query = search.get("query", "")
     url = _build_url_with_host(host, search)
+    # GitHub runners: hit mobile first — desktop challenge is near-certain.
+    prefer_mobile = _on_github_actions() or os.environ.get("EBAY_HTML_MOBILE_FIRST", "").strip() in (
+        "1",
+        "true",
+        "yes",
+    )
     session = _get_ebay_session()
     home = f"https://www.{host}/"
     referer = referer or home
+    common_headers = {
+        "Referer": referer,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+    }
     try:
         if not _ebay_session_warmed:
             _warmup_session(session, host)
             _ebay_session_warmed = True
-        common_headers = {
-            "Referer": referer,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-        }
-        resp = session.get(url, timeout=HTTP_TIMEOUT, headers=common_headers)
-    except Exception as e:
-        # curl_cffi raises its own errors; treat all as network
-        if "impersonating" in str(e).lower() and "not supported" in str(e).lower():
-            logger.warning("Unsupported eBay fingerprint %s, rotating", _ebay_session_ua)
-            reset_ebay_session(rotate=True)
-            return [], "blocked"
-        if "timeout" in str(e).lower():
-            logger.error("Timeout fetching '%s' on %s: %s", search["query"], host, e)
-            return [], "network"
-        logger.error("Network error fetching '%s' on %s: %s", search["query"], host, e)
-        return [], "network"
+        urls_try = []
+        if prefer_mobile and host in ("ebay.de", "ebay.com"):
+            urls_try.append(_build_url_with_host(host, search, sub="m"))
+        urls_try.append(url)
+        if host in ("ebay.de", "ebay.com") and not prefer_mobile:
+            urls_try.append(_build_url_with_host(host, search, sub="m"))
 
-    sc = resp.status_code
-    if sc == 429:
-        logger.warning("eBay %s rate limited (429) for '%s'", host, search["query"])
-        return [], "rate_limit"
-    if sc in (403, 503):
-        logger.warning("eBay %s blocked (%d) for '%s'", host, sc, search["query"])
-        return [], "blocked"
-    if sc >= 400:
-        logger.error("HTTP %d on %s for '%s'", sc, host, search["query"])
-        return [], f"http_{sc}"
-
-    body = resp.text or ""
-    low = body[:8000].lower()
-    final_url = getattr(resp, "url", "") or ""
-    challenge_markers = (
-        "pardon our interruption",
-        "bitte entschuldigen sie die störung",
-        "splashui/captcha",
-        "are you a robot",
-        "automated access",
-        "/splashui/",
-        "verify you are a human",
-        "checking your browser",
-        "access denied",
-    )
-    if "/splashui/" in final_url.lower() or any(m in low for m in challenge_markers):
-        # The first hit at the desktop search endpoint reliably trips eBay's
-        # splashui challenge for non-browser TLS sessions, but immediately
-        # repeating the same query on the mobile subdomain m.ebay.de works,
-        # because the failed challenge attaches a bm_sv cookie that the
-        # mobile front-end accepts. We do that retry here transparently.
-        if host == "ebay.de" and "://m.ebay.de/" not in url:
-            m_url = _build_url_with_host(host, search, sub="m")
+        last_err = "blocked"
+        for try_url in urls_try:
             try:
-                resp2 = session.get(m_url, timeout=HTTP_TIMEOUT, headers=common_headers)
+                sc, body, final_url = _http_get_search(session, try_url, common_headers)
             except Exception as e:
-                logger.warning("eBay m.%s retry network error for '%s': %s", host, search["query"], e)
-                return [], "blocked"
-            sc2 = resp2.status_code
-            body2 = resp2.text or ""
-            low2 = body2[:8000].lower()
-            final_url2 = getattr(resp2, "url", "") or ""
-            if sc2 < 400 and "/splashui/" not in final_url2.lower() and not any(
-                m in low2 for m in challenge_markers
-            ):
-                try:
-                    items2 = parse_ebay_results(body2)
-                except Exception as e:
-                    logger.error("Parse error for '%s' on m.%s: %s", search["query"], host, e)
-                    return [], "parse"
-                if items2:
-                    return items2, None
-        logger.warning(
-            "eBay %s challenge page for '%s' (impersonate=%s)",
-            host, search["query"], _ebay_session_ua,
-        )
-        return [], "blocked"
+                if "impersonating" in str(e).lower() and "not supported" in str(e).lower():
+                    logger.warning("Unsupported eBay fingerprint %s, rotating", _ebay_session_ua)
+                    reset_ebay_session(rotate=True)
+                    return [], "blocked"
+                if "timeout" in str(e).lower():
+                    last_err = "network"
+                    continue
+                last_err = "network"
+                continue
 
-    try:
-        items = parse_ebay_results(body)
+            if sc == 429:
+                return [], "rate_limit"
+            if sc in (403, 503):
+                last_err = "blocked"
+                continue
+            if sc >= 400:
+                last_err = f"http_{sc}"
+                continue
+
+            if _is_challenge_html(body, final_url):
+                logger.warning(
+                    "eBay challenge on %s for '%s' (impersonate=%s, url=%s)",
+                    host, query, _ebay_session_ua, (final_url or try_url)[:80],
+                )
+                last_err = "blocked"
+                # cookie from challenge page may unlock next URL (m.)
+                continue
+
+            items, err = _parse_search_body(body, host, query)
+            if items:
+                logger.info(
+                    "  %s -> %d items via %s body_len=%d",
+                    query, len(items), try_url.split("/")[2], len(body),
+                )
+                return items, None
+            if err:
+                last_err = err
+            else:
+                # honest empty
+                last_err = None
+        return [], last_err
     except Exception as e:
-        logger.error("Parse error for '%s' on %s: %s", search["query"], host, e)
-        return [], "parse"
-
-    if not items:
-        has_result_container = (
-            'class="srp-results' in body
-            or "srp-river-results" in body
-            or 'class="srp-list' in body
-            or "data-listingid" in body
-        )
-        has_no_results_marker = (
-            "kein ergebnis" in low
-            or "no exact matches" in low
-            or "0 ergebnisse" in low
-            or "0 results" in low
-            or "we couldn" in low
-        )
-        if not has_result_container and not has_no_results_marker:
-            logger.warning("eBay %s empty (likely stealth block) for '%s'", host, search["query"])
-            return [], "blocked"
-
-    return items, None
+        if "timeout" in str(e).lower():
+            logger.error("Timeout fetching '%s' on %s: %s", query, host, e)
+            return [], "network"
+        logger.error("Network error fetching '%s' on %s: %s", query, host, e)
+        return [], "network"
 
 
 def _query_cache_key(search):
@@ -4854,45 +4971,70 @@ def fetch_ebay_ex(search, force=False):
         # profile, the second one rotates to the next profile and re-warms
         # the session. eBay sometimes flags one fingerprint while leaving
         # the next alone, so this turns a transient block into a hit.
-        attempts_per_host = 2
+        attempts_per_host = 3 if _on_github_actions() else 2
         for host in chain:
             for attempt in range(attempts_per_host):
                 its, e = _do_fetch_one(host, search, referer=referer)
-                if e is None:
+                if its:
                     return its, None, host
+                # Soft empty (err None, 0 items) on CI is almost never real stock —
+                # keep rotating fingerprints / hosts.
+                if e is None and not its:
+                    e = "blocked" if _on_github_actions() else e
+                if e is None and not its:
+                    return [], None, host
                 last = e
                 if e in ("blocked", "rate_limit"):
                     # Last attempt for this host? Roll over to the next host.
                     if attempt == attempts_per_host - 1:
-                        reset_ebay_session()
+                        reset_ebay_session(rotate=True)
                         break
                     # Otherwise rotate fingerprint and try the same host again.
                     reset_ebay_session(rotate=True)
                     continue
-                return its, e, None
+                # network/parse: still try next host
+                reset_ebay_session(rotate=True)
+                break
         return [], last or "blocked", None
 
     items, err, host = _try_chain()
-    if err is None:
+    if items:
         _ebay_active_host = host
         _ebay_consecutive_blocks = 0
-        if items:
-            logger.info("  %s -> %d items via %s", search["query"], len(items), host)
+        logger.info("  %s -> %d items via %s", search["query"], len(items), host)
         _ebay_query_cache[cache_key] = (time.time(), items, None)
         return items, None
 
-    if err not in ("blocked", "rate_limit"):
-        _ebay_query_cache[cache_key] = (time.time(), items, err)
-        return items, err
+    # HTML last resort: real Chromium (helps GitHub Actions datacenter IPs).
+    if err in (None, "blocked", "rate_limit", "parse", "network") or not items:
+        pw_url = _build_url_with_host("ebay.de", search)
+        pw_items, pw_err = _do_fetch_playwright(pw_url, search.get("query", ""))
+        if pw_items:
+            _ebay_consecutive_blocks = 0
+            _ebay_query_cache[cache_key] = (time.time(), pw_items, None)
+            return pw_items, None
+        if pw_err and pw_err not in ("no_playwright",):
+            err = err or pw_err
 
-    if source == "auto" and _ebay_api_configured():
+    if err is None and not items:
+        # Genuine empty after all HTML strategies
+        _ebay_query_cache[cache_key] = (time.time(), [], None)
+        return [], None
+
+    if err not in ("blocked", "rate_limit", "network", "parse"):
+        _ebay_query_cache[cache_key] = (time.time(), items or [], err)
+        return items or [], err
+
+    # API only after HTML fully exhausted (extreme last resort).
+    if source == "auto" and _ebay_api_configured() and not _ebay_api_circuit_open:
         _ebay_block_until = max(_ebay_block_until, time.time() + _EBAY_BLOCK_COOLDOWN_BASE)
-        logger.info("eBay HTML blocked/rate-limited, trying Browse API fallback")
+        logger.info("eBay HTML exhausted (%s), trying Browse API last resort", err)
         api_items, api_err = fetch_ebay_api_ex(search, force=force)
-        if api_err is None:
+        if api_err is None and api_items:
             _ebay_query_cache[cache_key] = (time.time(), api_items, None)
             return api_items, None
-        logger.warning("eBay API fallback failed: %s", api_err)
+        logger.warning("eBay API last-resort failed: %s", api_err)
+        err = api_err or err
 
 
     # Still blocked — exponential cooldown to stop hammering the flagged IP.
@@ -6069,14 +6211,19 @@ async def process_searches(bot, once=False):
                     # Browse API is optional fallback only for EBAY_SOURCE=auto.
                     # With EBAY_SOURCE=html we stay HTML-only (no API 429 spam).
                     source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
+                    # API only after HTML fully failed (blocked/rate/empty shell).
+                    # fetch_ebay_ex already tried curl_cffi + m.ebay + Playwright.
                     if (
                         source_now == "auto"
                         and not _ebay_api_circuit_open
-                        and (bucket_err in ("blocked", "rate_limit", "cooldown") or not bucket_results)
+                        and (bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse") or not bucket_results)
                         and _ebay_api_configured()
                     ):
                         reason = bucket_err or "empty"
-                        logger.info("  %s: HTML %s for %s, falling back to API", search["query"], reason, label)
+                        logger.info(
+                            "  %s: HTML exhausted (%s) for %s — API last resort only",
+                            search["query"], reason, label,
+                        )
                         api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, stats_search, force=True)
                         if not api_err:
                             bucket_results = api_results
