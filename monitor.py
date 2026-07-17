@@ -4811,7 +4811,7 @@ def _do_fetch_playwright(url, query=""):
             except Exception:
                 pass
             page.goto(url, wait_until="domcontentloaded", timeout=35000)
-            page.wait_for_timeout(2200)
+            page.wait_for_timeout(1800)
             # dismiss cookie banner if present
             for sel in (
                 "button#gdpr-banner-accept",
@@ -4823,6 +4823,15 @@ def _do_fetch_playwright(url, query=""):
                     page.wait_for_timeout(500)
                 except Exception:
                     pass
+            # Wait for result cards when SPA paints late (common on auction SERP).
+            try:
+                page.wait_for_selector(
+                    "li.s-card, li.s-item, .srp-results, .srp-river-results",
+                    timeout=8000,
+                )
+                page.wait_for_timeout(900)
+            except Exception:
+                page.wait_for_timeout(1200)
             body = page.content()
             final = page.url
             browser.close()
@@ -6422,6 +6431,9 @@ async def process_searches(bot, once=False):
                     """Auction path: PW-first on GH (curl soft-empty is useless for auctions).
 
                     Returns (items, err). err is None on genuine empty.
+                    Tries multiple sort orders — empty auction stock and soft-blocks
+                    look the same on GH; price_asc often still surfaces real lots
+                    when newest is stealth-empty.
                     """
                     base = _statistics_search_variant(
                         search, "auction", auc_min_price, False
@@ -6429,36 +6441,66 @@ async def process_searches(bot, once=False):
                     base.setdefault("filters", {})["best_offer"] = False
                     base["filters"].pop("_stats_bucket_filter", None)
                     base["filters"]["category"] = "all"
-                    base["filters"]["sort"] = "newest"
                     base["filters"].pop("sort_code", None)
                     q = base.get("query") or search.get("query") or ""
+                    last_err = None
+                    saw_clean_empty = False
 
-                    # GitHub: skip curl chain — go Chromium first (www then m.).
+                    # Sort variants: newest first (live bids), then cheapest floor.
+                    sort_variants = ("newest", "price_asc")
                     if _on_github_actions():
-                        for sub in ("www", "m"):
-                            pw_url = _build_url_with_host("ebay.de", base, sub=sub)
-                            pw_items, pw_err = await asyncio.to_thread(
-                                _do_fetch_playwright, pw_url, q
-                            )
-                            pw_items = _tag_items_for_search(pw_items or [], base)
-                            if pw_items:
-                                auc_only = [it for it in pw_items if it.get("auction")] or pw_items
-                                logger.info(
-                                    "  %s: auction PW-%s %d items",
-                                    search["query"], sub, len(auc_only),
+                        for sort_name in sort_variants:
+                            trial = copy.deepcopy(base)
+                            trial["filters"]["sort"] = sort_name
+                            # m. first on GH — desktop challenge is near-certain.
+                            for sub in ("m", "www"):
+                                pw_url = _build_url_with_host("ebay.de", trial, sub=sub)
+                                pw_items, pw_err = await asyncio.to_thread(
+                                    _do_fetch_playwright, pw_url, q
                                 )
-                                return auc_only, None
-                            if pw_err is None:
-                                return [], None
-                            if pw_err == "no_playwright":
+                                pw_items = _tag_items_for_search(pw_items or [], trial)
+                                if pw_items:
+                                    auc_only = [
+                                        it for it in pw_items if it.get("auction")
+                                    ] or pw_items
+                                    logger.info(
+                                        "  %s: auction PW-%s/%s %d items",
+                                        search["query"], sub, sort_name, len(auc_only),
+                                    )
+                                    return auc_only, None
+                                if pw_err is None:
+                                    saw_clean_empty = True
+                                    # Real empty SERP for this sort — still try other
+                                    # sorts once (price_asc can differ), then stop.
+                                    logger.info(
+                                        "  %s: auction PW-%s/%s clean empty",
+                                        search["query"], sub, sort_name,
+                                    )
+                                    break
+                                if pw_err == "no_playwright":
+                                    last_err = pw_err
+                                    break
+                                last_err = pw_err
+                                await asyncio.sleep(0.8)
+                            if last_err == "no_playwright":
                                 break
-                            await asyncio.sleep(1.0)
+                        if saw_clean_empty and last_err in (None, "blocked", "network", "parse"):
+                            # At least one auction SERP was a real empty page.
+                            return [], None
 
-                    items, err = await _stats_one_fetch("Auction fill", base)
-                    if items:
-                        auc_only = [it for it in items if it.get("auction")] or items
-                        return auc_only, None
-                    return [], err
+                    for sort_name in sort_variants:
+                        trial = copy.deepcopy(base)
+                        trial["filters"]["sort"] = sort_name
+                        items, err = await _stats_one_fetch(
+                            f"Auction fill/{sort_name}", trial
+                        )
+                        if items:
+                            auc_only = [it for it in items if it.get("auction")] or items
+                            return auc_only, None
+                        if err is None:
+                            return [], None
+                        last_err = err
+                    return [], last_err
 
                 mixed_items, mixed_err = await _stats_one_fetch("mixed stats", mixed_search)
                 if mixed_items:
@@ -6567,19 +6609,32 @@ async def process_searches(bot, once=False):
                 if raw_has_auc:
                     side_ok["auc"] = True
                     side_err["auc"] = None
-                # If product has any results at all, sibling empty is not a full eBay outage.
+                # Sibling side recovered prices → do not paint the missing side as a
+                # full eBay outage. Soft-block on auction-only SERP is the usual
+                # shape of *real zero auctions* (manual live checks: LG/G6/DEX/…),
+                # so prefer Не найдено over «сбой загрузки» when mixed/BIN worked.
                 if results:
-                    if not raw_has_auc and side_err.get("auc") in (
-                        "blocked", "cooldown", "network", "parse", "rate_limit", "api_rate_limit",
-                    ):
-                        # Transport failed for auction page, but BIN worked — do not lie
-                        # "eBay block" on auction rows; user reads that as "no stock".
-                        # Keep a softer side-only note via side_err for optional wording.
-                        side_err["auc"] = "side_fetch_failed"
-                    if not raw_has_bin and side_err.get("bin") in (
-                        "blocked", "cooldown", "network", "parse", "rate_limit", "api_rate_limit",
-                    ):
-                        side_err["bin"] = "side_fetch_failed"
+                    soft_transport = (
+                        "blocked", "cooldown", "network", "parse",
+                        "rate_limit", "api_rate_limit", "side_fetch_failed",
+                    )
+                    if not raw_has_auc and side_err.get("auc") in soft_transport:
+                        # Mixed page already proved HTML works for this product.
+                        # Auction-only soft-fail ≈ no auction listings, not outage.
+                        side_genuine_empty["auc"] = True
+                        side_err["auc"] = None
+                        logger.info(
+                            "  %s: auction side soft-fail→empty (BIN ok, 0 auc raw)",
+                            search["query"],
+                        )
+                    if not raw_has_bin and side_err.get("bin") in soft_transport:
+                        # Same for BIN when only auctions came back.
+                        side_genuine_empty["bin"] = True
+                        side_err["bin"] = None
+                        logger.info(
+                            "  %s: BIN side soft-fail→empty (auc ok, 0 bin raw)",
+                            search["query"],
+                        )
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
                 # Drop bait floors again after bucket split (defense in depth).
