@@ -3472,7 +3472,22 @@ def _build_ebay_api_params(search, market=None):
     return params
 
 
+# Once Browse API hard-429s, stop calling it for the rest of this process —
+# multi-product stats was burning 500+ 429s and every bucket became "Не найдено".
+_ebay_api_circuit_open = False
+_ebay_api_circuit_reason = None
+
+
 def fetch_ebay_api_ex(search, force=False):
+    global _ebay_api_circuit_open, _ebay_api_circuit_reason
+    if _ebay_api_circuit_open:
+        logger.info(
+            "eBay API circuit open (%s) — skip '%s'",
+            _ebay_api_circuit_reason or "rate_limit",
+            search.get("query"),
+        )
+        return [], "api_rate_limit"
+
     token, err = _get_ebay_api_token()
     if err:
         return [], err
@@ -3559,6 +3574,13 @@ def fetch_ebay_api_ex(search, force=False):
                         time.sleep(4.0)
                         continue
                     hit_hard_rate_limit = True
+                    # Open global circuit so remaining products don't each burn 2+ 429s.
+                    _ebay_api_circuit_open = True
+                    _ebay_api_circuit_reason = "429"
+                    logger.warning(
+                        "eBay API circuit OPEN after 429 on %s for '%s' — no more Browse API this run",
+                        market, search.get("query"),
+                    )
                 break
             except Exception as e:
                 logger.warning("eBay API network error for '%s' on %s: %s", search["query"], market, e)
@@ -6049,6 +6071,7 @@ async def process_searches(bot, once=False):
                     source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
                     if (
                         source_now == "auto"
+                        and not _ebay_api_circuit_open
                         and (bucket_err in ("blocked", "rate_limit", "cooldown") or not bucket_results)
                         and _ebay_api_configured()
                     ):
@@ -6061,11 +6084,13 @@ async def process_searches(bot, once=False):
                         elif api_err in ("rate_limit", "api_rate_limit") or (
                             isinstance(api_err, str) and "429" in api_err
                         ):
-                            # Don't thrash remaining markets/products after hard 429.
+                            bucket_err = "api_rate_limit"
                             logger.warning(
-                                "  %s: API rate-limited on %s — skip further API fallback this product",
+                                "  %s: API rate-limited on %s — circuit will stop further API",
                                 search["query"], label,
                             )
+                    elif source_now == "auto" and _ebay_api_circuit_open and not bucket_results:
+                        bucket_err = bucket_err or "api_rate_limit"
                     if bucket_results:
                         result_groups.append(bucket_results)
                     if bucket_err:
@@ -6228,6 +6253,23 @@ async def process_searches(bot, once=False):
                     t_lower = t_str.lower()
                     return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "д", "ч"))
                 
+                def _empty_bucket_label():
+                    """Distinguish real empty stock vs transport failures (block/429)."""
+                    errs = set(fetch_errors or [])
+                    if _ebay_api_circuit_open or errs & {
+                        "api_rate_limit",
+                        "rate_limit",
+                        "api_rate",
+                    }:
+                        return "⚠️", "Rate limit"
+                    if errs & {"blocked", "cooldown"}:
+                        return "⚠️", "eBay block"
+                    if fetch_err in ("blocked", "rate_limit", "cooldown", "api_rate_limit"):
+                        if fetch_err in ("rate_limit", "api_rate_limit"):
+                            return "⚠️", "Rate limit"
+                        return "⚠️", "eBay block"
+                    return "❌", "Не найдено"
+
                 def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False, link_spaces_len=9):
                     row_lines = []
                     if item:
@@ -6270,7 +6312,7 @@ async def process_searches(bot, once=False):
                         row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        v_emoji, v_text = "❌", "Не найдено"
+                        v_emoji, v_text = _empty_bucket_label()
                         verdict_info = f"{v_emoji} {v_text}"
                         row_lines.append(f"{emoji} <code>{label}{padded_dashes}  │ </code>{verdict_info}")
                     return row_lines
