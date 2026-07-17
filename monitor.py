@@ -4913,6 +4913,45 @@ def _query_cache_key(search):
     return "|".join(parts)
 
 
+def _tag_items_for_search(items, search):
+    """Fix listing-type flags from the *search* we ran.
+
+    eBay mobile/desktop cards often omit 'Gebot'/'Auktion' text. Then the HTML
+    parser leaves auction=False / buy_now=True, so auction-search hits land in
+    Sofort buckets and Auktion stays empty — the main 'нет данных' lie after
+    a successful auction page fetch.
+    """
+    if not items:
+        return items or []
+    lt = (search.get("filters") or {}).get("listing_type", "all")
+    out = []
+    for raw in items:
+        it = raw
+        # time-left is a strong auction signal even on mixed pages
+        if it.get("time_left") and not it.get("auction"):
+            it = dict(it)
+            it["auction"] = True
+        if lt == "auction":
+            it = dict(it)
+            it["auction"] = True
+            # Pure auction SERP: default parser buy_now=True is wrong unless hybrid.
+            if not it.get("_was_hybrid"):
+                it["buy_now"] = False
+            if it.get("auc_price") is None and it.get("price") is not None:
+                it["auc_price"] = it.get("price")
+            if it.get("auc_total_price") is None and it.get("total_price") is not None:
+                it["auc_total_price"] = it.get("total_price")
+        elif lt in ("buy_now", "buy_now_offer"):
+            it = dict(it)
+            it["buy_now"] = True
+            if it.get("bin_price") is None and it.get("price") is not None:
+                it["bin_price"] = it.get("price")
+            if it.get("bin_total_price") is None and it.get("total_price") is not None:
+                it["bin_total_price"] = it.get("total_price")
+        out.append(it)
+    return out
+
+
 def fetch_ebay_ex(search, force=False):
     """Returns (items, error). Tries host chain: remembers a working one,
     falls back to next host on block/rate_limit. After sustained blocks the
@@ -6289,6 +6328,7 @@ async def process_searches(bot, once=False):
                     bucket_results, bucket_err = await asyncio.to_thread(
                         fetch_ebay_ex, stats_search, force=True
                     )
+                    bucket_results = _tag_items_for_search(bucket_results or [], stats_search)
                     source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
                     if (
                         source_now == "auto"
@@ -6305,7 +6345,7 @@ async def process_searches(bot, once=False):
                             fetch_ebay_api_ex, stats_search, force=True
                         )
                         if not api_err and api_results:
-                            bucket_results = api_results
+                            bucket_results = _tag_items_for_search(api_results, stats_search)
                             bucket_err = None
                         elif api_err in ("rate_limit", "api_rate_limit") or (
                             isinstance(api_err, str) and "429" in api_err
@@ -6332,34 +6372,60 @@ async def process_searches(bot, once=False):
                     return has_bin, has_auc
 
                 async def _auction_fill_hard():
-                    """Dedicated auction recovery — do not inherit mixed-page errors.
+                    """Dedicated auction recovery with listing-type tagging + URL variants.
 
                     Returns (items, err). err is None on genuine empty after Playwright.
                     """
-                    auc_search = _statistics_search_variant(
+                    variants = []
+                    base = _statistics_search_variant(
                         search, "auction", auc_min_price, False
                     )
-                    auc_search.setdefault("filters", {})["best_offer"] = False
-                    auc_search["filters"].pop("_stats_bucket_filter", None)
-                    # Prefer ending-soon on retry so auctions aren't buried under junk.
-                    items, err = await _stats_one_fetch("Auction fill", auc_search)
-                    if items:
-                        return items, None
-                    # Genuine empty (Playwright saw a real 0-result page).
-                    if err is None:
-                        return [], None
-                    # One more Playwright-only path with force + session clear.
-                    if _on_github_actions():
-                        await asyncio.sleep(2.0)
-                        _clear_gh_fetch_pressure(had_results=False)
-                        reset_ebay_session(rotate=True)
-                        items2, err2 = await _stats_one_fetch("Auction fill retry", auc_search)
-                        if items2:
-                            return items2, None
-                        if err2 is None:
-                            return [], None
-                        return [], err2 or err
-                    return [], err
+                    base.setdefault("filters", {})["best_offer"] = False
+                    base["filters"].pop("_stats_bucket_filter", None)
+                    variants.append(("Auction fill price_asc", base))
+
+                    # Newest — auctions often missing on price_asc shells.
+                    v_new = copy.deepcopy(base)
+                    v_new["filters"]["sort"] = "newest"
+                    v_new["filters"].pop("sort_code", None)
+                    variants.append(("Auction fill newest", v_new))
+
+                    # Open category + slightly lower floor (auction junk floors less often).
+                    v_open = copy.deepcopy(base)
+                    v_open["filters"]["category"] = "all"
+                    try:
+                        mp = float(v_open["filters"].get("min_price") or 0)
+                        if mp > 30:
+                            v_open["filters"]["min_price"] = max(20.0, mp * 0.75)
+                    except (TypeError, ValueError):
+                        pass
+                    variants.append(("Auction fill open-cat", v_open))
+
+                    last_err = None
+                    for i, (label, auc_search) in enumerate(variants):
+                        if i and _on_github_actions():
+                            await asyncio.sleep(1.5)
+                            _clear_gh_fetch_pressure(had_results=False)
+                            reset_ebay_session(rotate=True)
+                        items, err = await _stats_one_fetch(label, auc_search)
+                        if items:
+                            # Only keep auction-flagged rows for auction buckets.
+                            auc_only = [it for it in items if it.get("auction")]
+                            if not auc_only:
+                                auc_only = _tag_items_for_search(items, auc_search)
+                                auc_only = [it for it in auc_only if it.get("auction")]
+                            if auc_only:
+                                logger.info(
+                                    "  %s: auction fill OK via %s (%d items)",
+                                    search["query"], label, len(auc_only),
+                                )
+                                return auc_only, None
+                        if err is None and not items:
+                            # genuine empty for this variant — try next anyway
+                            last_err = None
+                            continue
+                        last_err = err or last_err
+                    return [], last_err
 
                 mixed_items, mixed_err = await _stats_one_fetch("mixed stats", mixed_search)
                 if mixed_items:
