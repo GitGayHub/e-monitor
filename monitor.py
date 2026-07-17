@@ -4950,9 +4950,19 @@ def fetch_ebay_ex(search, force=False):
     if now < _ebay_block_until:
         wait = int(_ebay_block_until - now)
         logger.info("eBay cooldown active, %d s left", wait)
-        if source == "auto" and _ebay_api_configured():
+        # On GH/stats we still try Playwright per query — a full 5–60 min skip
+        # turns every remaining product into fake empty / rate-limit rows.
+        if _on_github_actions() or force:
+            pw_url = _build_url_with_host("ebay.de", search)
+            pw_items, pw_err = _do_fetch_playwright(pw_url, search.get("query", ""))
+            if pw_items:
+                _ebay_consecutive_blocks = 0
+                _ebay_block_until = 0.0
+                _ebay_query_cache[cache_key] = (time.time(), pw_items, None)
+                return pw_items, None
+        if source == "auto" and _ebay_api_configured() and not _ebay_api_circuit_open:
             items, err = fetch_ebay_api_ex(search, force=force)
-            if err is None:
+            if err is None and items:
                 _ebay_query_cache[cache_key] = (time.time(), items, None)
                 return items, None
             logger.warning("eBay API fallback failed during HTML cooldown: %s", err)
@@ -5027,7 +5037,7 @@ def fetch_ebay_ex(search, force=False):
 
     # API only after HTML fully exhausted (extreme last resort).
     if source == "auto" and _ebay_api_configured() and not _ebay_api_circuit_open:
-        _ebay_block_until = max(_ebay_block_until, time.time() + _EBAY_BLOCK_COOLDOWN_BASE)
+        # Short pause only — do not arm multi-minute cooldown before API try.
         logger.info("eBay HTML exhausted (%s), trying Browse API last resort", err)
         api_items, api_err = fetch_ebay_api_ex(search, force=force)
         if api_err is None and api_items:
@@ -5036,13 +5046,16 @@ def fetch_ebay_ex(search, force=False):
         logger.warning("eBay API last-resort failed: %s", api_err)
         err = api_err or err
 
-
-    # Still blocked — exponential cooldown to stop hammering the flagged IP.
+    # Still blocked — brief cool-down. On GH/stats keep it tiny so one block
+    # does not blank the rest of a 20-product report for 5–60 minutes.
     _ebay_consecutive_blocks += 1
-    cooldown = min(
-        _EBAY_BLOCK_COOLDOWN_MAX,
-        _EBAY_BLOCK_COOLDOWN_BASE * (2 ** (_ebay_consecutive_blocks - 1)),
-    )
+    if _on_github_actions():
+        cooldown = min(45, 10 * _ebay_consecutive_blocks)
+    else:
+        cooldown = min(
+            _EBAY_BLOCK_COOLDOWN_MAX,
+            _EBAY_BLOCK_COOLDOWN_BASE * (2 ** (_ebay_consecutive_blocks - 1)),
+        )
     _ebay_block_until = time.time() + cooldown
     logger.warning(
         "eBay sustained block #%d, cooling down for %ds",
