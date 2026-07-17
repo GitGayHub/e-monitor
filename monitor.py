@@ -4765,7 +4765,8 @@ def _parse_search_body(body, host, query):
             host, itm_links, query,
         )
         return [], None
-    # Many /itm/ links but parser got 0 — markup drift; try harder upstream, not "no stock".
+    # Many /itm/ links but parser got 0 — markup drift. Prefer "parse" so caller
+    # retries Playwright, not "blocked" (which opens API circuit on 429 spam).
     if itm_links > 2:
         logger.warning(
             "eBay %s unparseable listings itm=%d body_len=%d for '%s'",
@@ -5116,9 +5117,12 @@ def fetch_ebay_ex(search, force=False):
         _ebay_query_cache[cache_key] = (time.time(), items, None)
         return items, None
 
-    # HTML last resort: real Chromium (helps GitHub Actions datacenter IPs).
-    # Always try PW when chain empty — including clean empty — to confirm stock.
-    if not items:
+    # True empty SERP from curl (0 itm, result chrome) — e.g. unlisted models.
+    # Must NOT be upgraded to eBay block / API 429 by a later Playwright crash.
+    html_confirmed_empty = (err is None)
+
+    # Chromium recovery when chain failed or to double-check soft empties.
+    if not items and err in (None, "blocked", "rate_limit", "parse", "network"):
         pw_urls = [
             _build_url_with_host("ebay.de", search, sub="www"),
             _build_url_with_host("ebay.de", search, sub="m"),
@@ -5130,18 +5134,25 @@ def fetch_ebay_ex(search, force=False):
                 _ebay_consecutive_blocks = 0
                 _ebay_query_cache[cache_key] = (time.time(), pw_items, None)
                 return pw_items, None
-            # Clean empty from Chromium = real empty stock.
             if pw_err is None:
                 _ebay_consecutive_blocks = 0
                 _ebay_query_cache[cache_key] = (time.time(), [], None)
                 return [], None
             if pw_err in ("no_playwright",):
                 break
+        if html_confirmed_empty:
+            # curl already saw empty SERP; PW crash/network must not invent block.
+            logger.info(
+                "HTML empty confirmed for '%s'; ignoring PW fail (%s)",
+                search.get("query"), pw_err,
+            )
+            _ebay_consecutive_blocks = 0
+            _ebay_query_cache[cache_key] = (time.time(), [], None)
+            return [], None
         if pw_err and pw_err not in ("no_playwright",):
             err = pw_err or err
 
     if err is None and not items:
-        # Genuine empty after all HTML strategies
         _ebay_query_cache[cache_key] = (time.time(), [], None)
         return [], None
 
@@ -5149,9 +5160,14 @@ def fetch_ebay_ex(search, force=False):
         _ebay_query_cache[cache_key] = (time.time(), items or [], err)
         return items or [], err
 
-    # API only after HTML fully exhausted (extreme last resort).
-    if source == "auto" and _ebay_api_configured() and not _ebay_api_circuit_open:
-        # Short pause only — do not arm multi-minute cooldown before API try.
+    # API only after real HTML transport failure — never after confirmed empty SERP
+    # (empty + API 429 was painting Z80 LV as eBay block and opening the circuit).
+    if (
+        source == "auto"
+        and not html_confirmed_empty
+        and _ebay_api_configured()
+        and not _ebay_api_circuit_open
+    ):
         logger.info("eBay HTML exhausted (%s), trying Browse API last resort", err)
         api_items, api_err = fetch_ebay_api_ex(search, force=force)
         if api_err is None and api_items:
@@ -6368,39 +6384,13 @@ async def process_searches(bot, once=False):
                     stats_search = copy.deepcopy(stats_search)
                     stats_search.setdefault("filters", {})["best_offer"] = False
                     stats_search["filters"].pop("_stats_bucket_filter", None)
+                    # fetch_ebay_ex already does HTML + PW + API last resort.
+                    # Do NOT call Browse API again here — second 429 on empty models
+                    # (Z80 LV) opened the circuit and poisoned the rest of the report.
                     bucket_results, bucket_err = await asyncio.to_thread(
                         fetch_ebay_ex, stats_search, force=True
                     )
                     bucket_results = _tag_items_for_search(bucket_results or [], stats_search)
-                    source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
-                    if (
-                        source_now == "auto"
-                        and not _ebay_api_circuit_open
-                        and not bucket_results
-                        and bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse")
-                        and _ebay_api_configured()
-                    ):
-                        logger.info(
-                            "  %s: HTML exhausted (%s) for %s — API last resort only",
-                            search["query"], bucket_err, label,
-                        )
-                        api_results, api_err = await asyncio.to_thread(
-                            fetch_ebay_api_ex, stats_search, force=True
-                        )
-                        if not api_err and api_results:
-                            bucket_results = _tag_items_for_search(api_results, stats_search)
-                            bucket_err = None
-                        elif api_err in ("rate_limit", "api_rate_limit") or (
-                            isinstance(api_err, str) and "429" in api_err
-                        ):
-                            if not bucket_results and bucket_err in (
-                                "blocked", "rate_limit", "cooldown", "network", "parse",
-                            ):
-                                bucket_err = "api_rate_limit"
-                            logger.warning(
-                                "  %s: API rate-limited on %s",
-                                search["query"], label,
-                            )
                     return bucket_results or [], bucket_err
 
                 def _mark_sides_from_items(items):
@@ -6740,9 +6730,12 @@ async def process_searches(bot, once=False):
                     if side_genuine_empty["bin"] or side_genuine_empty["auc"]:
                         return "❌", "Не найдено"
                     err = err or fetch_err
+                    # network/parse after empty attempts = often unlisted model + PW crash
+                    if err in ("network", "parse"):
+                        return "❌", "Не найдено"
                     if err in ("rate_limit", "api_rate_limit", "api_rate"):
                         return "⚠️", "Rate limit"
-                    if err in ("blocked", "cooldown", "network", "parse"):
+                    if err in ("blocked", "cooldown"):
                         return "⚠️", "eBay block"
                     return "❌", "Не найдено"
 
