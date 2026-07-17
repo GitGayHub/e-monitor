@@ -4640,6 +4640,16 @@ def _on_github_actions():
     return bool(os.environ.get("GITHUB_ACTIONS") or os.environ.get("CI"))
 
 
+def _clear_gh_fetch_pressure(had_results=False):
+    """Between GH stats products: never carry cooldown into the next search."""
+    global _ebay_block_until, _ebay_consecutive_blocks
+    if not _on_github_actions():
+        return
+    _ebay_block_until = 0.0
+    if had_results:
+        _ebay_consecutive_blocks = 0
+
+
 def _warmup_session(session, host):
     """Visit homepage and a category index before the search to look like a
     real user navigating the site. Cookies stick to the session, which keeps
@@ -4927,7 +4937,16 @@ def fetch_ebay_ex(search, force=False):
     if len(variants) > 1 and not search.get("_variant_child"):
         merged_items = []
         errors = []
-        for query in variants:
+        # On GH: primary query first; if empty try at most ONE alias.
+        # Full 3–5 variant bursts × many products was the main reason eBay
+        # flipped to soft-empty / rate-limit mid statistics report.
+        if _on_github_actions():
+            order = list(variants)[:2]
+        else:
+            order = list(variants)
+        for qi, query in enumerate(order):
+            if qi > 0 and merged_items:
+                break
             variant = copy.deepcopy(search)
             variant["_query_override"] = query
             variant["_variant_child"] = True
@@ -4938,7 +4957,10 @@ def fetch_ebay_ex(search, force=False):
                 errors.append(variant_err)
         merged_items = _merge_items_by_id(merged_items)
         err = None if merged_items else (errors[-1] if errors else None)
-        logger.info("  %s -> %d merged items via %d query variants", search["query"], len(merged_items), len(variants))
+        logger.info(
+            "  %s -> %d merged items via %d/%d query variants",
+            search["query"], len(merged_items), len(order), len(variants),
+        )
         _ebay_query_cache[cache_key] = (time.time(), merged_items, err)
         return merged_items, err
 
@@ -5046,16 +5068,21 @@ def fetch_ebay_ex(search, force=False):
         logger.warning("eBay API last-resort failed: %s", api_err)
         err = api_err or err
 
-    # Still blocked — brief cool-down. On GH/stats keep it tiny so one block
-    # does not blank the rest of a 20-product report for 5–60 minutes.
+    # Still blocked. On GH never arm multi-product cooldown — each search
+    # already rotates fingerprints + Playwright; skipping the rest of stats
+    # for 45s+ made 20 products show "Rate limit" after two OK phones.
     _ebay_consecutive_blocks += 1
     if _on_github_actions():
-        cooldown = min(45, 10 * _ebay_consecutive_blocks)
-    else:
-        cooldown = min(
-            _EBAY_BLOCK_COOLDOWN_MAX,
-            _EBAY_BLOCK_COOLDOWN_BASE * (2 ** (_ebay_consecutive_blocks - 1)),
+        logger.warning(
+            "eBay block #%d for '%s' on GH — no cooldown, next product will retry HTML",
+            _ebay_consecutive_blocks, search.get("query"),
         )
+        _ebay_query_cache[cache_key] = (time.time(), [], err or "blocked")
+        return [], err or "blocked"
+    cooldown = min(
+        _EBAY_BLOCK_COOLDOWN_MAX,
+        _EBAY_BLOCK_COOLDOWN_BASE * (2 ** (_ebay_consecutive_blocks - 1)),
+    )
     _ebay_block_until = time.time() + cooldown
     logger.warning(
         "eBay sustained block #%d, cooling down for %ds",
@@ -6209,23 +6236,23 @@ async def process_searches(bot, once=False):
                 bin_min_price = bin_search_cfg.get("filters", {}).get("min_price") if bin_search_cfg else None
                 auc_min_price = auc_search_cfg.get("filters", {}).get("min_price") if auc_search_cfg else None
                 
-                # Fetch each stats bucket with cheapest-first sorting. A single
-                # newest-first BIN/Auction page can miss the real lowest valid item.
+                # TWO HTML fetches only (BIN + Auction). Sofort/Sofort+/Auktion/Auktion+
+                # are split client-side below. Four separate eBay hits per product was
+                # the main reason GH mid-report flipped to Rate limit / cooldown.
                 stats_fetches = [
                     ("BIN stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, False)),
-                    ("BIN+BO stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, True)),
                     ("Auction stats", _statistics_search_variant(search, "auction", auc_min_price, False)),
-                    ("Auction+BO stats", _statistics_search_variant(search, "auction", auc_min_price, True)),
                 ]
                 result_groups = []
                 fetch_errors = []
                 for label, stats_search in stats_fetches:
+                    stats_search = copy.deepcopy(stats_search)
+                    # One page for listing type — include BO and non-BO (no LH_BO filter).
+                    stats_search.setdefault("filters", {})["best_offer"] = False
+                    stats_search["filters"].pop("_stats_bucket_filter", None)
                     bucket_results, bucket_err = await asyncio.to_thread(fetch_ebay_ex, stats_search, force=True)
-                    # Browse API is optional fallback only for EBAY_SOURCE=auto.
-                    # With EBAY_SOURCE=html we stay HTML-only (no API 429 spam).
                     source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
-                    # API only after HTML fully failed (blocked/rate/empty shell).
-                    # fetch_ebay_ex already tried curl_cffi + m.ebay + Playwright.
+                    # API only after HTML fully failed (curl + m.ebay + Playwright).
                     if (
                         source_now == "auto"
                         and not _ebay_api_circuit_open
@@ -6255,16 +6282,21 @@ async def process_searches(bot, once=False):
                         result_groups.append(bucket_results)
                     if bucket_err:
                         fetch_errors.append(bucket_err)
+                    if _on_github_actions():
+                        # Brief pause between BIN and Auction for same product.
+                        await asyncio.sleep(2.0)
 
                 results = _merge_items_by_id(*result_groups)
                 fetch_err = fetch_errors[0] if fetch_errors else None
                 if fetch_err and not results:
                     blocked_searches.append(search)
+                if _on_github_actions():
+                    # Pause between products so the next HTML chain is not still hot.
+                    await asyncio.sleep(3.0)
+                    _clear_gh_fetch_pressure(had_results=bool(results))
                 
                 # Filter results with skip_seen=True (to show already notified items).
-                # The stats fetch above already split BIN/Auction/BO buckets; using
-                # the original search here would often keep only the first config row
-                # for a query (usually Sofort) and drop every auction before grouping.
+                # BIN/Auction/BO split happens after this merge (see bin_no_bo / auc_bo).
                 stats_filter_search = _statistics_filter_search(search)
                 filtered = filter_results(results, stats_filter_search, config, skip_seen=True, is_statistics=True)
                 
