@@ -4925,13 +4925,15 @@ def fetch_ebay_ex(search, force=False):
 
     # Short per-query cache: absorbs duplicate calls from the UI ('Retry'
     # button spam, double-presses) so we don't hammer eBay.
+    # force=True bypasses cache so stats retries after a soft-block can re-hit HTML.
     cache_key = _query_cache_key(search)
-    cached = _ebay_query_cache.get(cache_key)
-    if cached and now - cached[0] < _EBAY_QUERY_CACHE_TTL:
-        items, err = cached[1], cached[2]
-        logger.info("  %s -> cached (%ds old, %d items, err=%s)",
-                    search["query"], int(now - cached[0]), len(items), err)
-        return items, err
+    if not force:
+        cached = _ebay_query_cache.get(cache_key)
+        if cached and now - cached[0] < _EBAY_QUERY_CACHE_TTL:
+            items, err = cached[1], cached[2]
+            logger.info("  %s -> cached (%ds old, %d items, err=%s)",
+                        search["query"], int(now - cached[0]), len(items), err)
+            return items, err
 
     variants = _search_query_variants(search)
     if len(variants) > 1 and not search.get("_variant_child"):
@@ -6239,52 +6241,92 @@ async def process_searches(bot, once=False):
                 # TWO HTML fetches only (BIN + Auction). Sofort/Sofort+/Auktion/Auktion+
                 # are split client-side below. Four separate eBay hits per product was
                 # the main reason GH mid-report flipped to Rate limit / cooldown.
+                # Track per-side errors so empty Sofort+ is not labeled Rate limit
+                # when BIN succeeded and Auction failed (common mid-report case).
                 stats_fetches = [
-                    ("BIN stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, False)),
-                    ("Auction stats", _statistics_search_variant(search, "auction", auc_min_price, False)),
+                    ("bin", "BIN stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, False)),
+                    ("auc", "Auction stats", _statistics_search_variant(search, "auction", auc_min_price, False)),
                 ]
                 result_groups = []
                 fetch_errors = []
-                for label, stats_search in stats_fetches:
+                side_err = {"bin": None, "auc": None}
+                side_ok = {"bin": False, "auc": False}
+
+                async def _stats_one_fetch(side, label, stats_search, attempt=1):
                     stats_search = copy.deepcopy(stats_search)
-                    # One page for listing type — include BO and non-BO (no LH_BO filter).
                     stats_search.setdefault("filters", {})["best_offer"] = False
                     stats_search["filters"].pop("_stats_bucket_filter", None)
-                    bucket_results, bucket_err = await asyncio.to_thread(fetch_ebay_ex, stats_search, force=True)
+                    bucket_results, bucket_err = await asyncio.to_thread(
+                        fetch_ebay_ex, stats_search, force=True
+                    )
                     source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
-                    # API only after HTML fully failed (curl + m.ebay + Playwright).
+                    # API only after HTML transport failure — never for clean empty stock
+                    # (that was burning Browse API 429s and painting false Rate limits).
                     if (
                         source_now == "auto"
                         and not _ebay_api_circuit_open
-                        and (bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse") or not bucket_results)
+                        and not bucket_results
+                        and bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse")
                         and _ebay_api_configured()
                     ):
-                        reason = bucket_err or "empty"
+                        reason = bucket_err
                         logger.info(
                             "  %s: HTML exhausted (%s) for %s — API last resort only",
                             search["query"], reason, label,
                         )
-                        api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, stats_search, force=True)
-                        if not api_err:
+                        api_results, api_err = await asyncio.to_thread(
+                            fetch_ebay_api_ex, stats_search, force=True
+                        )
+                        if not api_err and api_results:
                             bucket_results = api_results
                             bucket_err = None
                         elif api_err in ("rate_limit", "api_rate_limit") or (
                             isinstance(api_err, str) and "429" in api_err
                         ):
-                            bucket_err = "api_rate_limit"
+                            # Only upgrade to Rate limit when HTML itself failed.
+                            # Clean HTML zero-result + API 429 must stay "Не найдено".
+                            if not bucket_results and bucket_err in (
+                                "blocked", "rate_limit", "cooldown", "network", "parse",
+                            ):
+                                bucket_err = "api_rate_limit"
                             logger.warning(
                                 "  %s: API rate-limited on %s — circuit will stop further API",
                                 search["query"], label,
                             )
                     elif source_now == "auto" and _ebay_api_circuit_open and not bucket_results:
-                        bucket_err = bucket_err or "api_rate_limit"
+                        # Circuit open must not re-label a clean HTML empty as Rate limit.
+                        pass
+                    return bucket_results or [], bucket_err
+
+                for side, label, stats_search in stats_fetches:
+                    bucket_results, bucket_err = await _stats_one_fetch(side, label, stats_search)
+                    # On GH: one delayed retry for Auction (second hit is more often blocked).
+                    if (
+                        _on_github_actions()
+                        and side == "auc"
+                        and not bucket_results
+                        and bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse", "api_rate_limit")
+                    ):
+                        logger.info(
+                            "  %s: auction empty (%s) — one GH retry after pause",
+                            search["query"], bucket_err,
+                        )
+                        await asyncio.sleep(4.0)
+                        _clear_gh_fetch_pressure(had_results=False)
+                        bucket_results, bucket_err = await _stats_one_fetch(
+                            side, label + " retry", stats_search, attempt=2
+                        )
                     if bucket_results:
                         result_groups.append(bucket_results)
-                    if bucket_err:
-                        fetch_errors.append(bucket_err)
+                        side_ok[side] = True
+                        side_err[side] = None
+                    else:
+                        side_err[side] = bucket_err
+                        if bucket_err:
+                            fetch_errors.append(bucket_err)
                     if _on_github_actions():
-                        # Brief pause between BIN and Auction for same product.
-                        await asyncio.sleep(2.0)
+                        # Pause between BIN and Auction for same product.
+                        await asyncio.sleep(3.0)
 
                 results = _merge_items_by_id(*result_groups)
                 fetch_err = fetch_errors[0] if fetch_errors else None
@@ -6445,20 +6487,21 @@ async def process_searches(bot, once=False):
                     t_lower = t_str.lower()
                     return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "д", "ч"))
                 
-                def _empty_bucket_label():
-                    """Distinguish real empty stock vs transport failures (block/429)."""
-                    errs = set(fetch_errors or [])
-                    if _ebay_api_circuit_open or errs & {
-                        "api_rate_limit",
-                        "rate_limit",
-                        "api_rate",
-                    }:
+                def _empty_bucket_label(is_auction=False):
+                    """Empty label uses THIS side's fetch error only.
+
+                    If BIN succeeded, empty Sofort+ is real stock gap (Не найдено),
+                    even when Auction hit rate-limit — not a fake Rate limit row.
+                    """
+                    side = "auc" if is_auction else "bin"
+                    if side_ok.get(side):
+                        return "❌", "Не найдено"
+                    err = side_err.get(side) or (None if side_ok.get(side) else fetch_err)
+                    if err in ("rate_limit", "api_rate_limit", "api_rate"):
                         return "⚠️", "Rate limit"
-                    if errs & {"blocked", "cooldown"}:
+                    if err in ("blocked", "cooldown"):
                         return "⚠️", "eBay block"
-                    if fetch_err in ("blocked", "rate_limit", "cooldown", "api_rate_limit"):
-                        if fetch_err in ("rate_limit", "api_rate_limit"):
-                            return "⚠️", "Rate limit"
+                    if err in ("network", "parse"):
                         return "⚠️", "eBay block"
                     return "❌", "Не найдено"
 
@@ -6504,7 +6547,7 @@ async def process_searches(bot, once=False):
                         row_lines.append(f"🔗 <code>{spaces_str}</code><a href=\"{html.escape(url)}\"><b>*ТЫК*</b></a>")
                     else:
                         padded_dashes = dashes.rjust(max_len)
-                        v_emoji, v_text = _empty_bucket_label()
+                        v_emoji, v_text = _empty_bucket_label(is_auction=is_auction)
                         verdict_info = f"{v_emoji} {v_text}"
                         row_lines.append(f"{emoji} <code>{label}{padded_dashes}  │ </code>{verdict_info}")
                     return row_lines
