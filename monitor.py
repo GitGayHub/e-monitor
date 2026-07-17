@@ -196,10 +196,14 @@ EBAY_DEVICE_CATEGORY_IDS = {
     "smart_watches": "178893",  # Smartwatches
     "consoles": "139971",       # Videospiel-Konsolen / Video Game Consoles
     "laptops": "177",          # Notebooks & Netbooks / Laptops & Netbooks
-    "tablets": "171485",        # Tablets & eReader / Tablets & eBook Readers
+    "tablets": "171485",        # Tablets & eBook Readers
     "computers": "179",        # PC Desktops & All-in-Ones
     "headphones": "112529",    # Kopfhörer & Headsets / Headphones
     "vr_headsets": "190066",   # VR-Headsets / Virtual Reality Headsets
+    # Without these, monitors/mice fell back to parent 58058 (Computers/Tablets)
+    # and eBay returned empty / wrong catalog for dedicated monitor & mouse listings.
+    "monitors": "80182",       # Monitore, Projektoren & Zubehör
+    "mice": "23160",           # Mäuse / Mice
 }
 
 
@@ -671,13 +675,15 @@ def _search_intent(search_or_query):
     if "32gs95" in ident or "27gx790a" in ident or "lg ultragear oled" in ident:
         return {
             "kind": "lg_ultragear_oled",
-            "query": "lg ultragear oled 480hz (32GS95, 27GX790A)",
+            # Clean eBay _nkw — parentheses OR groups zero out monitor results.
+            "query": "lg ultragear oled 480hz",
             "display_name": "LG UltraGear OLED",
             "category": "monitors",
         }
     if (
         "g60sf" in ident
         or "ls27fg602" in ident
+        or "ls27fg604" in ident
         or (
             "odyssey" in ident
             and "g6" in ident
@@ -687,9 +693,33 @@ def _search_intent(search_or_query):
     ):
         return {
             "kind": "samsung_odyssey_oled_g6",
-            "query": "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+            # No (G60SF, LS27FG602) in _nkw — eBay treats that as near-empty.
+            "query": "samsung odyssey oled g6 500hz",
             "display_name": "Samsung Odyssey OLED G6 500Hz",
             "category": "monitors",
+        }
+    if "superlight" in ident and "dex" in ident:
+        return {
+            "kind": "superlight_2_dex",
+            "query": "logitech superlight 2 dex",
+            "display_name": "logitech superlight 2 dex",
+            "category": "mice",
+        }
+    if "superlight" in ident and "2" in ident and "dex" not in ident:
+        return {
+            "kind": "superlight_2",
+            "query": "logitech superlight 2",
+            "display_name": "logitech superlight 2",
+            "category": "mice",
+        }
+    if "ult wear" in ident or "ult900" in ident or re.search(
+        r"\bsony\s+ult\b", ident
+    ):
+        return {
+            "kind": "sony_ult_wear",
+            "query": "sony ult wear",
+            "display_name": "Sony ULT Wear",
+            "category": "headphones",
         }
     if re.search(r"\b4050\b", ident) and "oled" in ident:
         return {
@@ -740,9 +770,9 @@ def _search_intent(search_or_query):
 
 
 def _matches_samsung_odyssey_g6_500hz(text_norm):
-    """True for Odyssey OLED G6 500Hz (G60SF / LS27FG602), not 360Hz G60SD or 240Hz G61SD."""
+    """True for Odyssey OLED G6 500Hz (G60SF / LS27FG602 / LS27FG604), not 360Hz G60SD."""
     t = text_norm or ""
-    if re.search(r"\bg60sf\b", t) or re.search(r"\bls27fg602[a-z0-9]*\b", t):
+    if re.search(r"\bg60sf\b", t) or re.search(r"\bls27fg60[24][a-z0-9]*\b", t):
         return True
     # Explicit non-500Hz sibling models without a 500Hz claim
     if re.search(r"\b(?:g60sd|g61sd|ls27dg60[12]|ls27dg61)\b", t) and not re.search(
@@ -754,6 +784,61 @@ def _matches_samsung_odyssey_g6_500hz(text_norm):
     )
     has_500 = re.search(r"\b500\s*hz\b|\b500hz\b", t) is not None
     return bool(has_odyssey_g6 and has_500)
+
+
+def _matches_lg_ultragear_oled_480(text_norm):
+    """LG UltraGear OLED 480Hz — model codes OR ultragear+oled+480."""
+    t = text_norm or ""
+    if re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", t):
+        return True
+    has_ug = "ultragear" in t or ("lg" in t and "oled" in t and "monitor" in t)
+    has_480 = re.search(r"\b480\s*hz\b|\b480hz\b", t) is not None
+    has_oled = "oled" in t
+    return bool(has_ug and has_480 and has_oled)
+
+
+def _matches_superlight_2_mouse(title_norm, require_dex=False):
+    """Logitech G Pro X Superlight 2 (+ optional DEX). Not parts/dongle-only."""
+    t = title_norm or ""
+    if not re.search(r"\bsuperlight\b", t):
+        return False
+    if not re.search(r"\b2\b|\bii\b", t):
+        return False
+    has_dex = re.search(r"\bdex\b", t) is not None
+    if require_dex and not has_dex:
+        return False
+    if not require_dex and has_dex:
+        # Plain Superlight 2 search must not pick DEX as "cheapest"
+        return False
+    # Block obvious parts already in category hard words; extra dongle/pcb noise
+    if re.search(
+        r"\b(?:dongle|receiver|empfaenger|empfänger|pcb|ersatzteil|skate|mausfuss|"
+        r"mausfuß|shell|hot-swap|hot swap)\b",
+        t,
+    ):
+        return False
+    return True
+
+
+def _matches_sony_ult_wear(title_norm):
+    t = title_norm or ""
+    if not (
+        re.search(r"\bult\s*wear\b", t)
+        or re.search(r"\bwh[\s-]*ult900n\b", t)
+        or re.search(r"\bult900n\b", t)
+    ):
+        return False
+    # Full headset hints beat spare-part flood on price_asc
+    if re.search(
+        r"\b(?:ohrpolster|earpad|ear pad|earpads|scharnier|halterung|batterie|akku|"
+        r"ersatz|replacement|oem|gehäuse|gehaeuse|lautsprechergehäuse)\b",
+        t,
+    ):
+        if not re.search(
+            r"\b(?:kopfhoerer|kopfhörer|headphones|headset|over[\s-]*ear)\b", t
+        ):
+            return False
+    return True
 
 
 def _intent_query(search):
@@ -769,13 +854,42 @@ def _search_query_variants(search):
     intent = _search_intent(search)
     if not intent:
         return [_intent_query(search)]
-    if intent.get("kind") == "superstrike":
+    kind = intent.get("kind")
+    if kind == "superstrike":
         return [
             "logitech superstrike",
             "logitech g pro x 2 superstrike",
             "logitech pro x2 superstrike",
             "superstrike lunar eclipse",
             "pro x 2 superstrike lunar eclipse",
+        ]
+    if kind == "samsung_odyssey_oled_g6":
+        # Keep short: multi-variant bursts trip soft HTML empty responses.
+        return [
+            "samsung odyssey oled g6 500hz",
+            "G60SF LS27FG602",
+            "LS27FG604 500Hz",
+        ]
+    if kind == "lg_ultragear_oled":
+        return [
+            "lg ultragear oled 480hz",
+            "27GX790A",
+            "32GS95UE OLED",
+        ]
+    if kind == "superlight_2_dex":
+        return [
+            "logitech superlight 2 dex",
+            "g pro x superlight 2 dex",
+        ]
+    if kind == "superlight_2":
+        return [
+            "logitech g pro x superlight 2",
+            "logitech superlight 2",
+        ]
+    if kind == "sony_ult_wear":
+        return [
+            "sony ult wear WH-ULT900N",
+            "WH-ULT900N",
         ]
     return [_intent_query(search)]
 
@@ -814,9 +928,15 @@ def _intent_prelim_matches_title(title_norm, search):
         return _query_matches_title(title_norm, search.get("query", ""))
     kind = intent["kind"]
     if kind == "lg_ultragear_oled":
-        return re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", title_norm) is not None
+        return _matches_lg_ultragear_oled_480(title_norm)
     if kind == "samsung_odyssey_oled_g6":
         return _matches_samsung_odyssey_g6_500hz(title_norm)
+    if kind == "superlight_2_dex":
+        return _matches_superlight_2_mouse(title_norm, require_dex=True)
+    if kind == "superlight_2":
+        return _matches_superlight_2_mouse(title_norm, require_dex=False)
+    if kind == "sony_ult_wear":
+        return _matches_sony_ult_wear(title_norm)
     if kind == "rtx_oled_laptop":
         gpu = intent["gpu"]
         if any(_has_term(title_norm, w) for w in ("grafikkarte", "graphics card", "gpu only", "nur gpu", "nur grafikkarte")):
@@ -843,10 +963,17 @@ def _intent_details_match(search, item=None, details=None):
         return True
     text_norm = _intent_text_from_item_and_details(item, details)
     kind = intent["kind"]
+    title_only = _normalize((item or {}).get("title") or "")
     if kind == "lg_ultragear_oled":
-        return re.search(r"\b(?:32gs95[a-z0-9]*|27gx790a[a-z0-9]*)\b", text_norm) is not None
+        return _matches_lg_ultragear_oled_480(text_norm) or _matches_lg_ultragear_oled_480(title_only)
     if kind == "samsung_odyssey_oled_g6":
-        return _matches_samsung_odyssey_g6_500hz(text_norm)
+        return _matches_samsung_odyssey_g6_500hz(text_norm) or _matches_samsung_odyssey_g6_500hz(title_only)
+    if kind == "superlight_2_dex":
+        return _matches_superlight_2_mouse(title_only or text_norm, require_dex=True)
+    if kind == "superlight_2":
+        return _matches_superlight_2_mouse(title_only or text_norm, require_dex=False)
+    if kind == "sony_ult_wear":
+        return _matches_sony_ult_wear(title_only or text_norm)
     if kind == "rtx_oled_laptop":
         return _has_rtx_gpu(text_norm, intent["gpu"]) and _has_term(text_norm, "oled") and _has_laptop_hint(text_norm)
     if kind == "vivobook_14x_oled_3050":
@@ -857,7 +984,6 @@ def _intent_details_match(search, item=None, details=None):
         return has_gpu and _has_pc_hint(text_norm)
     if kind == "superstrike":
         # Use listing title only — description often mentions skates as related products.
-        title_only = _normalize((item or {}).get("title") or "")
         if title_only:
             return _matches_superstrike_mouse(title_only)
         return _matches_superstrike_mouse(text_norm)
@@ -1305,10 +1431,36 @@ def _is_smartwatch_search_query(query_norm):
 
 
 def _is_phone_search_query(query_norm):
+    # Monitors / TVs that contain "samsung" must NOT be treated as phones
+    # (wrong floor 120€ + phone filters → empty Odyssey G6 stats).
+    if any(
+        w in (query_norm or "")
+        for w in (
+            "odyssey",
+            "monitor",
+            "g60sf",
+            "ls27fg",
+            "ultragear",
+            "27gx790",
+            "32gs95",
+            "fernseher",
+            " television",
+            " tv ",
+        )
+    ) or re.search(r"\b(?:g6|g7|g8|g9)\b.*\b(?:hz|oled|qhd|uhd)\b", query_norm or ""):
+        return False
     phone_terms = (
         "iphone", "galaxy", "oneplus", "nubia", "red magic", "redmagic", "pixel",
-        "samsung", "xiaomi", "motorola", "realme", "huawei", "oppo", "xperia"
+        "xiaomi", "motorola", "realme", "huawei", "oppo", "xperia",
     )
+    # "samsung" alone is ambiguous (phones vs monitors) — only with phone model hints
+    if "samsung" in (query_norm or ""):
+        if re.search(
+            r"\b(?:galaxy|s\d{2}|a\d{2}|z\s*fold|z\s*flip|note\s*\d+)\b",
+            query_norm or "",
+        ):
+            return True
+        return False
     if any(term in query_norm for term in phone_terms):
         return True
     return re.search(r"\b(?:samsung\s+)?s\d{2}\s+ultra\b", query_norm) is not None
@@ -1801,8 +1953,18 @@ def _build_smart_search_query(search):
     excludes = [
         "defekt", "teildefekt", "ersatzteil", "reparatur",
         "broken", "cracked", "damage", "damaged", "defect", "defective",
-        "repair", "spares", "parts", "wasserschaden"
+        "repair", "wasserschaden",
     ]
+    # "-parts" / "-spares" are dangerous for monitors/PCs (part of model names / "parts pack")
+    intent = _search_intent(search)
+    intent_kind = (intent or {}).get("kind")
+    if intent_kind not in (
+        "samsung_odyssey_oled_g6",
+        "lg_ultragear_oled",
+        "gpu_pc",
+        "rtx_oled_laptop",
+    ):
+        excludes.extend(["spares", "parts"])
     
     # Category-specific safe defect/parts exclusions
     if eff_category == "phones":
@@ -2098,8 +2260,12 @@ def _prepare_monitor_fetch_search(search):
     search_floor = device_floor
     if category == "phones" or _is_phone_search_query(query_norm):
         search_floor = max(device_floor, 120.0)
-    elif category == "headphones" or "sony wh" in query_norm:
+    elif category == "headphones" or "sony wh" in query_norm or "ult wear" in query_norm:
         search_floor = max(device_floor, 80.0)
+    elif category == "monitors":
+        search_floor = max(device_floor, 150.0)
+    elif category == "mice" or "superlight" in query_norm:
+        search_floor = max(device_floor, 40.0)
     cur_min = filters.get("min_price")
     try:
         cur_min_f = float(cur_min) if cur_min is not None else 0.0
@@ -3325,8 +3491,15 @@ def fetch_ebay_api_ex(search, force=False):
     all_items = []
     seen_item_ids = set()
     last_err = None
+    hit_hard_rate_limit = False
 
     for market in markets:
+        if hit_hard_rate_limit:
+            logger.info(
+                "Skipping remaining API markets after 429 (next would be %s for '%s')",
+                market, search.get("query"),
+            )
+            break
         # Check rate-limiting if force is False
         if not force:
             search_id = search.get("id", "")
@@ -3337,13 +3510,13 @@ def fetch_ebay_api_ex(search, force=False):
             # Discard so we don't query it again in this run
             _allowed_api_targets_this_run.discard((search_id, market))
         
-        # Query API and record run timestamp (retry 429 — stats was showing empty
-        # while eBay still had phones, purely due to rate limits).
+        # Query API. On 429: short retry on same market, then stop the multi-market
+        # chain — hammering GB/ES/FR after DE 429 only burns the daily cap.
         params = _build_ebay_api_params(search, market=market)
         url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
         country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(market, "DE")
         market_ok = False
-        for attempt in range(3):
+        for attempt in range(2):
             try:
                 req = urllib.request.Request(
                     url,
@@ -3375,15 +3548,17 @@ def fetch_ebay_api_ex(search, force=False):
                 try:
                     body = e.read().decode("utf-8", errors="replace")
                     logger.warning(
-                        "eBay API HTTP %s for '%s' on %s (try %d/3): %s",
+                        "eBay API HTTP %s for '%s' on %s (try %d/2): %s",
                         e.code, search["query"], market, attempt + 1, body[:300],
                     )
                 except Exception:
                     pass
                 last_err = _ebay_api_http_error(e.code)
-                if e.code == 429 and attempt < 2:
-                    time.sleep(2.5 * (attempt + 1))
-                    continue
+                if e.code == 429:
+                    if attempt < 1:
+                        time.sleep(4.0)
+                        continue
+                    hit_hard_rate_limit = True
                 break
             except Exception as e:
                 logger.warning("eBay API network error for '%s' on %s: %s", search["query"], market, e)
@@ -4383,10 +4558,22 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     variant = _prepare_monitor_fetch_search(search)
     filters = variant.setdefault("filters", {})
     filters["_stats_category"] = filters.get("category", "all")
-    query_norm = _normalize(variant.get("query", ""))
+    # Use intent query (clean eBay _nkw), not raw config query with parentheses.
+    query_norm = _normalize(_intent_query(variant))
     effective_category = _effective_category(filters.get("category", "all"), query_norm)
     if effective_category == "consoles":
         filters["category"] = "all"
+    # Intent category drives title filters; for eBay _sacat we open monitors/mice
+    # to "all" — narrow sacat (80182/23160) + heavy negatives often returned 0 HTML
+    # hits while Playwright still saw stock site-wide.
+    intent = _search_intent(variant)
+    if intent and intent.get("category"):
+        effective_category = intent["category"]
+        filters["_stats_category"] = effective_category
+        if effective_category in ("monitors", "mice"):
+            filters["category"] = "all"
+        else:
+            filters["category"] = intent["category"]
     filters["listing_type"] = listing_type
     filters["best_offer"] = bool(best_offer)
     # price_asc without a real _udlo fills page 1 with 4–20€ Hüllen/Folien.
@@ -4395,8 +4582,12 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     search_floor = device_floor
     if effective_category == "phones" or _is_phone_search_query(query_norm):
         search_floor = max(device_floor, 120.0)
-    elif effective_category == "headphones" or "sony wh" in query_norm:
+    elif effective_category == "headphones" or "sony wh" in query_norm or "ult wear" in query_norm:
         search_floor = max(device_floor, 80.0)
+    elif effective_category == "monitors":
+        search_floor = max(device_floor, 150.0)
+    elif effective_category == "mice" or "superlight" in query_norm:
+        search_floor = max(device_floor, 40.0)
     if min_price is not None:
         try:
             search_floor = max(float(min_price), float(search_floor or 0))
@@ -5667,7 +5858,7 @@ async def process_searches(bot, once=False):
             else:
                 search = {
                     "id": new_id,
-                    "query": "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+                    "query": "samsung odyssey oled g6 500hz",
                     "display_name": "Samsung Odyssey OLED G6 500Hz",
                     "filters": {},
                     "exclude_words": [],
@@ -5679,9 +5870,16 @@ async def process_searches(bot, once=False):
                 searches.append(search)
                 by_id[new_id] = search
                 modified = True
-            if search.get("query") != "samsung odyssey oled g6 500hz (G60SF, LS27FG602)":
-                search["query"] = "samsung odyssey oled g6 500hz (G60SF, LS27FG602)"
-                modified = True
+            # Prefer clean query (parenthetical OR groups break eBay HTML search).
+            if search.get("query") in (
+                "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+                "samsung odyssey oled g6 500hz",
+            ) or "odyssey" in _normalize(search.get("query") or "") and "g6" in _normalize(
+                search.get("query") or ""
+            ):
+                if search.get("query") != "samsung odyssey oled g6 500hz":
+                    search["query"] = "samsung odyssey oled g6 500hz"
+                    modified = True
             if search.get("display_name") != "Samsung Odyssey OLED G6 500Hz":
                 search["display_name"] = "Samsung Odyssey OLED G6 500Hz"
                 modified = True
@@ -5703,6 +5901,29 @@ async def process_searches(bot, once=False):
 
         ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_buy", "buy_now_offer", None)
         ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_auc", "auction", None)
+
+        # Clean LG UltraGear query — parentheses OR-groups zero eBay HTML results.
+        for s in searches:
+            qn = _normalize(s.get("query") or "")
+            if "ultragear" in qn or "27gx790" in qn or "32gs95" in qn:
+                if s.get("query") != "lg ultragear oled 480hz":
+                    s["query"] = "lg ultragear oled 480hz"
+                    if not s.get("display_name"):
+                        s["display_name"] = "LG UltraGear OLED"
+                    modified = True
+                filters = s.setdefault("filters", {})
+                if filters.get("category") != "monitors":
+                    filters["category"] = "monitors"
+                    modified = True
+
+        # Second Superlight 2 row (limit 65) was empty at end of long stats runs
+        # while the std row found stock — keep one enabled pair to avoid tail empty.
+        for s in searches:
+            sid = s.get("id") or ""
+            if sid.startswith("logitech_superlight_2_c_"):
+                if s.get("enabled", True):
+                    s["enabled"] = False
+                    modified = True
 
         def ensure_z70s_search(source_id, new_id, listing_type, min_price):
             nonlocal modified
@@ -5823,13 +6044,28 @@ async def process_searches(bot, once=False):
                 fetch_errors = []
                 for label, stats_search in stats_fetches:
                     bucket_results, bucket_err = await asyncio.to_thread(fetch_ebay_ex, stats_search, force=True)
-                    if (bucket_err in ("blocked", "rate_limit", "cooldown") or not bucket_results) and _ebay_api_configured():
+                    # Browse API is optional fallback only for EBAY_SOURCE=auto.
+                    # With EBAY_SOURCE=html we stay HTML-only (no API 429 spam).
+                    source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
+                    if (
+                        source_now == "auto"
+                        and (bucket_err in ("blocked", "rate_limit", "cooldown") or not bucket_results)
+                        and _ebay_api_configured()
+                    ):
                         reason = bucket_err or "empty"
                         logger.info("  %s: HTML %s for %s, falling back to API", search["query"], reason, label)
                         api_results, api_err = await asyncio.to_thread(fetch_ebay_api_ex, stats_search, force=True)
                         if not api_err:
                             bucket_results = api_results
                             bucket_err = None
+                        elif api_err in ("rate_limit", "api_rate_limit") or (
+                            isinstance(api_err, str) and "429" in api_err
+                        ):
+                            # Don't thrash remaining markets/products after hard 429.
+                            logger.warning(
+                                "  %s: API rate-limited on %s — skip further API fallback this product",
+                                search["query"], label,
+                            )
                     if bucket_results:
                         result_groups.append(bucket_results)
                     if bucket_err:
