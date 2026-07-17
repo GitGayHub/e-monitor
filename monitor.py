@@ -5047,8 +5047,18 @@ def fetch_ebay_ex(search, force=False):
             _ebay_consecutive_blocks = 0
             _ebay_query_cache[cache_key] = (time.time(), pw_items, None)
             return pw_items, None
-        if pw_err and pw_err not in ("no_playwright",):
-            err = err or pw_err
+        # Clean Playwright page with 0 items = real empty stock, NOT "eBay block".
+        # Soft-empty→blocked conversion above was for curl shells only; after a real
+        # Chromium pass we must not lie with ⚠️ eBay block / Rate limit.
+        if pw_err is None:
+            _ebay_consecutive_blocks = 0
+            _ebay_query_cache[cache_key] = (time.time(), [], None)
+            return [], None
+        if pw_err not in ("no_playwright",):
+            err = pw_err or err
+        elif err == "blocked" and pw_err == "no_playwright":
+            # no PW available; keep prior err
+            pass
 
     if err is None and not items:
         # Genuine empty after all HTML strategies
@@ -6321,6 +6331,36 @@ async def process_searches(bot, once=False):
                         side_err["auc"] = None
                     return has_bin, has_auc
 
+                async def _auction_fill_hard():
+                    """Dedicated auction recovery — do not inherit mixed-page errors.
+
+                    Returns (items, err). err is None on genuine empty after Playwright.
+                    """
+                    auc_search = _statistics_search_variant(
+                        search, "auction", auc_min_price, False
+                    )
+                    auc_search.setdefault("filters", {})["best_offer"] = False
+                    auc_search["filters"].pop("_stats_bucket_filter", None)
+                    # Prefer ending-soon on retry so auctions aren't buried under junk.
+                    items, err = await _stats_one_fetch("Auction fill", auc_search)
+                    if items:
+                        return items, None
+                    # Genuine empty (Playwright saw a real 0-result page).
+                    if err is None:
+                        return [], None
+                    # One more Playwright-only path with force + session clear.
+                    if _on_github_actions():
+                        await asyncio.sleep(2.0)
+                        _clear_gh_fetch_pressure(had_results=False)
+                        reset_ebay_session(rotate=True)
+                        items2, err2 = await _stats_one_fetch("Auction fill retry", auc_search)
+                        if items2:
+                            return items2, None
+                        if err2 is None:
+                            return [], None
+                        return [], err2 or err
+                    return [], err
+
                 mixed_items, mixed_err = await _stats_one_fetch("mixed stats", mixed_search)
                 if mixed_items:
                     result_groups.append(mixed_items)
@@ -6342,22 +6382,21 @@ async def process_searches(bot, once=False):
                             side_ok["bin"] = True
                             side_err["bin"] = None
                         else:
-                            side_err["bin"] = bin_err or mixed_err
+                            # None err = real empty BIN; do not stick mixed_err on BIN.
+                            side_err["bin"] = bin_err
                             if side_err["bin"]:
                                 fetch_errors.append(side_err["bin"])
                     if not has_auc:
                         if _on_github_actions():
                             await asyncio.sleep(1.5)
-                        auc_search = _statistics_search_variant(
-                            search, "auction", auc_min_price, False
-                        )
-                        auc_items, auc_err = await _stats_one_fetch("Auction fill", auc_search)
+                        auc_items, auc_err = await _auction_fill_hard()
                         if auc_items:
                             result_groups.append(auc_items)
                             side_ok["auc"] = True
                             side_err["auc"] = None
                         else:
-                            side_err["auc"] = auc_err or mixed_err
+                            # Do NOT fall back to mixed_err (BIN success would poison auction).
+                            side_err["auc"] = auc_err
                             if side_err["auc"]:
                                 fetch_errors.append(side_err["auc"])
                 else:
@@ -6375,14 +6414,17 @@ async def process_searches(bot, once=False):
                         if _on_github_actions():
                             await asyncio.sleep(2.0)
                             _clear_gh_fetch_pressure(had_results=False)
-                        side_search = _statistics_search_variant(search, lt, mprice, False)
-                        side_items, side_e = await _stats_one_fetch(label, side_search)
+                        if side == "auc":
+                            side_items, side_e = await _auction_fill_hard()
+                        else:
+                            side_search = _statistics_search_variant(search, lt, mprice, False)
+                            side_items, side_e = await _stats_one_fetch(label, side_search)
                         if side_items:
                             result_groups.append(side_items)
                             side_ok[side] = True
                             side_err[side] = None
                         else:
-                            side_err[side] = side_e or mixed_err
+                            side_err[side] = side_e
                             if side_err[side]:
                                 fetch_errors.append(side_err[side])
 
@@ -6428,6 +6470,30 @@ async def process_searches(bot, once=False):
                             auc_no_bo.append(auc_item)
                         elif item.get("bids_count") in (0, None):
                             auc_bo.append(auc_item)
+
+                # After filter: if a side still has raw items but filter wiped them,
+                # empty buckets are real empty — clear transport errors for that side.
+                raw_has_bin = any(it.get("buy_now") for it in results)
+                raw_has_auc = any(it.get("auction") for it in results)
+                if raw_has_bin:
+                    side_ok["bin"] = True
+                    side_err["bin"] = None
+                if raw_has_auc:
+                    side_ok["auc"] = True
+                    side_err["auc"] = None
+                # If product has any results at all, sibling empty is not a full eBay outage.
+                if results:
+                    if not raw_has_auc and side_err.get("auc") in (
+                        "blocked", "cooldown", "network", "parse", "rate_limit", "api_rate_limit",
+                    ):
+                        # Transport failed for auction page, but BIN worked — do not lie
+                        # "eBay block" on auction rows; user reads that as "no stock".
+                        # Keep a softer side-only note via side_err for optional wording.
+                        side_err["auc"] = "side_fetch_failed"
+                    if not raw_has_bin and side_err.get("bin") in (
+                        "blocked", "cooldown", "network", "parse", "rate_limit", "api_rate_limit",
+                    ):
+                        side_err["bin"] = "side_fetch_failed"
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
                 # Drop bait floors again after bucket split (defense in depth).
@@ -6548,20 +6614,31 @@ async def process_searches(bot, once=False):
                     return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "д", "ч"))
                 
                 def _empty_bucket_label(is_auction=False):
-                    """Empty label uses THIS side's fetch error only.
+                    """Honest empty labels — never paint full eBay outage on partial success.
 
-                    If BIN succeeded, empty Sofort+ is real stock gap (Не найдено),
-                    even when Auction hit rate-limit — not a fake Rate limit row.
+                    Rules (from live audit):
+                    - side had raw items / filter wiped them → Не найдено
+                    - product has other side data, this side fetch failed → «нет данных»
+                      (NOT «eBay block» — that was the main user-facing lie)
+                    - whole product failed with 429 → Rate limit
+                    - whole product failed with block and zero items → eBay block
                     """
                     side = "auc" if is_auction else "bin"
                     if side_ok.get(side):
                         return "❌", "Не найдено"
-                    err = side_err.get(side) or (None if side_ok.get(side) else fetch_err)
+                    err = side_err.get(side)
+                    other = "bin" if is_auction else "auc"
+                    # Sibling worked or we have any product results → not a total outage.
+                    if results or side_ok.get(other):
+                        if err in ("side_fetch_failed", "blocked", "cooldown", "network", "parse",
+                                   "rate_limit", "api_rate_limit", "api_rate"):
+                            return "⚠️", "нет данных"
+                        return "❌", "Не найдено"
+                    # Total miss for this product.
+                    err = err or fetch_err
                     if err in ("rate_limit", "api_rate_limit", "api_rate"):
                         return "⚠️", "Rate limit"
-                    if err in ("blocked", "cooldown"):
-                        return "⚠️", "eBay block"
-                    if err in ("network", "parse"):
+                    if err in ("blocked", "cooldown", "network", "parse"):
                         return "⚠️", "eBay block"
                     return "❌", "Не найдено"
 
