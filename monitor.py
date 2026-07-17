@@ -6238,21 +6238,41 @@ async def process_searches(bot, once=False):
                 bin_min_price = bin_search_cfg.get("filters", {}).get("min_price") if bin_search_cfg else None
                 auc_min_price = auc_search_cfg.get("filters", {}).get("min_price") if auc_search_cfg else None
                 
-                # TWO HTML fetches only (BIN + Auction). Sofort/Sofort+/Auktion/Auktion+
-                # are split client-side below. Four separate eBay hits per product was
-                # the main reason GH mid-report flipped to Rate limit / cooldown.
-                # Track per-side errors so empty Sofort+ is not labeled Rate limit
-                # when BIN succeeded and Auction failed (common mid-report case).
-                stats_fetches = [
-                    ("bin", "BIN stats", _statistics_search_variant(search, "buy_now_offer", bin_min_price, False)),
-                    ("auc", "Auction stats", _statistics_search_variant(search, "auction", auc_min_price, False)),
-                ]
+                # ONE primary HTML fetch (listing_type=all) → client-split into
+                # Sofort / Sofort+ / Auktion / Auktion+. Extra BIN or Auction hit
+                # only when that side is missing from the mixed page.
+                # Halves eBay traffic vs always doing BIN+Auction (and kills the
+                # "second hit always blocked" mid-report pattern).
+                floor = None
+                for cand in (bin_min_price, auc_min_price):
+                    if cand is None:
+                        continue
+                    try:
+                        floor = float(cand) if floor is None else max(floor, float(cand))
+                    except (TypeError, ValueError):
+                        pass
+                mixed_search = _statistics_search_variant(
+                    search, "buy_now_offer", floor, False
+                )
+                mixed_search.setdefault("filters", {})["listing_type"] = "all"
+                mixed_search["filters"]["best_offer"] = False
+                mixed_search["filters"].pop("_stats_bucket_filter", None)
+                # Wider page so mixed BIN+Auction both appear under price_asc.
+                if _on_github_actions():
+                    mixed_search["filters"]["_ipg"] = max(
+                        int(mixed_search["filters"].get("_ipg") or 0), 60
+                    )
+                else:
+                    mixed_search["filters"]["_ipg"] = max(
+                        int(mixed_search["filters"].get("_ipg") or 0), 120
+                    )
+
                 result_groups = []
                 fetch_errors = []
                 side_err = {"bin": None, "auc": None}
                 side_ok = {"bin": False, "auc": False}
 
-                async def _stats_one_fetch(side, label, stats_search, attempt=1):
+                async def _stats_one_fetch(label, stats_search):
                     stats_search = copy.deepcopy(stats_search)
                     stats_search.setdefault("filters", {})["best_offer"] = False
                     stats_search["filters"].pop("_stats_bucket_filter", None)
@@ -6260,8 +6280,6 @@ async def process_searches(bot, once=False):
                         fetch_ebay_ex, stats_search, force=True
                     )
                     source_now = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
-                    # API only after HTML transport failure — never for clean empty stock
-                    # (that was burning Browse API 429s and painting false Rate limits).
                     if (
                         source_now == "auto"
                         and not _ebay_api_circuit_open
@@ -6269,10 +6287,9 @@ async def process_searches(bot, once=False):
                         and bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse")
                         and _ebay_api_configured()
                     ):
-                        reason = bucket_err
                         logger.info(
                             "  %s: HTML exhausted (%s) for %s — API last resort only",
-                            search["query"], reason, label,
+                            search["query"], bucket_err, label,
                         )
                         api_results, api_err = await asyncio.to_thread(
                             fetch_ebay_api_ex, stats_search, force=True
@@ -6283,58 +6300,101 @@ async def process_searches(bot, once=False):
                         elif api_err in ("rate_limit", "api_rate_limit") or (
                             isinstance(api_err, str) and "429" in api_err
                         ):
-                            # Only upgrade to Rate limit when HTML itself failed.
-                            # Clean HTML zero-result + API 429 must stay "Не найдено".
                             if not bucket_results and bucket_err in (
                                 "blocked", "rate_limit", "cooldown", "network", "parse",
                             ):
                                 bucket_err = "api_rate_limit"
                             logger.warning(
-                                "  %s: API rate-limited on %s — circuit will stop further API",
+                                "  %s: API rate-limited on %s",
                                 search["query"], label,
                             )
-                    elif source_now == "auto" and _ebay_api_circuit_open and not bucket_results:
-                        # Circuit open must not re-label a clean HTML empty as Rate limit.
-                        pass
                     return bucket_results or [], bucket_err
 
-                for side, label, stats_search in stats_fetches:
-                    bucket_results, bucket_err = await _stats_one_fetch(side, label, stats_search)
-                    # On GH: one delayed retry for Auction (second hit is more often blocked).
-                    if (
-                        _on_github_actions()
-                        and side == "auc"
-                        and not bucket_results
-                        and bucket_err in ("blocked", "rate_limit", "cooldown", "network", "parse", "api_rate_limit")
+                def _mark_sides_from_items(items):
+                    has_bin = any(it.get("buy_now") for it in items)
+                    has_auc = any(it.get("auction") for it in items)
+                    if has_bin:
+                        side_ok["bin"] = True
+                        side_err["bin"] = None
+                    if has_auc:
+                        side_ok["auc"] = True
+                        side_err["auc"] = None
+                    return has_bin, has_auc
+
+                mixed_items, mixed_err = await _stats_one_fetch("mixed stats", mixed_search)
+                if mixed_items:
+                    result_groups.append(mixed_items)
+                    has_bin, has_auc = _mark_sides_from_items(mixed_items)
+                    logger.info(
+                        "  %s: mixed page %d items (bin=%s auc=%s)",
+                        search["query"], len(mixed_items), has_bin, has_auc,
+                    )
+                    # Fill missing side with one targeted fetch only.
+                    if not has_bin:
+                        if _on_github_actions():
+                            await asyncio.sleep(1.5)
+                        bin_search = _statistics_search_variant(
+                            search, "buy_now_offer", bin_min_price, False
+                        )
+                        bin_items, bin_err = await _stats_one_fetch("BIN fill", bin_search)
+                        if bin_items:
+                            result_groups.append(bin_items)
+                            side_ok["bin"] = True
+                            side_err["bin"] = None
+                        else:
+                            side_err["bin"] = bin_err or mixed_err
+                            if side_err["bin"]:
+                                fetch_errors.append(side_err["bin"])
+                    if not has_auc:
+                        if _on_github_actions():
+                            await asyncio.sleep(1.5)
+                        auc_search = _statistics_search_variant(
+                            search, "auction", auc_min_price, False
+                        )
+                        auc_items, auc_err = await _stats_one_fetch("Auction fill", auc_search)
+                        if auc_items:
+                            result_groups.append(auc_items)
+                            side_ok["auc"] = True
+                            side_err["auc"] = None
+                        else:
+                            side_err["auc"] = auc_err or mixed_err
+                            if side_err["auc"]:
+                                fetch_errors.append(side_err["auc"])
+                else:
+                    # Mixed page dead — fall back to separate BIN + Auction once each.
+                    logger.warning(
+                        "  %s: mixed page failed (%s) — BIN then Auction fallback",
+                        search["query"], mixed_err,
+                    )
+                    if mixed_err:
+                        fetch_errors.append(mixed_err)
+                    for side, label, lt, mprice in (
+                        ("bin", "BIN fallback", "buy_now_offer", bin_min_price),
+                        ("auc", "Auction fallback", "auction", auc_min_price),
                     ):
-                        logger.info(
-                            "  %s: auction empty (%s) — one GH retry after pause",
-                            search["query"], bucket_err,
-                        )
-                        await asyncio.sleep(4.0)
-                        _clear_gh_fetch_pressure(had_results=False)
-                        bucket_results, bucket_err = await _stats_one_fetch(
-                            side, label + " retry", stats_search, attempt=2
-                        )
-                    if bucket_results:
-                        result_groups.append(bucket_results)
-                        side_ok[side] = True
-                        side_err[side] = None
-                    else:
-                        side_err[side] = bucket_err
-                        if bucket_err:
-                            fetch_errors.append(bucket_err)
-                    if _on_github_actions():
-                        # Pause between BIN and Auction for same product.
-                        await asyncio.sleep(3.0)
+                        if _on_github_actions():
+                            await asyncio.sleep(2.0)
+                            _clear_gh_fetch_pressure(had_results=False)
+                        side_search = _statistics_search_variant(search, lt, mprice, False)
+                        side_items, side_e = await _stats_one_fetch(label, side_search)
+                        if side_items:
+                            result_groups.append(side_items)
+                            side_ok[side] = True
+                            side_err[side] = None
+                        else:
+                            side_err[side] = side_e or mixed_err
+                            if side_err[side]:
+                                fetch_errors.append(side_err[side])
 
                 results = _merge_items_by_id(*result_groups)
+                # Reconcile sides from final merge (hybrids fill both).
+                if results:
+                    _mark_sides_from_items(results)
                 fetch_err = fetch_errors[0] if fetch_errors else None
                 if fetch_err and not results:
                     blocked_searches.append(search)
                 if _on_github_actions():
-                    # Pause between products so the next HTML chain is not still hot.
-                    await asyncio.sleep(3.0)
+                    await asyncio.sleep(1.5)
                     _clear_gh_fetch_pressure(had_results=bool(results))
                 
                 # Filter results with skip_seen=True (to show already notified items).
