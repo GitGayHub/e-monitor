@@ -6500,6 +6500,39 @@ async def process_searches(bot, once=False):
                         if err is None:
                             return [], None
                         last_err = err
+
+                    # HTML/PW soft-failed but BIN often works — Browse API can still
+                    # return auction lots (ULT / Pixel5 / G6) when Chromium is blocked.
+                    if (
+                        last_err
+                        and last_err not in ("no_playwright",)
+                        and _ebay_api_configured()
+                        and not _ebay_api_circuit_open
+                    ):
+                        try:
+                            api_items, api_err = await asyncio.to_thread(
+                                fetch_ebay_api_ex, base, True
+                            )
+                        except Exception as e:
+                            logger.warning(
+                                "  %s: auction API fill crashed: %s",
+                                search.get("query"), e,
+                            )
+                            api_items, api_err = [], last_err
+                        if api_items:
+                            tagged = _tag_items_for_search(api_items, base)
+                            auc_only = [
+                                it for it in tagged if it.get("auction")
+                            ] or tagged
+                            logger.info(
+                                "  %s: auction API fill %d items",
+                                search.get("query"), len(auc_only),
+                            )
+                            return auc_only, None
+                        if api_err is None:
+                            return [], None
+                        # Don't open circuit here — 429 on empty auction is common.
+                        last_err = api_err or last_err
                     return [], last_err
 
                 mixed_items, mixed_err = await _stats_one_fetch("mixed stats", mixed_search)
@@ -6609,32 +6642,25 @@ async def process_searches(bot, once=False):
                 if raw_has_auc:
                     side_ok["auc"] = True
                     side_err["auc"] = None
-                # Sibling side recovered prices → do not paint the missing side as a
-                # full eBay outage. Soft-block on auction-only SERP is the usual
-                # shape of *real zero auctions* (manual live checks: LG/G6/DEX/…),
-                # so prefer Не найдено over «сбой загрузки» when mixed/BIN worked.
+                # Sibling side recovered prices → never paint full eBay outage on the
+                # missing side. Soft-fail alone is NOT proof of empty stock (live
+                # auctions for ULT/Pixel5/G6 exist while PW soft-blocks) — only a
+                # clean empty SERP (side_genuine_empty) is «Не найдено».
                 if results:
                     soft_transport = (
                         "blocked", "cooldown", "network", "parse",
-                        "rate_limit", "api_rate_limit", "side_fetch_failed",
+                        "rate_limit", "api_rate_limit",
                     )
                     if not raw_has_auc and side_err.get("auc") in soft_transport:
-                        # Mixed page already proved HTML works for this product.
-                        # Auction-only soft-fail ≈ no auction listings, not outage.
-                        side_genuine_empty["auc"] = True
-                        side_err["auc"] = None
-                        logger.info(
-                            "  %s: auction side soft-fail→empty (BIN ok, 0 auc raw)",
-                            search["query"],
-                        )
+                        if side_genuine_empty.get("auc"):
+                            side_err["auc"] = None
+                        else:
+                            side_err["auc"] = "side_fetch_failed"
                     if not raw_has_bin and side_err.get("bin") in soft_transport:
-                        # Same for BIN when only auctions came back.
-                        side_genuine_empty["bin"] = True
-                        side_err["bin"] = None
-                        logger.info(
-                            "  %s: BIN side soft-fail→empty (auc ok, 0 bin raw)",
-                            search["query"],
-                        )
+                        if side_genuine_empty.get("bin"):
+                            side_err["bin"] = None
+                        else:
+                            side_err["bin"] = "side_fetch_failed"
                 
                 total_price_key = lambda x: float(x.get("total_price") or 0)
                 # Drop bait floors again after bucket split (defense in depth).
