@@ -4863,7 +4863,10 @@ def _parse_search_body(body, host, query):
 
 
 def _do_fetch_playwright(url, query=""):
-    """Real Chromium HTML fetch — last HTML hope on blocked datacenter IPs (GH Actions)."""
+    """Real Chromium HTML fetch — last HTML hope on blocked datacenter IPs (GH Actions).
+
+    Retries once on page crash (common on auction SERP under GH load).
+    """
     if os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").strip().lower() in ("0", "false", "no"):
         return [], "no_playwright"
     try:
@@ -4871,66 +4874,92 @@ def _do_fetch_playwright(url, query=""):
     except ImportError:
         logger.info("playwright not installed — skip browser HTML fallback")
         return [], "no_playwright"
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(
-                headless=True,
-                args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
-            )
-            context = browser.new_context(
-                locale="de-DE",
-                timezone_id="Europe/Berlin",
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                    "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-                ),
-                viewport={"width": 1365, "height": 900},
-            )
-            page = context.new_page()
-            page.add_init_script(
-                "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-            )
-            # Warm homepage first for cookies
-            try:
-                page.goto("https://www.ebay.de/", wait_until="domcontentloaded", timeout=25000)
-                page.wait_for_timeout(800)
-            except Exception:
-                pass
-            page.goto(url, wait_until="domcontentloaded", timeout=35000)
-            page.wait_for_timeout(1800)
-            # dismiss cookie banner if present
-            for sel in (
-                "button#gdpr-banner-accept",
-                "button[data-testid='gdpr-banner-accept']",
-                "#consent-page .btn-primary",
-            ):
+
+    last_err = None
+    for attempt in range(2):
+        browser = None
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=[
+                        "--disable-blink-features=AutomationControlled",
+                        "--no-sandbox",
+                        "--disable-dev-shm-usage",
+                    ],
+                )
+                context = browser.new_context(
+                    locale="de-DE",
+                    timezone_id="Europe/Berlin",
+                    user_agent=(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                        "(KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+                    ),
+                    viewport={"width": 1365, "height": 900},
+                )
+                page = context.new_page()
+                page.add_init_script(
+                    "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+                )
+                # Warm homepage first for cookies
                 try:
-                    page.locator(sel).first.click(timeout=1200)
-                    page.wait_for_timeout(500)
+                    page.goto(
+                        "https://www.ebay.de/",
+                        wait_until="domcontentloaded",
+                        timeout=25000,
+                    )
+                    page.wait_for_timeout(600)
                 except Exception:
                     pass
-            # Wait for result cards when SPA paints late (common on auction SERP).
+                page.goto(url, wait_until="domcontentloaded", timeout=35000)
+                page.wait_for_timeout(1500)
+                # dismiss cookie banner if present
+                for sel in (
+                    "button#gdpr-banner-accept",
+                    "button[data-testid='gdpr-banner-accept']",
+                    "#consent-page .btn-primary",
+                ):
+                    try:
+                        page.locator(sel).first.click(timeout=1200)
+                        page.wait_for_timeout(400)
+                    except Exception:
+                        pass
+                # Wait for result cards when SPA paints late (common on auction SERP).
+                try:
+                    page.wait_for_selector(
+                        "li.s-card, li.s-item, .srp-results, .srp-river-results",
+                        timeout=8000,
+                    )
+                    page.wait_for_timeout(700)
+                except Exception:
+                    page.wait_for_timeout(900)
+                body = page.content()
+                final = page.url
+                browser.close()
+                browser = None
+            if _is_challenge_html(body, final):
+                logger.warning("Playwright still got challenge for '%s'", query)
+                return [], "blocked"
+            items, err = _parse_search_body(body, "playwright", query)
+            if items:
+                logger.info("  %s -> %d items via Playwright HTML", query, len(items))
+            return items, err
+        except Exception as e:
+            last_err = e
+            msg = str(e).lower()
+            logger.warning(
+                "Playwright HTML fetch failed for '%s' (try %d/2): %s",
+                query, attempt + 1, e,
+            )
             try:
-                page.wait_for_selector(
-                    "li.s-card, li.s-item, .srp-results, .srp-river-results",
-                    timeout=8000,
-                )
-                page.wait_for_timeout(900)
+                if browser:
+                    browser.close()
             except Exception:
-                page.wait_for_timeout(1200)
-            body = page.content()
-            final = page.url
-            browser.close()
-        if _is_challenge_html(body, final):
-            logger.warning("Playwright still got challenge for '%s'", query)
-            return [], "blocked"
-        items, err = _parse_search_body(body, "playwright", query)
-        if items:
-            logger.info("  %s -> %d items via Playwright HTML", query, len(items))
-        return items, err
-    except Exception as e:
-        logger.warning("Playwright HTML fetch failed for '%s': %s", query, e)
-        return [], "network"
+                pass
+            if attempt == 0 and ("crash" in msg or "target closed" in msg or "destroyed" in msg):
+                continue
+            break
+    return [], "network"
 
 
 def _http_get_search(session, url, common_headers):
@@ -6568,12 +6597,11 @@ async def process_searches(bot, once=False):
                             fetch_errors.append(err)
 
                 async def _auction_fill_hard():
-                    """Auction path: PW-first on GH (curl soft-empty is useless for auctions).
+                    """Auction fill: curl/m.ebay first, then PW multi-sort.
 
                     Returns (items, err). err is None on genuine empty.
-                    Tries multiple sort orders — empty auction stock and soft-blocks
-                    look the same on GH; price_asc often still surfaces real lots
-                    when newest is stealth-empty.
+                    GH logs showed m.ebay often works for mixed pages while PW
+                    crashes on auction SERP — so HTML chain first, Chromium second.
                     """
                     base = _statistics_search_variant(
                         search, "auction", auc_min_price, False
@@ -6585,14 +6613,39 @@ async def process_searches(bot, once=False):
                     q = base.get("query") or search.get("query") or ""
                     last_err = None
                     saw_clean_empty = False
+                    sort_variants = ("price_asc", "newest")
 
-                    # Sort variants: newest first (live bids), then cheapest floor.
-                    sort_variants = ("newest", "price_asc")
+                    # 1) HTML chain (m.ebay first on GH) — cheaper and more stable
+                    for sort_name in sort_variants:
+                        trial = copy.deepcopy(base)
+                        trial["filters"]["sort"] = sort_name
+                        items, err = await _stats_one_fetch(
+                            f"Auction fill/{sort_name}", trial
+                        )
+                        if items:
+                            auc_only = [it for it in items if it.get("auction")] or items
+                            logger.info(
+                                "  %s: auction HTML/%s %d items",
+                                search["query"], sort_name, len(auc_only),
+                            )
+                            return auc_only, None
+                        if err is None:
+                            saw_clean_empty = True
+                            logger.info(
+                                "  %s: auction HTML/%s clean empty",
+                                search["query"], sort_name,
+                            )
+                            # try other sort once (price_asc vs newest differ)
+                            continue
+                        last_err = err
+                    if saw_clean_empty and last_err in (None, "blocked", "network", "parse"):
+                        return [], None
+
+                    # 2) Playwright recovery when HTML soft-failed
                     if _on_github_actions():
                         for sort_name in sort_variants:
                             trial = copy.deepcopy(base)
                             trial["filters"]["sort"] = sort_name
-                            # m. first on GH — desktop challenge is near-certain.
                             for sub in ("m", "www"):
                                 pw_url = _build_url_with_host("ebay.de", trial, sub=sub)
                                 pw_items, pw_err = await asyncio.to_thread(
@@ -6610,8 +6663,6 @@ async def process_searches(bot, once=False):
                                     return auc_only, None
                                 if pw_err is None:
                                     saw_clean_empty = True
-                                    # Real empty SERP for this sort — still try other
-                                    # sorts once (price_asc can differ), then stop.
                                     logger.info(
                                         "  %s: auction PW-%s/%s clean empty",
                                         search["query"], sub, sort_name,
@@ -6621,25 +6672,13 @@ async def process_searches(bot, once=False):
                                     last_err = pw_err
                                     break
                                 last_err = pw_err
-                                await asyncio.sleep(0.8)
+                                await asyncio.sleep(0.6)
                             if last_err == "no_playwright":
                                 break
-                        if saw_clean_empty and last_err in (None, "blocked", "network", "parse"):
-                            # At least one auction SERP was a real empty page.
+                        if saw_clean_empty and last_err in (
+                            None, "blocked", "network", "parse",
+                        ):
                             return [], None
-
-                    for sort_name in sort_variants:
-                        trial = copy.deepcopy(base)
-                        trial["filters"]["sort"] = sort_name
-                        items, err = await _stats_one_fetch(
-                            f"Auction fill/{sort_name}", trial
-                        )
-                        if items:
-                            auc_only = [it for it in items if it.get("auction")] or items
-                            return auc_only, None
-                        if err is None:
-                            return [], None
-                        last_err = err
 
                     # HTML/PW soft-failed but BIN often works — Browse API can still
                     # return auction lots (ULT / Pixel5 / G6) when Chromium is blocked.
