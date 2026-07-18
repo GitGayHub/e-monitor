@@ -26,3 +26,12 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
   - 29620193500 completed success a1e98daa1 workflow_dispatch E Monitor
   - 29619825722 completed cancelled a1e98daa1 schedule E Monitor
 
+## 2026-07-18 00:42 UTC — tip stats e96920 SUCCESS
+
+- run_id=29622988657 sha=e96920a2f conclusion=success
+- metrics: prices~108 empty=41 fail=0 block=0 rl=0
+- Z80 LV: Не найдено (not eBay block) OK
+- residual: many Auktion empty (ULT/G6/LG/DEX/Z80 Ultra full empty this pass) — auction recovery still soft; not mass outage
+- ACTION: mode.txt -> normal (production), push
+- watcher 019f72a0183b continues every 20m; next cycles can re-enter statistics if auctions regress badly
+
