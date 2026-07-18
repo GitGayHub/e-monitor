@@ -5889,12 +5889,16 @@ def _live_validation_limit(search_cfg):
     return 40
 
 
-async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
+async def _select_cheapest_valid_candidate(items, search_cfg, limit=None, stats_soft_fallback=False):
     if limit is None:
         limit = _live_validation_limit(search_cfg)
     price_window = _live_validation_price_window(search_cfg)
     valid_items = []
+    soft_pool = []
     query_norm = _normalize(search_cfg.get("query", ""))
+    category = _effective_category(
+        (search_cfg.get("filters") or {}).get("category", "all"), query_norm
+    )
     checked = 0
     for item in items:
         if checked >= limit:
@@ -5908,6 +5912,15 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
             if card_total > best_total + price_window:
                 break
         checked += 1
+        title_norm = _normalize(item.get("title") or "")
+        if (
+            stats_soft_fallback
+            and title_norm
+            and not _is_implausibly_cheap_device(item, search_cfg)
+            and not _is_category_blocked_title(title_norm, category, query_norm)
+            and not _is_for_accessory_title(title_norm, query_norm, category)
+        ):
+            soft_pool.append(item)
         is_valid, _ = await _validate_candidate(item, search_cfg)
         if is_valid:
             valid_items.append(item)
@@ -5918,12 +5931,21 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None):
                 (item.get("title") or "")[:60],
             )
         else:
-            logger.debug(
+            logger.info(
                 "Stats candidate reject [%s] total=%.0f title=%s",
                 item.get("item_id"),
                 card_total,
                 (item.get("title") or "")[:60],
             )
+    if not valid_items and stats_soft_fallback and soft_pool:
+        selected = min(soft_pool, key=lambda x: float(x.get("total_price") or 0))
+        logger.info(
+            "Stats soft-fallback [%s] total=%.0f for %s (details validation all failed)",
+            selected.get("item_id"),
+            float(selected.get("total_price") or 0),
+            search_cfg.get("query"),
+        )
+        return selected
     if not valid_items:
         logger.info(
             "Stats candidate: no valid of %d checked for %s",
@@ -6788,10 +6810,22 @@ async def process_searches(bot, once=False):
                 auc_bo = [x for x in auc_bo if not _is_implausibly_cheap_device(x, search)]
                 # Same validation as normal alerts — no multi-variation exceptions.
                 stats_search_cfg = copy.deepcopy(search)
-                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(sorted(bin_no_bo, key=total_price_key), stats_search_cfg)
-                cheapest_bin_bo = await _select_cheapest_valid_candidate(sorted(bin_bo, key=total_price_key), stats_search_cfg)
-                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(sorted(auc_no_bo, key=total_price_key), stats_search_cfg)
-                cheapest_auc_bo = await _select_cheapest_valid_candidate(sorted(auc_bo, key=total_price_key), stats_search_cfg)
+                # stats_soft_fallback: if details API/description boilerplate rejects
+                # every SERP hit, still surface the cheapest card that already
+                # passed filter_results (title/intent/price floor). Full details
+                # rules remain for normal notifications.
+                cheapest_bin_no_bo = await _select_cheapest_valid_candidate(
+                    sorted(bin_no_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                )
+                cheapest_bin_bo = await _select_cheapest_valid_candidate(
+                    sorted(bin_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                )
+                cheapest_auc_no_bo = await _select_cheapest_valid_candidate(
+                    sorted(auc_no_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                )
+                cheapest_auc_bo = await _select_cheapest_valid_candidate(
+                    sorted(auc_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                )
 
                 def get_verdict_for_item(item):
                     """🟢 = default mode would alert; 🟡 = price ok but wait 24h; 🟣 = over limit."""
