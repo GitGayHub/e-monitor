@@ -152,3 +152,25 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - last good stats 29630429879 0cabd3: Z80 Ultra recovered 756/511 after damage boilerplate fix
 - damage: cracked back still blocks; warranty boilerplate OK
 - no code change this cycle
+
+## 2026-07-18 05:14 UTC
+- tip_local=8278d1039 mode=statistics
+- red_flags=['mode still statistics — consider normal if report honest']
+- paste={'chars': 7785, 'prices_eur': 119, 'empty': 30, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29631508909 in_progress - 3449148e2 workflow_dispatch E Monitor
+  - 29631195085 completed success 56798e8e3 push fix: stats soft-fallback when details reject all SERP cards;
+  - 29631079280 completed cancelled 5a5149d94 workflow_dispatch E Monitor
+  - 29631020089 completed cancelled 5a5149d94 push chore: watcher status quiet normal cycle
+  - 29630994441 completed cancelled 36c936b8f push chore: mode=normal after Z80 Ultra audit fix verified
+  - 29630662824 completed cancelled 88df5c9a0 workflow_dispatch E Monitor
+  - 29630429879 completed success 0cabd3fdc push fix: stop warranty boilerplate false damage blocks (Z80 Ultr
+  - 29630248969 completed cancelled a7093116e workflow_dispatch E Monitor
+
+## 2026-07-18 05:15 UTC — watcher: stats honest -> normal
+- last stats 29631195085/56798e: prices~119 empty=30 fail=0 block=0 rl=0 Z80_LV not block
+- Z80 Ultra recovered prior cycle; soft-fallback live
+- mode was statistics (diagnostic left on); switching to normal for production
+- one in_progress state run 29631508909 left alone (tip queue)
+- damage filters OK; no code change
+
