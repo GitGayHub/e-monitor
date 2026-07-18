@@ -35,3 +35,27 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - ACTION: mode.txt -> normal (production), push
 - watcher 019f72a0183b continues every 20m; next cycles can re-enter statistics if auctions regress badly
 
+## 2026-07-18 00:48 UTC
+- tip_local=50648dab4 mode=﻿normal
+- red_flags=['none']
+- paste={'chars': 7195, 'prices_eur': 108, 'empty': 41, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29623787194 pending - 50648dab4 workflow_dispatch E Monitor
+  - 29623684462 completed cancelled 50648dab4 push chore: watcher status after healthy e96920 stats
+  - 29623238030 in_progress - 0ca5ead8a workflow_dispatch E Monitor
+  - 29623178833 completed cancelled 0ca5ead8a push chore: arm autonomous watcher playbook + health snapshot scr
+  - 29622988657 completed success e96920a2f push fix: block cracked/damaged rear glass (beschädigter Rückseit
+  - 29622680245 completed cancelled c2c2665e1 workflow_dispatch E Monitor
+  - 29622316281 completed cancelled c2c2665e1 schedule E Monitor
+  - 29622112171 completed cancelled 532e2aa19 workflow_dispatch E Monitor
+
+## 2026-07-18 00:49 UTC — watcher cycle quiet
+
+- mode=normal (fixed UTF-8 BOM that broke clean mode string)
+- cancelled stale in_progress 29623238030 (0ca5ead) so tip 50648dab pending can run
+- last full stats 29622988657 e96920: fail=0 block=0 rl=0 Z80_LV empty OK
+- paste metrics: prices~108 empty=41 fail=0 block=0
+- damage filter still blocks beschädigter Rückseite
+- no code change this cycle
+- residual risk: auction recovery (many Auktion empty in last stats); monitor in normal alerts
+
