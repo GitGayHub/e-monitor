@@ -5135,6 +5135,7 @@ def fetch_ebay_ex(search, force=False):
 
     def _try_chain(referer=None):
         last = None
+        saw_clean_empty = False
         # Per-host retries: first attempt uses the current impersonation
         # profile, the second one rotates to the next profile and re-warms
         # the session. eBay sometimes flags one fingerprint while leaving
@@ -5145,10 +5146,13 @@ def fetch_ebay_ex(search, force=False):
                 its, e = _do_fetch_one(host, search, referer=referer)
                 if its:
                     return its, None, host
-                # Soft empty (err None): on GH rotate once more; do NOT permanently
-                # rewrite genuine empty as blocked (Z80 LV / unlisted models).
+                # Soft/true empty (err None): do NOT keep a prior "blocked" —
+                # `last = last or None` was wrong (blocked stays blocked) and
+                # upgraded real empty SERPs (LG/G6/Z80 LV) to eBay block after
+                # one soft-block attempt earlier in the chain.
                 if e is None and not its:
-                    last = last or None
+                    saw_clean_empty = True
+                    last = None
                     if _on_github_actions() and attempt < attempts_per_host - 1:
                         reset_ebay_session(rotate=True)
                         continue
@@ -5167,7 +5171,9 @@ def fetch_ebay_ex(search, force=False):
                 # network: still try next host
                 reset_ebay_session(rotate=True)
                 break
-        # Prefer None (empty) over inventing "blocked" when every host soft-emptied.
+        # Any clean empty SERP in the chain wins over earlier soft-blocks.
+        if saw_clean_empty and last in (None, "blocked", "parse", "network"):
+            return [], None, None
         return [], last, None
 
     items, err, host = _try_chain()
