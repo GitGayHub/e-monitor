@@ -216,3 +216,24 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - last success 29631948036 a1f879 normal; stats baseline 56798e honest
 - damage OK; no code change
 
+## 2026-07-18 06:15 UTC
+- tip_local=23e59a096 mode=normal
+- red_flags=['none']
+- paste={'chars': 7740, 'prices_eur': 118, 'empty': 31, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29633630794 pending - 23e59a096 push chore: mode=normal after Z80+auction residual verify
+  - 29633243676 in_progress - 718504793 workflow_dispatch E Monitor
+  - 29632945412 completed success c47ad05df push fix: auction HTML-first + PW crash retry; mode=statistics fo
+  - 29632798656 completed cancelled 25d4785b2 workflow_dispatch E Monitor
+  - 29632704463 completed cancelled 25d4785b2 schedule E Monitor
+  - 29632597615 completed cancelled 536375807 push fix: run_log — do not mark whole run blocked on few API last
+  - 29632582465 completed cancelled 97f7acd21 push chore: watcher status quiet normal
+  - 29632370455 completed success 13cbf7279 workflow_dispatch E Monitor
+
+## 2026-07-18 06:15 UTC — watcher quiet
+- mode=normal
+- paste: fail=0 block=0 rl=0 prices~118 empty=31 Z80_LV not block
+- cancelled stale 29633243676; tip pending 23e59a normal
+- last stats 29632945412/c47ad05: Z80 Ultra 756/511, LV honest empty, Superstrike auc 60
+- damage OK; no code change
+
