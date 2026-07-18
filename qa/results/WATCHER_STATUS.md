@@ -195,3 +195,24 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - last stats success 29631195085/56798e honest
 - damage OK; no code change
 
+## 2026-07-18 05:37 UTC
+- tip_local=136691d59 mode=normal
+- red_flags=['none']
+- paste={'chars': 7785, 'prices_eur': 119, 'empty': 30, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29632370455 in_progress - 13cbf7279 workflow_dispatch E Monitor
+  - 29632008741 completed cancelled 9b5348d53 push chore: watcher status quiet normal cycle
+  - 29631948036 completed success a1f879209 workflow_dispatch E Monitor
+  - 29631934527 completed cancelled a1f879209 push chore: mode=normal after honest stats (watcher)
+  - 29631508909 completed cancelled 3449148e2 workflow_dispatch E Monitor
+  - 29631195085 completed success 56798e8e3 push fix: stats soft-fallback when details reject all SERP cards;
+  - 29631079280 completed cancelled 5a5149d94 workflow_dispatch E Monitor
+  - 29631020089 completed cancelled 5a5149d94 push chore: watcher status quiet normal cycle
+
+## 2026-07-18 05:37 UTC — watcher quiet
+- mode=normal
+- metrics paste: fail=0 block=0 rl=0 prices~119
+- single active run 29632370455 (state); no multi-stack cancel
+- last success 29631948036 a1f879 normal; stats baseline 56798e honest
+- damage OK; no code change
+
