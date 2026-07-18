@@ -59,3 +59,26 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - no code change this cycle
 - residual risk: auction recovery (many Auktion empty in last stats); monitor in normal alerts
 
+## 2026-07-18 03:02 UTC
+- tip_local=09f627659 mode=normal
+- red_flags=['none']
+- paste={'chars': 7195, 'prices_eur': 108, 'empty': 41, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29628050654 pending - 1bbd2b4be workflow_dispatch E Monitor
+  - 29627597065 in_progress - 792253805 workflow_dispatch E Monitor
+  - 29627164218 completed success 9d5529cd1 workflow_dispatch E Monitor
+  - 29626716592 completed success fbdbcedfb workflow_dispatch E Monitor
+  - 29626265550 completed cancelled 40c968d3a workflow_dispatch E Monitor
+  - 29625805401 completed success 76313e2ca workflow_dispatch E Monitor
+  - 29625322399 completed success de57e2406 workflow_dispatch E Monitor
+  - 29624843234 completed cancelled f09c78fc7 workflow_dispatch E Monitor
+
+## 2026-07-18 03:03 UTC — watcher cycle fix empty-vs-block
+
+- mode=normal (kept)
+- cancelled stale in_progress 29627597065 (792253805); tip pending 1bbd2b4be
+- last normal run 29627164218 logs: many eBay block msgs for LG/G6/DEX/Pixel after empty SERP
+- ROOT CAUSE: _try_chain used last=last or None so earlier blocked stuck after clean empty
+- FIX pushed: saw_clean_empty clears block; empty wins over soft-block
+- damage filter still OK; no mode change
+
