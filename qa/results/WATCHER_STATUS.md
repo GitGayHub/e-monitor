@@ -174,3 +174,24 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - one in_progress state run 29631508909 left alone (tip queue)
 - damage filters OK; no code change
 
+## 2026-07-18 05:17 UTC
+- tip_local=a1f879209 mode=normal
+- red_flags=['none']
+- paste={'chars': 7785, 'prices_eur': 119, 'empty': 30, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29631948036 pending - a1f879209 workflow_dispatch E Monitor
+  - 29631934527 completed cancelled a1f879209 push chore: mode=normal after honest stats (watcher)
+  - 29631508909 in_progress - 3449148e2 workflow_dispatch E Monitor
+  - 29631195085 completed success 56798e8e3 push fix: stats soft-fallback when details reject all SERP cards;
+  - 29631079280 completed cancelled 5a5149d94 workflow_dispatch E Monitor
+  - 29631020089 completed cancelled 5a5149d94 push chore: watcher status quiet normal cycle
+  - 29630994441 completed cancelled 36c936b8f push chore: mode=normal after Z80 Ultra audit fix verified
+  - 29630662824 completed cancelled 88df5c9a0 workflow_dispatch E Monitor
+
+## 2026-07-18 05:17 UTC — watcher quiet
+- mode=normal
+- paste: fail=0 block=0 rl=0 prices~119 empty=30 Z80_LV not block
+- cancelled stale 29631508909 (3449148e2); tip pending a1f879 normal
+- last stats success 29631195085/56798e honest
+- damage OK; no code change
+
