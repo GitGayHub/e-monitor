@@ -4797,8 +4797,12 @@ def _parse_search_body(body, host, query):
     )
     body_len = len(raw)
     itm_links = len(re.findall(r"/itm/\d{9,15}", raw))
-    # Honest empty SERP (model not listed yet, etc.) — NEVER call this eBay block.
+    # Honest empty SERP (model not listed yet) — ONLY with explicit no-results text.
+    # NEVER call this eBay block.
     if has_no_results_marker:
+        logger.info(
+            "eBay %s genuine no-results marker for '%s'", host, query
+        )
         return [], None
     # Datacenter stealth shell: fat HTML, no result markup, no empty marker.
     if body_len > 5000 and not has_result_container and itm_links == 0:
@@ -4809,14 +4813,15 @@ def _parse_search_body(body, host, query):
     if not has_result_container and itm_links == 0 and not has_no_results_marker:
         logger.warning("eBay %s empty (likely stealth block) for '%s'", host, query)
         return [], "blocked"
-    # Result chrome present but 0 parseable cards / only placeholder itm links.
-    # Real empty stock often looks like this — treat as empty, not block.
+    # Result chrome + almost no /itm/ links WITHOUT no-results marker is the classic
+    # GH soft-empty (Z80 Ultra still in stock live, curl shows container/itm=0).
+    # Must NOT be "honest empty" — force Playwright / retries via parse.
     if has_result_container and itm_links <= 2:
-        logger.info(
-            "eBay %s empty results page (container, itm=%d) for '%s'",
+        logger.warning(
+            "eBay %s soft-empty chrome (container, itm=%d, no empty-marker) for '%s' — retry PW",
             host, itm_links, query,
         )
-        return [], None
+        return [], "parse"
     # Many /itm/ links but parser got 0 — markup drift. Prefer "parse" so caller
     # retries Playwright, not "blocked" (which opens API circuit on 429 spam).
     if itm_links > 2:
@@ -5223,9 +5228,11 @@ def fetch_ebay_ex(search, force=False):
             if pw_err in ("no_playwright",):
                 break
         if html_confirmed_empty:
-            # curl already saw empty SERP; PW crash/network must not invent block.
+            # Only genuine no-results marker (err=None from parse). Soft-empty
+            # is now "parse", so PW crash will surface as transport fail, not
+            # "Не найдено" while live stock exists (Z80 Ultra audit).
             logger.info(
-                "HTML empty confirmed for '%s'; ignoring PW fail (%s)",
+                "HTML genuine empty for '%s'; ignoring PW fail (%s)",
                 search.get("query"), pw_err,
             )
             _ebay_consecutive_blocks = 0
