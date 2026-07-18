@@ -110,3 +110,23 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
   - 29626716592 completed success fbdbcedfb workflow_dispatch E Monitor
   - 29626265550 completed cancelled 40c968d3a workflow_dispatch E Monitor
 
+## 2026-07-18 03:33 UTC
+- tip_local=beefb9082 mode=normal
+- red_flags=['none']
+- paste={'chars': 7195, 'prices_eur': 108, 'empty': 41, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29628934322 pending - beefb9082 workflow_dispatch E Monitor
+  - 29628794117 completed cancelled 7ab8d300d schedule E Monitor
+  - 29628576783 completed cancelled a09e66bd0 push fix: run_log classifier ignores no-cooldown soft blocks
+  - 29628495110 in_progress - 4495e9982 workflow_dispatch E Monitor
+  - 29628136781 completed cancelled a0786ea10 push chore: watcher status empty-vs-block fix
+  - 29628135629 completed cancelled ce0beeacb push fix: clean empty SERP must not keep prior blocked from host 
+  - 29628050654 completed cancelled 1bbd2b4be workflow_dispatch E Monitor
+  - 29627597065 completed cancelled 792253805 workflow_dispatch E Monitor
+
+## 2026-07-18 03:34 UTC fix cycle
+- mode=normal
+- fixed: query-variant merge no longer upgrades clean empty to network/block
+- fixed: Browse API 0 items treated as clean empty (not API failed None)
+- fixed: GH log says fetch fail not always eBay block
+- push f2b987415
