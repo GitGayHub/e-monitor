@@ -420,6 +420,16 @@ BAD_CONDITION_WORDS = (
     "riss im display", "riss im bildschirm", "riss im glas",
     "sprung im display", "sprung im glas", "sprung im bildschirm",
     "mit riss", "mit sprung",
+    # Cracked / damaged rear glass / housing (common DE seller phrasing)
+    "beschaedigte rueckseite", "beschaedigter rueckseite", "beschaedigtes rueckseite",
+    "beschaedigtes gehaeuse", "beschaedigter gehaeuse", "beschaedigtes gehaeuse",
+    "rueckseite beschaedigt", "rueckseite gebrochen", "rueckseite gesprungen",
+    "rueckseite riss", "riss in der rueckseite", "riss auf der rueckseite",
+    "hinterglas", "rueckglas", "backglass gebrochen", "backglass gesprungen",
+    "back glass cracked", "cracked back", "cracked rear", "shattered back",
+    "gehaeuse gebrochen", "gehaeuse gesprungen", "gehaeuse riss",
+    "trotz beschaedigter rueckseite", "trotz beschaedigtem gehaeuse",
+    "rueckseite hat riss", "rueckseite hat risse", "rueckseite hat kratzer",
     # Water damage
     "wasserschaden", "water damage", "water damaged",
     "feuchtigkeitsschaden", "nass geworden",
@@ -1672,15 +1682,43 @@ def _is_display_replacement_description(text_norm):
     return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
 
 
+# Defect stems AFTER _normalize (ä→ae, ü→ue). Must match inflected DE forms:
+# beschädigter/beschädigte/beschädigtes → beschaedigter/... not only exact "beschaedigt".
+_DAMAGE_DEFECT_RE = (
+    r"(?:beschaedig\w*|schaden|schaeden|beschaedigung(?:en)?"
+    r"|damage|damaged|defect|defective"
+    r"|gebrochen\w*|gesprungen\w*|gerissen\w*|kaputt"
+    r"|riss(?:e|ig\w*)?|sprung|spruenge|sprünge|bruch|brueche|brüche"
+    r"|crack(?:s|ed)?|absplitter\w*|gesplittert\w*|zerkratzt\w*|zerschrammt\w*)"
+)
+_DAMAGE_PART_RE = (
+    r"(?:backcover|back\s*cover|rueckseite|rueckabdeckung|rueckglas|hinterglas"
+    r"|rear\s*glass|back\s*glass|backglass|gehaeuse|gehäuse|housing|rahmen|frame"
+    r"|display|bildschirm|screen|oled|glas|glass|scheibe|akkudeckel"
+    r"|kamera|camera|linse|linsen|lens|frontglas|frontglass|displayglas|displayglass)"
+)
+
+
 def _has_damage_word(text_norm):
-    damage_words = r"schaden|schaeden|beschaedigt|beschaedigung|damage|damaged|defect|defective"
-    neg = r"(?<!ohne\s)(?<!kein\s)(?<!keine\s)(?<!keinen\s)(?<!nicht\s)(?<!no\s)(?<!without\s)"
-    if re.search(rf"\b{neg}(?:{damage_words})\b", text_norm, re.IGNORECASE):
+    """Title/description damage signal. text_norm must already be _normalize()'d."""
+    if not text_norm:
+        return False
+    neg = r"(?<!ohne\s)(?<!kein\s)(?<!keine\s)(?<!keinen\s)(?<!nicht\s)(?<!no\s)(?<!without\s)(?<!not\s)"
+    # Standalone defect (any inflected form)
+    if re.search(rf"\b{neg}{_DAMAGE_DEFECT_RE}\b", text_norm, re.IGNORECASE):
         return True
-    part_words = r"display|bildschirm|screen|oled|glas|glass|scheibe|rueckseite|backcover|back\s+cover|backglass|back\s+glass"
-    if re.search(rf"\b(?:{part_words})\b.{{0,50}}\b{neg}(?:{damage_words})\b", text_norm, re.IGNORECASE):
+    # Part near defect either order (covers "beschädigter Rückseite" and reverse)
+    if re.search(
+        rf"\b(?:{_DAMAGE_PART_RE})\b.{{0,60}}\b{neg}{_DAMAGE_DEFECT_RE}\b",
+        text_norm,
+        re.IGNORECASE,
+    ):
         return True
-    if re.search(rf"\b{neg}(?:{damage_words})\b.{{0,50}}\b(?:{part_words})\b", text_norm, re.IGNORECASE):
+    if re.search(
+        rf"\b{neg}{_DAMAGE_DEFECT_RE}\b.{{0,60}}\b(?:{_DAMAGE_PART_RE})\b",
+        text_norm,
+        re.IGNORECASE,
+    ):
         return True
     return False
 
@@ -3970,36 +4008,43 @@ def _clean_description(html_text):
 
 
 def _has_damage_in_description(desc_norm):
-    part_pattern = re.compile(
-        r"\b(?:backcover|back\s*cover|rueckseite|rückseite|rear\s*glass|back\s*glass|gehaeuse|gehäuse|housing|rahmen|frame|display|screen|glas|glass|kamera|camera|linse|linsen|lens|frontglas|frontglass|displayglas|displayglass|akkudeckel)\b",
-        re.IGNORECASE
+    """Part+defect near each other in listing description (normalized text).
+
+    Catches seller copy like:
+      'funktionsfähig trotz beschädigter Rückseite'
+      'Rückseite ist gesprungen, Display und Kamera ok'
+    which previously slipped through because defect regex missed DE inflections
+    after _normalize (beschädigt → beschaedigter ≠ \\bbeschaedigt\\b).
+    """
+    if not desc_norm:
+        return False
+    # Shared helper already covers part↔defect both orders + stems.
+    if _has_damage_word(desc_norm):
+        return True
+    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE})\b", re.IGNORECASE)
+    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE})\b", re.IGNORECASE)
+    neg_tokens = (
+        "nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei", "not",
     )
-    defect_pattern = re.compile(
-        r"\b(?:gebrochen|gesprungen|kaputt|beschädigt|beschadigt|defekt|cracked|broken|damaged|defective|riss|risse|sprung|sprünge|spruenge|bruch|brüche|brueche|crack|cracks|damage|schaden|schäden|schaeden|beschädigung|beschädigungen|beschadigung|beschadigungen|absplitterung|absplitterungen|gesplittert)\b",
-        re.IGNORECASE
-    )
-    
+
     for m_part in part_pattern.finditer(desc_norm):
         part_start, part_end = m_part.span()
-        # Lookahead window: 50 characters after part
-        after_window = desc_norm[part_end : part_end + 50]
+        after_window = desc_norm[part_end : part_end + 70]
         for m_defect in defect_pattern.finditer(after_window):
-            defect_start = m_defect.start()
-            between = after_window[:defect_start]
-            if not any(w in between for w in ("nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei")):
+            between = after_window[: m_defect.start()]
+            if not any(w in between for w in neg_tokens):
                 return True
-                
-        # Lookbehind window: 50 characters before part
-        before_window_start = max(0, part_start - 50)
-        before_window = desc_norm[before_window_start : part_start]
+
+        before_window_start = max(0, part_start - 70)
+        before_window = desc_norm[before_window_start:part_start]
         for m_defect in defect_pattern.finditer(before_window):
-            defect_end = m_defect.end()
-            between = before_window[defect_end:]
-            if not any(w in between for w in ("nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei")):
-                abs_defect_start = before_window_start + m_defect.start()
-                pre_defect = desc_norm[max(0, abs_defect_start - 15) : abs_defect_start]
-                if not any(w in pre_defect for w in ("nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei")):
-                    return True
+            between = before_window[m_defect.end() :]
+            if any(w in between for w in neg_tokens):
+                continue
+            abs_defect_start = before_window_start + m_defect.start()
+            pre_defect = desc_norm[max(0, abs_defect_start - 18) : abs_defect_start]
+            if not any(w in pre_defect for w in neg_tokens):
+                return True
     return False
 
 
@@ -4023,6 +4068,13 @@ def _is_description_blocked(desc_html, category):
         if w in ("tausch", "tauschen") and re.search(r"\b(?:kein|keine|keinen|nicht|no)\s+(?:um)?tausch\b|\bumtausch\b", desc_norm):
             continue
         if _has_term(desc_norm, w):
+            # "ohne Displayschaden" / "kein Riss" must not block
+            w_norm = _normalize(w)
+            if re.search(
+                rf"\b(?:kein|keine|keinen|ohne|nicht|no|without|not)\s+{re.escape(w_norm)}\b",
+                desc_norm,
+            ):
+                continue
             logger.info("Description blocked due to bad condition word/phrase: '%s'", w)
             return True
 
