@@ -237,3 +237,10 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - last stats 29632945412/c47ad05: Z80 Ultra 756/511, LV honest empty, Superstrike auc 60
 - damage OK; no code change
 
+## 2026-07-18 06:17 UTC — watcher STOPPED
+
+- scheduler task 019f72a0183b deleted (every 20m)
+- mode.txt = **normal** (production alerts)
+- remaining later: auction SERP recovery (11S/LG/G6/4080/Superlight pure Auktion), optional cheaper-BIN filter tuning
+- last good stats baseline: 29632945412 / c47ad05 — fail=0 block=0; Z80 Ultra 756/511; Z80 LV honest empty
+
