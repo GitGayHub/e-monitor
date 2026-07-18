@@ -116,14 +116,33 @@ jobs:
               output = open('run_output.log', encoding='utf-8', errors='ignore').read()
           lower = output.lower()
 
+          # Classify carefully: logs say "no cooldown" on GH soft-blocks and
+          # "eBay block #N" per product without meaning the whole run died.
           reason = ''
-          if 'rate_limit' in lower or 'rate limit' in lower:
+          has_rl = (
+              'rate_limit' in lower
+              or 'rate limit' in lower
+              or 'api circuit open' in lower
+              or 'http 429' in lower
+          )
+          # "no cooldown" must NOT count as cooldown (common GH log line).
+          has_cooldown = (
+              ('cooldown active' in lower or 'cooling down' in lower or "cooldown'" in lower)
+              and 'no cooldown' not in lower
+          )
+          # Sustained/whole-run block signals only (not every "eBay block #1 for …").
+          has_hard_block = (
+              'sustained block' in lower
+              or 'stealth empty' in lower
+              or 'still got challenge' in lower
+          )
+          if has_rl:
               reason = 'rate_limit'
-          elif 'cooldown' in lower:
+          elif has_cooldown:
               reason = 'cooldown'
-          elif 'blocked' in lower:
+          elif has_hard_block:
               reason = 'blocked'
-          elif 'api fallback' in lower or 'fallback' in lower:
+          elif 'api last-resort failed' in lower or 'browse api last resort' in lower:
               reason = 'fallback'
 
           telegram_failed = (
@@ -134,6 +153,15 @@ jobs:
               or 'telegram exception' in lower
           )
 
+          # Source: prefer explicit HTML/API path markers, not substring "api" in
+          # marketplace ids / comments.
+          if 'via ebay browse api' in lower or 'browse api last resort' in lower:
+              src = 'api'
+          elif 'items via' in lower or 'playwright html' in lower or 'm.ebay' in lower:
+              src = 'html'
+          else:
+              src = 'unknown'
+
           entry = {
               'time': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
               'trigger': os.environ.get('GITHUB_EVENT_NAME', '${{ github.event_name }}'),
@@ -141,7 +169,7 @@ jobs:
               'new': output.count('send_notification') + output.count('🆕') + output.count('🚨'),
               'blocked': bool(reason),
               'blocked_reason': reason,
-              'source': 'api' if 'api' in lower else 'html',
+              'source': src,
               'monitor_status': int(os.environ.get('MONITOR_STATUS') or 0),
               'telegram_failed': telegram_failed,
           }

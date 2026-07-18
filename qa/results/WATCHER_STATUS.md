@@ -82,3 +82,31 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - FIX pushed: saw_clean_empty clears block; empty wins over soft-block
 - damage filter still OK; no mode change
 
+## 2026-07-18 03:12 UTC
+- tip_local=a0786ea10 mode=normal
+- red_flags=['none']
+- paste={'chars': 7195, 'prices_eur': 108, 'empty': 41, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29628136781 pending - a0786ea10 push chore: watcher status empty-vs-block fix
+  - 29628135629 completed cancelled ce0beeacb push fix: clean empty SERP must not keep prior blocked from host 
+  - 29628050654 in_progress - 1bbd2b4be workflow_dispatch E Monitor
+  - 29627597065 completed cancelled 792253805 workflow_dispatch E Monitor
+  - 29627164218 completed success 9d5529cd1 workflow_dispatch E Monitor
+  - 29626716592 completed success fbdbcedfb workflow_dispatch E Monitor
+  - 29626265550 completed cancelled 40c968d3a workflow_dispatch E Monitor
+  - 29625805401 completed success 76313e2ca workflow_dispatch E Monitor
+
+## 2026-07-18 03:17 UTC
+- tip_local=a0786ea10 mode=normal
+- red_flags=['none']
+- paste={'chars': 7195, 'prices_eur': 108, 'empty': 41, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29628495110 pending - 4495e9982 workflow_dispatch E Monitor
+  - 29628136781 completed cancelled a0786ea10 push chore: watcher status empty-vs-block fix
+  - 29628135629 completed cancelled ce0beeacb push fix: clean empty SERP must not keep prior blocked from host 
+  - 29628050654 in_progress - 1bbd2b4be workflow_dispatch E Monitor
+  - 29627597065 completed cancelled 792253805 workflow_dispatch E Monitor
+  - 29627164218 completed success 9d5529cd1 workflow_dispatch E Monitor
+  - 29626716592 completed success fbdbcedfb workflow_dispatch E Monitor
+  - 29626265550 completed cancelled 40c968d3a workflow_dispatch E Monitor
+
