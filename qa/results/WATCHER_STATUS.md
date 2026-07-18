@@ -130,3 +130,25 @@ Next cycle should report run ids, block/fail/price counts, and actions taken.
 - fixed: Browse API 0 items treated as clean empty (not API failed None)
 - fixed: GH log says fetch fail not always eBay block
 - push f2b987415
+
+## 2026-07-18 04:42 UTC
+- tip_local=36c936b8f mode=normal
+- red_flags=['none']
+- paste={'chars': 7425, 'prices_eur': 112, 'empty': 37, 'fail': 0, 'block': 0, 'rl': 0, 'z80_lv_block': False}
+- runs:
+  - 29630994441 pending - 36c936b8f push chore: mode=normal after Z80 Ultra audit fix verified
+  - 29630662824 in_progress - 88df5c9a0 workflow_dispatch E Monitor
+  - 29630429879 completed success 0cabd3fdc push fix: stop warranty boilerplate false damage blocks (Z80 Ultr
+  - 29630248969 completed cancelled a7093116e workflow_dispatch E Monitor
+  - 29629814659 completed cancelled a7093116e workflow_dispatch E Monitor
+  - 29629776753 completed success a7093116e push chore: bump logic_version after soft-empty fix
+  - 29629768343 completed cancelled f50ae0b81 push fix: soft-empty chrome is parse not honest empty (Z80 Ultra 
+  - 29629376497 completed cancelled 65a3d5ff7 workflow_dispatch E Monitor
+
+## 2026-07-18 04:43 UTC — watcher quiet
+- mode=normal
+- paste metrics: fail=0 block=0 rl=0 prices~112 empty=37 Z80_LV not block
+- cancelled stale in_progress 29630662824 (88df5c9a0); tip pending 29630994441 (36c936 normal)
+- last good stats 29630429879 0cabd3: Z80 Ultra recovered 756/511 after damage boilerplate fix
+- damage: cracked back still blocks; warranty boilerplate OK
+- no code change this cycle
