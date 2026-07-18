@@ -4013,38 +4013,67 @@ def _has_damage_in_description(desc_norm):
     Catches seller copy like:
       'funktionsfähig trotz beschädigter Rückseite'
       'Rückseite ist gesprungen, Display und Kamera ok'
-    which previously slipped through because defect regex missed DE inflections
-    after _normalize (beschädigt → beschaedigter ≠ \\bbeschaedigt\\b).
+
+    Does NOT use standalone defect words — seller boilerplate often says
+    'warranty does not cover any damaged caused by the user' which wiped
+    all Z80 Ultra candidates (14 SERP hits → 0 valid) while phones were fine.
     """
     if not desc_norm:
         return False
-    # Shared helper already covers part↔defect both orders + stems.
-    if _has_damage_word(desc_norm):
-        return True
+    # Strip warranty / policy boilerplate that mentions damage/cover generically.
+    cleaned = re.sub(
+        r"(?:warranty|garantie).{0,60}(?:does not cover|deckt nicht|nicht ab).{0,100}",
+        " ",
+        desc_norm,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"does not cover any damage\w*.{0,40}",
+        " ",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"(?:wear and tear|normalen verschleiss|normalem verschleiss).{0,40}",
+        " ",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    # Require part + defect proximity only (not bare 'damaged'/'defekt').
     part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE})\b", re.IGNORECASE)
     defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE})\b", re.IGNORECASE)
     neg_tokens = (
         "nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei", "not",
+        "unbeschaedig", "undamaged",
     )
 
-    for m_part in part_pattern.finditer(desc_norm):
+    for m_part in part_pattern.finditer(cleaned):
         part_start, part_end = m_part.span()
-        after_window = desc_norm[part_end : part_end + 70]
+        after_window = cleaned[part_end : part_end + 70]
         for m_defect in defect_pattern.finditer(after_window):
             between = after_window[: m_defect.start()]
             if not any(w in between for w in neg_tokens):
                 return True
 
         before_window_start = max(0, part_start - 70)
-        before_window = desc_norm[before_window_start:part_start]
+        before_window = cleaned[before_window_start:part_start]
         for m_defect in defect_pattern.finditer(before_window):
             between = before_window[m_defect.end() :]
             if any(w in between for w in neg_tokens):
                 continue
             abs_defect_start = before_window_start + m_defect.start()
-            pre_defect = desc_norm[max(0, abs_defect_start - 18) : abs_defect_start]
+            pre_defect = cleaned[max(0, abs_defect_start - 18) : abs_defect_start]
             if not any(w in pre_defect for w in neg_tokens):
                 return True
+    # Explicit cracked-back phrasing still blocked after cleaning.
+    if re.search(
+        r"\b(?:trotz\s+)?beschaedig\w*\s+(?:rueckseite|gehaeuse|back\s*glass|hinterglas)\b",
+        cleaned,
+    ) or re.search(
+        r"\b(?:rueckseite|gehaeuse|back\s*glass|hinterglas)\s+(?:ist\s+)?(?:beschaedig\w*|gebrochen\w*|gesprungen\w*)\b",
+        cleaned,
+    ):
+        return True
     return False
 
 
