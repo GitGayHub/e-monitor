@@ -136,13 +136,21 @@ jobs:
               or 'stealth empty' in lower
               or 'still got challenge' in lower
           )
+          # API last-resort appears for a few soft products every run — only flag
+          # when many products actually fail the API fallback (mass outage).
+          api_fail_n = lower.count('api last-resort failed')
+          api_try_n = lower.count('browse api last resort') + lower.count(
+              'trying browse api last resort'
+          )
+          has_mass_api_fallback = api_fail_n >= 5
+
           if has_rl:
               reason = 'rate_limit'
           elif has_cooldown:
               reason = 'cooldown'
           elif has_hard_block:
               reason = 'blocked'
-          elif 'api last-resort failed' in lower or 'browse api last resort' in lower:
+          elif has_mass_api_fallback:
               reason = 'fallback'
 
           telegram_failed = (
@@ -153,12 +161,16 @@ jobs:
               or 'telegram exception' in lower
           )
 
-          # Source: prefer explicit HTML/API path markers, not substring "api" in
-          # marketplace ids / comments.
-          if 'via ebay browse api' in lower or 'browse api last resort' in lower:
+          # Source: HTML is primary; mark api only when API actually returned items
+          # or dominated the run (not a single last-resort attempt).
+          html_hits = lower.count('items via m.ebay') + lower.count('items via ebay.')
+          api_hits = lower.count('via ebay browse api')
+          if api_hits > 0 and api_hits >= html_hits:
               src = 'api'
-          elif 'items via' in lower or 'playwright html' in lower or 'm.ebay' in lower:
+          elif html_hits > 0 or 'playwright html' in lower or 'm.ebay' in lower:
               src = 'html'
+          elif api_try_n > 0:
+              src = 'mixed'
           else:
               src = 'unknown'
 
