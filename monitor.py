@@ -5073,6 +5073,7 @@ def fetch_ebay_ex(search, force=False):
     if len(variants) > 1 and not search.get("_variant_child"):
         merged_items = []
         errors = []
+        saw_clean_empty = False
         # On GH: primary query first; if empty try at most ONE alias.
         # Full 3–5 variant bursts × many products was the main reason eBay
         # flipped to soft-empty / rate-limit mid statistics report.
@@ -5083,19 +5084,33 @@ def fetch_ebay_ex(search, force=False):
         for qi, query in enumerate(order):
             if qi > 0 and merged_items:
                 break
+            # Primary already saw a real empty SERP — do not burn a second
+            # alias (PW crashes + API) and then upgrade empty → network/block.
+            if qi > 0 and saw_clean_empty and not errors:
+                break
             variant = copy.deepcopy(search)
             variant["_query_override"] = query
             variant["_variant_child"] = True
             variant_items, variant_err = fetch_ebay_ex(variant, force=force)
             if variant_items:
                 merged_items.extend(variant_items)
-            if variant_err:
+            elif variant_err is None:
+                saw_clean_empty = True
+            elif variant_err:
                 errors.append(variant_err)
         merged_items = _merge_items_by_id(merged_items)
-        err = None if merged_items else (errors[-1] if errors else None)
+        if merged_items:
+            err = None
+        elif saw_clean_empty:
+            # At least one variant returned a clean empty page — honest empty,
+            # not the last alias's network/PW crash.
+            err = None
+        else:
+            err = errors[-1] if errors else None
         logger.info(
-            "  %s -> %d merged items via %d/%d query variants",
+            "  %s -> %d merged items via %d/%d query variants (empty_ok=%s err=%s)",
             search["query"], len(merged_items), len(order), len(variants),
+            saw_clean_empty, err,
         )
         _ebay_query_cache[cache_key] = (time.time(), merged_items, err)
         return merged_items, err
@@ -5237,23 +5252,32 @@ def fetch_ebay_ex(search, force=False):
     ):
         logger.info("eBay HTML exhausted (%s), trying Browse API last resort", err)
         api_items, api_err = fetch_ebay_api_ex(search, force=force)
-        if api_err is None and api_items:
-            _ebay_query_cache[cache_key] = (time.time(), api_items, None)
-            return api_items, None
+        if api_err is None:
+            # Clean API response — 0 items is honest empty, NOT a failure.
+            # (Was: only accepted non-empty, then "API failed: None" + kept network.)
+            _ebay_query_cache[cache_key] = (time.time(), api_items or [], None)
+            if api_items:
+                return api_items, None
+            logger.info(
+                "  %s -> Browse API clean empty (0 items) after HTML %s",
+                search.get("query"), err,
+            )
+            return [], None
         logger.warning("eBay API last-resort failed: %s", api_err)
         err = api_err or err
 
-    # Still blocked. On GH never arm multi-product cooldown — each search
-    # already rotates fingerprints + Playwright; skipping the rest of stats
-    # for 45s+ made 20 products show "Rate limit" after two OK phones.
+    # Still blocked / transport-fail. On GH never arm multi-product cooldown.
     _ebay_consecutive_blocks += 1
     if _on_github_actions():
+        # Do not call every network/parse fail "eBay block" — logs + run_log
+        # classifier treated soft fails as full outages.
+        kind = err or "blocked"
         logger.warning(
-            "eBay block #%d for '%s' on GH — no cooldown, next product will retry HTML",
-            _ebay_consecutive_blocks, search.get("query"),
+            "eBay fetch fail #%d (%s) for '%s' on GH — no cooldown, next product retries",
+            _ebay_consecutive_blocks, kind, search.get("query"),
         )
-        _ebay_query_cache[cache_key] = (time.time(), [], err or "blocked")
-        return [], err or "blocked"
+        _ebay_query_cache[cache_key] = (time.time(), [], kind)
+        return [], kind
     cooldown = min(
         _EBAY_BLOCK_COOLDOWN_MAX,
         _EBAY_BLOCK_COOLDOWN_BASE * (2 ** (_ebay_consecutive_blocks - 1)),
