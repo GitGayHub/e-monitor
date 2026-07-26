@@ -2352,6 +2352,26 @@ def _prepare_monitor_fetch_search(search):
         search_floor = max(device_floor, 150.0)
     elif category == "mice" or "superlight" in query_norm:
         search_floor = max(device_floor, 40.0)
+    # The raise above device_floor is cosmetic — it only keeps page 1 free of
+    # Hüllen/Folien. It must never climb above the price we would alert at, or
+    # the search asks eBay for a band where no deal can live: Pixel 5 was asking
+    # for ≥120€ under a 70€ limit, so its live 40–70€ lots were never fetched.
+    try:
+        limit_f = float(filters.get("limit_price") or 0)
+    except (TypeError, ValueError):
+        limit_f = 0.0
+    if limit_f and search_floor > limit_f:
+        if device_floor > limit_f:
+            # Not fixable here: the limit sits below what counts as a real
+            # device for this query, so _is_implausibly_cheap_device would drop
+            # every hit anyway. Say so instead of silently reporting «Не найдено».
+            logger.warning(
+                "%s: limit %.0f€ is below the plausibility floor %.0f€ — "
+                "this search cannot match anything",
+                search.get("query"), limit_f, device_floor,
+            )
+        search_floor = device_floor
+
     cur_min = filters.get("min_price")
     try:
         cur_min_f = float(cur_min) if cur_min is not None else 0.0
