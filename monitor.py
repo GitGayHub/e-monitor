@@ -7617,9 +7617,11 @@ async def process_searches(bot, once=False):
             stats_7d = get_stats_7d(search["id"])
 
             candidates = _notify_candidates_from_filtered(filtered)
+            by_stage = {s: sum(1 for _, st in candidates if st == s) for s in NOTIFY_STAGES}
             logger.info(
-                "  %s: %d results, %d candidates (initial/final_hour)",
+                "  %s: %d results, %d candidates (%s)",
                 search["query"], len(filtered), len(candidates),
+                ", ".join(f"{s}={by_stage[s]}" for s in NOTIFY_STAGES if by_stage[s]) or "none",
             )
 
             for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):

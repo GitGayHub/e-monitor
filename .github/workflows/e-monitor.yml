@@ -78,7 +78,9 @@ jobs:
           # passes and waiting for the scheduler; the concurrency group makes
           # the next run queue up right behind it.
           RUN_INTERVAL_SEC: 60
-          RUN_BUDGET_SEC: 2100
+          # 30 min of sweeping + the manifest and state-commit steps stay clear
+          # of the job's 45-min timeout even when a pass runs long.
+          RUN_BUDGET_SEC: 1800
         run: |
           set +e
           git config --global user.name "E Bot"
@@ -99,8 +101,11 @@ jobs:
             echo "===== E MONITOR ITERATION $i (budget ${RUN_BUDGET_SEC}s) =====" | tee -a run_output_all.log
             echo "iteration_start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a run_output_all.log
 
+            pass_start=$SECONDS
             python monitor.py --once 2>&1 | tee run_output.log
             MONITOR_STATUS=${PIPESTATUS[0]}
+            pass_dur=$(( SECONDS - pass_start ))
+            echo "pass_seconds=$pass_dur" | tee -a run_output_all.log
             cat run_output.log >> run_output_all.log
 
             MONITOR_STATUS="$MONITOR_STATUS" LOOP_INDEX="$i" python - <<'PY'
@@ -225,9 +230,13 @@ jobs:
               echo "statistics mode — single pass, done" | tee -a run_output_all.log
               break
             fi
+            # Never start a pass the budget cannot finish: a pass takes ~8-9 min,
+            # so checking only the sleep interval would let the last one run past
+            # the job timeout and lose the whole run's state commit.
             elapsed=$(( SECONDS - loop_start ))
-            if [ $(( RUN_BUDGET_SEC - elapsed )) -le "$RUN_INTERVAL_SEC" ]; then
-              echo "run budget spent after ${elapsed}s and $i pass(es)" | tee -a run_output_all.log
+            if [ $(( elapsed + RUN_INTERVAL_SEC + pass_dur )) -ge "$RUN_BUDGET_SEC" ]; then
+              echo "budget: ${elapsed}s used over $i pass(es), last pass ${pass_dur}s — stopping" \
+                | tee -a run_output_all.log
               break
             fi
             sleep "$RUN_INTERVAL_SEC"

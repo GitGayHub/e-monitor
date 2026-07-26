@@ -116,16 +116,37 @@ about an hour late. Two causes, both in the code rather than in eBay:
 still inside the limit. `seen_ids.json` carries a third flag and migrates old
 files silently. `test_auction_final_stages.py` — 17 tests.
 
+### Measured on GH — first normal run (30221996333, 21:53–22:36 UTC)
+
+| | before | this run |
+| --- | ---: | ---: |
+| passes per run | 2, then wait for a late cron | **5** (21:54, 22:02, 22:11, 22:19, 22:27) |
+| gap between passes | 2 min ×1, then 10–40 min of nothing | **~8 min, continuously** |
+| listings the price page was hiding | invisible | **+39…48 per truncated search** |
+
+`newly listed sweep added 39 item(s)` fired for iPhone 16 Pro Max, iPhone 15 Pro
+Max (48), samsung s24 ultra (48), Sony WH-1000XM6 (16), logitech superlight 2
+(44) — 30 sweeps in the run. Those items were simply not visible to the monitor
+before: the price-ascending page 1 was full without them.
+
+`ending soon sweep added` fired **0 times**, and that is the gate working, not a
+bug: the auction-only SERPs come back with 21–29 lots, well under the 60-card
+page, so the market is not truncated and every ending lot is already in the
+primary fetch. The sweep exists for the day an auction market outgrows a page.
+
+One alert went out during the run (iPhone 16 Pro Max, Sofortkauf,
+`telegram_failed: False`), no fetch errors, no crashes.
+
+Budget overshoot found and fixed: the loop only compared the remaining budget
+against the sleep interval, so a 5th pass started at minute 34 and the run took
+2406 s against a 2100 s budget — 42 min against a 45 min job timeout. It now
+also accounts for how long the previous pass took, and the budget is 1800 s.
+
 ### Next step
 
-Watch a `normal` run and confirm on GH:
-
-- `newly listed sweep added N item(s)` / `ending soon sweep added N item(s)` on
-  the truncated markets (iPhone, S24 Ultra, PS5 Pro), and no sweep on the small
-  ones
-- a pass lands inside an auction's last 15 min and «🔥 15 МИНУТ ДО КОНЦА»
-  arrives, with the price still under the limit
-- the run does several passes within its 35-min budget instead of two
+- confirm «🔥 15 МИНУТ ДО КОНЦА» on a real lot: a pass has to land inside the
+  last 15 minutes of an auction that is still under the limit
+- watch that runs now finish inside ~32 min, well clear of the timeout
 
 ## Earlier
 
