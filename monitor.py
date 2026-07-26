@@ -1668,11 +1668,43 @@ def _is_for_accessory_title(title_norm, query_norm, category):
     return True
 
 
+_DISPLAY_PART_WORDS = r"(?:display|bildschirm|screen|oled|glas|glass|scheibe)"
+_DISPLAY_REPAIR_WORDS = (
+    r"(?:getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch"
+    r"|bekommen|erneuert|reparatur|getauschtes|gewechseltes|repariertes"
+    r"|ersetztes|erneuertes)"
+)
+# "neu" alone only means a swapped screen when it sits *next to* the part.
+_DISPLAY_NEW_WORDS = r"(?:neu|neue|neues|neuer|frisches)"
+_DISPLAY_NEG = (
+    r"(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)"
+    r"(?<!not\s)(?<!without\s)"
+)
+
+
 def _is_display_replacement(text_norm):
-    """Detect display/screen/oled/glass/backglass replacements in title or description."""
-    p1 = r"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b.*\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|bekommen|erneuert|reparatur)\b"
-    p2 = r"\b(?<!wie\s)(?<!nicht\s)(?<!kein\s)(?<!keine\s)(?<!ohne\s)(?<!no\s)(?<!not\s)(?<!without\s)(?:neu|neues|neuer|getauschtes|gewechseltes|repariertes|ersetztes|erneuertes|frisches)\b.*\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
-    return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
+    """Detect display/screen/oled/glass/backglass replacements in title or description.
+
+    "Display neu" on a phone means the screen was swapped. On an OLED device
+    "neu" is just the condition: «LG Ultragear … 4K UHD OLED Gaming Monitor
+    240Hz/480Hz - NEU» is a new monitor, and the old `oled .* neu` match ate the
+    only live LG auction lot in the 2026-07-26 report (item 267738467047).
+    So repair verbs may sit anywhere in the text, but the bare "neu" family has
+    to be adjacent (one word apart at most) to the display word.
+    """
+    near = r"\W+(?:\w+\W+)?"
+    patterns = (
+        rf"\b{_DISPLAY_PART_WORDS}\b.*\b{_DISPLAY_NEG}{_DISPLAY_REPAIR_WORDS}\b",
+        rf"\b{_DISPLAY_NEG}{_DISPLAY_REPAIR_WORDS}\b.*\b{_DISPLAY_PART_WORDS}\b",
+        rf"\b{_DISPLAY_PART_WORDS}\b{near}{_DISPLAY_NEG}{_DISPLAY_NEW_WORDS}\b",
+        rf"\b{_DISPLAY_NEG}{_DISPLAY_NEW_WORDS}\b{near}{_DISPLAY_PART_WORDS}\b",
+    )
+    return any(re.search(p, text_norm, re.IGNORECASE) for p in patterns)
+
+
+# Categories where the panel IS the product — a "new OLED" there is a new device,
+# never a replacement part.
+_PANEL_IS_PRODUCT_CATEGORIES = ("monitors", "tvs")
 
 
 def _is_display_replacement_description(text_norm):
@@ -1726,7 +1758,7 @@ def _has_damage_word(text_norm):
 def _is_category_blocked_title(title_norm, category, query_norm=None):
     if any(_has_term(title_norm, w) for w in BAD_CONDITION_WORDS):
         return True
-    if _is_display_replacement(title_norm):
+    if category not in _PANEL_IS_PRODUCT_CATEGORIES and _is_display_replacement(title_norm):
         return True
     if _has_damage_word(title_norm):
         return True
