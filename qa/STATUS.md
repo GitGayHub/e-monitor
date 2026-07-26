@@ -1,42 +1,45 @@
 # QA status / handoff
 
-## Active task — auction buckets must tell the truth
+## Auction buckets — closed 2026-07-26
 
-- mode: **`statistics`** on purpose — the 4-bucket report is the measuring tool
-  for this loop. Back to `normal` (AGENTS.md production default) once the
-  auction rows stop lying. While `statistics` is set the 5-min cron **skips**,
-  so no alerts are being delivered.
-- Loop: change logic → push to `main` → run → read the report → compare against
-  live eBay from the local PC → next change.
+The residual the night watcher left open on 2026-07-18 («auction SERP recovery,
+11S / LG / G6 / 4080 / Superlight pure Auktion») is done: after three GH
+iterations every one of the five reads the same as live eBay.
 
-### Where it stands after iteration 2 (GH run 30219818970, 20:50–21:14 UTC)
+- mode: back to **`normal`** (AGENTS.md production default). `statistics` was on
+  only as the measuring tool for this loop — while it is set the 5-min cron
+  skips and no alerts go out.
+- Loop used: change logic → push to `main` → run → read the report → compare
+  against live eBay from the local PC → next change.
 
-| marker | pre-fix 30217151118 | iter 1 · 30218257391 | iter 2 · 30219818970 |
-| --- | ---: | ---: | ---: |
-| `Page crashed` | 93 | 3 | **0** |
-| `net::ERR_ABORTED` | 0 | 92 | **0** |
-| `Playwright HTML fetch failed` | 93 | 92 | **0** |
-| `soft-empty` | 144 | 164 | **0** |
-| `Browse API clean empty` | 24 | 2 | **0** |
-| `eBay HTML exhausted` → API last resort | 24 | 28 | **0** |
-| `genuine no-results marker` | — | — | **162** |
-| `⚠️ сбой загрузки` rows in the report | — | 6 | **0** |
+### Transport, run by run
 
-The HTML chain now resolves every search on its own: no Chromium crash, no
-aborted navigation, no Browse-API last resort, and no bucket left in limbo.
+| marker | pre-fix 30217151118 | iter 1 · 30218257391 | iter 2 · 30219818970 | iter 3 · 30221035184 |
+| --- | ---: | ---: | ---: | ---: |
+| `Page crashed` | 93 | 3 | **0** | **0** |
+| `net::ERR_ABORTED` | 0 | 92 | **0** | **0** |
+| `Playwright HTML fetch failed` | 93 | 92 | **0** | **0** |
+| `soft-empty` | 144 | 164 | **0** | **0** |
+| `Browse API clean empty` | 24 | 2 | **0** | **0** |
+| `eBay HTML exhausted` → API last resort | 24 | 28 | **0** | **0** |
+| `genuine no-results marker` | — | — | 162 | **166** |
+| `⚠️ сбой загрузки` rows in the report | — | 6 | **0** | **0** |
 
-### The 5 residual products
+The HTML chain resolves every search on its own now: no Chromium crash, no
+aborted navigation, no Browse-API last resort, no bucket left in limbo.
+
+### The 5 residual products — final
 
 Ground truth taken the same evening from this PC (real Chromium + curl chain,
 same URL builder and filters as the monitor):
 
-| product | iter 1 | iter 2 | live eBay | verdict |
-| --- | --- | --- | --- | --- |
-| Redmagic 11S Pro | ❌ Не найдено | ❌ Не найдено | «0 Ergebnisse» | **correct** |
-| 4080 (pc, …) | ⚠️ сбой загрузки | ❌ Не найдено | «0 Ergebnisse» | **fixed** |
-| samsung odyssey oled g6 500hz | ⚠️ сбой загрузки | ❌ Не найдено | «0 Ergebnisse» | **fixed** |
-| logitech superlight 2 | Auktion ❌ / Auktion+ 70 € | same | lots exist | **recovered** |
-| lg ultragear oled 480hz | ❌ Не найдено | ❌ Не найдено | 1 lot, 450 € | **still wrong** → fix 4 |
+| product | iter 1 | iter 2 | iter 3 | live eBay | verdict |
+| --- | --- | --- | --- | --- | --- |
+| Redmagic 11S Pro | ❌ Не найдено | ❌ Не найдено | ❌ Не найдено | «0 Ergebnisse» | **correct** |
+| 4080 (pc, …) | ⚠️ сбой загрузки | ❌ Не найдено | ❌ Не найдено | «0 Ergebnisse» | **fixed** |
+| samsung odyssey oled g6 500hz | ⚠️ сбой загрузки | ❌ Не найдено | ❌ Не найдено | «0 Ergebnisse» | **fixed** |
+| logitech superlight 2 | Auktion ❌ / Auktion+ 70 € | same | same | lots exist | **recovered** |
+| lg ultragear oled 480hz | ❌ Не найдено | ❌ Не найдено | **460 €** 🟣 | 1 lot, 450 € + 10.49 | **fixed** |
 
 Everything else in the report is consistent with live eBay: markets with stock
 (iPhone 15/16 Pro Max, PS5 Pro, S24 Ultra, 5070 Ti, 4050 OLED, Pixel 5, ULT
@@ -90,18 +93,39 @@ returns 0 items with no error.
 so «ohne Display Austausch» still reads as a swap. Phone-filter behaviour,
 untouched by this work — see `test_display_replacement_rule.py`.
 
+## Alert timing (same session, not yet measured on GH)
+
+Reported symptom: some links arrive while the listing is still fresh, others
+about an hour late. Two causes, both in the code rather than in eBay:
+
+1. **Visibility.** The monitoring profile fetches one price-ascending page
+   (`_sop=15`, 60 cards on GH). A new listing that is not among the 60 cheapest
+   matches is invisible until one of them ends. A lot in its last minutes sits
+   just as deep — which would also have kept the new 15-minute alert from ever
+   firing. When (and only when) the price page comes back full, i.e. the market
+   really is truncated, the pass now also takes two 25-card pages: «newly
+   listed» (`_sop=10`) and «ending soonest» (`_sop=1`, auction only).
+2. **Cadence.** The workflow did two passes and exited, then waited for the
+   5-min cron, which GitHub delivers late by 10–40 min routinely. The run is now
+   time-boxed: it keeps sweeping for `RUN_BUDGET_SEC` (35 min) with 60 s between
+   passes, and the concurrency group queues the next run right behind it.
+   Statistics stays a single diagnostic pass.
+
+**New auction stage.** Alerts were initial (≤24 h) → final_hour (≤1 h). Added
+`final_15m`: a last call ~15 min before the hammer, sent only while the price is
+still inside the limit. `seen_ids.json` carries a third flag and migrates old
+files silently. `test_auction_final_stages.py` — 17 tests.
+
 ### Next step
 
-Run **E Monitor** on `main` and check:
+Watch a `normal` run and confirm on GH:
 
-- `lg ultragear oled 480hz` — auction row must show the 450 € lot (🟣 Дорого,
-  limit 430) instead of «Не найдено»
-- `auction buckets empty after filter — dedicated auction fetch` still fires
-  where it should, and `report cap` never appears silently
-- no `Page crashed` / `net::ERR_ABORTED` / `Browse API clean empty` regressions
-- 11S Pro / 4080 / G6 stay «❌ Не найдено»
-
-Then flip `mode.txt` back to `normal` and commit.
+- `newly listed sweep added N item(s)` / `ending soon sweep added N item(s)` on
+  the truncated markets (iPhone, S24 Ultra, PS5 Pro), and no sweep on the small
+  ones
+- a pass lands inside an auction's last 15 min and «🔥 15 МИНУТ ДО КОНЦА»
+  arrives, with the price still under the limit
+- the run does several passes within its 35-min budget instead of two
 
 ## Earlier
 
