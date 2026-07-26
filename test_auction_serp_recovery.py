@@ -7,10 +7,33 @@ be reported as a clean empty, which is what painted 11S / LG / G6 / 4080 /
 Superlight pure Auktion as «Не найдено» while lots were live.
 """
 
+import re
 import unittest
 from unittest import mock
 
 import monitor
+
+
+def _glob_matches(glob, url):
+    """Playwright URL-glob semantics: ** spans /, * does not, {a,b} alternates."""
+    out = []
+    i = 0
+    while i < len(glob):
+        if glob.startswith("**", i):
+            out.append(".*")
+            i += 2
+        elif glob[i] == "*":
+            out.append("[^/]*")
+            i += 1
+        elif glob[i] == "{":
+            j = glob.index("}", i)
+            opts = glob[i + 1:j].split(",")
+            out.append("(?:" + "|".join(re.escape(o) for o in opts) + ")")
+            i = j + 1
+        else:
+            out.append(re.escape(glob[i]))
+            i += 1
+    return re.fullmatch("".join(out), url) is not None
 
 
 def _search(listing_type, query="nubia z80 ultra"):
@@ -59,7 +82,15 @@ class LightSerpUrlTest(unittest.TestCase):
 
 
 class BlockHeavyResourcesTest(unittest.TestCase):
-    """Thumbnails are what blow the renderer up; we never parse them."""
+    """Thumbnails are what blow the renderer up; we never parse them.
+
+    The handler is attached to asset URL globs only — routing "**/*" also
+    intercepts the navigation, and continue_()-ing the document through eBay's
+    redirect chain turned every GH crash into "Page.goto: net::ERR_ABORTED"
+    (run 20:07 UTC: 3 crashes, 92 aborts, 0 pages). So anything that reaches
+    this handler is an asset and gets aborted; a document that somehow
+    over-matched a glob is let through.
+    """
 
     def _route(self, resource_type):
         route = mock.Mock()
@@ -73,11 +104,51 @@ class BlockHeavyResourcesTest(unittest.TestCase):
             route.abort.assert_called_once()
             route.continue_.assert_not_called()
 
-    def test_document_and_script_pass(self):
-        for kind in ("document", "script", "xhr", "stylesheet"):
-            route = self._route(kind)
-            route.continue_.assert_called_once()
-            route.abort.assert_not_called()
+    def test_document_is_never_aborted(self):
+        route = self._route("document")
+        route.continue_.assert_called_once()
+        route.abort.assert_not_called()
+
+    def test_globs_never_match_a_serp_document(self):
+        serp = "https://www.ebay.de/sch/i.html?_nkw=x&LH_Auction=1"
+        for glob in monitor._PW_BLOCKED_URL_GLOBS:
+            self.assertFalse(
+                _glob_matches(glob, serp),
+                f"{glob!r} would intercept the SERP navigation itself",
+            )
+
+    def test_globs_match_ebay_thumbnails(self):
+        thumb = "https://i.ebayimg.com/images/g/abcAAOSw/s-l500.webp"
+        self.assertTrue(
+            any(_glob_matches(g, thumb) for g in monitor._PW_BLOCKED_URL_GLOBS),
+            "eBay thumbnails must still be blocked",
+        )
+
+
+class EscalateOnFailureTest(unittest.TestCase):
+    """The chain must not end on the first failure it has an answer for."""
+
+    def test_page_crash_escalates(self):
+        self.assertTrue(_escalates("Page.goto: Page crashed", 0))
+        self.assertTrue(_escalates("Page.wait_for_timeout: Page crashed", 1))
+
+    def test_net_aborted_escalates(self):
+        # The GH failure mode after request interception was added.
+        msg = "Page.goto: net::ERR_ABORTED at https://www.ebay.de/sch/i.html?_nkw=x"
+        self.assertTrue(_escalates(msg, 0))
+        self.assertTrue(_escalates(msg, 1))
+
+    def test_timeout_escalates_once_only(self):
+        msg = "Page.goto: Timeout 35000ms exceeded"
+        self.assertTrue(_escalates(msg, 0))
+        self.assertFalse(_escalates(msg, 1), "one timeout retry is the whole budget")
+
+    def test_unknown_error_does_not_burn_attempts(self):
+        self.assertFalse(_escalates("Executable doesn't exist", 0))
+
+
+def _escalates(msg, attempt):
+    return monitor._pw_should_escalate(msg, attempt)
 
 
 class AuctionApiZeroTest(unittest.TestCase):

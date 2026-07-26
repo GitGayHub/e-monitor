@@ -3528,6 +3528,11 @@ def _is_auction_only_search(search):
     return ((search or {}).get("filters") or {}).get("listing_type") == "auction"
 
 
+# One extra auction SERP per product whose auction buckets came back empty from
+# the shared mixed page. Statistics has a 45 min budget — never unbounded.
+_MAX_AUCTION_REFILLS = 10
+
+
 # Once Browse API hard-429s, stop calling it for the rest of this process —
 # multi-product stats was burning 500+ 429s and every bucket became "Не найдено".
 _ebay_api_circuit_open = False
@@ -4798,6 +4803,20 @@ def _is_challenge_html(body, final_url=""):
     return "/splashui/" in fu or any(m in low for m in _CHALLENGE_MARKERS)
 
 
+# Null-search phrases eBay only renders when the query really has no hits.
+# Unambiguous enough to trust deep in the document — unlike "we couldn'…",
+# which also shows up in the footer of pages that DO have listings.
+_DEEP_EMPTY_MARKERS = (
+    "keine exakten treffer",
+    "kein ergebnis",
+    "keine treffer",
+    "keine ergebnisse",
+    "es wurden keine ergebnisse",
+    "no exact matches",
+    "no results found",
+)
+
+
 def _parse_search_body(body, host, query):
     try:
         items = parse_ebay_results(body or "")
@@ -4821,6 +4840,8 @@ def _parse_search_body(body, host, query):
     has_no_results_marker = (
         "kein ergebnis" in low
         or "keine treffer" in low
+        or "keine exakten treffer" in low
+        or "keine ergebnisse" in low
         or "no exact matches" in low
         or "0 ergebnisse" in low
         or "0 results" in low
@@ -4830,6 +4851,22 @@ def _parse_search_body(body, host, query):
     )
     body_len = len(raw)
     itm_links = len(re.findall(r"/itm/\d{9,15}", raw))
+    # eBay.de renders the null-search headline ("Keine exakten Treffer gefunden")
+    # ~150–200k into a 400k document, far past the 12k head we scan on every page,
+    # so a genuinely empty market looked like the GH soft-empty and came back as
+    # "parse" — which the auction policy then reports as «сбой загрузки».
+    # Deep scan only when the page is a SERP with zero listing links: with no
+    # /itm/ links there is nothing to mistake an empty page for, and pages that
+    # DO have listings keep the old head-only rule.
+    if not has_no_results_marker and itm_links == 0 and has_result_container:
+        deep = raw.lower()
+        deep_hit = next((m for m in _DEEP_EMPTY_MARKERS if m in deep), None)
+        if deep_hit:
+            has_no_results_marker = True
+            logger.info(
+                "eBay %s empty-marker %r past the 12k head (body_len=%d) for '%s'",
+                host, deep_hit, body_len, query,
+            )
     # Honest empty SERP (model not listed yet) — ONLY with explicit no-results text.
     # NEVER call this eBay block.
     if has_no_results_marker:
@@ -4881,19 +4918,52 @@ def _pw_light_serp_url(url, ipg="25"):
     return f"{url}{sep}_ipg={ipg}"
 
 
+# Asset URLs only — a "**/*" route also intercepts the navigation itself, and
+# continue_()-ing the document through eBay's redirect chain is what turned
+# every GH "Page crashed" into "Page.goto: net::ERR_ABORTED" (run 20:07 UTC:
+# 3 crashes, 92 aborts, 0 pages parsed). These globs never match the document.
+_PW_BLOCKED_URL_GLOBS = (
+    "**/*.{png,jpg,jpeg,gif,webp,avif,svg,ico,bmp}",
+    "**/*.{woff,woff2,ttf,otf,eot}",
+    "**/*.{mp4,webm,ogg,ogv,mp3,m4a,mov}",
+    "**i.ebayimg.com/**",
+    "**ir.ebaystatic.com/**",
+)
+
+
 def _pw_block_heavy(route):
-    """Abort thumbnails/fonts/video — HTML is all we parse."""
+    """Abort thumbnails/fonts/video — HTML is all we parse.
+
+    Only ever attached to asset globs (never to the navigation request), but
+    resource_type stays as a second guard for anything the glob over-matches.
+    """
     try:
-        if route.request.resource_type in _PW_BLOCKED_RESOURCE_TYPES:
-            route.abort()
-        else:
+        if route.request.resource_type == "document":
             route.continue_()
+        else:
+            route.abort()
     except Exception:
         # Route already handled / page gone — never let this kill the fetch.
         try:
             route.continue_()
         except Exception:
             pass
+
+
+def _pw_should_escalate(exc_msg, attempt):
+    """Is this failure worth the next (cheaper, plainer) attempt?
+
+    - crash: the renderer died — repeating the same load is pointless, escalate.
+    - net::ERR_ABORTED: the navigation itself died. This is what GH returned 92
+      times on 2026-07-26 20:07 UTC after we started intercepting requests, and
+      it used to end the chain after a single ~2s try, leaving every auction
+      bucket without a page.
+    - timeout: only worth the commit-only retry once — statistics has a budget.
+    """
+    msg = (exc_msg or "").lower()
+    crashed = "crash" in msg or "target closed" in msg or "destroyed" in msg
+    navigation_died = "net::" in msg or "err_aborted" in msg
+    return crashed or navigation_died or (attempt == 0 and "timeout" in msg)
 
 
 def _do_fetch_playwright(url, query=""):
@@ -4914,16 +4984,23 @@ def _do_fetch_playwright(url, query=""):
         logger.info("playwright not installed — skip browser HTML fallback")
         return [], "no_playwright"
 
-    # Retries must get cheaper, not repeat the attempt that just died:
-    # full load → commit-only wait → commit-only on a 25-card page.
+    # Retries must get cheaper AND less exotic, not repeat the attempt that just
+    # died: full load → commit-only wait → plain Chromium (no asset routing, no
+    # renderer cap) on a 25-card page. Each step names itself in the log, so the
+    # next GH run says which configuration actually fetched the page.
     attempts = (
-        {"url": url, "warm": True, "wait_until": "domcontentloaded", "settle": 1500},
-        {"url": url, "warm": False, "wait_until": "commit", "settle": 900},
         {
-            "url": _pw_light_serp_url(url),
-            "warm": False,
-            "wait_until": "commit",
-            "settle": 900,
+            "url": url, "warm": True, "wait_until": "domcontentloaded",
+            "settle": 1500, "block": True, "cap_renderers": True, "name": "full",
+        },
+        {
+            "url": url, "warm": False, "wait_until": "commit",
+            "settle": 900, "block": True, "cap_renderers": True, "name": "commit",
+        },
+        {
+            "url": _pw_light_serp_url(url), "warm": False, "wait_until": "commit",
+            "settle": 900, "block": False, "cap_renderers": False,
+            "name": "light SERP, plain chromium",
         },
     )
 
@@ -4932,25 +5009,26 @@ def _do_fetch_playwright(url, query=""):
         browser = None
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(
-                    headless=True,
-                    args=[
-                        "--disable-blink-features=AutomationControlled",
-                        "--no-sandbox",
-                        "--disable-dev-shm-usage",
-                        "--disable-gpu",
-                        "--disable-software-rasterizer",
-                        "--disable-extensions",
-                        # eBay SERP embeds ad/tracking iframes; site-per-process
-                        # gives each one its own renderer and the runner runs
-                        # out of memory mid-navigation → "Page crashed".
+                launch_args = [
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-software-rasterizer",
+                    "--disable-extensions",
+                    "--disable-background-timer-throttling",
+                    "--disable-backgrounding-occluded-windows",
+                    "--disable-renderer-backgrounding",
+                ]
+                if plan["cap_renderers"]:
+                    # eBay SERP embeds ad/tracking iframes; site-per-process
+                    # gives each one its own renderer and the runner runs
+                    # out of memory mid-navigation → "Page crashed".
+                    launch_args += [
                         "--disable-features=IsolateOrigins,site-per-process,TranslateUI",
                         "--renderer-process-limit=2",
-                        "--disable-background-timer-throttling",
-                        "--disable-backgrounding-occluded-windows",
-                        "--disable-renderer-backgrounding",
-                    ],
-                )
+                    ]
+                browser = p.chromium.launch(headless=True, args=launch_args)
                 context = browser.new_context(
                     locale="de-DE",
                     timezone_id="Europe/Berlin",
@@ -4960,7 +5038,9 @@ def _do_fetch_playwright(url, query=""):
                     ),
                     viewport={"width": 1365, "height": 900},
                 )
-                context.route("**/*", _pw_block_heavy)
+                if plan["block"]:
+                    for glob in _PW_BLOCKED_URL_GLOBS:
+                        context.route(glob, _pw_block_heavy)
                 page = context.new_page()
                 page.add_init_script(
                     "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
@@ -4978,9 +5058,8 @@ def _do_fetch_playwright(url, query=""):
                         pass
                 if attempt:
                     logger.info(
-                        "Playwright retry %d/%d for '%s' (%s%s)",
-                        attempt + 1, len(attempts), query, plan["wait_until"],
-                        ", light SERP" if plan["url"] != url else "",
+                        "Playwright retry %d/%d for '%s' (%s)",
+                        attempt + 1, len(attempts), query, plan["name"],
                     )
                 page.goto(plan["url"], wait_until=plan["wait_until"], timeout=35000)
                 page.wait_for_timeout(plan["settle"])
@@ -5029,10 +5108,7 @@ def _do_fetch_playwright(url, query=""):
                 pass
             if attempt >= len(attempts) - 1:
                 break
-            crashed = "crash" in msg or "target closed" in msg or "destroyed" in msg
-            # A slow SPA is exactly what the commit-only retry fixes, but one
-            # 35s timeout is all we spend on it — stats has a 45 min budget.
-            if crashed or (attempt == 0 and "timeout" in msg):
+            if _pw_should_escalate(msg, attempt):
                 continue
             break
     return [], "network"
@@ -6577,7 +6653,10 @@ async def process_searches(bot, once=False):
             report_entries = []  # list of (sort_key, block_text) for alphabetical ordering
             blocked_searches = []
             processed_base_ids = set()
-            
+            # Post-filter auction refills cost one extra SERP each; the report has
+            # a 45 min budget, so cap them and say so in the log when the cap hits.
+            auction_refills_done = 0
+
             for search in searches:
                 if not search.get("enabled", True):
                     continue
@@ -6645,6 +6724,7 @@ async def process_searches(bot, once=False):
 
                 result_groups = []
                 fetch_errors = []
+                did_auction_fill = False
                 side_err = {"bin": None, "auc": None}
                 side_ok = {"bin": False, "auc": False}
                 # True when a fetch returned a clean page with 0 items (not transport fail).
@@ -6837,6 +6917,7 @@ async def process_searches(bot, once=False):
                         if _on_github_actions():
                             await asyncio.sleep(1.5)
                         auc_items, auc_err = await _auction_fill_hard()
+                        did_auction_fill = True
                         if auc_items:
                             result_groups.append(auc_items)
                         _note_side_outcome("auc", auc_items, auc_err)
@@ -6861,6 +6942,7 @@ async def process_searches(bot, once=False):
                             _clear_gh_fetch_pressure(had_results=False)
                         if side == "auc":
                             side_items, side_e = await _auction_fill_hard()
+                            did_auction_fill = True
                         else:
                             side_search = _statistics_search_variant(search, lt, mprice, False)
                             side_items, side_e = await _stats_one_fetch(label, side_search)
@@ -6885,31 +6967,81 @@ async def process_searches(bot, once=False):
                 filtered = filter_results(results, stats_filter_search, config, skip_seen=True, is_statistics=True)
                 
                 # Group filtered items into Buy It Now and Auction, handling hybrid listings
-                bin_no_bo = []
-                bin_bo = []
-                auc_no_bo = []
-                auc_bo = []
-                for item in filtered:
-                    if item.get("buy_now"):
-                        bin_item = copy.deepcopy(item)
-                        bin_item["auction"] = False
-                        bin_item["price"] = item.get("bin_price") or item["price"]
-                        bin_item["total_price"] = item.get("bin_total_price") or item["total_price"]
-                        bin_item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
-                        if not item.get("best_offer"):
-                            bin_no_bo.append(bin_item)
+                def _split_buckets(rows):
+                    bin_no_bo = []
+                    bin_bo = []
+                    auc_no_bo = []
+                    auc_bo = []
+                    for item in rows:
+                        if item.get("buy_now"):
+                            bin_item = copy.deepcopy(item)
+                            bin_item["auction"] = False
+                            bin_item["price"] = item.get("bin_price") or item["price"]
+                            bin_item["total_price"] = item.get("bin_total_price") or item["total_price"]
+                            bin_item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
+                            if not item.get("best_offer"):
+                                bin_no_bo.append(bin_item)
+                            else:
+                                bin_bo.append(bin_item)
+                        if item.get("auction"):
+                            auc_item = copy.deepcopy(item)
+                            auc_item["buy_now"] = False
+                            auc_item["price"] = item.get("auc_price") or item["price"]
+                            auc_item["total_price"] = item.get("auc_total_price") or item["total_price"]
+                            auc_item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
+                            if not item.get("best_offer"):
+                                auc_no_bo.append(auc_item)
+                            elif item.get("bids_count") in (0, None):
+                                auc_bo.append(auc_item)
+                    return bin_no_bo, bin_bo, auc_no_bo, auc_bo
+
+                bin_no_bo, bin_bo, auc_no_bo, auc_bo = _split_buckets(filtered)
+
+                # An auction item on the mixed page proves the side *loaded*, not
+                # that we saw the auction market: that page is one price-ascending
+                # list shared with Sofort, so cheap BIN cards push live lots off it.
+                # LG UltraGear (20:31 UTC) had auc=True on the mixed page, both
+                # auction buckets empty after filtering, and a 450€ lot sitting on
+                # the auction-only SERP that passes the very same filters. One
+                # dedicated fetch, once per product, capped per report.
+                if (
+                    not auc_no_bo
+                    and not auc_bo
+                    and not did_auction_fill
+                    and (bin_no_bo or bin_bo)
+                ):
+                    if auction_refills_done >= _MAX_AUCTION_REFILLS:
+                        logger.info(
+                            "  %s: auction buckets empty after filter — refill skipped "
+                            "(report cap %d reached)",
+                            search["query"], _MAX_AUCTION_REFILLS,
+                        )
+                    else:
+                        auction_refills_done += 1
+                        logger.info(
+                            "  %s: auction buckets empty after filter — dedicated auction fetch (%d/%d)",
+                            search["query"], auction_refills_done, _MAX_AUCTION_REFILLS,
+                        )
+                        if _on_github_actions():
+                            await asyncio.sleep(1.5)
+                        refill_items, refill_err = await _auction_fill_hard()
+                        did_auction_fill = True
+                        if refill_items:
+                            result_groups.append(refill_items)
+                            results = _merge_items_by_id(*result_groups)
+                            _mark_sides_from_items(results)
+                            filtered = filter_results(
+                                results, stats_filter_search, config,
+                                skip_seen=True, is_statistics=True,
+                            )
+                            bin_no_bo, bin_bo, auc_no_bo, auc_bo = _split_buckets(filtered)
+                            logger.info(
+                                "  %s: auction refill %d raw items -> buckets %d/%d",
+                                search["query"], len(refill_items),
+                                len(auc_no_bo), len(auc_bo),
+                            )
                         else:
-                            bin_bo.append(bin_item)
-                    if item.get("auction"):
-                        auc_item = copy.deepcopy(item)
-                        auc_item["buy_now"] = False
-                        auc_item["price"] = item.get("auc_price") or item["price"]
-                        auc_item["total_price"] = item.get("auc_total_price") or item["total_price"]
-                        auc_item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
-                        if not item.get("best_offer"):
-                            auc_no_bo.append(auc_item)
-                        elif item.get("bids_count") in (0, None):
-                            auc_bo.append(auc_item)
+                            _note_side_outcome("auc", refill_items, refill_err)
 
                 # After filter: if a side still has raw items but filter wiped them,
                 # empty buckets are real empty — clear transport errors for that side.
