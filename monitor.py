@@ -6087,6 +6087,30 @@ def _notify_candidates_from_filtered(filtered):
     return candidates
 
 
+def _record_feed_item(item, search):
+    """Кладёт отправленный лот в mobile/feed.json, чтобы его увидело приложение.
+
+    Лента — побочный продукт уведомления: любая ошибка здесь не должна ронять
+    прогон, поэтому всё под общим except.
+    """
+    try:
+        from mobile.feed_writer import record_item
+
+        trust = _seller_trust(
+            item.get("seller_rating_count") or 0,
+            item.get("seller_rating_percent") or 0,
+            item.get("top_rated"),
+        )
+        record_item(
+            item,
+            search,
+            seller_trust=f"{_trust_emoji(trust)} {trust}",
+            is_outlier=bool(is_outlier(item.get("price"), search.get("id"))),
+        )
+    except Exception:
+        logger.warning("Не удалось записать лот в ленту приложения", exc_info=True)
+
+
 async def _process_notify_candidate(bot, item, search, stats_7d, stage):
     """Validate details and send one notification stage. Returns True if sent."""
     item["item_id"] = str(item.get("item_id") or "")
@@ -6182,6 +6206,7 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
     if sent:
         if stage == "initial" and not item.get("auction"):
             config.add_item_hash(h)
+        _record_feed_item(item, search)
         return True
     logger.warning(
         "Notification failed; will retry item %s stage=%s on next run",

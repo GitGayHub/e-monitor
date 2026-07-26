@@ -10,6 +10,7 @@ on:
       - "price_history.db"
       - "run_log.json"
       - "mobile/app_sync.json"
+      - "mobile/feed.json"
       - "details_test_output.json"
       - "monitor_debug_tail.txt"
   schedule:
@@ -194,6 +195,7 @@ jobs:
 
             git add seen_ids.json price_history.db run_log.json || true
             [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
+            [ -f mobile/feed.json ] && git add mobile/feed.json
             [ -f details_test_output.json ] && git add details_test_output.json
             [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
             if ! git diff --cached --quiet; then
@@ -241,6 +243,7 @@ jobs:
           git config --global user.email "bot@noreply.github.com"
           git add seen_ids.json price_history.db run_log.json || true
           [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
+          [ -f mobile/feed.json ] && git add mobile/feed.json
           [ -f details_test_output.json ] && git add details_test_output.json
           [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
           if git diff --cached --quiet; then
