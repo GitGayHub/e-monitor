@@ -3524,6 +3524,10 @@ def _build_ebay_api_params(search, market=None):
     return params
 
 
+def _is_auction_only_search(search):
+    return ((search or {}).get("filters") or {}).get("listing_type") == "auction"
+
+
 # Once Browse API hard-429s, stop calling it for the rest of this process —
 # multi-product stats was burning 500+ 429s and every bucket became "Не найдено".
 _ebay_api_circuit_open = False
@@ -4862,10 +4866,45 @@ def _parse_search_body(body, host, query):
     return [], None
 
 
+# Subresources we never parse. eBay SERP pulls 60+ thumbnails per page and the
+# renderer used to die ("Page crashed") on every auction attempt on GH runners.
+_PW_BLOCKED_RESOURCE_TYPES = ("image", "media", "font")
+
+
+def _pw_light_serp_url(url, ipg="25"):
+    """Same SERP with fewer cards — a 60-card auction page is what kills the
+    renderer. Sort is price+shipping asc, so the cheapest lot is still on page 1.
+    """
+    if re.search(r"[?&]_ipg=\d+", url):
+        return re.sub(r"([?&]_ipg=)\d+", r"\g<1>" + ipg, url)
+    sep = "&" if "?" in url else "?"
+    return f"{url}{sep}_ipg={ipg}"
+
+
+def _pw_block_heavy(route):
+    """Abort thumbnails/fonts/video — HTML is all we parse."""
+    try:
+        if route.request.resource_type in _PW_BLOCKED_RESOURCE_TYPES:
+            route.abort()
+        else:
+            route.continue_()
+    except Exception:
+        # Route already handled / page gone — never let this kill the fetch.
+        try:
+            route.continue_()
+        except Exception:
+            pass
+
+
 def _do_fetch_playwright(url, query=""):
     """Real Chromium HTML fetch — last HTML hope on blocked datacenter IPs (GH Actions).
 
-    Retries once on page crash (common on auction SERP under GH load).
+    Auction SERPs are the heaviest page we load and the renderer used to crash
+    on every single attempt on GH, which turned every pure-Auktion bucket into
+    a false «Не найдено». So we drop the subresources we never read, keep
+    eBay's ad iframes out of their own renderer processes, and *escalate* on
+    each retry (lighter wait, then fewer cards) instead of repeating the exact
+    attempt that just crashed.
     """
     if os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").strip().lower() in ("0", "false", "no"):
         return [], "no_playwright"
@@ -4875,8 +4914,21 @@ def _do_fetch_playwright(url, query=""):
         logger.info("playwright not installed — skip browser HTML fallback")
         return [], "no_playwright"
 
+    # Retries must get cheaper, not repeat the attempt that just died:
+    # full load → commit-only wait → commit-only on a 25-card page.
+    attempts = (
+        {"url": url, "warm": True, "wait_until": "domcontentloaded", "settle": 1500},
+        {"url": url, "warm": False, "wait_until": "commit", "settle": 900},
+        {
+            "url": _pw_light_serp_url(url),
+            "warm": False,
+            "wait_until": "commit",
+            "settle": 900,
+        },
+    )
+
     last_err = None
-    for attempt in range(2):
+    for attempt, plan in enumerate(attempts):
         browser = None
         try:
             with sync_playwright() as p:
@@ -4886,6 +4938,17 @@ def _do_fetch_playwright(url, query=""):
                         "--disable-blink-features=AutomationControlled",
                         "--no-sandbox",
                         "--disable-dev-shm-usage",
+                        "--disable-gpu",
+                        "--disable-software-rasterizer",
+                        "--disable-extensions",
+                        # eBay SERP embeds ad/tracking iframes; site-per-process
+                        # gives each one its own renderer and the runner runs
+                        # out of memory mid-navigation → "Page crashed".
+                        "--disable-features=IsolateOrigins,site-per-process,TranslateUI",
+                        "--renderer-process-limit=2",
+                        "--disable-background-timer-throttling",
+                        "--disable-backgrounding-occluded-windows",
+                        "--disable-renderer-backgrounding",
                     ],
                 )
                 context = browser.new_context(
@@ -4897,22 +4960,30 @@ def _do_fetch_playwright(url, query=""):
                     ),
                     viewport={"width": 1365, "height": 900},
                 )
+                context.route("**/*", _pw_block_heavy)
                 page = context.new_page()
                 page.add_init_script(
                     "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
                 )
-                # Warm homepage first for cookies
-                try:
-                    page.goto(
-                        "https://www.ebay.de/",
-                        wait_until="domcontentloaded",
-                        timeout=25000,
+                if plan["warm"]:
+                    # Warm homepage first for cookies
+                    try:
+                        page.goto(
+                            "https://www.ebay.de/",
+                            wait_until="domcontentloaded",
+                            timeout=25000,
+                        )
+                        page.wait_for_timeout(600)
+                    except Exception:
+                        pass
+                if attempt:
+                    logger.info(
+                        "Playwright retry %d/%d for '%s' (%s%s)",
+                        attempt + 1, len(attempts), query, plan["wait_until"],
+                        ", light SERP" if plan["url"] != url else "",
                     )
-                    page.wait_for_timeout(600)
-                except Exception:
-                    pass
-                page.goto(url, wait_until="domcontentloaded", timeout=35000)
-                page.wait_for_timeout(1500)
+                page.goto(plan["url"], wait_until=plan["wait_until"], timeout=35000)
+                page.wait_for_timeout(plan["settle"])
                 # dismiss cookie banner if present
                 for sel in (
                     "button#gdpr-banner-accept",
@@ -4948,15 +5019,20 @@ def _do_fetch_playwright(url, query=""):
             last_err = e
             msg = str(e).lower()
             logger.warning(
-                "Playwright HTML fetch failed for '%s' (try %d/2): %s",
-                query, attempt + 1, e,
+                "Playwright HTML fetch failed for '%s' (try %d/%d): %s",
+                query, attempt + 1, len(attempts), e,
             )
             try:
                 if browser:
                     browser.close()
             except Exception:
                 pass
-            if attempt == 0 and ("crash" in msg or "target closed" in msg or "destroyed" in msg):
+            if attempt >= len(attempts) - 1:
+                break
+            crashed = "crash" in msg or "target closed" in msg or "destroyed" in msg
+            # A slow SPA is exactly what the commit-only retry fixes, but one
+            # 35s timeout is all we spend on it — stats has a 45 min budget.
+            if crashed or (attempt == 0 and "timeout" in msg):
                 continue
             break
     return [], "network"
@@ -5320,16 +5396,32 @@ def fetch_ebay_ex(search, force=False):
         if api_err is None:
             # Clean API response — 0 items is honest empty, NOT a failure.
             # (Was: only accepted non-empty, then "API failed: None" + kept network.)
-            _ebay_query_cache[cache_key] = (time.time(), api_items or [], None)
             if api_items:
+                _ebay_query_cache[cache_key] = (time.time(), api_items, None)
                 return api_items, None
-            logger.info(
-                "  %s -> Browse API clean empty (0 items) after HTML %s",
-                search.get("query"), err,
-            )
-            return [], None
-        logger.warning("eBay API last-resort failed: %s", api_err)
-        err = api_err or err
+            if _is_auction_only_search(search):
+                # buyingOptions:{AUCTION} coverage is thin, so an API 0 cannot
+                # confirm an empty auction market once the HTML side died on
+                # transport. Report the transport failure — «сбой загрузки»
+                # is honest, «Не найдено» would not be. Return it straight:
+                # one thin auction bucket is not an eBay outage, so it must not
+                # bump _ebay_consecutive_blocks or arm the local cooldown.
+                logger.info(
+                    "  %s -> auction API 0 items after HTML %s — keeping %s, not empty",
+                    search.get("query"), err, err,
+                )
+                _ebay_query_cache[cache_key] = (time.time(), [], err)
+                return [], err
+            else:
+                _ebay_query_cache[cache_key] = (time.time(), [], None)
+                logger.info(
+                    "  %s -> Browse API clean empty (0 items) after HTML %s",
+                    search.get("query"), err,
+                )
+                return [], None
+        else:
+            logger.warning("eBay API last-resort failed: %s", api_err)
+            err = api_err or err
 
     # Still blocked / transport-fail. On GH never arm multi-product cooldown.
     _ebay_consecutive_blocks += 1
@@ -6708,8 +6800,16 @@ async def process_searches(bot, once=False):
                                 search.get("query"), len(auc_only),
                             )
                             return auc_only, None
+                        # No clean-empty from an API 0 here: the HTML/PW chain
+                        # already failed on transport and buyingOptions:{AUCTION}
+                        # is too thin to prove an empty auction market. Keeping
+                        # last_err makes the bucket «сбой загрузки», not a false
+                        # «Не найдено» (11S / LG / G6 / 4080 / Superlight pure).
                         if api_err is None:
-                            return [], None
+                            logger.info(
+                                "  %s: auction API fill 0 items after %s — keeping %s",
+                                search.get("query"), last_err, last_err,
+                            )
                         # Don't open circuit here — 429 on empty auction is common.
                         last_err = api_err or last_err
                     return [], last_err
