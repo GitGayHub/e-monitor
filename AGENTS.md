@@ -26,6 +26,19 @@ Manual eBay vs Telegram statistics report (4 buckets × multi-query aliases):
 - Paste stats → `qa/inbox/stats_paste.txt` → `python qa/parse_stats_paste.py`
 - Playwright required for eBay. **bebranoid-telegram does not read e-monitor bot messages.**
 
+## Android app feed (pending merge)
+
+- Branch **`claude/publish-mobile-feed`** adds `mobile/feed_writer.py` and a hook in
+  `_process_notify_candidate`, so every notified lot is also written to
+  **`mobile/feed.json`** for the Android app. Not merged into `main` yet.
+- Until it is merged the app gets HTTP 404 for the feed: it reads
+  `raw.githubusercontent.com/GitGayHub/e-monitor/main/mobile/feed.json`.
+- The manifest `mobile/app_sync.json` stays config-only — `build_app_sync.py` never
+  filled its `items`, and the app now pushes it empty. Lots go to `feed.json`.
+- App side: **GitGayHub/e-monitor-android**, branch `claude/app-redesign-minimal-48me6n`,
+  handoff in `docs/handoff-2026-07-26.md`. The feed JSON format is pinned there by a
+  test fixture — change `feed_writer.py` output and that test must change too.
+
 ## MCP
 
 - Repo template: **[.grok/config.toml](./.grok/config.toml)** (edit absolute Bebranoid paths).
