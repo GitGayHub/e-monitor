@@ -2327,6 +2327,34 @@ def _notify_eligibility(item, search):
     return True, "notify"
 
 
+def _serp_price_floor(search, device_floor, category, query_norm):
+    """eBay `_udlo` for a search.
+
+    Raising it above the bait floor only keeps a price-ascending page 1 free of
+    Hüllen und Folien — and that convenience cost real finds: with a 45€ limit
+    the mouse searches asked eBay for ≥40€ and never saw a live 30.50€ PRO X
+    SUPERLIGHT 2 auction (2026-07-27). So once the owner set a limit, the entire
+    band up to it is fetched and the cosmetic raise is skipped; page 1 may carry
+    some accessories, and the title/category filters drop them.
+    """
+    raise_to = device_floor
+    if category == "phones" or _is_phone_search_query(query_norm):
+        raise_to = max(device_floor, 120.0)
+    elif category == "headphones" or "sony wh" in query_norm or "ult wear" in query_norm:
+        raise_to = max(device_floor, 80.0)
+    elif category == "monitors":
+        raise_to = max(device_floor, 150.0)
+    elif category == "mice" or "superlight" in query_norm:
+        raise_to = max(device_floor, 40.0)
+    limit = _search_limit_price(search)
+    if limit:
+        # Same share as the bait floor: keep page 1 usable on a huge market
+        # (iPhone: ≥112€ instead of ≥120€) without ever reaching into the band
+        # where the finds live (mice: 11€ instead of 40€).
+        raise_to = min(raise_to, limit * _BAIT_FLOOR_SHARE_OF_LIMIT)
+    return max(device_floor, raise_to)
+
+
 def _prepare_monitor_fetch_search(search):
     """Same eBay fetch profile for normal alerts and statistics.
 
@@ -2343,15 +2371,7 @@ def _prepare_monitor_fetch_search(search):
     query_norm = _normalize(_intent_query(prepared))
     category = _effective_category(filters.get("category", "all"), query_norm)
     device_floor = _min_plausible_device_price(prepared)
-    search_floor = device_floor
-    if category == "phones" or _is_phone_search_query(query_norm):
-        search_floor = max(device_floor, 120.0)
-    elif category == "headphones" or "sony wh" in query_norm or "ult wear" in query_norm:
-        search_floor = max(device_floor, 80.0)
-    elif category == "monitors":
-        search_floor = max(device_floor, 150.0)
-    elif category == "mice" or "superlight" in query_norm:
-        search_floor = max(device_floor, 40.0)
+    search_floor = _serp_price_floor(prepared, device_floor, category, query_norm)
     # The raise above device_floor is cosmetic — it only keeps page 1 free of
     # Hüllen/Folien. It must never climb above the price we would alert at, or
     # the search asks eBay for a band where no deal can live: Pixel 5 was asking
@@ -2361,15 +2381,6 @@ def _prepare_monitor_fetch_search(search):
     except (TypeError, ValueError):
         limit_f = 0.0
     if limit_f and search_floor > limit_f:
-        if device_floor > limit_f:
-            # Not fixable here: the limit sits below what counts as a real
-            # device for this query, so _is_implausibly_cheap_device would drop
-            # every hit anyway. Say so instead of silently reporting «Не найдено».
-            logger.warning(
-                "%s: limit %.0f€ is below the plausibility floor %.0f€ — "
-                "this search cannot match anything",
-                search.get("query"), limit_f, device_floor,
-            )
         search_floor = device_floor
 
     cur_min = filters.get("min_price")
@@ -2566,7 +2577,38 @@ def _price_within_limit(item, search):
         return False
 
 
+def _search_limit_price(search):
+    filters = (search.get("filters") if isinstance(search, dict) else {}) or {}
+    try:
+        return float(filters.get("limit_price") or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+# A bait floor may only guard the bottom quarter of what the owner would pay.
+# Above that it stops protecting and starts hiding the finds this bot exists
+# for: a 40€ floor under a 45€ mouse limit buried a live 36.69€ SUPERLIGHT 2,
+# while a quarter of a 200€ XM6 limit still throws out the 4€ earpad bait.
+_BAIT_FLOOR_SHARE_OF_LIMIT = 0.25
+
+
 def _min_plausible_device_price(search):
+    """Bait floor for this query, capped against the owner's limit.
+
+    The point of this bot is the rare underpriced lot, so `limit_price` says
+    what is worth seeing. The category floor still throws out «XM6 ab 4€»
+    multi-SKU bait, but it may never climb into the band the owner is hunting.
+    """
+    floor = _category_device_floor(search)
+    if not floor:
+        return floor
+    limit = _search_limit_price(search)
+    if limit:
+        return min(floor, limit * _BAIT_FLOOR_SHARE_OF_LIMIT)
+    return floor
+
+
+def _category_device_floor(search):
     """Reject earpad/case/bait floors that are not a real device for this query.
 
     Fake 'from 4€' / multi-SKU listings often survive as fixed 4–30€ cards.
@@ -4641,7 +4683,13 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
         if effective_category == "phones":
-            if "pixel" not in query_norm and item.get("buy_now") and item.get("total_price", 0) < 50:
+            # Same rule as the bait floor: never drop something the owner said
+            # they would buy. A 40€ limit means 40€ finds are the point.
+            try:
+                phone_floor = min(50.0, float(filters.get("limit_price") or 50.0))
+            except (TypeError, ValueError):
+                phone_floor = 50.0
+            if "pixel" not in query_norm and item.get("buy_now") and item.get("total_price", 0) < phone_floor:
                 continue
             if not _matches_phone_query_model(title_norm, query_norm):
                 continue
@@ -4826,18 +4874,10 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
             filters["category"] = intent["category"]
     filters["listing_type"] = listing_type
     filters["best_offer"] = bool(best_offer)
-    # price_asc without a real _udlo fills page 1 with 4–20€ Hüllen/Folien.
-    # Raise eBay search floor so actual devices (and over-limit 🟣) appear.
+    # Same floor rule as the monitoring fetch: once a limit is set, the whole
+    # band under it is fetched, so the report shows the cheap finds too.
     device_floor = _min_plausible_device_price(search)
-    search_floor = device_floor
-    if effective_category == "phones" or _is_phone_search_query(query_norm):
-        search_floor = max(device_floor, 120.0)
-    elif effective_category == "headphones" or "sony wh" in query_norm or "ult wear" in query_norm:
-        search_floor = max(device_floor, 80.0)
-    elif effective_category == "monitors":
-        search_floor = max(device_floor, 150.0)
-    elif effective_category == "mice" or "superlight" in query_norm:
-        search_floor = max(device_floor, 40.0)
+    search_floor = _serp_price_floor(search, device_floor, effective_category, query_norm)
     if min_price is not None:
         try:
             search_floor = max(float(min_price), float(search_floor or 0))
@@ -4903,6 +4943,11 @@ def _warmup_session(session, host):
                 pass
     except Exception as e:
         logger.debug("warmup on %s failed (non-fatal): %s", host, e)
+
+
+# Below this many hits a single missing card changes the answer, so a thin
+# result set is worth one cross-check against the sibling host.
+_THIN_MARKET_ITEMS = 5
 
 
 _CHALLENGE_MARKERS = (
@@ -5319,6 +5364,44 @@ def _do_fetch_one(host, search, referer=None):
                     "  %s -> %d items via %s body_len=%d",
                     query, len(items), try_url.split("/")[2], len(body),
                 )
+                # eBay sometimes answers with a real page that carries a partial
+                # list — measured 2026-07-27: the same URL gave 2 lots on one
+                # request and 3 on the next, and the missing one was a live
+                # 36.69€ SUPERLIGHT 2 under a 45€ limit. On a thin market that
+                # single lot is the whole point, so cross-check it against the
+                # sibling host (m ↔ www serve the same market) and merge. One
+                # cheap HTML request, only when there is almost nothing to lose.
+                if len(items) < _THIN_MARKET_ITEMS:
+                    sibling_sub = "www" if "//m." in try_url else "m"
+                    samples = [
+                        (sibling_sub, _build_url_with_host(host, search, sub=sibling_sub)),
+                        # Same URL again: measured 2026-07-27, three of five
+                        # requests carried the full list and two came back 403 or
+                        # a 14 KB shell, so a second sample is worth ~2 seconds.
+                        ("retry", try_url),
+                    ]
+                    for label, sample_url in samples:
+                        if len(items) >= _THIN_MARKET_ITEMS:
+                            break
+                        if sample_url == try_url and label != "retry":
+                            continue
+                        try:
+                            sc2, body2, final2 = _http_get_search(
+                                session, sample_url, common_headers
+                            )
+                            if sc2 >= 400 or _is_challenge_html(body2, final2):
+                                continue
+                            extra, _ = _parse_search_body(body2, host, query)
+                            merged = _merge_items_by_id(items, extra or [])
+                            if len(merged) > len(items):
+                                logger.info(
+                                    "  %s -> +%d lot(s) missing from the first page "
+                                    "(thin market, recovered via %s)",
+                                    query, len(merged) - len(items), label,
+                                )
+                                items = merged
+                        except Exception as e:
+                            logger.debug("thin-market cross-check (%s) failed: %s", label, e)
                 return items, None
             if err:
                 last_err = err
@@ -5421,7 +5504,11 @@ def fetch_ebay_ex(search, force=False):
         else:
             order = list(variants)
         for qi, query in enumerate(order):
-            if qi > 0 and merged_items:
+            # Stop at the first alias that worked — but only when nothing failed
+            # on the way. eBay answers curl with a 403 or a 14 KB shell now and
+            # then (measured 2026-07-27), and stopping on a set collected around
+            # such a failure silently reports a partial market as complete.
+            if qi > 0 and merged_items and not errors:
                 break
             # Primary already saw a real empty SERP — do not burn a second
             # alias (PW crashes + API) and then upgrade empty → network/block.

@@ -142,11 +142,63 @@ against the sleep interval, so a 5th pass started at minute 34 and the run took
 2406 s against a 2100 s budget — 42 min against a 45 min job timeout. It now
 also accounts for how long the previous pass took, and the budget is 1800 s.
 
+## Price floors were hiding the finds (2026-07-27)
+
+Prompted by «ты проверил, что отчёт отвечает реальности?» — the honest answer was
+no, and digging turned up a class of miss that has nothing to do with transport.
+
+`_prepare_monitor_fetch_search` raised eBay's `_udlo` above the bait floor to
+keep a price-ascending page 1 free of Hüllen und Folien. It never looked at
+`limit_price`:
+
+| search | limit | asked eBay for | live lot it hid |
+| --- | ---: | ---: | --- |
+| logitech superlight 2 | 45 € | ≥ 40 € | **30.50 € PRO X SUPERLIGHT 2** (item 267731690074, ends 28.07, bid 30.50) |
+| Pixel 5 | 70 € | ≥ 120 € | 30.49 € and 9.40 € lots — the band was inverted, nothing could ever match |
+| sony ult wear | 30 € | ≥ 80 € | same inversion |
+
+The floor is now capped at a quarter of the limit
+(`_BAIT_FLOOR_SHARE_OF_LIMIT`), which keeps the protection the repo actually
+tested — «XM6 ab 4 €» multi-SKU bait is still rejected under a 200 € limit — but
+never reaches into the band the owner is hunting. `test_search_price_floor.py`,
+7 tests; `test_search_intent_rules.py` is back to its single pre-existing failure.
+
+### What the mouse search was NOT doing wrong
+
+Measured one parameter at a time against live eBay, all cleared: query text
+(5 aliases), category (`_sacat=23160` vs all), `LH_ItemCondition`, `LH_PrefLoc`,
+sort (`price_asc` vs `newest`), and host — m.ebay.de and www.ebay.de return
+identical sets (3/3, 36/36 lots).
+
+### What is left: eBay answers curl unevenly
+
+Same URL, five consecutive curl requests:
+
+```
+run 1  HTTP 403     1 981 B   0 lots
+run 2  HTTP 200    13 987 B   0 lots   (shell)
+run 3  HTTP 200   520 733 B   3 lots   ← full list
+run 4  HTTP 200   520 466 B   3 lots
+run 5  HTTP 200   520 476 B   3 lots
+Chromium ×2                   3 lots
+```
+
+Some 200-responses are large but carry a short list, so the chain took a partial
+market for a complete one. On a thin market (< `_THIN_MARKET_ITEMS`) a missing
+card changes the answer, so the fetch now takes a second sample — the sibling
+host, then one retry — and merges. The variant loop also no longer stops at the
+first non-empty alias when something errored on the way.
+
 ### Next step
 
 - confirm «🔥 15 МИНУТ ДО КОНЦА» on a real lot: a pass has to land inside the
-  last 15 minutes of an auction that is still under the limit
+  last 15 minutes of an auction that is still under the limit. Item
+  267731690074 (30.50 €, ends 2026-07-28 18:15 UTC) is a live candidate: it
+  should alert first when it drops under 24 h, then at 1 h, then at 15 min.
 - watch that runs now finish inside ~32 min, well clear of the timeout
+- still unverified against reality: the Sofort/Sofort+ rows, the "cheapest
+  price" claims and the 🟢/🟡/🟣 verdicts — only the auction side has been
+  checked lot by lot
 
 ## Earlier
 
