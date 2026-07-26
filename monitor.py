@@ -7544,6 +7544,13 @@ async def process_searches(bot, once=False):
                     blocked_searches.append(search)
                 logger.warning("  %s: fetch error %s", search["query"], fetch_err)
                 continue
+            # Flag listing types from the search we ran, exactly like statistics
+            # does. eBay cards often omit "Gebot"/"Auktion", and an untagged lot
+            # from an auction-only search counts as Sofort: it would be alerted
+            # immediately instead of under the auction rules, and would never
+            # reach the final-hour or 15-minute stages, which both require
+            # auction and not buy_now.
+            results = _tag_items_for_search(results, fetch_search)
             # A full page means the price sort truncated the market: fresh or
             # ending lots can be hiding behind it. A short page already IS the
             # whole market, and paying for two more fetches there would only
@@ -7558,6 +7565,7 @@ async def process_searches(bot, once=False):
                     logger.warning("  %s: auction sweep error %s", search["query"], auction_err)
                 else:
                     before = len(results)
+                    auction_results = _tag_items_for_search(auction_results or [], sweep)
                     results = _merge_items_by_id(results, auction_results)
                     if len(results) > before:
                         logger.info("  %s: auction sweep added %d item(s)", search["query"], len(results) - before)
@@ -7572,6 +7580,7 @@ async def process_searches(bot, once=False):
                     logger.warning("  %s: %s sweep error %s", search["query"], label, err)
                     return
                 before = len(results)
+                items = _tag_items_for_search(items or [], sweep_search)
                 results = _merge_items_by_id(results, items)
                 if len(results) > before:
                     logger.info(

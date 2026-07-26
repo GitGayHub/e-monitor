@@ -141,6 +141,51 @@ class SweepSearchTest(unittest.TestCase):
         self.assertIn("LH_Auction=1", url)
 
 
+class ListingTypeTaggingTest(unittest.TestCase):
+    """An auction-only SERP whose cards omit «Gebot» must still be auctions.
+
+    Untagged, such a lot counts as Sofort: alerted immediately instead of under
+    the auction rules, and never reaching the final-hour or 15-minute stages,
+    which both require auction and not buy_now. Statistics always tagged; the
+    normal pass now does too.
+    """
+
+    AUCTION_SEARCH = {"id": "s", "query": "x", "filters": {"listing_type": "auction"}}
+
+    def test_untagged_card_from_an_auction_search_becomes_an_auction(self):
+        card = {"item_id": "1", "price": 50.0, "total_price": 50.0,
+                "auction": False, "buy_now": True, "time_left": "12мин"}
+        tagged = monitor._tag_items_for_search([card], self.AUCTION_SEARCH)[0]
+        self.assertTrue(tagged["auction"])
+        self.assertFalse(tagged["buy_now"])
+
+    def test_hybrid_listings_keep_their_buy_now_side(self):
+        card = {"item_id": "1", "price": 50.0, "total_price": 50.0,
+                "auction": True, "buy_now": True, "_was_hybrid": True}
+        tagged = monitor._tag_items_for_search([card], self.AUCTION_SEARCH)[0]
+        self.assertTrue(tagged["buy_now"], "a hybrid lot is still buyable outright")
+
+    def test_tagged_card_reaches_the_15_minute_stage(self):
+        saved, monitor.seen_state = monitor.seen_state, {}
+        patcher = mock.patch.object(monitor, "save_seen_ids", lambda: None)
+        patcher.start()
+        try:
+            card = {"item_id": "1", "title": "x", "price": 50.0, "total_price": 50.0,
+                    "auction": False, "buy_now": True, "time_left": "9мин",
+                    "seller_name": "s"}
+            monitor.mark_seen_item("1", stage="initial")
+            untagged = monitor._notify_candidates_from_filtered([dict(card)])
+            self.assertEqual(untagged, [], "as Sofort it is simply never re-notified")
+            tagged = monitor._tag_items_for_search([dict(card)], self.AUCTION_SEARCH)
+            self.assertEqual(
+                [s for _, s in monitor._notify_candidates_from_filtered(tagged)],
+                ["final_15m"],
+            )
+        finally:
+            patcher.stop()
+            monitor.seen_state = saved
+
+
 class PriceGateTest(unittest.TestCase):
     """«если цена все еще подходит» — the re-notify must re-check the limit."""
 
