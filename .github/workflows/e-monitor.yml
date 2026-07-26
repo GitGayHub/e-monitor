@@ -72,8 +72,13 @@ jobs:
           EBAY_SOURCE: auto
           EBAY_HTML_PLAYWRIGHT: "1"
           EBAY_HTML_MOBILE_FIRST: "1"
-          RUN_INTERVAL_SEC: 120
-          RUN_ITERATIONS: 2
+          # GitHub's 5-min cron is best effort and regularly lands 10–40 min
+          # late, which is what made alerts arrive an hour after the listing.
+          # So one run keeps sweeping for its whole budget instead of doing two
+          # passes and waiting for the scheduler; the concurrency group makes
+          # the next run queue up right behind it.
+          RUN_INTERVAL_SEC: 60
+          RUN_BUDGET_SEC: 2100
         run: |
           set +e
           git config --global user.name "E Bot"
@@ -86,12 +91,12 @@ jobs:
             echo "mode=statistics schedule_skip=1" | tee run_output.log
             exit 0
           fi
-          if [ "$MONITOR_MODE" = "statistics" ]; then
-            RUN_ITERATIONS=1
-          fi
           : > run_output_all.log
-          for i in $(seq 1 "$RUN_ITERATIONS"); do
-            echo "===== E MONITOR ITERATION $i/$RUN_ITERATIONS =====" | tee -a run_output_all.log
+          loop_start=$SECONDS
+          i=0
+          while :; do
+            i=$((i+1))
+            echo "===== E MONITOR ITERATION $i (budget ${RUN_BUDGET_SEC}s) =====" | tee -a run_output_all.log
             echo "iteration_start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a run_output_all.log
 
             python monitor.py --once 2>&1 | tee run_output.log
@@ -215,9 +220,17 @@ jobs:
               fi
             fi
 
-            if [ "$i" -lt "$RUN_ITERATIONS" ]; then
-              sleep "$RUN_INTERVAL_SEC"
+            # The 4-bucket report is one long diagnostic pass, never a loop.
+            if [ "$MONITOR_MODE" = "statistics" ]; then
+              echo "statistics mode — single pass, done" | tee -a run_output_all.log
+              break
             fi
+            elapsed=$(( SECONDS - loop_start ))
+            if [ $(( RUN_BUDGET_SEC - elapsed )) -le "$RUN_INTERVAL_SEC" ]; then
+              echo "run budget spent after ${elapsed}s and $i pass(es)" | tee -a run_output_all.log
+              break
+            fi
+            sleep "$RUN_INTERVAL_SEC"
           done
 
           tail -n 240 run_output_all.log > monitor_debug_tail.txt

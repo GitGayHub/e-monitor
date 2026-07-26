@@ -1141,6 +1141,9 @@ def _sort_code(filters):
         "newest": "10",
         "price_asc": "15",
         "price_desc": "12",
+        # eBay: Zeit — zuerst endende Angebote. The only order that puts a lot
+        # in its last minutes on page 1.
+        "ending_soon": "1",
     }
     return sort_map.get(filters.get("sort"), "10")
 
@@ -2147,8 +2150,21 @@ seen_state = {}
 process_lock = asyncio.Lock()
 
 
+# Auction alerts fire three times: when the lot first qualifies (≤24 h left),
+# in the last hour, and one last call ~15 min before the hammer — each time only
+# if the price still fits.
+NOTIFY_STAGES = ("initial", "final_hour", "final_15m")
+FINAL_HOUR_MINUTES = 60
+FINAL_15M_MINUTES = 15
+# The search card only hints at the time left and a pass is minutes long, so the
+# candidate window is wider than the send gate — the precise end date from the
+# item details decides.
+FINAL_HOUR_CANDIDATE_MINUTES = 90
+FINAL_15M_CANDIDATE_MINUTES = 25
+
+
 def _empty_seen_entry():
-    return {"initial": False, "final_hour": False}
+    return {"initial": False, "final_hour": False, "final_15m": False}
 
 
 class _SeenIdsProxy:
@@ -2412,7 +2428,7 @@ def _normalize_seen_payload(data):
         for x in data:
             iid = str(x).strip()
             if iid:
-                state[iid] = {"initial": True, "final_hour": False}
+                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
     elif isinstance(data, dict):
         for k, v in data.items():
             iid = str(k).strip()
@@ -2422,10 +2438,13 @@ def _normalize_seen_payload(data):
                 state[iid] = {
                     "initial": bool(v.get("initial")),
                     "final_hour": bool(v.get("final_hour")),
+                    # Files written before the 15-min stage existed simply have
+                    # no flag; those lots get their last call on the next pass.
+                    "final_15m": bool(v.get("final_15m")),
                 }
             else:
                 # Bare true / legacy values mean initial notify done
-                state[iid] = {"initial": True, "final_hour": False}
+                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
     return state
 
 
@@ -2452,6 +2471,7 @@ def save_seen_ids():
         k: {
             "initial": bool(v.get("initial")),
             "final_hour": bool(v.get("final_hour")),
+            "final_15m": bool(v.get("final_15m")),
         }
         for k, v in seen_state.items()
     }
@@ -2460,14 +2480,21 @@ def save_seen_ids():
 
 
 def mark_seen_item(item_id, stage="initial"):
-    """Mark a notification stage for an item. stage: 'initial' | 'final_hour'."""
+    """Mark a notification stage. stage: 'initial' | 'final_hour' | 'final_15m'."""
     if not item_id:
         return
     iid = str(item_id).strip()
     if not iid:
         return
     entry = seen_state.setdefault(iid, _empty_seen_entry())
-    if stage == "final_hour":
+    if stage == "final_15m":
+        # A lot can go straight from the initial alert into the last 15 minutes
+        # (nothing guarantees a pass landed inside the final hour), so the
+        # skipped stage is closed too — no late "1 час до конца" afterwards.
+        entry["final_15m"] = True
+        entry["final_hour"] = True
+        entry["initial"] = True
+    elif stage == "final_hour":
         entry["final_hour"] = True
         entry["initial"] = True
     else:
@@ -2483,11 +2510,13 @@ def unmark_seen_stage(item_id, stage="initial"):
     entry = seen_state.get(iid)
     if not entry:
         return
-    if stage == "final_hour":
+    if stage == "final_15m":
+        entry["final_15m"] = False
+    elif stage == "final_hour":
         entry["final_hour"] = False
     else:
         entry["initial"] = False
-    if not entry.get("initial") and not entry.get("final_hour"):
+    if not any(entry.get(s) for s in NOTIFY_STAGES):
         seen_state.pop(iid, None)
     save_seen_ids()
 
@@ -2502,6 +2531,7 @@ def get_seen_entry(item_id):
     return {
         "initial": bool(entry.get("initial")),
         "final_hour": bool(entry.get("final_hour")),
+        "final_15m": bool(entry.get("final_15m")),
     }
 
 
@@ -4711,6 +4741,48 @@ def _auction_sweep_search(search):
     return sweep
 
 
+# Both sweeps below take an already-prepared fetch search (price floors set) and
+# only change how eBay orders and pages the same query. 25 cards is plenty: what
+# they look for sits at the very top of their sort.
+_SWEEP_PAGE_SIZE = 25
+
+
+def _ending_soon_auction_search(search):
+    """Auction lots ordered by hammer time.
+
+    The monitoring profile is price-ascending, so a lot in its last minutes can
+    sit deep on page 3 and never be seen — which is exactly when the final-hour
+    and 15-minute alerts have to fire.
+    """
+    filters = search.get("filters", {}) or {}
+    if filters.get("listing_type", "all") not in ("all", "auction"):
+        return None
+    sweep = copy.deepcopy(search)
+    f = sweep.setdefault("filters", {})
+    f["listing_type"] = "auction"
+    f["sort"] = "ending_soon"
+    f.pop("sort_code", None)
+    f["_ipg"] = _SWEEP_PAGE_SIZE
+    sweep["id"] = f"{search.get('id', 'search')}__ending_soon"
+    return sweep
+
+
+def _newly_listed_search(search):
+    """Freshly listed items, newest first.
+
+    Being first is the whole point of the bot, and a price-ascending page 1 hides
+    a brand-new listing behind the cheaper ones until one of them ends — that is
+    the "sometimes it arrives an hour late" case.
+    """
+    sweep = copy.deepcopy(search)
+    f = sweep.setdefault("filters", {})
+    f["sort"] = "newest"
+    f.pop("sort_code", None)
+    f["_ipg"] = _SWEEP_PAGE_SIZE
+    sweep["id"] = f"{search.get('id', 'search')}__newest"
+    return sweep
+
+
 def _statistics_search_variant(search, listing_type, min_price=None, best_offer=False):
     # Same base fetch profile as normal monitoring (price_asc + large page).
     variant = _prepare_monitor_fetch_search(search)
@@ -5713,7 +5785,9 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         query_esc += " ♾️"
         
     header = f"{cat_emoji} <b>{query_esc}</b>"
-    if notify_stage == "final_hour":
+    if notify_stage == "final_15m":
+        header = f"🔥 <b>15 МИНУТ ДО КОНЦА</b>\n{header}"
+    elif notify_stage == "final_hour":
         header = f"⏰ <b>1 ЧАС ДО КОНЦА</b>\n{header}"
     if outlier:
         header = f"🚨 {header}"
@@ -6264,7 +6338,13 @@ def initialize_api_budget_and_queue(searches):
 
 
 def _notify_candidates_from_filtered(filtered):
-    """Pick items for initial notify or final-hour re-notify (≤1h, already initial)."""
+    """Pick items for the initial notify or an auction re-notify.
+
+    Stages: initial (lot qualifies, ≤24 h left) → final_hour (≤1 h) →
+    final_15m (last call before the hammer). The time here comes from the
+    search card, which is coarse, so the windows are wide; the exact end date
+    from the item details makes the final call in _process_notify_candidate.
+    """
     candidates = []
     for r in filtered:
         iid = str(r.get("item_id") or "")
@@ -6275,13 +6355,17 @@ def _notify_candidates_from_filtered(filtered):
         if not entry.get("initial"):
             candidates.append((r, "initial"))
             continue
-        # Second notify: pure auctions still in flight, ≤ ~90 min hint from search card
-        if entry.get("final_hour"):
-            continue
         if not (r.get("auction") and not r.get("buy_now")):
             continue
         minutes = _parse_time_left_to_minutes(r.get("time_left", ""))
-        if minutes is not None and minutes > 90:
+        if not entry.get("final_15m") and (
+            minutes is not None and minutes <= FINAL_15M_CANDIDATE_MINUTES
+        ):
+            candidates.append((r, "final_15m"))
+            continue
+        if entry.get("final_hour"):
+            continue
+        if minutes is not None and minutes > FINAL_HOUR_CANDIDATE_MINUTES:
             continue
         candidates.append((r, "final_hour"))
     return candidates
@@ -6351,18 +6435,21 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         _calculate_total(item, config.get_settings(), details)
         h = _item_hash(item["seller_name"], item["title"], item["price"])
 
-    if stage == "final_hour":
+    if stage in ("final_hour", "final_15m"):
+        # Re-notify only while the deal still stands: the price moved with every
+        # bid since the first alert.
         if not _price_within_limit(item, search):
             logger.info(
-                "Skipping final-hour notify for item %s: price no longer within limit",
-                item["item_id"],
+                "Skipping %s notify for item %s: price no longer within limit",
+                stage, item["item_id"],
             )
             return False
+        gate = FINAL_15M_MINUTES if stage == "final_15m" else FINAL_HOUR_MINUTES
         minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
-        if minutes is None or minutes > 60:
+        if minutes is None or minutes > gate:
             logger.info(
-                "Skipping final-hour notify for item %s: time_left=%s (need ≤60 min)",
-                item["item_id"], item.get("time_left"),
+                "Skipping %s notify for item %s: time_left=%s (need ≤%d min)",
+                stage, item["item_id"], item.get("time_left"), gate,
             )
             return False
         if not (item.get("auction") and not item.get("buy_now")):
@@ -7457,6 +7544,12 @@ async def process_searches(bot, once=False):
                     blocked_searches.append(search)
                 logger.warning("  %s: fetch error %s", search["query"], fetch_err)
                 continue
+            # A full page means the price sort truncated the market: fresh or
+            # ending lots can be hiding behind it. A short page already IS the
+            # whole market, and paying for two more fetches there would only
+            # slow every pass down.
+            page_size = int((fetch_search.get("filters") or {}).get("_ipg") or 0)
+            market_truncated = bool(page_size) and len(results) >= page_size
             sweep = _auction_sweep_search(fetch_search)
             if sweep:
                 sweep = _prepare_monitor_fetch_search(sweep)
@@ -7468,6 +7561,31 @@ async def process_searches(bot, once=False):
                     results = _merge_items_by_id(results, auction_results)
                     if len(results) > before:
                         logger.info("  %s: auction sweep added %d item(s)", search["query"], len(results) - before)
+
+            async def _extra_sweep(label, sweep_search):
+                """Merge one re-sorted page of the same query into results."""
+                nonlocal results
+                if not sweep_search:
+                    return
+                items, err = await asyncio.to_thread(fetch_ebay_ex, sweep_search)
+                if err:
+                    logger.warning("  %s: %s sweep error %s", search["query"], label, err)
+                    return
+                before = len(results)
+                results = _merge_items_by_id(results, items)
+                if len(results) > before:
+                    logger.info(
+                        "  %s: %s sweep added %d item(s)",
+                        search["query"], label, len(results) - before,
+                    )
+
+            if market_truncated:
+                # Newest first: catches a listing the price sort buried.
+                await _extra_sweep("newly listed", _newly_listed_search(fetch_search))
+                # Ending soonest: without it a lot in its last minutes can sit
+                # deep on page 3 and the final-hour / 15-minute alerts never fire.
+                await _extra_sweep("ending soon", _ending_soon_auction_search(fetch_search))
+
             if not results:
                 logger.info("  %s: 0 results", search["query"])
                 continue
