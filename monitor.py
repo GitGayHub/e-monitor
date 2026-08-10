@@ -1240,6 +1240,53 @@ def _has_term(title_norm, term):
     return re.search(rf"\b{re.escape(term_norm)}\b", title_norm) is not None
 
 
+def _has_stickdrift_problem(title_norm):
+    """True when title admits stick drift / abgenutzte Sticks (DE/EN).
+
+    Does NOT match 'ohne Stickdrift' / 'kein Stick Drift' (seller claims no drift).
+    """
+    t = title_norm or ""
+    # Explicit no-drift claims first
+    if re.search(
+        r"\b(?:ohne|kein|keine|keinen|nicht|no|without)\s+"
+        r"(?:stick\s*-?\s*drift|stickdrift|stick\s*drift)\b",
+        t,
+    ):
+        return False
+    if re.search(r"\b(?:stick\s*-?\s*drift|stickdrift)\b", t):
+        return True
+    # DE wear phrasing from live cards: «Linker Stick abgenutzt»
+    if re.search(
+        r"\b(?:linker|rechter|linke[rn]?|rechte[rn]?)?\s*sticks?\s+"
+        r"(?:abgenutzt|abgenutz|verschlissen|defekt)\b",
+        t,
+    ):
+        return True
+    if re.search(
+        r"\b(?:abgenutzte[rn]?|verschlissene[rn]?)\s+"
+        r"(?:linker|rechter)?\s*sticks?\b",
+        t,
+    ):
+        return True
+    return False
+
+
+def _exclude_word_hits(title_norm, word):
+    """exclude_words match, but stickdrift-family respects ohne/kein negation."""
+    w = _normalize(word or "")
+    if not w:
+        return False
+    if w in (
+        "stickdrift",
+        "stick drift",
+        "stick-drift",
+        "stick_drift",
+        "drift",
+    ) or "stickdrift" in w.replace(" ", "").replace("-", ""):
+        return _has_stickdrift_problem(title_norm) and _has_term(title_norm, word)
+    return _has_term(title_norm, word)
+
+
 def _is_phone_device_title(title_norm):
     if any(_has_term(title_norm, w) for w in PHONE_DEVICE_HINTS):
         return True
@@ -4730,7 +4777,10 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if effective_category == "consoles":
             if not _matches_console_query_model(title_norm, query_norm):
                 continue
-        if any(_has_term(title_norm, w) for w in exclude_words):
+        if any(_exclude_word_hits(title_norm, w) for w in exclude_words):
+            continue
+        # Controllers: Stickdrift / abgenutzte Sticks (even without per-search exclude)
+        if _has_stickdrift_problem(title_norm):
             continue
         if include_words and not any(w in title_norm for w in include_words):
             continue
