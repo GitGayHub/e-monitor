@@ -546,6 +546,15 @@ CATEGORY_ACCESSORY_WORDS = {
         "parts", "ersatzteil", "ersatzteile", "displayschaden", "netzteil",
         "ladegerät", "charger", "tastatur", "keyboard", "akku", "battery",
         "tasche", "hülle", "huelle", "case",
+        # Screen/chassis assemblies sold as spare (compat title names the laptop).
+        "baugruppe", "baugruppen", "komplettbaugruppe",
+        "displaybaugruppe", "lcd baugruppe", "lcd-schirm", "lcd schirm",
+        "schirm komplett", "komplett montage", "komplettmontage",
+        "display montage", "displaymontage", "screen assembly",
+        "display assembly", "lcd assembly", "panel assembly",
+        "nur display", "nur bildschirm", "nur schirm", "only screen",
+        "ersatzdisplay", "ersatz bildschirm", "replacement screen",
+        "replacement display", "digitizer", "touch digitizer",
     ),
     "mice": (
         "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button", "clicker",
@@ -598,6 +607,15 @@ CATEGORY_HARD_PART_WORDS = {
     "laptops": (
         "parts", "ersatzteil", "ersatzteile", "netzteil", "ladegerät", "charger",
         "tastatur", "keyboard", "akku", "battery",
+        # Hard block: spare display assemblies (Zenbook title + "LCD-Schirm Komplett Baugruppe").
+        "baugruppe", "baugruppen", "komplettbaugruppe",
+        "displaybaugruppe", "lcd baugruppe", "lcd-schirm", "lcd schirm",
+        "schirm komplett", "komplett montage", "komplettmontage",
+        "display montage", "displaymontage", "screen assembly",
+        "display assembly", "lcd assembly", "panel assembly",
+        "nur display", "nur bildschirm", "nur schirm", "only screen",
+        "ersatzdisplay", "ersatz bildschirm", "replacement screen",
+        "replacement display", "digitizer", "touch digitizer",
     ),
     "mice": (
         "shell", "tastenflächen", "tastenflaechen", "tasten", "buttons", "button",
@@ -660,6 +678,9 @@ LAPTOP_DEVICE_HINTS = (
     "thinkpad", "ideapad", "legion", "omen", "victus", "xps", "latitude",
     "inspiron", "alienware", "razer blade", "blade", "aorus", "gigabyte",
     "msi", "katana", "stealth", "creator", "predator", "nitro", "aspire",
+    # Galaxy Book titles often omit the word "laptop" entirely.
+    "galaxybook", "galaxy book", "galaxy book4", "galaxybook4",
+    "macbook", "chromebook", "surface laptop", "surface book",
 )
 
 PC_DEVICE_HINTS = (
@@ -953,7 +974,16 @@ def _intent_prelim_matches_title(title_norm, search):
             return False
         has_gpu = _has_rtx_gpu(title_norm, gpu)
         has_oled = _has_term(title_norm, "oled")
-        return (has_gpu or has_oled) and (_has_laptop_hint(title_norm) or has_gpu)
+        # Strict path: GPU or OLED already on the SERP card.
+        if (has_gpu or has_oled) and (_has_laptop_hint(title_norm) or has_gpu):
+            return True
+        # Soft path when details_can_satisfy: keep real laptop-looking cards
+        # (e.g. GalaxyBook without "4050"/"OLED" in the title) so item-page
+        # validation can accept GPU/OLED from description — and reject cracked
+        # screens there too. Spare assemblies are dropped by hard part words.
+        if intent.get("details_can_satisfy") and _has_laptop_hint(title_norm):
+            return True
+        return False
     if kind == "vivobook_14x_oled_3050":
         return "vivobook" in title_norm and ("14x" in title_norm or "m7400qc" in title_norm) and "oled" in title_norm
     if kind == "gpu_pc":

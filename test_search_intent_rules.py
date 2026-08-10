@@ -74,6 +74,50 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual([x["item_id"] for x in monitor.filter_results([good], search, cfg, skip_seen=True, is_statistics=True)], ["100"])
         self.assertEqual(monitor.filter_results([bad], search, cfg, skip_seen=True, is_statistics=True), [])
 
+    def test_laptop_screen_assembly_blocked_not_only_blacklist(self):
+        """Zenbook + LCD-Schirm Komplett Baugruppe/Montage = spare, not a laptop."""
+        search = {
+            "query": "4050 OLED",
+            "filters": {"category": "laptops", "listing_type": "buy_now", "location": "de"},
+        }
+        cfg = DummyConfig()
+        spare = item(
+            "Black ASUS Zenbook Pro 14 OLED UX6404VV-P4050W 3K LCD-Schirm Komplett Baugruppe",
+            item_id="spare1",
+            price=161,
+        )
+        montage = item(
+            "Black ASUS Zenbook Pro 14 OLED UX6404VV-P4050W 3K LCD-Schirm Komplett Montage",
+            item_id="spare2",
+            price=161,
+        )
+        kept = monitor.filter_results([spare, montage], search, cfg, skip_seen=True, is_statistics=True)
+        self.assertEqual(kept, [])
+
+    def test_galaxybook_prelim_soft_when_details_can_satisfy(self):
+        """Title without 4050/OLED still prelim-matches so details can accept or reject."""
+        search = {
+            "query": "4050 OLED",
+            "filters": {"category": "laptops", "listing_type": "buy_now"},
+        }
+        title = "Samsung GalaxyBook4 Ultra 16 Intel Core Ultra 7 155H 512GB SSD 16GB RAM NVIDIA"
+        tnorm = monitor._normalize(title)
+        self.assertTrue(monitor._intent_prelim_matches_title(tnorm, search))
+        # Details with GPU ok, cracked screen blocked by description check
+        self.assertTrue(
+            monitor._intent_details_match(
+                search,
+                item(title),
+                {"description": "NVIDIA GeForce RTX 4050 6GB GDDR6 OLED"},
+            )
+        )
+        self.assertTrue(
+            monitor._is_description_blocked(
+                "NVIDIA RTX 4050. Display Glas ist gesprungen, Touchscreen.",
+                "laptops",
+            )
+        )
+
     def test_5070_ti_pc_rejects_plain_5070(self):
         search = {"query": "5070 Ti PC", "filters": {"category": "computers", "listing_type": "buy_now_offer"}}
         good = item("Gaming PC RTX 5070 Ti Ryzen 7 32GB RAM")

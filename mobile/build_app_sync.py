@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_PATH = ROOT / "config.json"
 OUTPUT_PATH = ROOT / "mobile" / "app_sync.json"
+LOGIC_VERSION_PATH = ROOT / "logic_version.txt"
 
 
 def load_json(path, default):
@@ -15,6 +16,19 @@ def load_json(path, default):
             return json.load(handle)
     except Exception:
         return default
+
+
+def read_logic_version_timestamp():
+    """Same source as monitor.py: first token of logic_version.txt = unix UTC seconds."""
+    try:
+        with open(LOGIC_VERSION_PATH, "r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                return int(line.split()[0])
+    except Exception:
+        return None
 
 
 def convert_search(search):
@@ -51,11 +65,15 @@ def main():
         for search in config.get("searches", [])
         if search.get("query")
     ] or existing.get("searches", [])
+    logic_ts = read_logic_version_timestamp()
     document = {
         "schema": 1,
         "source": os.environ.get("GITHUB_REPOSITORY", "GitGayHub/e-monitor"),
         "commit": os.environ.get("GITHUB_SHA", ""),
         "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        # Android app shows this as «на основе e-monitor · Версия: …»
+        # Same stamp as Telegram stats footer (logic_version.txt, not git HEAD).
+        "logicVersion": logic_ts if logic_ts is not None else existing.get("logicVersion"),
         "config": {
             "ebay_marketplace_id": os.environ.get("EBAY_MARKETPLACE_ID", "EBAY_DE"),
             "ebay_source": os.environ.get("EBAY_SOURCE", "auto"),
