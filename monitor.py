@@ -1241,9 +1241,10 @@ def _has_term(title_norm, term):
 
 
 def _has_stickdrift_problem(title_norm):
-    """True when title admits stick drift / abgenutzte Sticks (DE/EN).
+    """True when title/description admits stick drift / abgenutzte Sticks (DE/EN).
 
     Does NOT match 'ohne Stickdrift' / 'kein Stick Drift' (seller claims no drift).
+    Covers seller prose like «Der linke Stick hat einen leichten Stickdrift».
     """
     t = title_norm or ""
     # Explicit no-drift claims first
@@ -1253,7 +1254,14 @@ def _has_stickdrift_problem(title_norm):
         t,
     ):
         return False
+    # bare / leichten / leichten Stickdrift
     if re.search(r"\b(?:stick\s*-?\s*drift|stickdrift)\b", t):
+        return True
+    # «hat einen … Stickdrift» / «mit leichtem Stickdrift»
+    if re.search(
+        r"\b(?:hat|mit|wegen|durch)\b.{0,40}\b(?:stick\s*-?\s*drift|stickdrift)\b",
+        t,
+    ):
         return True
     # DE wear phrasing from live cards: «Linker Stick abgenutzt»
     if re.search(
@@ -4296,6 +4304,12 @@ def _is_description_blocked(desc_html, category):
 
     if _has_damage_in_description(desc_norm):
         logger.info("Description blocked due to damage check (part + defect words)")
+        return True
+
+    # Stickdrift often only appears in seller text, not SERP title
+    # e.g. «Der linke Stick hat einen leichten Stickdrift»
+    if _has_stickdrift_problem(desc_norm):
+        logger.info("Description blocked due to Stickdrift / abgenutzte Sticks")
         return True
 
     if _is_display_replacement_description(desc_norm):
