@@ -678,9 +678,13 @@ LAPTOP_DEVICE_HINTS = (
     "thinkpad", "ideapad", "legion", "omen", "victus", "xps", "latitude",
     "inspiron", "alienware", "razer blade", "blade", "aorus", "gigabyte",
     "msi", "katana", "stealth", "creator", "predator", "nitro", "aspire",
-    # Galaxy Book titles often omit the word "laptop" entirely.
+    # Galaxy Book / Acer Swift titles often omit the word "laptop" entirely.
     "galaxybook", "galaxy book", "galaxy book4", "galaxybook4",
     "macbook", "chromebook", "surface laptop", "surface book",
+    "swift", "travelmate", "extensa", "yoga", "thinkbook",
+    "pavilion", "envy", "elitebook", "probook", "zbook",
+    "vostro", "precision", "zephyrus", "strix", "matebook", "magicbook",
+    "acer", "lenovo", "asus",
 )
 
 PC_DEVICE_HINTS = (
@@ -7739,13 +7743,8 @@ async def process_searches(bot, once=False):
         for search in searches:
             if not search.get("enabled", True):
                 continue
-            # Telegram deal alerts only when search.notify is true.
-            # Auto-monitoring for the app (feed / state) can run with notify=false
-            # and must not spam the chat.
-            if not search.get("notify", True):
-                logger.info("  %s: skip Telegram (notify=false)", search.get("query"))
-                continue
             # Same eBay sort/page profile as statistics so alerts match green rows.
+            # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
             fetch_search = _prepare_monitor_fetch_search(search)
             results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
             if fetch_err:
@@ -7833,10 +7832,15 @@ async def process_searches(bot, once=False):
                 ", ".join(f"{s}={by_stage[s]}" for s in NOTIFY_STAGES if by_stage[s]) or "none",
             )
 
-            for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
-                if await _process_notify_candidate(bot, item, search, stats_7d, stage):
-                    total_new += 1
-                await asyncio.sleep(0.5)
+            # notify=false: still scan/record, only skip Telegram deal alerts.
+            # (Earlier bug: continue at top skipped the whole search → TG silent forever.)
+            if not search.get("notify", True):
+                logger.info("  %s: skip Telegram sends (notify=false)", search.get("query"))
+            else:
+                for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
+                    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
+                        total_new += 1
+                    await asyncio.sleep(0.5)
 
             if not once:
                 await asyncio.sleep(random.uniform(2, 5))
@@ -7848,8 +7852,6 @@ async def process_searches(bot, once=False):
         if blocked_searches and _ebay_api_configured():
             logger.info("=== API retry for %d blocked search(es) ===", len(blocked_searches))
             for search in blocked_searches:
-                if not search.get("notify", True):
-                    continue
                 fetch_search = _prepare_monitor_fetch_search(search)
                 api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, fetch_search)
                 if api_err:
@@ -7867,6 +7869,9 @@ async def process_searches(bot, once=False):
                     search["query"], len(filtered), len(candidates),
                 )
 
+                if not search.get("notify", True):
+                    logger.info("  %s: API retry skip Telegram (notify=false)", search.get("query"))
+                    continue
                 for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
                     if await _process_notify_candidate(bot, item, search, stats_7d, stage):
                         total_new += 1
