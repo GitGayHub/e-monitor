@@ -7737,6 +7737,14 @@ async def process_searches(bot, once=False):
         blocked_searches = []  # Searches that failed due to block/rate_limit/cooldown
 
         for search in searches:
+            if not search.get("enabled", True):
+                continue
+            # Telegram deal alerts only when search.notify is true.
+            # Auto-monitoring for the app (feed / state) can run with notify=false
+            # and must not spam the chat.
+            if not search.get("notify", True):
+                logger.info("  %s: skip Telegram (notify=false)", search.get("query"))
+                continue
             # Same eBay sort/page profile as statistics so alerts match green rows.
             fetch_search = _prepare_monitor_fetch_search(search)
             results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
@@ -7840,6 +7848,8 @@ async def process_searches(bot, once=False):
         if blocked_searches and _ebay_api_configured():
             logger.info("=== API retry for %d blocked search(es) ===", len(blocked_searches))
             for search in blocked_searches:
+                if not search.get("notify", True):
+                    continue
                 fetch_search = _prepare_monitor_fetch_search(search)
                 api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, fetch_search)
                 if api_err:
