@@ -990,7 +990,12 @@ def _intent_prelim_matches_title(title_norm, search):
             return True
         return False
     if kind == "vivobook_14x_oled_3050":
-        return "vivobook" in title_norm and ("14x" in title_norm or "m7400qc" in title_norm) and "oled" in title_norm
+        # M7400QC / M7400QA = RTX 3050 SKUs even when title omits "3050"
+        return (
+            "vivobook" in title_norm
+            and ("14x" in title_norm or "m7400" in title_norm)
+            and "oled" in title_norm
+        )
     if kind == "gpu_pc":
         if intent["gpu"] == "5070ti":
             has_gpu = _has_rtx_5070_ti(title_norm)
@@ -1022,7 +1027,11 @@ def _intent_details_match(search, item=None, details=None):
     if kind == "rtx_oled_laptop":
         return _has_rtx_gpu(text_norm, intent["gpu"]) and _has_term(text_norm, "oled") and _has_laptop_hint(text_norm)
     if kind == "vivobook_14x_oled_3050":
-        has_gpu = re.search(r"\b(?:rtx\s*)?3050\s*ti\b|\b(?:rtx\s*)?3050ti\b|\b(?:rtx\s*)?3050\b", text_norm) is not None
+        # 3050 text OR official ASUS model codes that are 3050-class
+        has_gpu = (
+            re.search(r"\b(?:rtx\s*)?3050\s*ti\b|\b(?:rtx\s*)?3050ti\b|\b(?:rtx\s*)?3050\b", text_norm) is not None
+            or re.search(r"\bm7400q[ca]?\b", text_norm) is not None
+        )
         return "vivobook" in text_norm and "oled" in text_norm and has_gpu
     if kind == "gpu_pc":
         has_gpu = _has_rtx_5070_ti(text_norm) if intent["gpu"] == "5070ti" else _has_rtx_gpu(text_norm, intent["gpu"])
@@ -4654,6 +4663,21 @@ def _details_price_mismatch(item, details):
     return abs(details_price - item_price) > 1.0, item_price, details_price
 
 
+def _include_word_in_title(title_norm, word_norm):
+    """Match include_words with known GPU↔model synonyms (vivobook 3050 ↔ m7400qc)."""
+    if not word_norm:
+        return False
+    if word_norm in title_norm:
+        return True
+    # ASUS Vivobook 14X OLED M7400Q* ships with RTX 3050; titles often omit "3050"
+    if word_norm in ("3050", "rtx 3050", "rtx3050"):
+        if re.search(r"\bm7400q[ca]?\b", title_norm):
+            return True
+        if re.search(r"\b(?:rtx\s*)?3050\s*ti\b|\b(?:rtx\s*)?3050ti\b|\b(?:rtx\s*)?3050\b", title_norm):
+            return True
+    return False
+
+
 def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False):
     global_banned = config_obj.get_global_banned_sellers()
     global_banned_norm = {_normalize(s) for s in global_banned}
@@ -4805,7 +4829,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # Controllers: Stickdrift / abgenutzte Sticks (even without per-search exclude)
         if _has_stickdrift_problem(title_norm):
             continue
-        if include_words and not any(w in title_norm for w in include_words):
+        if include_words and not any(_include_word_in_title(title_norm, w) for w in include_words):
             continue
         if not skip_seen:
             h = _item_hash(item["seller_name"], item["title"], item["price"])
