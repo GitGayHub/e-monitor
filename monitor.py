@@ -499,7 +499,8 @@ CATEGORY_ACCESSORY_WORDS = {
     "headphones": (
         "scharnier", "halterung", "kopfbuegel", "kopfbügel", "speaker horn",
         "driver part", "schutzhülle", "schutzhuelle", "hülle", "huelle",
-        "case", "silikon", "abdeckung", "ersatzteil", "ersatzteile", "ersatz teile", "part",
+        "case", "cover", "sweat cover", "silikon", "abdeckung", "ersatzteil",
+        "ersatzteile", "ersatz teile", "part", "zubehoer", "zubehör",
         "ohrpolster", "audio kabel", "kabel", "3.5mm", "kopfband", "hinge",
         "lautsprecher", "gehörschützer", "gehoerschuetzer", "ohrenschützer",
         "ohrenschuetzer", "storage bag", "replacement earpads", "earpads",
@@ -2007,26 +2008,30 @@ def _matches_category_query(title_norm, category, query_norm):
         )
 
     if "sony wh" in query_norm or "sony ult wear" in query_norm:
-        # Block confirmed spare parts / cases / pads, pass full headphones
+        # Block spare parts / cases / pads / sweat covers — never the headset itself.
+        # Bug: "Silikon Sweat Cover … Zubehör für Kopfhörer" matched because
+        # "kopfhörer" appeared in the accessory phrase and "cover" was not blocked.
         part_words = (
             "ersatz", "ersatzteil", "spare", "replacement", "oem",
             "linke", "rechte", "left ear", "right ear",
             "ohrpolster", "earpad", "ear pad", "earpads", "ear cushions",
-            "hülle", "huelle", "case", "tasche", "silikon", "schutzhülle",
-            "kabel", "cable", "stand", "halterung", "only", "nur ",
+            "hülle", "huelle", "case", "cover", "tasche", "silikon", "schutzhülle",
+            "schutzhuelle", "kabel", "cable", "stand", "halterung", "only", "nur ",
+            "zubehoer", "zubehör", "sweat", "earcup", "ear cup", "pad set",
         )
-        if any(_has_term(title_norm, w) for w in part_words) or re.search(
-            r"\b(?:for|fuer|für|compatibel|kompatibel)\b.*\b(?:sony|wh[\s-]*1000|xm[456])\b",
+        if any(_has_term(title_norm, w) for w in part_words):
+            return False
+        # "für Sony WH…", "für Kopfhörer", "compatible with XM6" = accessory
+        if re.search(
+            r"\b(?:for|fuer|für|compatibel|kompatibel)\b.*\b(?:sony|wh[\s-]*1000|xm[456]|kopfhoerer|headphones|headset)\b",
             title_norm,
         ):
-            # Allow only if title still clearly is the full headset (rare)
-            if not any(
-                term in title_norm
-                for term in ("kopfhoerer", "headphones", "over-ear", "over ear", "headset")
-            ):
-                return False
-            if any(_has_term(title_norm, w) for w in ("ohrpolster", "earpad", "earpads", "case", "hülle", "huelle")):
-                return False
+            return False
+        if re.search(
+            r"\b(?:fuer|für|for)\s+(?:kopfhoerer|headphones|headset)\b",
+            title_norm,
+        ):
+            return False
         return True
 
     is_ps5_pro_query = _is_ps5_pro_search_query(query_norm)
@@ -6579,6 +6584,16 @@ def _notify_candidates_from_filtered(filtered):
 async def _process_notify_candidate(bot, item, search, stats_7d, stage):
     """Validate details and send one notification stage. Returns True if sent."""
     item["item_id"] = str(item.get("item_id") or "")
+    # Never spam the chat with incomplete SERP shells (APK-style "Seller: unknown").
+    seller = (item.get("seller_name") or "").strip()
+    if not seller or seller.lower() in ("unknown", "n/a", "-", "none"):
+        logger.info(
+            "Skipping notification for item %s: seller missing/unknown",
+            item.get("item_id"),
+        )
+        if stage == "initial":
+            mark_seen_item(item["item_id"], stage="initial")
+        return False
     h = _item_hash(item["seller_name"], item["title"], item["price"])
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     desc = ""
