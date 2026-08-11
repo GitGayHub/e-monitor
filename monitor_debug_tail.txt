@@ -1,110 +1,3 @@
-
-Full filter_results: 0 pass out of 6
-2026-08-11 19:06:34,189 - Running under GitHub Actions: executing git_sync.py state push...
-=== [git_sync] Starting Sync ===
-Fetching remote changes...
-Merging state files...
-Merged seen_ids.json: 343 local + 343 remote -> 343 total (stage format)
-Merged run_log.json: 300 local + 300 remote -> 300 total
-Merged config.json successfully.
-Committing local state changes...
-Pulling & Rebasing with remote to avoid conflicts...
-Pushing to origin...
-=== [git_sync] Push successful! ===
-===== E MONITOR ITERATION 21 (budget 1800s) =====
-iteration_start=2026-08-11 19:07:37 UTC
-pass_seconds=21
-2026-08-11 19:07:39,519 - ╔══════════════════════════════════════════════╗
-2026-08-11 19:07:39,519 - ║              eBay Monitor Bot               ║
-2026-08-11 19:07:39,519 - ╠══════════════════════════════════════════════╣
-2026-08-11 19:07:39,519 -   Mode:       ONE-SHOT
-2026-08-11 19:07:39,519 -   Repo:       GitGayHub/e-monitor
-2026-08-11 19:07:39,519 -   GH Token:   ✅ GitGayHub
-2026-08-11 19:07:39,520 -   GH Actions: ⚠️ pending 7m ago (E Monitor)
-2026-08-11 19:07:39,520 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-08-11 19:07:39,520 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-08-11 19:07:39,520 -   Chat ID:    5326338543
-2026-08-11 19:07:39,520 - ╠══════════════════════════════════════════════╣
-2026-08-11 19:07:39,520 -   Searches:   50 (1018 excl, 8 incl words)
-2026-08-11 19:07:39,520 -   Bans:       1 sellers, 16 items
-2026-08-11 19:07:39,520 -   Seen:       343 ids
-2026-08-11 19:07:39,520 - ╚══════════════════════════════════════════════╝
-2026-08-11 19:07:45,024 - eBay API budget this run: M=15 (API calls in last 24h: 0/5000)
-2026-08-11 19:07:45,100 - Top 15 priority API targets queued: ['lg_ultragear_oled_480hz_auc:EBAY_DE', 'ps5_pro_buy:EBAY_DE', 'nubia_z70s_ultra_buy:EBAY_DE', 'sony_wh_1000xm6_buy:EBAY_DE', 'nubia_z80_ultra_buy:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', 'pixel_5_auc:EBAY_DE', 'nubia_z80_ultra_leading_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_buy:EBAY_DE', 'logitech_superlight_2_std_auc:EBAY_DE', 'nubia_z80_ultra_leading_auc:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_auc:EBAY_DE', 'nubia_z70_ultra_auc:EBAY_DE', '5070_ti_pc_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE']
-2026-08-11 19:07:45,104 - Programmatically migrated searches configuration (reordering, excludes, price limits)
-2026-08-11 19:07:45,104 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 19:07:45,105 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 19:07:45,106 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 19:07:45,107 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 19:07:45,112 - === Done ===
-2026-08-11 19:07:45,112 - Running under GitHub Actions: executing filters test...
-2026-08-11 19:07:45,116 - Migrated Sony headphone searches to all-category eBay fetch
-=== TEST FILTERS ===
-Search: Sony WH-1000XM6
-Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-08-11 19:07:45,117 - Fetching: Sony WH-1000XM6
-2026-08-11 19:07:45,118 - eBay session ready (impersonate=chrome124)
-2026-08-11 19:07:50,414 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-08-11 19:07:50,814 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-08-11 19:07:50,816 - eBay session ready (impersonate=chrome120)
-2026-08-11 19:07:56,454 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=537541
-2026-08-11 19:07:56,454 -   Sony WH-1000XM6 -> 6 items via ebay.de
-
-Fetched items: 6 (Error: None)
-
---- All fetched items ---
-  [800492590250] auction=True buy_now=False price=150.0 total=156.19 time_left= title=Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer Bluetooth A
-  [128017957826] auction=True buy_now=False price=199.0 total=205.19 time_left= title=Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhörer
-  [257670619958] auction=True buy_now=False price=285.0 total=292.0 time_left= title=Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhörer – Schwa
-  [358908058148] auction=True buy_now=False price=180.0 total=180.0 time_left= title=SONY WH-1000XM6 Premium Noise Cancelling (WIE NEU) Nur Abhol
-  [407125348307] auction=True buy_now=False price=250.0 total=256.5 time_left= title=Sony WH-1000XM6 Over-Ear Kopfhörer Noise Cancelling inkl. OV
-  [147491389756] auction=True buy_now=False price=319.9 total=324.8 time_left= title=Sony WH-1000XM6 kabellose Noise Cancelling Kopfhörer schwarz
-
---- Filter reasons ---
   [800492590250] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=156.19 | Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer B
   [128017957826] BLOCKED: PRICE_OVER_LIMIT (205.19 > 200), NO_TIME_LEFT (would be filtered out) | total=205.19 | Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhör
   [257670619958] BLOCKED: PRICE_OVER_LIMIT (292.0 > 200), NO_TIME_LEFT (would be filtered out) | total=292.0 | Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhör
@@ -113,7 +6,7 @@ Fetched items: 6 (Error: None)
   [147491389756] BLOCKED: PRICE_OVER_LIMIT (324.8 > 200), NO_TIME_LEFT (would be filtered out) | total=324.8 | Sony WH-1000XM6 kabellose Noise Cancelling Kopfhör
 
 Full filter_results: 0 pass out of 6
-2026-08-11 19:07:56,471 - Running under GitHub Actions: executing git_sync.py state push...
+2026-08-11 19:36:15,369 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
@@ -125,87 +18,84 @@ Pulling & Rebasing with remote to avoid conflicts...
 Pushing to origin...
 === [git_sync] Push successful! ===
 ===== E MONITOR ITERATION 22 (budget 1800s) =====
-iteration_start=2026-08-11 19:09:00 UTC
-pass_seconds=21
-2026-08-11 19:09:02,218 - ╔══════════════════════════════════════════════╗
-2026-08-11 19:09:02,218 - ║              eBay Monitor Bot               ║
-2026-08-11 19:09:02,218 - ╠══════════════════════════════════════════════╣
-2026-08-11 19:09:02,218 -   Mode:       ONE-SHOT
-2026-08-11 19:09:02,218 -   Repo:       GitGayHub/e-monitor
-2026-08-11 19:09:02,218 -   GH Token:   ✅ GitGayHub
-2026-08-11 19:09:02,218 -   GH Actions: ⚠️ pending 8m ago (E Monitor)
-2026-08-11 19:09:02,218 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-08-11 19:09:02,218 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-08-11 19:09:02,218 -   Chat ID:    5326338543
-2026-08-11 19:09:02,218 - ╠══════════════════════════════════════════════╣
-2026-08-11 19:09:02,218 -   Searches:   50 (1018 excl, 8 incl words)
-2026-08-11 19:09:02,218 -   Bans:       1 sellers, 16 items
-2026-08-11 19:09:02,218 -   Seen:       343 ids
-2026-08-11 19:09:02,219 - ╚══════════════════════════════════════════════╝
-2026-08-11 19:09:07,724 - eBay API budget this run: M=15 (API calls in last 24h: 0/5000)
-2026-08-11 19:09:07,803 - Top 15 priority API targets queued: ['nubia_z70_ultra_auc:EBAY_DE', '5070_ti_pc_buy:EBAY_DE', 'nubia_z80_ultra_buy:EBAY_DE', 'sony_wh_1000xm6_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_auc:EBAY_DE', 'nubia_z70s_ultra_buy:EBAY_DE', 'logitech_superlight_2_std_auc:EBAY_DE', 'nubia_z80_ultra_leading_buy:EBAY_DE', 'lg_ultragear_oled_480hz_auc:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE', 'nubia_z80_ultra_leading_auc:EBAY_DE', 'ps5_pro_buy:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', 'pixel_5_auc:EBAY_DE']
-2026-08-11 19:09:07,807 - Programmatically migrated searches configuration (reordering, excludes, price limits)
-2026-08-11 19:09:07,807 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 19:09:07,808 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 19:09:07,809 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 19:09:07,810 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 19:09:07,810 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 19:09:07,810 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 19:09:07,814 - === Done ===
-2026-08-11 19:09:07,815 - Running under GitHub Actions: executing filters test...
-2026-08-11 19:09:07,819 - Migrated Sony headphone searches to all-category eBay fetch
+iteration_start=2026-08-11 19:37:19 UTC
+pass_seconds=16
+2026-08-11 19:37:21,074 - ╔══════════════════════════════════════════════╗
+2026-08-11 19:37:21,074 - ║              eBay Monitor Bot               ║
+2026-08-11 19:37:21,074 - ╠══════════════════════════════════════════════╣
+2026-08-11 19:37:21,074 -   Mode:       ONE-SHOT
+2026-08-11 19:37:21,075 -   Repo:       GitGayHub/e-monitor
+2026-08-11 19:37:21,075 -   GH Token:   ✅ GitGayHub
+2026-08-11 19:37:21,075 -   GH Actions: ⚠️ pending 2m ago (E Monitor)
+2026-08-11 19:37:21,075 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-08-11 19:37:21,075 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-08-11 19:37:21,075 -   Chat ID:    5326338543
+2026-08-11 19:37:21,075 - ╠══════════════════════════════════════════════╣
+2026-08-11 19:37:21,075 -   Searches:   50 (1018 excl, 8 incl words)
+2026-08-11 19:37:21,075 -   Bans:       1 sellers, 16 items
+2026-08-11 19:37:21,075 -   Seen:       343 ids
+2026-08-11 19:37:21,075 - ╚══════════════════════════════════════════════╝
+2026-08-11 19:37:26,433 - eBay API budget this run: M=15 (API calls in last 24h: 0/5000)
+2026-08-11 19:37:26,514 - Top 15 priority API targets queued: ['ps5_pro_buy:EBAY_DE', 'logitech_superlight_2_std_auc:EBAY_DE', 'nubia_z80_ultra_buy:EBAY_DE', 'nubia_z80_ultra_leading_auc:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE', 'pixel_5_auc:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_buy:EBAY_DE', 'nubia_z80_ultra_leading_buy:EBAY_DE', 'nubia_z70s_ultra_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_auc:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', 'lg_ultragear_oled_480hz_auc:EBAY_DE', 'sony_wh_1000xm6_buy:EBAY_DE', 'nubia_z70_ultra_auc:EBAY_DE', '5070_ti_pc_buy:EBAY_DE']
+2026-08-11 19:37:26,518 - Programmatically migrated searches configuration (reordering, excludes, price limits)
+2026-08-11 19:37:26,518 -   Redmagic 11 Pro: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Redmagic 11 Pro: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Redmagic 11S Pro: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Redmagic 11S Pro: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Nubia Z80 Ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Nubia Z80 Ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
+2026-08-11 19:37:26,518 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Nubia Z70 Ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Nubia Z70 Ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Nubia Z70S Ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Nubia Z70S Ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   iPhone 16 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   iPhone 16 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Pixel 5: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Pixel 5: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Sony WH-1000XM6: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   Sony WH-1000XM6: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   iPhone 15 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   iPhone 15 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   samsung s24 ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   samsung s24 ultra: skip Telegram (notify=false)
+2026-08-11 19:37:26,519 -   4050 oled: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   4050 oled: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   4060 oled: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   4060 oled: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   asus vivobook 14x oled: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   asus vivobook 14x oled: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   logitech superstrike: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   logitech superstrike: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   logitech superlight 2: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   logitech superlight 2: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   logitech superlight 2 dex: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   logitech superlight 2 dex: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   sony ult wear: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   sony ult wear: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   lg ultragear oled 480hz: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   lg ultragear oled 480hz: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   dualsense controller: skip Telegram (notify=false)
+2026-08-11 19:37:26,520 -   dualsense controller: skip Telegram (notify=false)
+2026-08-11 19:37:26,526 - === Done ===
+2026-08-11 19:37:26,526 - Running under GitHub Actions: executing filters test...
+2026-08-11 19:37:26,530 - Migrated Sony headphone searches to all-category eBay fetch
 === TEST FILTERS ===
 Search: Sony WH-1000XM6
 Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-08-11 19:09:07,820 - Fetching: Sony WH-1000XM6
-2026-08-11 19:09:07,821 - eBay session ready (impersonate=chrome124)
-2026-08-11 19:09:12,581 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-08-11 19:09:12,770 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-08-11 19:09:12,772 - eBay session ready (impersonate=chrome120)
-2026-08-11 19:09:19,369 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=533541
-2026-08-11 19:09:19,369 -   Sony WH-1000XM6 -> 6 items via ebay.de
+2026-08-11 19:37:26,532 - Fetching: Sony WH-1000XM6
+2026-08-11 19:37:26,532 - eBay session ready (impersonate=chrome124)
+2026-08-11 19:37:33,462 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=536790
+2026-08-11 19:37:33,462 -   Sony WH-1000XM6 -> 6 items via ebay.de
 
 Fetched items: 6 (Error: None)
 
@@ -226,7 +116,7 @@ Fetched items: 6 (Error: None)
   [147491389756] BLOCKED: PRICE_OVER_LIMIT (324.8 > 200), NO_TIME_LEFT (would be filtered out) | total=324.8 | Sony WH-1000XM6 kabellose Noise Cancelling Kopfhör
 
 Full filter_results: 0 pass out of 6
-2026-08-11 19:09:19,387 - Running under GitHub Actions: executing git_sync.py state push...
+2026-08-11 19:37:33,481 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
@@ -237,4 +127,114 @@ Committing local state changes...
 Pulling & Rebasing with remote to avoid conflicts...
 Pushing to origin...
 === [git_sync] Push successful! ===
-budget: 1753s used over 22 pass(es), last pass 21s — stopping
+===== E MONITOR ITERATION 23 (budget 1800s) =====
+iteration_start=2026-08-11 19:38:36 UTC
+pass_seconds=17
+2026-08-11 19:38:38,202 - ╔══════════════════════════════════════════════╗
+2026-08-11 19:38:38,202 - ║              eBay Monitor Bot               ║
+2026-08-11 19:38:38,202 - ╠══════════════════════════════════════════════╣
+2026-08-11 19:38:38,202 -   Mode:       ONE-SHOT
+2026-08-11 19:38:38,203 -   Repo:       GitGayHub/e-monitor
+2026-08-11 19:38:38,203 -   GH Token:   ✅ GitGayHub
+2026-08-11 19:38:38,203 -   GH Actions: ⚠️ pending 3m ago (E Monitor)
+2026-08-11 19:38:38,203 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-08-11 19:38:38,203 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-08-11 19:38:38,203 -   Chat ID:    5326338543
+2026-08-11 19:38:38,203 - ╠══════════════════════════════════════════════╣
+2026-08-11 19:38:38,203 -   Searches:   50 (1018 excl, 8 incl words)
+2026-08-11 19:38:38,203 -   Bans:       1 sellers, 16 items
+2026-08-11 19:38:38,203 -   Seen:       343 ids
+2026-08-11 19:38:38,203 - ╚══════════════════════════════════════════════╝
+2026-08-11 19:38:43,561 - eBay API budget this run: M=15 (API calls in last 24h: 0/5000)
+2026-08-11 19:38:43,642 - Top 15 priority API targets queued: ['lg_ultragear_oled_480hz_auc:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE', 'nubia_z80_ultra_leading_buy:EBAY_DE', 'nubia_z80_ultra_leading_auc:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_auc:EBAY_DE', 'logitech_superlight_2_std_auc:EBAY_DE', 'ps5_pro_buy:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', 'nubia_z80_ultra_buy:EBAY_DE', 'nubia_z70_ultra_auc:EBAY_DE', 'nubia_z70s_ultra_buy:EBAY_DE', '5070_ti_pc_buy:EBAY_DE', 'pixel_5_auc:EBAY_DE', 'sony_wh_1000xm6_buy:EBAY_DE']
+2026-08-11 19:38:43,646 - Programmatically migrated searches configuration (reordering, excludes, price limits)
+2026-08-11 19:38:43,646 -   Redmagic 11 Pro: skip Telegram (notify=false)
+2026-08-11 19:38:43,646 -   Redmagic 11 Pro: skip Telegram (notify=false)
+2026-08-11 19:38:43,646 -   Redmagic 11S Pro: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Redmagic 11S Pro: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z80 Ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z80 Ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z70 Ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z70 Ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z70S Ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Nubia Z70S Ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   iPhone 16 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   iPhone 16 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Pixel 5: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Pixel 5: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Sony WH-1000XM6: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   Sony WH-1000XM6: skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:38:43,647 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   iPhone 15 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   iPhone 15 Pro Max: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   samsung s24 ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   samsung s24 ultra: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   4050 oled: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   4050 oled: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   4060 oled: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   4060 oled: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   asus vivobook 14x oled: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   asus vivobook 14x oled: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   logitech superstrike: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   logitech superstrike: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   logitech superlight 2: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   logitech superlight 2: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   logitech superlight 2 dex: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   logitech superlight 2 dex: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   sony ult wear: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   sony ult wear: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   lg ultragear oled 480hz: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   lg ultragear oled 480hz: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
+2026-08-11 19:38:43,648 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
+2026-08-11 19:38:43,649 -   dualsense controller: skip Telegram (notify=false)
+2026-08-11 19:38:43,649 -   dualsense controller: skip Telegram (notify=false)
+2026-08-11 19:38:43,654 - === Done ===
+2026-08-11 19:38:43,654 - Running under GitHub Actions: executing filters test...
+2026-08-11 19:38:43,659 - Migrated Sony headphone searches to all-category eBay fetch
+=== TEST FILTERS ===
+Search: Sony WH-1000XM6
+Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
+2026-08-11 19:38:43,660 - Fetching: Sony WH-1000XM6
+2026-08-11 19:38:43,660 - eBay session ready (impersonate=chrome124)
+2026-08-11 19:38:50,332 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=536118
+2026-08-11 19:38:50,332 -   Sony WH-1000XM6 -> 6 items via ebay.de
+
+Fetched items: 6 (Error: None)
+
+--- All fetched items ---
+  [800492590250] auction=True buy_now=False price=150.0 total=156.19 time_left= title=Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer Bluetooth A
+  [128017957826] auction=True buy_now=False price=199.0 total=205.19 time_left= title=Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhörer
+  [257670619958] auction=True buy_now=False price=285.0 total=292.0 time_left= title=Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhörer – Schwa
+  [358908058148] auction=True buy_now=False price=180.0 total=180.0 time_left= title=SONY WH-1000XM6 Premium Noise Cancelling (WIE NEU) Nur Abhol
+  [407125348307] auction=True buy_now=False price=250.0 total=256.5 time_left= title=Sony WH-1000XM6 Over-Ear Kopfhörer Noise Cancelling inkl. OV
+  [147491389756] auction=True buy_now=False price=319.9 total=324.8 time_left= title=Sony WH-1000XM6 kabellose Noise Cancelling Kopfhörer schwarz
+
+--- Filter reasons ---
+  [800492590250] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=156.19 | Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer B
+  [128017957826] BLOCKED: PRICE_OVER_LIMIT (205.19 > 200), NO_TIME_LEFT (would be filtered out) | total=205.19 | Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhör
+  [257670619958] BLOCKED: PRICE_OVER_LIMIT (292.0 > 200), NO_TIME_LEFT (would be filtered out) | total=292.0 | Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhör
+  [358908058148] BLOCKED: NO_TIME_LEFT (would be filtered out), TITLE_MISMATCH | total=180.0 | SONY WH-1000XM6 Premium Noise Cancelling (WIE NEU)
+  [407125348307] BLOCKED: PRICE_OVER_LIMIT (256.5 > 200), NO_TIME_LEFT (would be filtered out) | total=256.5 | Sony WH-1000XM6 Over-Ear Kopfhörer Noise Cancellin
+  [147491389756] BLOCKED: PRICE_OVER_LIMIT (324.8 > 200), NO_TIME_LEFT (would be filtered out) | total=324.8 | Sony WH-1000XM6 kabellose Noise Cancelling Kopfhör
+
+Full filter_results: 0 pass out of 6
+2026-08-11 19:38:50,350 - Running under GitHub Actions: executing git_sync.py state push...
+=== [git_sync] Starting Sync ===
+Fetching remote changes...
+Merging state files...
+Merged seen_ids.json: 343 local + 343 remote -> 343 total (stage format)
+Merged run_log.json: 300 local + 300 remote -> 300 total
+Merged config.json successfully.
+Committing local state changes...
+Pulling & Rebasing with remote to avoid conflicts...
+Pushing to origin...
+=== [git_sync] Push successful! ===
+budget: 1728s used over 23 pass(es), last pass 17s — stopping
