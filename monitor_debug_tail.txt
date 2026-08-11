@@ -1,101 +1,211 @@
-  [800492590250] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=156.19 | Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer B
-  [128017957826] BLOCKED: PRICE_OVER_LIMIT (205.19 > 200), NO_TIME_LEFT (would be filtered out) | total=205.19 | Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhör
-  [257670619958] BLOCKED: PRICE_OVER_LIMIT (292.0 > 200), NO_TIME_LEFT (would be filtered out) | total=292.0 | Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhör
-  [358908058148] BLOCKED: NO_TIME_LEFT (would be filtered out), TITLE_MISMATCH | total=180.0 | SONY WH-1000XM6 Premium Noise Cancelling (WIE NEU)
-  [407125348307] BLOCKED: PRICE_OVER_LIMIT (256.5 > 200), NO_TIME_LEFT (would be filtered out) | total=256.5 | Sony WH-1000XM6 Over-Ear Kopfhörer Noise Cancellin
-  [147491389756] BLOCKED: PRICE_OVER_LIMIT (324.8 > 200), NO_TIME_LEFT (would be filtered out) | total=324.8 | Sony WH-1000XM6 kabellose Noise Cancelling Kopfhör
-
-Full filter_results: 0 pass out of 6
-2026-08-11 20:05:41,680 - Running under GitHub Actions: executing git_sync.py state push...
-=== [git_sync] Starting Sync ===
-Fetching remote changes...
-Merging state files...
-Merged seen_ids.json: 343 local + 343 remote -> 343 total (stage format)
-Merged run_log.json: 300 local + 300 remote -> 300 total
-Merged config.json successfully.
-Committing local state changes...
-Pulling & Rebasing with remote to avoid conflicts...
-Pushing to origin...
-=== [git_sync] Push successful! ===
-===== E MONITOR ITERATION 21 (budget 1800s) =====
-iteration_start=2026-08-11 20:06:47 UTC
-pass_seconds=17
-2026-08-11 20:06:49,022 - ╔══════════════════════════════════════════════╗
-2026-08-11 20:06:49,022 - ║              eBay Monitor Bot               ║
-2026-08-11 20:06:49,023 - ╠══════════════════════════════════════════════╣
-2026-08-11 20:06:49,023 -   Mode:       ONE-SHOT
-2026-08-11 20:06:49,023 -   Repo:       GitGayHub/e-monitor
-2026-08-11 20:06:49,023 -   GH Token:   ✅ GitGayHub
-2026-08-11 20:06:49,023 -   GH Actions: ⚠️ pending 6m ago (E Monitor)
-2026-08-11 20:06:49,023 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-08-11 20:06:49,023 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-08-11 20:06:49,023 -   Chat ID:    5326338543
-2026-08-11 20:06:49,023 - ╠══════════════════════════════════════════════╣
-2026-08-11 20:06:49,023 -   Searches:   50 (1018 excl, 8 incl words)
-2026-08-11 20:06:49,023 -   Bans:       1 sellers, 16 items
-2026-08-11 20:06:49,023 -   Seen:       343 ids
-2026-08-11 20:06:49,023 - ╚══════════════════════════════════════════════╝
-2026-08-11 20:06:54,505 - eBay API budget this run: M=15 (API calls in last 24h: 0/5000)
-2026-08-11 20:06:54,551 - Top 15 priority API targets queued: ['samsung_odyssey_oled_g6_500hz_buy:EBAY_DE', 'ps5_pro_buy:EBAY_DE', 'nubia_z80_ultra_buy:EBAY_DE', '5070_ti_pc_buy:EBAY_DE', 'nubia_z70_ultra_auc:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', 'pixel_5_auc:EBAY_DE', 'logitech_superlight_2_std_auc:EBAY_DE', 'nubia_z80_ultra_leading_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE', 'sony_wh_1000xm6_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_auc:EBAY_DE', 'nubia_z80_ultra_leading_auc:EBAY_DE', 'nubia_z70s_ultra_buy:EBAY_DE', 'lg_ultragear_oled_480hz_auc:EBAY_DE']
-2026-08-11 20:06:54,555 - Programmatically migrated searches configuration (reordering, excludes, price limits)
-2026-08-11 20:06:54,555 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 20:06:54,555 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 20:06:54,556 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 20:06:54,557 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 20:06:54,557 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 20:06:54,557 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 20:06:54,557 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 20:06:54,557 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 20:06:54,561 - === Done ===
-2026-08-11 20:06:54,561 - Running under GitHub Actions: executing filters test...
-2026-08-11 20:06:54,565 - Migrated Sony headphone searches to all-category eBay fetch
+2026-08-11 20:27:40,701 - eBay ebay.de genuine no-results marker for 'asus vivobook 14x oled'
+2026-08-11 20:27:56,231 - Playwright still got challenge for 'asus vivobook 14x oled'
+2026-08-11 20:28:04,880 - eBay playwright empty-marker 'keine exakten treffer' past the 12k head (body_len=397550) for 'asus vivobook 14x oled'
+2026-08-11 20:28:04,880 - eBay playwright genuine no-results marker for 'asus vivobook 14x oled'
+2026-08-11 20:28:04,880 -   asus vivobook 14x oled: 0 results
+2026-08-11 20:28:04,880 - Fetching: logitech superstrike
+2026-08-11 20:28:04,881 - eBay session ready (impersonate=chrome124)
+2026-08-11 20:28:09,712 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:28:10,003 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:28:10,005 - eBay session ready (impersonate=chrome120)
+2026-08-11 20:28:16,311 -   logitech superstrike -> 21 items via m.ebay.de body_len=760793
+2026-08-11 20:28:16,311 -   logitech superstrike -> 21 items via ebay.de
+2026-08-11 20:28:16,311 -   logitech superstrike -> 21 merged items via 2/5 query variants (empty_ok=False err=None)
+2026-08-11 20:28:16,433 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-08-11 20:28:16,433 - Fetching: logitech superstrike
+2026-08-11 20:28:18,215 -   logitech superstrike -> 1 items via m.ebay.de body_len=459620
+2026-08-11 20:28:20,859 -   logitech superstrike -> 1 items via ebay.de
+2026-08-11 20:28:20,859 -   logitech superstrike -> 1 merged items via 2/5 query variants (empty_ok=False err=None)
+2026-08-11 20:28:20,973 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-08-11 20:28:20,974 - Fetching: logitech superlight 2
+2026-08-11 20:28:23,486 -   logitech superlight 2 -> 60 items via m.ebay.de body_len=1694301
+2026-08-11 20:28:23,486 -   logitech superlight 2 -> 60 items via ebay.de
+2026-08-11 20:28:23,486 -   logitech superlight 2 -> 60 merged items via 2/2 query variants (empty_ok=False err=None)
+2026-08-11 20:28:23,487 - Fetching: logitech superlight 2
+2026-08-11 20:28:25,939 -   logitech superlight 2 -> 60 items via m.ebay.de body_len=1580480
+2026-08-11 20:28:25,939 -   logitech superlight 2 -> 60 items via ebay.de
+2026-08-11 20:28:25,939 -   logitech superlight 2 -> 60 merged items via 2/2 query variants (empty_ok=False err=None)
+2026-08-11 20:28:25,940 -   logitech superlight 2: newly listed sweep added 47 item(s)
+2026-08-11 20:28:26,075 -   logitech superlight 2: 0 results, 0 candidates (none)
+2026-08-11 20:28:26,075 - Fetching: logitech superlight 2
+2026-08-11 20:28:27,463 -   logitech superlight 2 -> 2 items via m.ebay.de body_len=496356
+2026-08-11 20:28:29,195 -   logitech superlight 2 -> 2 items via ebay.de
+2026-08-11 20:28:29,195 -   logitech superlight 2 -> 2 merged items via 2/2 query variants (empty_ok=False err=None)
+2026-08-11 20:28:29,310 -   logitech superlight 2: 0 results, 0 candidates (none)
+2026-08-11 20:28:29,311 - Fetching: logitech superlight 2 dex
+2026-08-11 20:28:30,431 -   logitech superlight 2 dex -> 35 items via m.ebay.de body_len=1097602
+2026-08-11 20:28:30,431 -   logitech superlight 2 dex -> 35 items via ebay.de
+2026-08-11 20:28:30,431 -   logitech superlight 2 dex -> 35 merged items via 2/2 query variants (empty_ok=False err=None)
+2026-08-11 20:28:30,548 -   logitech superlight 2 dex: 0 results, 0 candidates (none)
+2026-08-11 20:28:30,548 - Fetching: logitech superlight 2 dex
+2026-08-11 20:28:31,474 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=375053) for 'logitech superlight 2 dex'
+2026-08-11 20:28:31,474 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:32,249 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=375063) for 'logitech superlight 2 dex'
+2026-08-11 20:28:32,249 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:32,251 - eBay session ready (impersonate=safari17_2_ios)
+2026-08-11 20:28:37,861 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=411661) for 'logitech superlight 2 dex'
+2026-08-11 20:28:37,861 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:38,550 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=411672) for 'logitech superlight 2 dex'
+2026-08-11 20:28:38,550 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:38,552 - eBay session ready (impersonate=safari17_0)
+2026-08-11 20:28:45,598 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=375040) for 'logitech superlight 2 dex'
+2026-08-11 20:28:45,598 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:46,608 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=375044) for 'logitech superlight 2 dex'
+2026-08-11 20:28:46,609 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:54,706 - eBay playwright empty-marker 'keine exakten treffer' past the 12k head (body_len=394870) for 'logitech superlight 2 dex'
+2026-08-11 20:28:54,706 - eBay playwright genuine no-results marker for 'logitech superlight 2 dex'
+2026-08-11 20:28:54,706 -   logitech superlight 2 dex -> 0 merged items via 2/2 query variants (empty_ok=True err=None)
+2026-08-11 20:28:54,706 -   logitech superlight 2 dex: 0 results
+2026-08-11 20:28:54,706 - Fetching: sony ult wear
+2026-08-11 20:28:54,707 - eBay session ready (impersonate=chrome131)
+2026-08-11 20:29:01,244 -   sony ult wear -> 38 items via m.ebay.de body_len=1138828
+2026-08-11 20:29:01,244 -   sony ult wear -> 38 items via ebay.de
+2026-08-11 20:29:01,244 -   sony ult wear -> 38 merged items via 2/2 query variants (empty_ok=False err=None)
+2026-08-11 20:29:01,380 -   sony ult wear: 0 results, 0 candidates (none)
+2026-08-11 20:29:01,381 - Fetching: sony ult wear
+2026-08-11 20:29:02,834 -   sony ult wear -> 1 items via m.ebay.de body_len=511742
+2026-08-11 20:29:04,905 -   sony ult wear -> 1 items via ebay.de
+2026-08-11 20:29:04,905 -   sony ult wear -> 1 merged items via 2/2 query variants (empty_ok=False err=None)
+2026-08-11 20:29:05,019 -   sony ult wear: 0 results, 0 candidates (none)
+2026-08-11 20:29:05,020 - Fetching: lg ultragear oled 480hz
+2026-08-11 20:29:06,226 -   lg ultragear oled 480hz -> 17 items via m.ebay.de body_len=720487
+2026-08-11 20:29:06,226 -   lg ultragear oled 480hz -> 17 items via ebay.de
+2026-08-11 20:29:06,226 -   lg ultragear oled 480hz -> 17 merged items via 2/3 query variants (empty_ok=False err=None)
+2026-08-11 20:29:06,343 -   lg ultragear oled 480hz: 0 results, 0 candidates (none)
+2026-08-11 20:29:06,344 - Fetching: lg ultragear oled 480hz
+2026-08-11 20:29:07,243 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=369005) for 'lg ultragear oled 480hz'
+2026-08-11 20:29:07,243 - eBay ebay.de genuine no-results marker for 'lg ultragear oled 480hz'
+2026-08-11 20:29:07,842 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=369023) for 'lg ultragear oled 480hz'
+2026-08-11 20:29:07,842 - eBay ebay.de genuine no-results marker for 'lg ultragear oled 480hz'
+2026-08-11 20:29:07,844 - eBay session ready (impersonate=chrome124)
+2026-08-11 20:29:12,499 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:29:12,767 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:29:12,769 - eBay session ready (impersonate=chrome120)
+2026-08-11 20:29:16,449 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=372032) for 'lg ultragear oled 480hz'
+2026-08-11 20:29:16,449 - eBay ebay.de genuine no-results marker for 'lg ultragear oled 480hz'
+2026-08-11 20:29:17,027 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=372020) for 'lg ultragear oled 480hz'
+2026-08-11 20:29:17,027 - eBay ebay.de genuine no-results marker for 'lg ultragear oled 480hz'
+2026-08-11 20:29:25,818 - eBay playwright empty-marker 'keine exakten treffer' past the 12k head (body_len=385181) for 'lg ultragear oled 480hz'
+2026-08-11 20:29:25,818 - eBay playwright genuine no-results marker for 'lg ultragear oled 480hz'
+2026-08-11 20:29:25,818 -   lg ultragear oled 480hz -> 0 merged items via 2/3 query variants (empty_ok=True err=None)
+2026-08-11 20:29:25,818 -   lg ultragear oled 480hz: 0 results
+2026-08-11 20:29:25,818 - Fetching: samsung odyssey oled g6 500hz
+2026-08-11 20:29:25,819 - eBay session ready (impersonate=safari17_2_ios)
+2026-08-11 20:29:30,633 -   samsung odyssey oled g6 500hz -> 7 items via m.ebay.de body_len=508784
+2026-08-11 20:29:30,633 -   samsung odyssey oled g6 500hz -> 7 items via ebay.de
+2026-08-11 20:29:30,633 -   samsung odyssey oled g6 500hz -> 7 merged items via 2/3 query variants (empty_ok=False err=None)
+2026-08-11 20:29:30,751 -   samsung odyssey oled g6 500hz: 0 results, 0 candidates (none)
+2026-08-11 20:29:30,751 - Fetching: samsung odyssey oled g6 500hz
+2026-08-11 20:29:31,446 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=410352) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:31,446 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:32,016 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=410986) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:32,016 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:32,019 - eBay session ready (impersonate=safari17_0)
+2026-08-11 20:29:38,180 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=372651) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:38,180 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:38,779 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=372655) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:38,779 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:38,781 - eBay session ready (impersonate=chrome131)
+2026-08-11 20:29:45,093 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=372674) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:45,093 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:45,799 - eBay ebay.de empty-marker 'keine exakten treffer' past the 12k head (body_len=371921) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:45,799 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:54,067 - eBay playwright empty-marker 'keine exakten treffer' past the 12k head (body_len=386550) for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:54,067 - eBay playwright genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-08-11 20:29:54,067 -   samsung odyssey oled g6 500hz -> 0 merged items via 2/3 query variants (empty_ok=True err=None)
+2026-08-11 20:29:54,067 -   samsung odyssey oled g6 500hz: 0 results
+2026-08-11 20:29:54,068 - Fetching: dualsense controller
+2026-08-11 20:29:54,068 - eBay session ready (impersonate=chrome124)
+2026-08-11 20:29:57,459 - eBay challenge on ebay.de for 'dualsense controller' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:29:57,743 - eBay challenge on ebay.de for 'dualsense controller' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:29:57,745 - eBay session ready (impersonate=chrome120)
+2026-08-11 20:30:03,814 -   dualsense controller -> 60 items via m.ebay.de body_len=1514325
+2026-08-11 20:30:03,814 -   dualsense controller -> 60 items via ebay.de
+2026-08-11 20:30:03,815 - Fetching: dualsense controller
+2026-08-11 20:30:05,022 -   dualsense controller -> 60 items via m.ebay.de body_len=1398836
+2026-08-11 20:30:05,022 -   dualsense controller -> 60 items via ebay.de
+2026-08-11 20:30:05,022 -   dualsense controller: newly listed sweep added 59 item(s)
+2026-08-11 20:30:05,276 -   dualsense controller: 13 results, 8 candidates (initial=8)
+2026-08-11 20:30:05,276 - Scraping item page details for item 366598768210 via HTML
+2026-08-11 20:30:06,241 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598768210?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=675157140&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:06,531 - _fetch_item_details: HTML scraping details missing critical fields for 366598768210
+2026-08-11 20:30:06,531 - Falling back to eBay Browse API details for item 366598768210
+2026-08-11 20:30:07,475 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598768210">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598768210">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598768210">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598768210">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:09,432 - Scraping item page details for item 366598955566 via HTML
+2026-08-11 20:30:10,422 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598955566?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=1707730180&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:10,854 - _fetch_item_details: HTML scraping details missing critical fields for 366598955566
+2026-08-11 20:30:10,854 - Falling back to eBay Browse API details for item 366598955566
+2026-08-11 20:30:11,351 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598955566">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598955566">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: .Der kabellose DualSense Controller |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598955566">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598955566">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:13,167 - Scraping item page details for item 366598927981 via HTML
+2026-08-11 20:30:14,203 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598927981?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=3817197&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:14,570 - _fetch_item_details: HTML scraping details missing critical fields for 366598927981
+2026-08-11 20:30:14,570 - Falling back to eBay Browse API details for item 366598927981
+2026-08-11 20:30:15,059 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598927981">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598927981">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller - Midnight Black. |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598927981">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598927981">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:16,911 - Scraping item page details for item 366598886908 via HTML
+2026-08-11 20:30:17,943 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598886908?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=1863801305&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:18,195 - _fetch_item_details: HTML scraping details missing critical fields for 366598886908
+2026-08-11 20:30:18,195 - Falling back to eBay Browse API details for item 366598886908
+2026-08-11 20:30:18,722 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598886908">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598886908">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598886908">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598886908">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:20,434 - Scraping item page details for item 366598851785 via HTML
+2026-08-11 20:30:21,315 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598851785?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=2051703986&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:21,735 - _fetch_item_details: HTML scraping details missing critical fields for 366598851785
+2026-08-11 20:30:21,736 - Falling back to eBay Browse API details for item 366598851785
+2026-08-11 20:30:22,317 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598851785">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598851785">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller&#x27; |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598851785">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598851785">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:24,148 - Scraping item page details for item 366598842075 via HTML
+2026-08-11 20:30:25,072 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598842075?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=1022134090&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:25,313 - _fetch_item_details: HTML scraping details missing critical fields for 366598842075
+2026-08-11 20:30:25,313 - Falling back to eBay Browse API details for item 366598842075
+2026-08-11 20:30:25,774 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598842075">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598842075">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller. |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598842075">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598842075">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:27,643 - Scraping item page details for item 366598817074 via HTML
+2026-08-11 20:30:28,483 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598817074?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=826220538&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:28,833 - _fetch_item_details: HTML scraping details missing critical fields for 366598817074
+2026-08-11 20:30:28,833 - Falling back to eBay Browse API details for item 366598817074
+2026-08-11 20:30:29,377 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598817074">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598817074">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller, |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598817074">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598817074">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:31,955 - Scraping item page details for item 366598787372 via HTML
+2026-08-11 20:30:32,882 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366598787372?t=0&category=117042&seller=elektroniktech&excSoj=1&ver=1519359673&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:33,198 - _fetch_item_details: HTML scraping details missing critical fields for 366598787372
+2026-08-11 20:30:33,198 - Falling back to eBay Browse API details for item 366598787372
+2026-08-11 20:30:33,723 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/366598787372">🛍</a> Цена: <a href="https://www.ebay.de/itm/366598787372">35€</a> |  | 🏷 Тип: Sofortkauf |  | 📌 Описание: Der kabellose DualSense Controller - Midnight Black |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ elektroniktech (6 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ 28€ |  | 📍 <b>Дистанция:</b> Abholung möglich |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/366598787372">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_366598787372">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_ZWxla3Ryb25pa3RlY2g">Бан</a>
+2026-08-11 20:30:35,166 - Fetching: dualsense controller
+2026-08-11 20:30:36,466 -   dualsense controller -> 60 items via m.ebay.de body_len=1487160
+2026-08-11 20:30:36,466 -   dualsense controller -> 60 items via ebay.de
+2026-08-11 20:30:36,467 - Fetching: dualsense controller
+2026-08-11 20:30:37,951 -   dualsense controller -> 60 items via m.ebay.de body_len=1396587
+2026-08-11 20:30:37,951 -   dualsense controller -> 60 items via ebay.de
+2026-08-11 20:30:37,953 -   dualsense controller: newly listed sweep added 10 item(s)
+2026-08-11 20:30:37,953 - Fetching: dualsense controller
+2026-08-11 20:30:39,325 -   dualsense controller -> 60 items via m.ebay.de body_len=1485634
+2026-08-11 20:30:39,325 -   dualsense controller -> 60 items via ebay.de
+2026-08-11 20:30:39,327 -   dualsense controller: ending soon sweep added 6 item(s)
+2026-08-11 20:30:39,489 -   dualsense controller: 9 results, 3 candidates (initial=3)
+2026-08-11 20:30:39,490 - Scraping item page details for item 298572951948 via HTML
+2026-08-11 20:30:40,389 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/298572951948?t=0&category=117042&seller=sonnycrow&excSoj=1&ver=752228767&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:40,673 - _fetch_item_details: HTML scraping details missing critical fields for 298572951948
+2026-08-11 20:30:40,673 - Falling back to eBay Browse API details for item 298572951948
+2026-08-11 20:30:41,455 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/298572951948">🎲</a> Цена: <a href="https://www.ebay.de/itm/298572951948">18€</a> 🔨 2 Bids ⏳21ч 30мин 🟢 |  | 🏷 Тип: Auktion |  | 📌 Описание: Sony DualSense Drahtloser Controller für Sony PlayStation 5 |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ sonnycrow (316 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ ♾️ |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/298572951948">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_298572951948">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_c29ubnljcm93">Бан</a>
+2026-08-11 20:30:43,234 - Scraping item page details for item 278270069725 via HTML
+2026-08-11 20:30:44,062 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/278270069725?t=0&category=117042&seller=290757&excSoj=1&ver=678617303&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:44,274 - _fetch_item_details: HTML scraping details missing critical fields for 278270069725
+2026-08-11 20:30:44,274 - Falling back to eBay Browse API details for item 278270069725
+2026-08-11 20:30:44,765 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/278270069725">🎲</a> Цена: <a href="https://www.ebay.de/itm/278270069725">🤝22€</a> 🔨 0 Bids ⏳4д 21ч 🟠 |  | 🏷 Тип: Auktion+ |  | 📌 Описание: Sony PlayStation DualSense Kabellos Controller - Midnight Black |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>⚠️ 290757 (1 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ ♾️ |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/278270069725">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_278270069725">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_MjkwNzU3">Бан</a>
+2026-08-11 20:30:46,324 - Scraping item page details for item 336734414287 via HTML
+2026-08-11 20:30:47,229 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/336734414287?t=0&category=117042&seller=joey.coco&excSoj=1&ver=2127666922&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&epdesc=0&lang=de
+2026-08-11 20:30:47,504 - _fetch_item_details: HTML scraping details missing critical fields for 336734414287
+2026-08-11 20:30:47,504 - Falling back to eBay Browse API details for item 336734414287
+2026-08-11 20:30:48,019 - send_notification: 📦 <b>DualSense 🇩🇪 ♾️</b> |  | <a href="https://www.ebay.de/itm/336734414287">🎲</a> Цена: <a href="https://www.ebay.de/itm/336734414287">26€</a> 🔨 7 Bids ⏳22ч 8мин 🟢 |  | 🏷 Тип: Auktion |  | 📌 Описание: Sony Playstation 5 DualSense Controller Cosmic Red |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ joey.coco (843 отзывов) | 💸 <code>Лимит:        │  </code>🎯 40€ ⬆️ 2500€ ⬇️ ♾️ |  | 🤖 GitHub автомониторинг | ℹ️ Версия: 22:18 11 августа | 🔎 Поиск: full html |  | 🔗 <a href="https://www.ebay.de/itm/336734414287">Ссылка</a>  │  ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_336734414287">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_am9leS5jb2Nv">Бан</a>
+2026-08-11 20:30:50,067 - === Done ===
+2026-08-11 20:30:50,067 - Running under GitHub Actions: executing filters test...
+2026-08-11 20:30:50,128 - Migrated Sony headphone searches to all-category eBay fetch
 === TEST FILTERS ===
 Search: Sony WH-1000XM6
 Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-08-11 20:06:54,566 - Fetching: Sony WH-1000XM6
-2026-08-11 20:06:54,567 - eBay session ready (impersonate=chrome124)
-2026-08-11 20:07:02,172 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=534357
-2026-08-11 20:07:02,172 -   Sony WH-1000XM6 -> 6 items via ebay.de
+2026-08-11 20:30:50,129 - Fetching: Sony WH-1000XM6
+2026-08-11 20:30:50,129 - eBay session ready (impersonate=chrome124)
+2026-08-11 20:30:54,284 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:30:54,569 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-08-11 20:30:54,571 - eBay session ready (impersonate=chrome120)
+2026-08-11 20:30:59,670 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=533368
+2026-08-11 20:30:59,670 -   Sony WH-1000XM6 -> 6 items via ebay.de
 
 Fetched items: 6 (Error: None)
 
@@ -116,125 +226,15 @@ Fetched items: 6 (Error: None)
   [147491389756] BLOCKED: PRICE_OVER_LIMIT (324.8 > 200), NO_TIME_LEFT (would be filtered out) | total=324.8 | Sony WH-1000XM6 kabellose Noise Cancelling Kopfhör
 
 Full filter_results: 0 pass out of 6
-2026-08-11 20:07:02,186 - Running under GitHub Actions: executing git_sync.py state push...
+2026-08-11 20:30:59,682 - Running under GitHub Actions: executing git_sync.py state push...
 === [git_sync] Starting Sync ===
 Fetching remote changes...
 Merging state files...
-Merged seen_ids.json: 343 local + 343 remote -> 343 total (stage format)
+Merged seen_ids.json: 359 local + 343 remote -> 359 total (stage format)
 Merged run_log.json: 300 local + 300 remote -> 300 total
 Merged config.json successfully.
 Committing local state changes...
 Pulling & Rebasing with remote to avoid conflicts...
 Pushing to origin...
 === [git_sync] Push successful! ===
-===== E MONITOR ITERATION 22 (budget 1800s) =====
-iteration_start=2026-08-11 20:08:06 UTC
-pass_seconds=20
-2026-08-11 20:08:08,676 - ╔══════════════════════════════════════════════╗
-2026-08-11 20:08:08,676 - ║              eBay Monitor Bot               ║
-2026-08-11 20:08:08,676 - ╠══════════════════════════════════════════════╣
-2026-08-11 20:08:08,676 -   Mode:       ONE-SHOT
-2026-08-11 20:08:08,676 -   Repo:       GitGayHub/e-monitor
-2026-08-11 20:08:08,676 -   GH Token:   ✅ GitGayHub
-2026-08-11 20:08:08,676 -   GH Actions: ⚠️ pending 7m ago (E Monitor)
-2026-08-11 20:08:08,676 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-08-11 20:08:08,676 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-08-11 20:08:08,676 -   Chat ID:    5326338543
-2026-08-11 20:08:08,676 - ╠══════════════════════════════════════════════╣
-2026-08-11 20:08:08,676 -   Searches:   50 (1018 excl, 8 incl words)
-2026-08-11 20:08:08,676 -   Bans:       1 sellers, 16 items
-2026-08-11 20:08:08,676 -   Seen:       343 ids
-2026-08-11 20:08:08,676 - ╚══════════════════════════════════════════════╝
-2026-08-11 20:08:14,142 - eBay API budget this run: M=15 (API calls in last 24h: 0/5000)
-2026-08-11 20:08:14,189 - Top 15 priority API targets queued: ['nubia_z70s_ultra_buy:EBAY_DE', 'logitech_superlight_2_c_buy:EBAY_DE', 'logitech_superlight_2_std_auc:EBAY_DE', 'pixel_5_auc:EBAY_DE', 'logitech_superlight_2_c_auc:EBAY_DE', '5070_ti_pc_buy:EBAY_DE', 'sony_wh_1000xm6_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_auc:EBAY_DE', 'nubia_z80_ultra_leading_buy:EBAY_DE', 'nubia_z80_ultra_leading_auc:EBAY_DE', 'nubia_z70_ultra_auc:EBAY_DE', 'ps5_pro_buy:EBAY_DE', 'samsung_odyssey_oled_g6_500hz_buy:EBAY_DE', 'nubia_z80_ultra_buy:EBAY_DE', 'lg_ultragear_oled_480hz_auc:EBAY_DE']
-2026-08-11 20:08:14,193 - Programmatically migrated searches configuration (reordering, excludes, price limits)
-2026-08-11 20:08:14,193 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Redmagic 11 Pro: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Redmagic 11S Pro: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z80 Ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z80 Ultra Leading: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z70 Ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Nubia Z70S Ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   iPhone 16 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   (playstation 5 pro, ps5 pro): skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Pixel 5: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   Sony WH-1000XM6: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   5070 ti (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   4080 (pc, rechner, computer, desktop, gaming pc): skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   iPhone 15 Pro Max: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   samsung s24 ultra: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 20:08:14,193 -   4050 oled: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   4060 oled: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   asus vivobook 14x oled: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   logitech superstrike: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   logitech superlight 2: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   logitech superlight 2 dex: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   sony ult wear: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   lg ultragear oled 480hz: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   samsung odyssey oled g6 500hz: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 20:08:14,194 -   dualsense controller: skip Telegram (notify=false)
-2026-08-11 20:08:14,198 - === Done ===
-2026-08-11 20:08:14,198 - Running under GitHub Actions: executing filters test...
-2026-08-11 20:08:14,202 - Migrated Sony headphone searches to all-category eBay fetch
-=== TEST FILTERS ===
-Search: Sony WH-1000XM6
-Filters: {'min_price': None, 'limit_price': 200, 'max_price': 2500, 'condition': 'any', 'listing_type': 'auction', 'seller_type': 'any', 'location': 'worldwide', 'category': 'all'}
-2026-08-11 20:08:14,203 - Fetching: Sony WH-1000XM6
-2026-08-11 20:08:14,204 - eBay session ready (impersonate=chrome124)
-2026-08-11 20:08:22,724 -   Sony WH-1000XM6 -> 6 items via m.ebay.de body_len=537936
-2026-08-11 20:08:22,724 -   Sony WH-1000XM6 -> 6 items via ebay.de
-
-Fetched items: 6 (Error: None)
-
---- All fetched items ---
-  [800492590250] auction=True buy_now=False price=150.0 total=156.19 time_left= title=Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer Bluetooth A
-  [128017957826] auction=True buy_now=False price=199.0 total=205.19 time_left= title=Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhörer
-  [257670619958] auction=True buy_now=False price=285.0 total=292.0 time_left= title=Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhörer – Schwa
-  [358908058148] auction=True buy_now=False price=180.0 total=180.0 time_left= title=SONY WH-1000XM6 Premium Noise Cancelling (WIE NEU) Nur Abhol
-  [407125348307] auction=True buy_now=False price=250.0 total=256.5 time_left= title=Sony WH-1000XM6 Over-Ear Kopfhörer Noise Cancelling inkl. OV
-  [147491389756] auction=True buy_now=False price=319.9 total=324.8 time_left= title=Sony WH-1000XM6 kabellose Noise Cancelling Kopfhörer schwarz
-
---- Filter reasons ---
-  [800492590250] BLOCKED: NO_TIME_LEFT (would be filtered out) | total=156.19 | Sony WH-1000XM6 Midnight Blue Over-Ear Kopfhörer B
-  [128017957826] BLOCKED: PRICE_OVER_LIMIT (205.19 > 200), NO_TIME_LEFT (would be filtered out) | total=205.19 | Sony WH-1000XM6 Bluetooth Ohrumschließende Kopfhör
-  [257670619958] BLOCKED: PRICE_OVER_LIMIT (292.0 > 200), NO_TIME_LEFT (would be filtered out) | total=292.0 | Sony WH-1000XM6 kabellose Noise Cancelling-Kopfhör
-  [358908058148] BLOCKED: NO_TIME_LEFT (would be filtered out), TITLE_MISMATCH | total=180.0 | SONY WH-1000XM6 Premium Noise Cancelling (WIE NEU)
-  [407125348307] BLOCKED: PRICE_OVER_LIMIT (256.5 > 200), NO_TIME_LEFT (would be filtered out) | total=256.5 | Sony WH-1000XM6 Over-Ear Kopfhörer Noise Cancellin
-  [147491389756] BLOCKED: PRICE_OVER_LIMIT (324.8 > 200), NO_TIME_LEFT (would be filtered out) | total=324.8 | Sony WH-1000XM6 kabellose Noise Cancelling Kopfhör
-
-Full filter_results: 0 pass out of 6
-2026-08-11 20:08:22,739 - Running under GitHub Actions: executing git_sync.py state push...
-=== [git_sync] Starting Sync ===
-Fetching remote changes...
-Merging state files...
-Merged seen_ids.json: 343 local + 343 remote -> 343 total (stage format)
-Merged run_log.json: 300 local + 300 remote -> 300 total
-Merged config.json successfully.
-Committing local state changes...
-Pulling & Rebasing with remote to avoid conflicts...
-Pushing to origin...
-=== [git_sync] Push successful! ===
-budget: 1731s used over 22 pass(es), last pass 20s — stopping
+budget: 1312s used over 10 pass(es), last pass 587s — stopping
