@@ -4,12 +4,13 @@ import json
 import shutil
 
 def _normalize_seen_state(data):
+    """Preserve final_15m — merge used to drop it and re-spam last-call alerts."""
     state = {}
     if isinstance(data, list):
         for x in data:
             iid = str(x).strip()
             if iid:
-                state[iid] = {"initial": True, "final_hour": False}
+                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
     elif isinstance(data, dict):
         for k, v in data.items():
             iid = str(k).strip()
@@ -19,9 +20,10 @@ def _normalize_seen_state(data):
                 state[iid] = {
                     "initial": bool(v.get("initial")),
                     "final_hour": bool(v.get("final_hour")),
+                    "final_15m": bool(v.get("final_15m")),
                 }
             else:
-                state[iid] = {"initial": True, "final_hour": False}
+                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
     return state
 
 
@@ -49,6 +51,7 @@ def merge_json_lists(path_origin, path_local):
         merged[iid] = {
             "initial": bool(a.get("initial") or b.get("initial")),
             "final_hour": bool(a.get("final_hour") or b.get("final_hour")),
+            "final_15m": bool(a.get("final_15m") or b.get("final_15m")),
         }
     return merged
 

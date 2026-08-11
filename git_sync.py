@@ -50,13 +50,17 @@ def get_remote_file_content(filename):
     return None
 
 def _normalize_seen_state(data):
-    """list of ids or stage-dict -> {id: {initial, final_hour}}."""
+    """list of ids or stage-dict -> {id: {initial, final_hour, final_15m}}.
+
+    final_15m MUST be preserved: dropping it on merge re-fired «15 мин до конца»
+    every Actions pass (user got 15мин @1:02 then 5мин @1:13 both labeled 15 мин).
+    """
     state = {}
     if isinstance(data, list):
         for x in data:
             iid = str(x).strip()
             if iid:
-                state[iid] = {"initial": True, "final_hour": False}
+                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
     elif isinstance(data, dict):
         for k, v in data.items():
             iid = str(k).strip()
@@ -66,9 +70,10 @@ def _normalize_seen_state(data):
                 state[iid] = {
                     "initial": bool(v.get("initial")),
                     "final_hour": bool(v.get("final_hour")),
+                    "final_15m": bool(v.get("final_15m")),
                 }
             else:
-                state[iid] = {"initial": True, "final_hour": False}
+                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
     return state
 
 
@@ -96,9 +101,11 @@ def merge_seen_ids():
     for iid in set(local_data) | set(remote_data):
         a = local_data.get(iid) or {}
         b = remote_data.get(iid) or {}
+        # OR-merge stages so a sent final_15m is never wiped by a stale remote.
         merged[iid] = {
             "initial": bool(a.get("initial") or b.get("initial")),
             "final_hour": bool(a.get("final_hour") or b.get("final_hour")),
+            "final_15m": bool(a.get("final_15m") or b.get("final_15m")),
         }
 
     with open(local_path, "w", encoding="utf-8") as f:

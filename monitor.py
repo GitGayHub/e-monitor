@@ -6020,7 +6020,12 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         
     header = f"{cat_emoji} <b>{query_esc}</b>"
     if notify_stage == "final_15m":
-        header = f"🔥 <b>15 МИНУТ ДО КОНЦА</b>\n{header}"
+        # Header from actual remaining time when known (avoid "15 мин" while card shows 5).
+        mins = _parse_time_left_to_minutes(item.get("time_left", ""))
+        if mins is not None and mins <= 5:
+            header = f"🔥 <b>~{int(mins)} МИН ДО КОНЦА</b>\n{header}"
+        else:
+            header = f"🔥 <b>15 МИНУТ ДО КОНЦА</b>\n{header}"
     elif notify_stage == "final_hour":
         header = f"⏰ <b>1 ЧАС ДО КОНЦА</b>\n{header}"
     if outlier:
