@@ -199,6 +199,7 @@ jobs:
               'time': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
               'trigger': os.environ.get('GITHUB_EVENT_NAME', '${{ github.event_name }}'),
               'loop_index': int(os.environ.get('LOOP_INDEX') or 0),
+              'logic_version': int(open('logic_version.txt', encoding='utf-8').read().strip()),
               'new': output.count('send_notification') + output.count('🆕') + output.count('🚨'),
               'blocked': bool(reason),
               'blocked_reason': reason,
