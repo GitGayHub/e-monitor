@@ -4973,7 +4973,36 @@ def _details_price_mismatch(item, details):
         item_price = float(item["price"])
     except (KeyError, TypeError, ValueError):
         return False, None, details_price
-    return abs(details_price - item_price) > 1.0, item_price, details_price
+    return (abs(details_price - item_price) > 1.0 if item.get("auction") else details_price > item_price + 1.0), item_price, details_price
+
+
+def _details_match_contract(item, search, details):
+    """Common metadata checks for statistics, previews and actual notifications."""
+    if not details:
+        return _intent_details_match(search, item, details)
+    category = search.get("filters", {}).get("category", "all")
+    allowed = ALLOWED_SUBCATEGORIES.get(category)
+    cat_id = str(details.get("categoryId") or "")
+    path = str(details.get("categoryIdPath") or "").split("|")
+    if allowed and cat_id and cat_id not in allowed and not any(cid in allowed for cid in path):
+        return False
+    return not (
+        details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS"
+        or _details_price_mismatch(item, details)[0]
+        or _is_details_blocked(details, search)
+        or _is_description_blocked(details.get("description", ""), category)
+        or not _intent_details_match(search, item, details)
+    )
+
+
+def _refresh_candidate_details(item, details, settings):
+    _calculate_total(item, settings, details)
+    if details.get("condition") or details.get("itemCondition"):
+        item["condition"] = details.get("condition") or details.get("itemCondition")
+    seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
+    if seconds_left is not None:
+        item["time_left"] = _format_time_left_from_seconds(max(0, seconds_left))
+    return item
 
 
 def _include_word_in_title(title_norm, word_norm):
@@ -6408,7 +6437,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     if shipping_suffix:
         price_line += f" {shipping_suffix}"
 
-    price_line += f"\nТовар: {item["price"]:.2f}€ · Доставка: {item["shipping_cost"]:.2f}€"
+    price_line += f"\nТовар: {item['price']:.2f}€ · Доставка: {item['shipping_cost']:.2f}€"
 
     # 3. Type Line
     type_line = f"🏷 Тип: {type_str}"
@@ -6672,59 +6701,14 @@ async def _validate_candidate(item, search):
 
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
-        # Update time_left from live API details
-        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
-        if seconds_left is not None and seconds_left > 0:
-            item["time_left"] = _format_time_left_from_seconds(seconds_left)
-
-        # Log subcategory mismatch but do NOT block — sellers often list in wrong categories.
-        cat_id = details.get("categoryId")
-        search_cat = search.get("filters", {}).get("category", "all")
-        if search_cat in ALLOWED_SUBCATEGORIES:
-            allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
-            if cat_id and cat_id not in allowed_set:
-                cat_path_ids = details.get("categoryIdPath", "").split("|")
-                if not any(cid in allowed_set for cid in cat_path_ids):
-                    logger.debug("Item %s in unexpected category %s (allowed: %s) — passing anyway",
-                                 item.get("item_id"), cat_id, allowed_set)
-
-        # Multi-variation / seller-defined SKU matrices: fake "from 4€" bait.
-        # Same rule for statistics and normal so reports match alerts.
-        if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
-            logger.info("Blocking multi-variation item %s (SELLER_DEFINED_VARIATIONS)", item.get("item_id"))
+        if not _details_match_contract(item, search, details):
             return False, details
-
-        scraped_price = None
-        try:
-            scraped_price = float(item["price"])
-        except Exception:
-            pass
-
-        # Update item details with the actual API values (handles conversion and shipping)
-        _calculate_total(item, config.get_settings(), details)
-
-        if _is_details_blocked(details, search):
-            return False, details
-
-        # Block constructor/bait listings (skip for auctions and check in converted currency).
-        # Details page price is authoritative when it is lower than the search card:
-        # eBay search can keep stale or inflated card prices, and blocking those
-        # items hides real cheaper BIN offers from statistics.
-        if scraped_price is not None and not item.get("auction"):
-            try:
-                api_price = float(item["price"])
-                if api_price > scraped_price + 1.0:
-                    logger.info("Blocking item %s: price mismatch (search: %s, details: %s)", 
-                                item["item_id"], scraped_price, api_price)
-                    return False, details
-                if api_price + 1.0 < scraped_price:
-                    logger.info("Correcting item %s price from search card %s to details %s",
-                                item["item_id"], scraped_price, api_price)
-            except Exception:
-                pass
-                
-        desc = details.get("description", "")
-        if desc and _is_description_blocked(desc, search_cat):
+        _refresh_candidate_details(item, details, config.get_settings())
+        # Price limits are represented by the statistics verdict; all structural
+        # filters still apply to the actual country, condition and radius.
+        structural = copy.deepcopy(search)
+        structural.setdefault("filters", {}).update(min_price=None, limit_price=None, max_price=None)
+        if not filter_results([item], structural, config, skip_seen=True, is_statistics=True):
             return False, details
     else:
         # Fallback check using HTML scraping of the item page if Browse API fails (e.g. returns 404)
@@ -6980,67 +6964,11 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         return False
     h = _item_hash(item["seller_name"], item["title"], item["price"])
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
-    desc = ""
+    if not _details_match_contract(item, search, details):
+        logger.info("Skipping notification for item %s: details do not pass common rules", item["item_id"])
+        return False
     if details:
-        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
-        if seconds_left is not None and seconds_left > 0:
-            item["time_left"] = _format_time_left_from_seconds(seconds_left)
-        cat_id = details.get("categoryId")
-        search_cat = search.get("filters", {}).get("category", "all")
-        if search_cat in ALLOWED_SUBCATEGORIES:
-            allowed_set = ALLOWED_SUBCATEGORIES[search_cat]
-            if cat_id and cat_id not in allowed_set:
-                cat_path_ids = details.get("categoryIdPath", "").split("|")
-                if not any(cid in allowed_set for cid in cat_path_ids):
-                    logger.info(
-                        "Skipping notification for item %s: category %s not allowed for search %s",
-                        item["item_id"], cat_id, search_cat,
-                    )
-                    if stage == "initial":
-                        mark_seen_item(item["item_id"], stage="initial")
-                    return False
-
-        if details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS":
-            logger.info("Skipping notification for item %s: blocked as SELLER_DEFINED_VARIATIONS", item["item_id"])
-            if stage == "initial":
-                mark_seen_item(item["item_id"], stage="initial")
-            return False
-
-        mismatch, scraped_price, api_price = _details_price_mismatch(item, details)
-        if mismatch:
-            logger.info(
-                "Skipping notification for item %s: blocked due to price mismatch (scraped: %s, API: %s)",
-                item["item_id"], scraped_price, api_price,
-            )
-            if stage == "initial":
-                mark_seen_item(item["item_id"], stage="initial")
-            return False
-        desc = details.get("description", "")
-
-    if details and _is_details_blocked(details, search):
-        logger.info("Skipping notification for item %s: blocked by details check", item["item_id"])
-        if stage == "initial":
-            mark_seen_item(item["item_id"], stage="initial")
-        return False
-
-    if desc and _is_description_blocked(desc, search.get("filters", {}).get("category", "all")):
-        logger.info("Skipping notification for item %s: blocked by description check", item["item_id"])
-        if stage == "initial":
-            mark_seen_item(item["item_id"], stage="initial")
-        return False
-
-    if not _intent_details_match(search, item, details):
-        logger.info("Skipping notification for item %s: search intent requirements failed", item["item_id"])
-        if stage == "initial":
-            mark_seen_item(item["item_id"], stage="initial")
-        return False
-
-    if details:
-        _calculate_total(item, config.get_settings(), details)
-        if details.get("condition") or details.get("itemCondition"):
-            item["condition"] = details.get("condition") or details.get("itemCondition")
-        # Unknown SERP country/shipping can change after opening the listing.
-        # Reapply the search to the actual details, including radius and total.
+        _refresh_candidate_details(item, details, config.get_settings())
         if not filter_results([item], search, config, skip_seen=True):
             logger.info("Skipping notification for item %s: refreshed details no longer pass search", item["item_id"])
             return False
@@ -8570,24 +8498,7 @@ async def run_once():
     save_seen_ids()
     logger.info("=== Done ===")
 
-    # Run state synchronization when running under GitHub Actions
-    if os.environ.get("GITHUB_ACTIONS") == "true":
-        logger.info("Running under GitHub Actions: executing filters test...")
-        try:
-            import test_filters
-            await test_filters.test_filters()
-        except Exception as e:
-            logger.error(f"Failed to run filters test: {e}")
-
-        logger.info("Running under GitHub Actions: executing git_sync.py state push...")
-        try:
-            import subprocess
-            sync_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "git_sync.py")
-            res = subprocess.run([sys.executable, sync_script])
-            if res.returncode != 0:
-                logger.error(f"git_sync.py failed with return code {res.returncode}")
-        except Exception as e:
-            logger.error(f"Failed to run git_sync.py: {e}")
+    # The workflow publishes one atomic checkpoint after this sweep.
 
 
 async def run_continuous():

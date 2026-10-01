@@ -173,6 +173,25 @@ class MobileContractTests(unittest.TestCase):
         self.assertFalse(_migrate_searches(config))
         self.assertEqual(config, before)
 
+    def test_normal_uses_authoritative_lower_price_like_statistics(self):
+        document=json.loads((Path(__file__).parent/"qa/fixtures/parity_cases.json").read_text(encoding="utf-8"))
+        c=next(x for x in document["cases"] if x["name"]=="details contract: lower BIN authoritative")
+        item=copy.deepcopy(c["item"]);search=merge.app_search_to_config(c["search"])
+        cfg=Mock();cfg.get_settings.return_value=c["settings"];cfg.get_global_banned_sellers.return_value=[]
+        cfg.get_banned_item_ids.return_value=set();cfg.get_item_hashes.return_value=set()
+        with patch.object(monitor,"config",cfg),patch.object(monitor,"seen_state",{}),patch.object(monitor,"save_seen_ids"),patch.object(monitor,"_fetch_item_details",return_value=c["details"]),patch.object(monitor,"send_notification",new=AsyncMock(return_value=True)),patch.object(feed,"enqueue"):
+            self.assertTrue(asyncio.run(monitor._process_notify_candidate(Mock(),item,search,None,"initial")))
+            self.assertEqual(item["total_price"],30)
+            self.assertTrue(monitor.get_seen_entry(item["item_id"])["initial"])
+
+    def test_rejected_details_never_claim_successful_delivery(self):
+        item={"item_id":"retry-rejected","title":"Logitech Superlight 2","price":30,"shipping_cost":5,"seller_name":"seller","buy_now":True,"auction":False,"location":"DE","condition":"Gebraucht"}
+        search={"id":"s","query":"logitech superlight 2","filters":{"category":"mice","limit_price":45}}
+        with patch.object(monitor,"seen_state",{}),patch.object(monitor,"save_seen_ids"),patch.object(monitor,"_fetch_item_details",return_value={"categoryId":"177"}),patch.object(monitor,"send_notification",new=AsyncMock()) as sender:
+            self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(),item,search,None,"initial")))
+            self.assertFalse(monitor.get_seen_entry(item["item_id"])["initial"])
+            sender.assert_not_awaited()
+
 
 if __name__ == "__main__":
     unittest.main()

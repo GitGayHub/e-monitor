@@ -214,6 +214,7 @@ jobs:
           print(f'Log: {entry}')
           PY
 
+            tail -n 240 run_output_all.log > monitor_debug_tail.txt
             python config_crypt.py encrypt config.json config.json.enc || exit 1
             python mobile/build_app_sync.py || exit 1
             git add seen_ids.json price_history.db run_log.json config.json.enc || true
@@ -226,6 +227,11 @@ jobs:
               git commit -m "Checkpoint monitor state"
               # seen_ids must reach origin so the next run does not re-notify.
               python mobile/checkpoint_push.py || exit 1
+            fi
+
+            if [ "$MONITOR_STATUS" -ne 0 ]; then
+              echo "Monitor failed; checkpoint published, stopping for diagnosis"
+              exit "$MONITOR_STATUS"
             fi
 
             # The 4-bucket report is one long diagnostic pass, never a loop.

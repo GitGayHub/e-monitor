@@ -33,8 +33,17 @@ def evaluate(case):
         return False, "too_cheap" if cheap else "filtered", raw["total_price"]
     raw = rows[0]
     details = case.get("details")
-    if details and (monitor._is_details_blocked(details, search) or monitor._is_description_blocked(details.get("description", ""), search["filters"]["category"]) or not monitor._intent_details_match(search, raw, details)):
-        return False, "filtered", raw["total_price"]
+    if details:
+        if not monitor._details_match_contract(raw, search, details):
+            return False, "filtered", raw["total_price"]
+        monitor._refresh_candidate_details(raw, details, settings)
+        rows = monitor.filter_results([copy.deepcopy(raw)], search, config, skip_seen=True, is_statistics=True)
+        if not rows:
+            minimum = search["filters"].get("min_price")
+            cheap = monitor._is_implausibly_cheap_device(raw, search) or (not raw.get("auction") and minimum is not None and raw["total_price"] < minimum)
+            over = not monitor._price_within_limit(raw, search) or (search["filters"].get("max_price") is not None and raw["price"] > search["filters"]["max_price"])
+            return False, "too_cheap" if cheap else "over_limit" if over else "filtered", raw["total_price"]
+        raw = rows[0]
     hard = search["filters"].get("max_price")
     if (hard is not None and raw["price"] > hard) or not monitor._price_within_limit(raw, search):
         return False, "over_limit", raw["total_price"]
