@@ -32,6 +32,9 @@ def evaluate(case):
         cheap = monitor._is_implausibly_cheap_device(raw, search) or (not raw.get("auction") and minimum is not None and raw["total_price"] < minimum)
         return False, "too_cheap" if cheap else "filtered", raw["total_price"]
     raw = rows[0]
+    details = case.get("details")
+    if details and (monitor._is_details_blocked(details, search) or monitor._is_description_blocked(details.get("description", ""), search["filters"]["category"]) or not monitor._intent_details_match(search, raw, details)):
+        return False, "filtered", raw["total_price"]
     hard = search["filters"].get("max_price")
     if (hard is not None and raw["price"] > hard) or not monitor._price_within_limit(raw, search):
         return False, "over_limit", raw["total_price"]

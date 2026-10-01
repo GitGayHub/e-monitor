@@ -6335,7 +6335,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     else:
         type_str = "Sofortkauf+" if item["best_offer"] else "Sofortkauf"
 
-    base_p = item["price"] + item["shipping_cost"]
+    base_p = item.get("total_price", item["price"] + item["shipping_cost"])
 
     if item.get("is_pickup_only"):
         shipping_suffix = " (Nur Abholung)"
@@ -6391,22 +6391,24 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         circle = "🟠" if (minutes is not None and minutes > 1440) else "🟢"
         
         if item["best_offer"]:
-            price_val_str = f"🤝{base_p:.0f}€"
+            price_val_str = f"🤝{base_p:.2f}€"
         else:
-            price_val_str = f"{base_p:.0f}€"
+            price_val_str = f"{base_p:.2f}€"
             
         price_line = f"<a href=\"{esc_url}\">🎲</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a> 🔨 {bids_count} Bids ⏳{time_left} {circle}"
     else:
         if item["best_offer"]:
-            price_val_str = f"🤝 {base_p:.0f}€"
+            price_val_str = f"🤝 {base_p:.2f}€"
         else:
-            price_val_str = f"{base_p:.0f}€"
+            price_val_str = f"{base_p:.2f}€"
             
         price_line = f"<a href=\"{esc_url}\">🛍</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a>"
 
     # Add shipping suffix to price line if present
     if shipping_suffix:
         price_line += f" {shipping_suffix}"
+
+    price_line += f"\nТовар: {item["price"]:.2f}€ · Доставка: {item["shipping_cost"]:.2f}€"
 
     # 3. Type Line
     type_line = f"🏷 Тип: {type_str}"
@@ -6453,7 +6455,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
                 
     if item["total_price"] != item["price"] + item["shipping_cost"]:
         import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
-        extra_lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.0f}€ пошлина → итого ~{item['total_price']:.0f}€")
+        extra_lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.2f}€ пошлина → итого {item['total_price']:.2f}€")
 
     if outlier:
         median = get_median_7d(search["id"])
@@ -7035,6 +7037,13 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
 
     if details:
         _calculate_total(item, config.get_settings(), details)
+        if details.get("condition") or details.get("itemCondition"):
+            item["condition"] = details.get("condition") or details.get("itemCondition")
+        # Unknown SERP country/shipping can change after opening the listing.
+        # Reapply the search to the actual details, including radius and total.
+        if not filter_results([item], search, config, skip_seen=True):
+            logger.info("Skipping notification for item %s: refreshed details no longer pass search", item["item_id"])
+            return False
         h = _item_hash(item["seller_name"], item["title"], item["price"])
 
     if stage in ("final_hour", "final_15m"):
@@ -7072,7 +7081,8 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         try:
             from mobile.feed_writer import enqueue
             enqueue(item, search, telegram_message_id=item.get("_telegram_message_id"),
-                    notify_stage=stage, logic_version=_read_logic_version_timestamp())
+                    notify_stage=stage, logic_version=_read_logic_version_timestamp(),
+                    seller_trust=_seller_trust(item.get("seller_rating_count", 0),item.get("seller_rating_percent", 0),item.get("top_rated", False)))
         except Exception:
             logger.exception("Telegram delivered; mobile feed publication pending for %s", item["item_id"])
         if stage == "initial" and not item.get("auction"):

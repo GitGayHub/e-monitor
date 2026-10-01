@@ -12,6 +12,14 @@ from unittest.mock import Mock
 
 
 class MobileContractTests(unittest.TestCase):
+    def test_refreshed_foreign_country_cannot_bypass_germany_filter(self):
+        item = {"item_id":"foreign","title":"Sony DualSense Wireless Controller", "price":30,"shipping_cost":0,"total_price":30,"seller_name":"seller","condition":"Gebraucht","location":"","buy_now":True,"auction":False,"best_offer":False}
+        search = {"id":"pad","query":"DualSense", "filters":{"location":"de", "category":"all", "listing_type":"buy_now", "limit_price":40}}
+        details = {"title":item["title"],"itemLocationText":"Niederlande","price":{"value":"30"}}
+        with patch.object(monitor, "seen_state", {}), patch.object(monitor, "_fetch_item_details", return_value=details), patch.object(monitor, "send_notification", new=AsyncMock()) as sender:
+            self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(),item,search,None,"initial")))
+            sender.assert_not_awaited()
+
     def test_confirmed_stage_is_not_sent_again(self):
         with patch.object(monitor, "seen_state", {"delivered": {"initial": True}}), patch.object(monitor, "_fetch_item_details") as details:
             self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(), {"item_id": "delivered"}, {}, None, "initial")))
