@@ -271,7 +271,9 @@ PHONE_HARD_ACCESSORY_WORDS = (
 # No override possible. A title with "motherboard" or "digitizer" is never a phone for sale.
 PHONE_HARD_PART_WORDS = (
     "display", "bildschirm", "screen", "oled",
-    "lcd", "digitizer", "touch screen", "screen replacement",
+    "lcd", "digitizer", "touch screen", "touchscreen", "displayeinheit",
+    "reparatur", "reparaturservice", "serviceware", "pulled",
+    "screen replacement",
     "screen assembly", "display assembly", "charging port", "back glass",
     "back cover", "housing", "spare part", "spare parts",
     "motherboard", "mainboard", "logic board", "flex cable", "flexkabel",
@@ -784,14 +786,17 @@ def _search_intent(search_or_query):
     if re.search(r"\b4080\b", ident) and _has_term(ident, "pc"):
         return {
             "kind": "gpu_pc",
-            "query": "4080 (pc, rechner, computer, desktop, gaming pc)",
+            # Clean _nkw — parentheses OR-groups scramble eBay (same as monitors).
+            "query": "4080 pc",
             "gpu": "4080",
             "category": "computers",
         }
     if re.search(r"\b5070\s*ti\b|\b5070ti\b", ident) and _has_term(ident, "pc"):
         return {
             "kind": "gpu_pc",
-            "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+            # Live check 2026-08-15: `_nkw=5070+ti+pc&_sacat=0` finds auctions
+            # and ~1450€ BIN that `(pc, rechner, …)` + `_sacat=179` misses.
+            "query": "5070 ti pc",
             "gpu": "5070ti",
             "category": "computers",
         }
@@ -838,7 +843,7 @@ def _matches_superlight_2_mouse(title_norm, require_dex=False):
     t = title_norm or ""
     if not re.search(r"\bsuperlight\b", t):
         return False
-    if not re.search(r"\b2\b|\bii\b", t):
+    if not re.search(r"\bsuperlight\s*(?:2|ii)\b|\bgpx\s*2\b", t):
         return False
     has_dex = re.search(r"\bdex\b", t) is not None
     if require_dex and not has_dex:
@@ -926,6 +931,14 @@ def _search_query_variants(search):
         return [
             "sony ult wear WH-ULT900N",
             "WH-ULT900N",
+        ]
+    if kind == "rtx_oled_laptop":
+        gpu = intent.get("gpu") or "4050"
+        return [
+            f"rtx {gpu} oled laptop",
+            f"rtx {gpu} oled notebook",
+            f"laptop {gpu} oled",
+            f"{gpu} oled",
         ]
     return [_intent_query(search)]
 
@@ -1028,6 +1041,8 @@ def _intent_details_match(search, item=None, details=None):
         return _has_rtx_gpu(text_norm, intent["gpu"]) and _has_term(text_norm, "oled") and _has_laptop_hint(text_norm)
     if kind == "vivobook_14x_oled_3050":
         # 3050 text OR official ASUS model codes that are 3050-class
+        if details:
+            text_norm = _intent_text_from_item_and_details(None, details)
         has_gpu = (
             re.search(r"\b(?:rtx\s*)?3050\s*ti\b|\b(?:rtx\s*)?3050ti\b|\b(?:rtx\s*)?3050\b", text_norm) is not None
             or re.search(r"\bm7400q[ca]?\b", text_norm) is not None
@@ -1169,6 +1184,11 @@ def _query_matches_title(title_norm, query):
 def _has_query_word(title_norm, word):
     if word == "redmagic":
         return _has_term(title_norm, "redmagic") or "red magic" in title_norm
+    # DualSense Gamepad is the pad, not a miss for query «dualsense controller».
+    if word == "controller" and _has_term(title_norm, "gamepad"):
+        return True
+    if word == "gamepad" and _has_term(title_norm, "controller"):
+        return True
     if word in ("ti", "super", "xt"):
         # GPU titles are often written as "5070ti"/"4070super"/"7900xt".
         if re.search(rf"\b\d{{3,4}}\s*{re.escape(word)}\b", title_norm):
@@ -1280,9 +1300,11 @@ def _has_stickdrift_problem(title_norm):
     # DE wear phrasing from live cards: «Linker Stick abgenutzt»
     if re.search(
         r"\b(?:linker|rechter|linke[rn]?|rechte[rn]?)?\s*sticks?\s+"
-        r"(?:abgenutzt|abgenutz|verschlissen|defekt)\b",
+        r"(?:abgenutzt|abgenutz|verschlissen|defekt|hakt|klemmt)\b",
         t,
     ):
+        return True
+    if re.search(r"\bsticks?\b.{0,24}\b(?:hakt|klemmt)\b", t):
         return True
     if re.search(
         r"\b(?:abgenutzte[rn]?|verschlissene[rn]?)\s+"
@@ -1291,6 +1313,32 @@ def _has_stickdrift_problem(title_norm):
     ):
         return True
     return False
+
+
+def _is_hall_or_tmr_stick_upgrade(title_norm):
+    """Hall Effect / TMR sticks on a complete DualSense are an upgrade, not spare sticks."""
+    t = title_norm or ""
+    pad = re.search(
+        r"\b(?:dualsense|dual\s*sense|dualshock|dual\s*shock|gamepad|controller)\b",
+        t,
+    )
+    hall = re.search(
+        r"\b(?:hall\s*-?\s*effect|hall\s*-?\s*effekt|halleffekt|tmr)\b",
+        t,
+    )
+    return bool(pad and hall)
+
+
+def _is_dock_exclude_word(word):
+    compact = _normalize(word or "").replace(" ", "").replace("-", "")
+    return compact in {
+        "ladestation",
+        "doppelladestation",
+        "chargingstation",
+        "chargingdock",
+        "ladedock",
+        "ladegeraet",
+    }
 
 
 def _exclude_word_hits(title_norm, word):
@@ -1306,6 +1354,14 @@ def _exclude_word_hits(title_norm, word):
         "drift",
     ) or "stickdrift" in w.replace(" ", "").replace("-", ""):
         return _has_stickdrift_problem(title_norm) and _has_term(title_norm, word)
+    # DualSense + Ladestation is the pad, not a dock-only listing.
+    if _is_dock_exclude_word(w) and _controller_bundle_keeps_pad(title_norm):
+        return False
+    # Hall Effect / TMR on a complete pad are an upgrade, not a stop-word hit.
+    if w in (
+        "stick", "sticks", "hall", "hallpi", "halleffekt", "effect", "effekt", "tmr"
+    ) and _is_hall_or_tmr_stick_upgrade(title_norm):
+        return False
     return _has_term(title_norm, word)
 
 
@@ -1576,6 +1632,101 @@ def _is_phone_search_query(query_norm):
     if any(term in query_norm for term in phone_terms):
         return True
     return re.search(r"\b(?:samsung\s+)?s\d{2}\s+ultra\b", query_norm) is not None
+
+
+def _is_controller_pad_query(query_norm):
+    q = query_norm or ""
+    return bool(re.search(r"\bdual\s*sense\b|\bdualsense\b|\bdual\s*shock\b|\bdualshock\b", q))
+
+
+def _controller_accessory_label(title_norm):
+    t = title_norm or ""
+    pairs = (
+        ("doppelladestation", "зарядка"),
+        ("ladestation", "зарядка"),
+        ("lade station", "зарядка"),
+        ("charging station", "зарядка"),
+        ("charging dock", "зарядка"),
+        ("ladedock", "зарядка"),
+        ("lade-dock", "зарядка"),
+        ("lade dock", "зарядка"),
+        ("ladegeraet", "зарядка"),
+        ("charger", "зарядка"),
+        ("tragetasche", "чехол"),
+        ("schutztasche", "чехол"),
+        ("aufbewahrungstasche", "чехол"),
+        ("tasche", "чехол"),
+        ("schutzhuelle", "чехол"),
+        ("silikonhuelle", "чехол"),
+        ("huelle", "чехол"),
+        ("hulle", "чехол"),
+        ("skin", "скин"),
+        ("aufkleber", "наклейка"),
+    )
+    hit = None
+    for word, label in pairs:
+        if _has_accessory_term(t, word) or word in t:
+            hit = label
+            break
+    if not hit:
+        return None
+    if _controller_bundle_keeps_pad(t):
+        return None
+    return hit
+
+
+def _controller_bundle_keeps_pad(title_norm):
+    if not re.search(r"\b(?:dualsense|dual\s*sense|dualshock|dual\s*shock|gamepad)\b", title_norm):
+        return False
+    if not re.search(r"\b(?:inkl|mit|with|bundle)\b|(?<=\s)\+(?=\s)", title_norm):
+        return False
+    acc = re.search(r"ladestation|charging station|ladedock|charging dock|tasche|hulle|huelle", title_norm)
+    pad = re.search(r"dualsense|dualshock|gamepad|controller", title_norm)
+    return bool(pad and acc and pad.start() < acc.start())
+
+
+def _wrong_controller_generation(title_norm, query_norm):
+    t = title_norm or ""
+    q = query_norm or ""
+    q_ds = bool(re.search(r"\bdual\s*sense\b|\bdualsense\b", q))
+    q_ds4 = bool(re.search(r"\bdual\s*shock\b|\bdualshock\b", q))
+    t_ps4 = bool(re.search(r"\bps4\b|playstation\s*4|dualshock\s*4|dual\s*shock\s*4", t))
+    t_ps5 = bool(re.search(r"\bps5\b|playstation\s*5", t))
+    t_ds = bool(re.search(r"\bdualsense\b|dual\s*sense", t))
+    t_ds4 = bool(re.search(r"\bdualshock\b|dual\s*shock", t))
+    if q_ds and not q_ds4:
+        if t_ps4 and not t_ps5:
+            return "PS4"
+        if t_ds4 and not t_ds:
+            return "DualShock"
+    if q_ds4 and not q_ds:
+        if t_ds and not t_ds4:
+            return "DualSense"
+        if t_ps5 and not t_ps4:
+            return "PS5"
+    return None
+
+
+def _controller_console_bundle_label(title_norm):
+    """PS5 Konsole + DualSense is not a DualSense listing. Pad SKU is CFI-ZCT*."""
+    t = title_norm or ""
+    if re.search(r"\bcfi[- ]?zct", t):
+        return None
+    console_sku = bool(re.search(r"\bcfi[- ]?(?:1|12)\d|\bcuh[- ]?\d", t))
+    console_word = any(
+        w in t
+        for w in (
+            "konsole", "spielekonsole", "spielkonsole", "heimkonsole",
+            "disc edition", "disk edition", "digital edition", "blu-ray", "blu ray",
+        )
+    ) or bool(re.search(r"\bconsole\b", t))
+    if not console_sku and not console_word:
+        return None
+    pad = re.search(r"dualsense|dual\s*sense|dualshock|dual\s*shock|gamepad|controller", t)
+    fuer = re.search(r"\b(?:fuer|fur|for)\b", t)
+    if pad and fuer and pad.start() < fuer.start():
+        return None
+    return "приставка"
 
 
 def _is_console_search_query(query_norm):
@@ -1943,6 +2094,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
 
 
 def _effective_category(category, query_norm):
+    if _is_controller_pad_query(query_norm):
+        return "all"
     intent = _search_intent(query_norm)
     if intent and intent.get("category"):
         return intent["category"]
@@ -1975,6 +2128,8 @@ def _matches_category_query(title_norm, category, query_norm):
     Lazy sellers write short titles — we don't want to miss good deals.
     Accessories/parts are caught separately by _is_category_blocked_title.
     """
+    if _is_controller_pad_query(query_norm):
+        return _query_matches_title(title_norm, query_norm)
     if _has_term(query_norm, "pc"):
         # PC searches: block standalone GPUs and parts, pass everything else
         # A standalone GPU listing without any PC/system word is not what we want
@@ -2168,7 +2323,12 @@ def _build_url_with_host(host, search, sub="www"):
     query_norm = _normalize(_intent_query(search))
     eff_category = _effective_category(category, query_norm)
     
-    if category and category != "all":
+    intent = _search_intent(search)
+    # GPU-PCs are listed under Desktops, Komponenten, Sonstiges… Pinning
+    # `_sacat=179` drops auctions and cheap used towers. Search site-wide;
+    # title filters still require a real PC + the GPU.
+    pin_sacat = not (intent and intent.get("kind") == "gpu_pc")
+    if pin_sacat and category and category != "all":
         device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
         if device_cat_id:
             params["_sacat"] = device_cat_id
@@ -2190,9 +2350,9 @@ def _build_url_with_host(host, search, sub="www"):
     min_p = filters.get("min_price")
     max_p = filters.get("max_price")
 
-    if min_p:
+    if min_p is not None:
         params["_udlo"] = str(min_p)
-    if max_p:
+    if max_p is not None:
         params["_udhi"] = str(max_p)
     if filters.get("_ipg"):
         params["_ipg"] = str(filters["_ipg"])
@@ -2389,23 +2549,48 @@ def _parse_time_left_to_minutes(time_left_str):
     if m_minutes:
         minutes = int(m_minutes.group(1)); matched = True
     if not matched:
-        if re.search(r"\b\d+\s*(?:sek|sec|second|seconds|s|сек)\b", t):
+        if re.search(r"\b\d+\s*(?:sekunden?|sek|secs?|seconds?|s|сек)\b", t):
             return 1
         return None
     return days * 1440 + hours * 60 + minutes
 
 
+def _format_minutes_short(minutes):
+    if minutes is None or minutes <= 0:
+        return None
+    d, rem = divmod(int(minutes), 1440)
+    h, m = divmod(rem, 60)
+    parts = []
+    if d:
+        parts.append(f"{d}д")
+    if h:
+        parts.append(f"{h}ч")
+    if not d and not h:
+        parts.append(f"{m}м")
+    return " ".join(parts) or None
+
+
+def _auction_meta(item):
+    minutes = _parse_time_left_to_minutes(item.get("time_left") or "")
+    clock = _format_minutes_short(minutes) or (item.get("time_left") or "").strip() or None
+    bids = item.get("bids_count")
+    bid_str = None
+    if bids is not None:
+        try:
+            n = int(bids)
+            if n == 1:
+                bid_str = "1 ставка"
+            elif 2 <= n <= 4:
+                bid_str = f"{n} ставки"
+            else:
+                bid_str = f"{n} ставок"
+        except (TypeError, ValueError):
+            bid_str = None
+    return " · ".join(p for p in (clock, bid_str) if p)
+
+
 def _passes_notification_price_and_auction_rules(item, search):
-    filters = search.get("filters", {}) or {}
-    limit_or_max = filters.get("limit_price") or filters.get("max_price")
-    if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
-        return False
-    if item.get("auction") and not item.get("buy_now"):
-        is_best_offer = bool(item.get("best_offer"))
-        minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
-        is_ending_soon = minutes is not None and minutes <= 1440
-        return is_best_offer or is_ending_soon
-    return True
+    return _notify_eligibility(item, search)[0]
 
 
 def _notify_eligibility(item, search):
@@ -2418,7 +2603,8 @@ def _notify_eligibility(item, search):
         return False, "missing"
     if _is_implausibly_cheap_device(item, search):
         return False, "too_cheap"
-    if not _price_within_limit(item, search):
+    hard_max = (search.get("filters") or {}).get("max_price")
+    if (hard_max is not None and float(item.get("price") or 0) > float(hard_max)) or not _price_within_limit(item, search):
         return False, "over_limit"
     if item.get("auction") and not item.get("buy_now"):
         if item.get("best_offer"):
@@ -2468,7 +2654,7 @@ def _prepare_monitor_fetch_search(search):
     filters = prepared.setdefault("filters", {})
     # Cheapest-first so page-1 matches what stats used to show.
     filters["sort"] = "price_asc"
-    filters["_ipg"] = 60 if _on_github_actions() else max(int(filters.get("_ipg") or 0), 120)
+    filters["_ipg"] = 60 if _on_github_actions() else max(int(filters.get("_ipg") or 0), 240)
     # Soft notify limit stays in limit_price; do not shrink eBay _udhi here.
     # Raise _udlo so price_asc is not 100% Hüllen/Folien before real devices.
     query_norm = _normalize(_intent_query(prepared))
@@ -2486,7 +2672,10 @@ def _prepare_monitor_fetch_search(search):
     if limit_f and search_floor > limit_f:
         search_floor = device_floor
 
-    cur_min = filters.get("min_price")
+    # A current auction bid is exempt from the configured lower price bound.
+    cur_min = filters.get("min_price") if filters.get("listing_type") in ("buy_now", "buy_now_offer") else None
+    if cur_min is None:
+        filters["min_price"] = None
     try:
         cur_min_f = float(cur_min) if cur_min is not None else 0.0
     except (TypeError, ValueError):
@@ -2671,7 +2860,7 @@ def get_seen_entry(item_id):
 
 def _price_within_limit(item, search):
     filters = search.get("filters", {}) or {}
-    limit_or_max = filters.get("limit_price") or filters.get("max_price")
+    limit_or_max = filters.get("limit_price") if "limit_price" in filters else filters.get("max_price")
     if limit_or_max is None:
         return True
     try:
@@ -2730,6 +2919,8 @@ def _category_device_floor(search):
         return 50.0
     if category == "phones" or _is_phone_search_query(query_norm):
         return 40.0
+    if _is_controller_pad_query(query_norm):
+        return 0.0
     if category == "consoles":
         return 80.0
     if category == "monitors":
@@ -3055,6 +3246,16 @@ def _is_nested_in_card(el, card_el):
     return False
 
 
+def _parse_feedback_count(num, suffix=""):
+    """German `(1.744)` is 1744, not 1.744. `1,2k` / `1.2k` stay 1200."""
+    suffix = (suffix or "").lower()
+    if suffix in ("k", "m"):
+        val = float(str(num).replace(",", "."))
+        return int(val * (1000 if suffix == "k" else 1_000_000))
+    digits = re.sub(r"[.,\s]", "", str(num))
+    return int(digits) if digits else 0
+
+
 def parse_ebay_results(html):
     soup = BeautifulSoup(html, "html.parser")
     items = []
@@ -3187,6 +3388,9 @@ def parse_ebay_results(html):
             )
             if auction and not has_sofort_kaufen:
                 buy_now = False
+            if auction and buy_now and len(parsed_prices) >= 2:
+                # A bid and a separate buy-now price are not a variant range.
+                is_multivariation = bool(re.search(r"\bbis\b|\bto\b|\b(?:ab|from)\s*(?:eur|€|\$)?\s*\d", price_lower))
 
             auc_price = None
             bin_price = None
@@ -3227,6 +3431,19 @@ def parse_ebay_results(html):
             seller_name = ""
             rating_count = 0
             rating_percent = 0.0
+            for a in card.select("a[href*='/usr/'], a[href*='/str/'], a[href*='_ssn=']"):
+                href = a.get("href") or ""
+                m_usr = re.search(r"/(?:usr|str)/([^/?#&]+)", href, flags=re.I)
+                m_ssn = re.search(r"[?&]_ssn=([^&]+)", href, flags=re.I)
+                cand = m_usr.group(1) if m_usr else (m_ssn.group(1) if m_ssn else "")
+                if cand:
+                    try:
+                        cand = urllib.parse.unquote(cand)
+                    except Exception:
+                        pass
+                    if cand and "%" not in cand and len(cand) < 80:
+                        seller_name = cand
+                        break
             for idx, s in enumerate(all_spans):
                 cls = " ".join(s.get("class", []))
                 txt = s.get_text(strip=True)
@@ -3234,18 +3451,21 @@ def parse_ebay_results(html):
                     if txt and not txt.startswith(("EUR", "USD", "$", "€")) and len(txt) < 50:
                         if not re.match(r"^\d", txt) and "%" not in txt:
                             seller_name = txt
-                if "positiv" in txt or "positive" in txt.lower():
-                    m = re.search(r"([\d.,]+)%\s*(?:positiv|positive).*?\(([\d.,]+)\s*([kKmM]?)\)", txt)
+                rating_hit = re.search(
+                    r"positiv|positive|положитель|позитивн|feedback|bewertung",
+                    txt,
+                    flags=re.I,
+                )
+                if rating_hit:
+                    m = re.search(
+                        r"([\d.,]+)%\s*(?:positiv|positive|положитель\w*|позитивн\w*|feedback|bewertung).*?\(([\d.,]+)\s*([kKmM]?)\)",
+                        txt,
+                        flags=re.I,
+                    )
                     if m:
                         try:
                             rating_percent = float(m.group(1).replace(",", "."))
-                            count = float(m.group(2).replace(",", "."))
-                            suffix = m.group(3).lower()
-                            if suffix == "k":
-                                count *= 1000
-                            elif suffix == "m":
-                                count *= 1000000
-                            rating_count = int(count)
+                            rating_count = _parse_feedback_count(m.group(2), m.group(3))
                         except ValueError:
                             pass
                     if not seller_name and idx > 0:
@@ -3693,8 +3913,10 @@ def _build_ebay_api_params(search, market=None):
     category = filters.get("category", "all")
     query_norm = _normalize(_intent_query(search))
     eff_category = _effective_category(category, query_norm)
-    
-    if category and category != "all":
+    intent = _search_intent(search)
+    pin_category = not (intent and intent.get("kind") == "gpu_pc")
+
+    if pin_category and category and category != "all":
         device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
         if device_cat_id:
             params["category_ids"] = device_cat_id
@@ -4132,6 +4354,13 @@ def _fetch_item_details_html(item_id):
         if desc_div:
             desc_html = str(desc_div)
 
+    # Buyer reviews (Produktbewertungen) are never seller description.
+    if desc_html:
+        desc_html = _strip_review_sections(desc_html)
+    specs_html = _item_specifics_html(soup)
+    if specs_html:
+        desc_html = ((desc_html or "") + "\n" + specs_html).strip()
+
     location_text = ""
     page_lines = [line.strip() for line in soup.get_text("\n", strip=True).splitlines() if line.strip()]
     shipping_cost = _parse_labeled_money(page_lines, (r"^versand\b", r"^shipping\b"))
@@ -4184,6 +4413,9 @@ def _fetch_item_details(item_id):
     html_details = None
     try:
         html_details = _fetch_item_details_html(item_id)
+        if html_details is None:
+            time.sleep(0.7)
+            html_details = _fetch_item_details_html(item_id)
         if html_details is not None and html_details.get("price") and html_details.get("itemEndDate"):
             logger.info("Successfully fetched item %s details via HTML scraping", item_id)
             return html_details
@@ -4229,6 +4461,84 @@ def _fetch_item_details(item_id):
     except Exception as e:
         logger.warning("_fetch_item_details: eBay API network error for item %s: %s", item_id, e)
         return html_details
+
+
+_REVIEW_NODE_SELECTORS = (
+    "#rwid",
+    "#reviews",
+    "#review-section",
+    "#rwid-tab",
+    "[data-testid=x-reviews]",
+    "[data-testid*=x-review]",
+    ".reviews",
+    ".x-reviews",
+    ".reviews--section",
+)
+_REVIEW_HEADING_RE = re.compile(
+    r"produktbewertung|kundenrezension|artikelbewertung|"
+    r"ratings\s*(?:and|&)\s*reviews|item reviews|product reviews|"
+    r"\brezensionen\b",
+    re.IGNORECASE,
+)
+_REVIEW_HEADING_LINE_RE = re.compile(
+    r"(?im)^[ \t]*(?:produktbewertungen|kundenrezensionen|artikelbewertungen|"
+    r"ratings\s*(?:and|&)\s*reviews|item reviews|product reviews|"
+    r"rezensionen)\b"
+)
+
+
+def _strip_review_sections(html_or_text):
+    """Drop buyer reviews. Defects / Stickdrift come from seller text only."""
+    if not html_or_text:
+        return html_or_text
+    raw = html_or_text
+    looks_html = "<" in raw and ">" in raw and re.search(r"</?\w+", raw)
+    if looks_html:
+        soup = BeautifulSoup(raw, "html.parser")
+        for sel in _REVIEW_NODE_SELECTORS:
+            for el in soup.select(sel):
+                el.decompose()
+        for h in soup.find_all(["h1", "h2", "h3", "h4"]):
+            title = h.get_text(" ", strip=True) or ""
+            if _REVIEW_HEADING_RE.search(title):
+                parent = h.find_parent(["section", "article"]) or h.parent
+                if parent is not None:
+                    parent.decompose()
+                else:
+                    h.decompose()
+        return str(soup)
+    m = _REVIEW_HEADING_LINE_RE.search(raw)
+    if m:
+        return raw[: m.start()].rstrip()
+    return raw
+
+
+def _item_specifics_html(soup):
+    """Item specifics / Merkmale — seller-authored, not reviews."""
+    if soup is None:
+        return ""
+    chunks = []
+    seen = set()
+    for sel in (
+        ".ux-labels-values",
+        ".x-about-this-item",
+        "[data-testid=x-about-this-item]",
+        ".itemAttr",
+        "#viTabs_0_is",
+        ".ux-layout-section--features",
+    ):
+        for el in soup.select(sel):
+            text = el.get_text(" ", strip=True)
+            if not text or len(text) < 10:
+                continue
+            key = text[:180]
+            if key in seen:
+                continue
+            seen.add(key)
+            chunks.append(str(el))
+            if len(chunks) >= 8:
+                return "\n".join(chunks)
+    return "\n".join(chunks)
 
 
 def _clean_description(html_text):
@@ -4317,6 +4627,7 @@ def _is_description_blocked(desc_html, category):
     """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
     if not desc_html:
         return False
+    desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
 
@@ -4604,14 +4915,16 @@ def _calculate_total(item, settings, details=None):
 
     def get_import_charges(price_val):
         if settings.get("warn_non_eu") and item.get("location") and not _is_eu(item["location"]):
-            actual_import = None
+            actual_import = item.get("actual_import_charges")
             if details:
                 _, actual_import = _get_api_shipping_and_import(details)
+                if actual_import is not None:
+                    item["actual_import_charges"] = actual_import
             if actual_import is not None:
                 return round(actual_import, 2)
             else:
                 base = price_val + shipping
-                vat = base * 0.19
+                vat = base * float(settings.get("non_eu_tax_rate", 0.19))
                 customs = base * 0.04
                 handling = 5.0
                 return round(vat + customs + handling, 2)
@@ -4695,6 +5008,8 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     filtered = []
     seen_batch_ids = set()
     for item in items:
+        # Bucket selection must never change the cached SERP used by another search.
+        item = copy.deepcopy(item)
         # Multi-variation bait (price "from X") is never a real deal for either mode.
         if item.get("is_multivariation"):
             continue
@@ -4706,10 +5021,6 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         listing_type = filters.get("listing_type", "all")
         item = _calculate_total(item, settings)
-        # Drop earpad/case/bait floors before stats picks them as "cheapest"
-        if _is_implausibly_cheap_device(item, search):
-            continue
-
         # Select correct price for hybrid listings based on the search/bucket type
         if item.get("buy_now") and item.get("auction"):
             if listing_type == "auction":
@@ -4725,9 +5036,36 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
                 item["auction"] = False
 
+        # Apply the bait floor to the selected price, not the other hybrid side.
+        if _is_implausibly_cheap_device(item, search):
+            continue
+
         if filters.get("location", "de") == "de" and item.get("location"):
             if _is_clearly_non_germany_location(item["location"]):
                 continue
+        if filters.get("location") == "eu" and not _is_eu(item.get("location", "")):
+            continue
+        wanted_condition = filters.get("condition", "any")
+        condition_text = _normalize(item.get("condition", ""))
+        conditions = {"used": ("used", "gebraucht"), "new": ("new", "neu"),
+                      "refurbished": ("refurbished", "erneuert", "generaluberholt", "generalueberholt")}
+        if wanted_condition != "any" and not any(_has_term(condition_text, word) for word in conditions.get(wanted_condition, (_normalize(wanted_condition),))):
+            continue
+        wanted_seller = filters.get("seller_type", "any")
+        actual_seller = item.get("seller_type", "unknown")
+        if wanted_seller != "any" and actual_seller != "unknown" and wanted_seller != actual_seller:
+            continue
+        radius = filters.get("max_distance_km")
+        if radius is not None:
+            from plz_distance import distance_between_plz, extract_plz
+            center = filters.get("plz_center") or settings.get("user_zip")
+            distance = distance_between_plz(center, extract_plz(item.get("location", "")))
+            if distance is None or distance > float(radius):
+                continue
+            item["distance_km"] = distance
+        hard_max = filters.get("max_price")
+        if not is_statistics and hard_max is not None and item.get("price", 0) > hard_max:
+            continue
         # Check min_price only for Buy It Now (non-auction) items
         min_price = filters.get("min_price")
         if min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
@@ -4735,7 +5073,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # Check limit_price (or max_price if limit_price not set) for all items.
         # If the item (even an auction) is already more expensive than our target limit, filter it out.
         # Statistics keeps over-limit items so the report can show "🟣 Дорого".
-        limit_or_max = filters.get("limit_price") or filters.get("max_price")
+        limit_or_max = filters.get("limit_price") if "limit_price" in filters else filters.get("max_price")
         if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
             if not skip_seen and not is_statistics:
                 continue
@@ -4806,6 +5144,13 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
+        if _is_controller_pad_query(query_norm):
+            if _controller_accessory_label(title_norm):
+                continue
+            if _controller_console_bundle_label(title_norm):
+                continue
+            if _wrong_controller_generation(title_norm, query_norm):
+                continue
         if effective_category == "phones":
             # Same rule as the bait floor: never drop something the owner said
             # they would buy. A 40€ limit means 40€ finds are the point.
@@ -4995,7 +5340,7 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
     if intent and intent.get("category"):
         effective_category = intent["category"]
         filters["_stats_category"] = effective_category
-        if effective_category in ("monitors", "mice"):
+        if effective_category in ("monitors", "mice", "computers"):
             filters["category"] = "all"
         else:
             filters["category"] = intent["category"]
@@ -6086,8 +6431,8 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     min_price_val = search.get("filters", {}).get("min_price")
 
     limit_parts = []
-    limit_parts.append(f"🎯 {limit_val:.0f}€" if limit_val else "🎯 ♾️")
-    limit_parts.append(f"⬆️ {max_price_val:.0f}€" if max_price_val else "⬆️ ♾️")
+    limit_parts.append(f"🎯 {limit_val:.0f}€" if limit_val is not None else "🎯 ♾️")
+    limit_parts.append(f"⬆️ {max_price_val:.0f}€" if max_price_val is not None else "⬆️ ♾️")
     limit_parts.append(f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ ♾️")
     limit_val_str = " ".join(limit_parts)
     limit_line = f"💸 <code>{pad_lbl('Лимит:')}│  </code>{limit_val_str}"
@@ -6151,16 +6496,13 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     parts.append(links_line)
 
     caption = "\n\n".join(parts)
-    if len(caption) > 1024:
-        excess = len(caption) - 1021
-        truncated_title = item['title'][:-excess] + "..." if len(item['title']) > excess else item['title'][:20] + "..."
-        desc_line = f"📌 Описание: {html.escape(truncated_title)}"
-        parts[3] = desc_line
-        caption = "\n\n".join(parts)
-        if len(caption) > 1024:
-            caption = caption[:1020] + "..."
+    if item.get("_audit_test"):
+        caption = "🧪 <b>ТЕСТ APK ↔ Telegram</b>\n" + caption
 
     img = item.get("image_url") or ""
+    # Long HTML is sent as text; cutting HTML can break a link or formatting tag.
+    if len(caption) > 1024:
+        img = ""
     if img and not img.startswith("data:"):
         import re as _re
         img = _re.sub(r"/s-l\d+\.(jpg|jpeg|png|webp)", r"/s-l800.\1", img, flags=_re.IGNORECASE)
@@ -6175,7 +6517,9 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
             keyboard=None,
             parse_mode="HTML"
         )
-        return sent
+        if sent:
+            item["_telegram_message_id"] = getattr(sent, "message_id", None)
+        return bool(sent)
     except Exception as e:
         logger.error("send_notification error: %s", e)
         return False
@@ -6252,7 +6596,7 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
     for active_bot in bots_to_try:
         try:
             if img and not img.startswith("data:"):
-                await active_bot.send_photo(
+                message = await active_bot.send_photo(
                     chat_id=chat_id,
                     photo=img,
                     caption=text,
@@ -6260,15 +6604,24 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
                     parse_mode=parse_mode,
                 )
             else:
-                await active_bot.send_message(
+                message = await active_bot.send_message(
                     chat_id=chat_id,
                     text=text,
                     reply_markup=keyboard,
                     parse_mode=parse_mode,
                     disable_web_page_preview=True,
                 )
-            return True
+            return message
         except Exception as e:
+            from telegram.error import BadRequest
+            if img and isinstance(e, BadRequest):
+                # A definite photo rejection delivered nothing; text is safe to
+                # retry. An ambiguous timeout is never retried by this fallback.
+                try:
+                    return await active_bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard,
+                                                         parse_mode=parse_mode, disable_web_page_preview=True)
+                except Exception as fallback_error:
+                    logger.warning("Telegram text fallback failed: %s", fallback_error)
             logger.warning("Failed to send message via bot: %s. Trying next...", e)
             
     return False
@@ -6613,6 +6966,8 @@ def _notify_candidates_from_filtered(filtered):
 async def _process_notify_candidate(bot, item, search, stats_7d, stage):
     """Validate details and send one notification stage. Returns True if sent."""
     item["item_id"] = str(item.get("item_id") or "")
+    if get_seen_entry(item["item_id"]).get(stage):
+        return False
     # Never spam the chat with incomplete SERP shells (APK-style "Seller: unknown").
     seller = (item.get("seller_name") or "").strip()
     if not seller or seller.lower() in ("unknown", "n/a", "-", "none"):
@@ -6620,8 +6975,6 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
             "Skipping notification for item %s: seller missing/unknown",
             item.get("item_id"),
         )
-        if stage == "initial":
-            mark_seen_item(item["item_id"], stage="initial")
         return False
     h = _item_hash(item["seller_name"], item["title"], item["price"])
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
@@ -6709,13 +7062,19 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
                 "Skipping notification for item %s: price/auction rules failed after details refresh",
                 item["item_id"],
             )
-            mark_seen_item(item["item_id"], stage="initial")
             return False
 
     # Reserve stage before send to prevent double-notify across overlapping runs
+    previous_seen = get_seen_entry(item["item_id"])
     mark_seen_item(item["item_id"], stage=stage)
     sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
     if sent:
+        try:
+            from mobile.feed_writer import enqueue
+            enqueue(item, search, telegram_message_id=item.get("_telegram_message_id"),
+                    notify_stage=stage, logic_version=_read_logic_version_timestamp())
+        except Exception:
+            logger.exception("Telegram delivered; mobile feed publication pending for %s", item["item_id"])
         if stage == "initial" and not item.get("auction"):
             config.add_item_hash(h)
         return True
@@ -6723,291 +7082,302 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         "Notification failed; will retry item %s stage=%s on next run",
         item["item_id"], stage,
     )
-    unmark_seen_stage(item["item_id"], stage=stage)
+    if any(previous_seen.values()):
+        seen_state[item["item_id"]] = previous_seen
+    else:
+        seen_state.pop(item["item_id"], None)
+    save_seen_ids()
     return False
 
 
 async def process_searches(bot, once=False):
     async with process_lock:
+        try:
+            from mobile.feed_writer import flush_pending
+            flush_pending()
+        except Exception:
+            logger.exception("Mobile feed publication retry failed")
         searches = config.get_searches()
         initialize_api_budget_and_queue(searches)
         modified = False
         
-        # 1. Reorder searches programmatically
-        id_order = [
-            "redmagic_11_pro_buy", "redmagic_11_pro_auc",
-            "redmagic_11s_pro_buy", "redmagic_11s_pro_auc",
-            "nubia_z80_ultra_buy", "nubia_z80_ultra_auc",
-            "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc",
-            "nubia_z70_ultra_buy", "nubia_z70_ultra_auc",
-            "nubia_z70s_ultra_buy", "nubia_z70s_ultra_auc"
-        ]
-        by_id = {s["id"]: s for s in searches}
-        new_searches = []
-        for s_id in id_order:
-            if s_id in by_id:
-                new_searches.append(by_id[s_id])
-        for s in searches:
-            if s["id"] not in id_order:
-                new_searches.append(s)
-        if [s["id"] for s in searches] != [s["id"] for s in new_searches]:
-            searches[:] = new_searches
-            modified = True
-
-        # 1.5 Migrate location filters from "eu" to "worldwide"
-        for s in searches:
-            filters = s.setdefault("filters", {})
-            if filters.get("location") == "eu":
-                filters["location"] = "worldwide"
+        # Explicit user settings replace the legacy hard-coded product migrations.
+        if not config.raw.get("mobile_managed"):
+            # 1. Reorder searches programmatically
+            id_order = [
+                "redmagic_11_pro_buy", "redmagic_11_pro_auc",
+                "redmagic_11s_pro_buy", "redmagic_11s_pro_auc",
+                "nubia_z80_ultra_buy", "nubia_z80_ultra_auc",
+                "nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc",
+                "nubia_z70_ultra_buy", "nubia_z70_ultra_auc",
+                "nubia_z70s_ultra_buy", "nubia_z70s_ultra_auc"
+            ]
+            by_id = {s["id"]: s for s in searches}
+            new_searches = []
+            for s_id in id_order:
+                if s_id in by_id:
+                    new_searches.append(by_id[s_id])
+            for s in searches:
+                if s["id"] not in id_order:
+                    new_searches.append(s)
+            if [s["id"] for s in searches] != [s["id"] for s in new_searches]:
+                searches[:] = new_searches
                 modified = True
 
-        banned_items = config.raw.setdefault("banned_item_ids", [])
-        for item_id in sorted(KNOWN_BAD_ITEM_IDS):
-            if item_id not in banned_items:
-                banned_items.append(item_id)
-                modified = True
-        banned_sellers = config.raw.setdefault("global_banned_sellers", [])
-        banned_sellers_norm = {_normalize(s) for s in banned_sellers}
-        for seller in sorted(KNOWN_BAD_SELLERS):
-            if _normalize(seller) not in banned_sellers_norm:
-                banned_sellers.append(seller)
-                banned_sellers_norm.add(_normalize(seller))
-                modified = True
-
-        for s in searches:
-            intent = _search_intent(s)
-            if intent:
-                expected_query = intent.get("query")
-                if expected_query and s.get("query") != expected_query:
-                    s["query"] = expected_query
-                    modified = True
-                expected_display = intent.get("display_name")
-                if expected_display and s.get("display_name") != expected_display:
-                    s["display_name"] = expected_display
-                    modified = True
-                expected_category = intent.get("category")
+            # 1.5 Migrate location filters from "eu" to "worldwide"
+            for s in searches:
                 filters = s.setdefault("filters", {})
-                if expected_category and filters.get("category") != expected_category:
-                    filters["category"] = expected_category
-                    modified = True
-            q_norm = _normalize(s.get("query", ""))
-            if re.search(r"\biphone\s*(?:15|16)\s*pro\s*max\b", q_norm):
-                filters = s.setdefault("filters", {})
-                if filters.get("location") != "de":
-                    filters["location"] = "de"
+                if filters.get("location") == "eu":
+                    filters["location"] = "worldwide"
                     modified = True
 
-        # 2. Existing and new filters/excludes migration for redmagic/nubia
-        accessory_excludes = [
-            "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
-            "folie", "folien", "charger", "ladegerät", "kabel", "tasche", 
-            "schutzhülle", "film", "glass", "glas", "cable", "cables", 
-            "netzteil", "netzteile", "panzerfolie", "displayfolie", "glasfolie",
-            "mats", "ibwind", "skin", "sticker", "adapter", "dock"
-        ]
-        for s in searches:
-            q_lower = s.get("query", "").lower()
-            if any(w in q_lower for w in ("redmagic", "red magic", "nubia")):
-                filters = s.setdefault("filters", {})
-                if filters.get("category") != "all":
-                    filters["category"] = "all"
+            banned_items = config.raw.setdefault("banned_item_ids", [])
+            for item_id in sorted(KNOWN_BAD_ITEM_IDS):
+                if item_id not in banned_items:
+                    banned_items.append(item_id)
+                    modified = True
+            banned_sellers = config.raw.setdefault("global_banned_sellers", [])
+            banned_sellers_norm = {_normalize(s) for s in banned_sellers}
+            for seller in sorted(KNOWN_BAD_SELLERS):
+                if _normalize(seller) not in banned_sellers_norm:
+                    banned_sellers.append(seller)
+                    banned_sellers_norm.add(_normalize(seller))
                     modified = True
 
-
-
-
-        # 3. Specific excludes for base Redmagic 11 and Nubia Z80 Ultra
-        redmagic_excludes = ["11s", "11 s", "11spro", "11s pro", "11 s pro"]
-        for s_id in ("redmagic_11_pro_buy", "redmagic_11_pro_auc"):
-            if s_id in by_id:
-                excludes = by_id[s_id].setdefault("exclude_words", [])
-                for w in redmagic_excludes:
-                    if w not in excludes:
-                        excludes.append(w)
+            for s in searches:
+                intent = _search_intent(s)
+                if intent:
+                    expected_query = intent.get("query")
+                    if expected_query and s.get("query") != expected_query:
+                        s["query"] = expected_query
                         modified = True
+                    expected_display = intent.get("display_name")
+                    if expected_display and s.get("display_name") != expected_display:
+                        s["display_name"] = expected_display
+                        modified = True
+                    expected_category = intent.get("category")
+                    filters = s.setdefault("filters", {})
+                    if expected_category and filters.get("category") != expected_category:
+                        filters["category"] = expected_category
+                        modified = True
+                q_norm = _normalize(s.get("query", ""))
+                if re.search(r"\biphone\s*(?:15|16)\s*pro\s*max\b", q_norm):
+                    filters = s.setdefault("filters", {})
+                    if filters.get("location") != "de":
+                        filters["location"] = "de"
+                        modified = True
+
+            # 2. Existing and new filters/excludes migration for redmagic/nubia
+            accessory_excludes = [
+                "hülle", "hüllen", "case", "cover", "schutzfolie", "panzerglas", 
+                "folie", "folien", "charger", "ladegerät", "kabel", "tasche", 
+                "schutzhülle", "film", "glass", "glas", "cable", "cables", 
+                "netzteil", "netzteile", "panzerfolie", "displayfolie", "glasfolie",
+                "mats", "ibwind", "skin", "sticker", "adapter", "dock"
+            ]
+            for s in searches:
+                q_lower = s.get("query", "").lower()
+                if any(w in q_lower for w in ("redmagic", "red magic", "nubia")):
+                    filters = s.setdefault("filters", {})
+                    if filters.get("category") != "all":
+                        filters["category"] = "all"
+                        modified = True
+
+
+
+
+            # 3. Specific excludes for base Redmagic 11 and Nubia Z80 Ultra
+            redmagic_excludes = ["11s", "11 s", "11spro", "11s pro", "11 s pro"]
+            for s_id in ("redmagic_11_pro_buy", "redmagic_11_pro_auc"):
+                if s_id in by_id:
+                    excludes = by_id[s_id].setdefault("exclude_words", [])
+                    for w in redmagic_excludes:
+                        if w not in excludes:
+                            excludes.append(w)
+                            modified = True
                         
-        nubia_excludes = ["leading", "leading version", "leading-version"]
-        for s_id in ("nubia_z80_ultra_buy", "nubia_z80_ultra_auc"):
-            if s_id in by_id:
-                excludes = by_id[s_id].setdefault("exclude_words", [])
-                for w in nubia_excludes:
-                    if w not in excludes:
-                        excludes.append(w)
+            nubia_excludes = ["leading", "leading version", "leading-version"]
+            for s_id in ("nubia_z80_ultra_buy", "nubia_z80_ultra_auc"):
+                if s_id in by_id:
+                    excludes = by_id[s_id].setdefault("exclude_words", [])
+                    for w in nubia_excludes:
+                        if w not in excludes:
+                            excludes.append(w)
+                            modified = True
+
+            for s_id in ("nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc"):
+                if s_id in by_id and by_id[s_id].get("display_name") != "Nubia Z80 LV":
+                    by_id[s_id]["display_name"] = "Nubia Z80 LV"
+                    modified = True
+
+            for s_id in ("nubia_z70_ultra_buy", "nubia_z70_ultra_auc"):
+                if s_id in by_id:
+                    filters = by_id[s_id].setdefault("filters", {})
+                    if filters.get("limit_price") != 325:
+                        filters["limit_price"] = 325
+                        modified = True
+                    if filters.get("max_price") != 2500:
+                        filters["max_price"] = 2500
                         modified = True
 
-        for s_id in ("nubia_z80_ultra_leading_buy", "nubia_z80_ultra_leading_auc"):
-            if s_id in by_id and by_id[s_id].get("display_name") != "Nubia Z80 LV":
-                by_id[s_id]["display_name"] = "Nubia Z80 LV"
-                modified = True
+            ps5_safe_bundle_words = {
+                "laufwerk", "drive", "stand", "stÃ¤nder", "ständer",
+                "ovp", "verpackung", "karton",
+            }
+            for s_id in ("ps5_pro_buy", "ps5_pro_auc"):
+                if s_id in by_id:
+                    search = by_id[s_id]
+                    if search.get("display_name") != "PlayStation 5 Pro":
+                        search["display_name"] = "PlayStation 5 Pro"
+                        modified = True
+                    if search.get("query") != "(playstation 5 pro, ps5 pro)":
+                        search["query"] = "(playstation 5 pro, ps5 pro)"
+                        modified = True
+                    filters = search.setdefault("filters", {})
+                    if filters.get("limit_price") != 750:
+                        filters["limit_price"] = 750
+                        modified = True
+                    if filters.get("max_price") != 2500:
+                        filters["max_price"] = 2500
+                        modified = True
+                    excludes = search.setdefault("exclude_words", [])
+                    cleaned = [w for w in excludes if _normalize(w) not in ps5_safe_bundle_words]
+                    if cleaned != excludes:
+                        search["exclude_words"] = cleaned
+                        modified = True
 
-        for s_id in ("nubia_z70_ultra_buy", "nubia_z70_ultra_auc"):
-            if s_id in by_id:
-                filters = by_id[s_id].setdefault("filters", {})
-                if filters.get("limit_price") != 325:
-                    filters["limit_price"] = 325
+            # Ensure Samsung Odyssey OLED G6 500Hz searches exist
+            def ensure_odyssey_g6_search(new_id, listing_type, min_price):
+                nonlocal modified
+                if new_id in by_id:
+                    search = by_id[new_id]
+                else:
+                    search = {
+                        "id": new_id,
+                        "query": "samsung odyssey oled g6 500hz",
+                        "display_name": "Samsung Odyssey OLED G6 500Hz",
+                        "filters": {},
+                        "exclude_words": [],
+                        "include_words": [],
+                        "exclude_sellers": [],
+                        "notify": True,
+                        "enabled": True,
+                    }
+                    searches.append(search)
+                    by_id[new_id] = search
                     modified = True
-                if filters.get("max_price") != 2500:
-                    filters["max_price"] = 2500
-                    modified = True
-
-        ps5_safe_bundle_words = {
-            "laufwerk", "drive", "stand", "stÃ¤nder", "ständer",
-            "ovp", "verpackung", "karton",
-        }
-        for s_id in ("ps5_pro_buy", "ps5_pro_auc"):
-            if s_id in by_id:
-                search = by_id[s_id]
-                if search.get("display_name") != "PlayStation 5 Pro":
-                    search["display_name"] = "PlayStation 5 Pro"
-                    modified = True
-                if search.get("query") != "(playstation 5 pro, ps5 pro)":
-                    search["query"] = "(playstation 5 pro, ps5 pro)"
+                # Prefer clean query (parenthetical OR groups break eBay HTML search).
+                if search.get("query") in (
+                    "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
+                    "samsung odyssey oled g6 500hz",
+                ) or "odyssey" in _normalize(search.get("query") or "") and "g6" in _normalize(
+                    search.get("query") or ""
+                ):
+                    if search.get("query") != "samsung odyssey oled g6 500hz":
+                        search["query"] = "samsung odyssey oled g6 500hz"
+                        modified = True
+                if search.get("display_name") != "Samsung Odyssey OLED G6 500Hz":
+                    search["display_name"] = "Samsung Odyssey OLED G6 500Hz"
                     modified = True
                 filters = search.setdefault("filters", {})
-                if filters.get("limit_price") != 750:
-                    filters["limit_price"] = 750
-                    modified = True
-                if filters.get("max_price") != 2500:
-                    filters["max_price"] = 2500
-                    modified = True
-                excludes = search.setdefault("exclude_words", [])
-                cleaned = [w for w in excludes if _normalize(w) not in ps5_safe_bundle_words]
-                if cleaned != excludes:
-                    search["exclude_words"] = cleaned
-                    modified = True
-
-        # Ensure Samsung Odyssey OLED G6 500Hz searches exist
-        def ensure_odyssey_g6_search(new_id, listing_type, min_price):
-            nonlocal modified
-            if new_id in by_id:
-                search = by_id[new_id]
-            else:
-                search = {
-                    "id": new_id,
-                    "query": "samsung odyssey oled g6 500hz",
-                    "display_name": "Samsung Odyssey OLED G6 500Hz",
-                    "filters": {},
-                    "exclude_words": [],
-                    "include_words": [],
-                    "exclude_sellers": [],
-                    "notify": True,
-                    "enabled": True,
+                expected = {
+                    "min_price": min_price,
+                    "limit_price": 400,
+                    "max_price": 2500,
+                    "condition": "any",
+                    "listing_type": listing_type,
+                    "seller_type": "any",
+                    "location": "worldwide",
+                    "category": "monitors",
                 }
-                searches.append(search)
-                by_id[new_id] = search
+                for key, value in expected.items():
+                    if filters.get(key) != value:
+                        filters[key] = value
+                        modified = True
+
+            ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_buy", "buy_now_offer", None)
+            ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_auc", "auction", None)
+
+            # Clean LG UltraGear query — parentheses OR-groups zero eBay HTML results.
+            for s in searches:
+                qn = _normalize(s.get("query") or "")
+                if "ultragear" in qn or "27gx790" in qn or "32gs95" in qn:
+                    if s.get("query") != "lg ultragear oled 480hz":
+                        s["query"] = "lg ultragear oled 480hz"
+                        if not s.get("display_name"):
+                            s["display_name"] = "LG UltraGear OLED"
+                        modified = True
+                    filters = s.setdefault("filters", {})
+                    if filters.get("category") != "monitors":
+                        filters["category"] = "monitors"
+                        modified = True
+
+            # Second Superlight 2 row (limit 65) was empty at end of long stats runs
+            # while the std row found stock — keep one enabled pair to avoid tail empty.
+            for s in searches:
+                sid = s.get("id") or ""
+                if sid.startswith("logitech_superlight_2_c_"):
+                    if s.get("enabled", True):
+                        s["enabled"] = False
+                        modified = True
+
+            def ensure_z70s_search(source_id, new_id, listing_type, min_price):
+                nonlocal modified
+                if new_id in by_id:
+                    search = by_id[new_id]
+                else:
+                    template = copy.deepcopy(by_id.get(source_id) or {})
+                    if not template:
+                        return
+                    template["id"] = new_id
+                    template["query"] = "Nubia Z70S Ultra"
+                    searches.append(template)
+                    by_id[new_id] = template
+                    search = template
+                    modified = True
+                if search.get("query") != "Nubia Z70S Ultra":
+                    search["query"] = "Nubia Z70S Ultra"
+                    modified = True
+                filters = search.setdefault("filters", {})
+                expected = {
+                    "min_price": min_price,
+                    "limit_price": 325,
+                    "max_price": 2500,
+                    "condition": "any",
+                    "listing_type": listing_type,
+                    "seller_type": "any",
+                    "location": "worldwide",
+                    "category": "all",
+                }
+                for key, value in expected.items():
+                    if filters.get(key) != value:
+                        filters[key] = value
+                        modified = True
+
+            ensure_z70s_search("nubia_z70_ultra_buy", "nubia_z70s_ultra_buy", "buy_now_offer", 50)
+            ensure_z70s_search("nubia_z70_ultra_auc", "nubia_z70s_ultra_auc", "auction", None)
+
+            by_id = {s["id"]: s for s in searches}
+            new_searches = []
+            for s_id in id_order:
+                if s_id in by_id:
+                    new_searches.append(by_id[s_id])
+            for s in searches:
+                if s["id"] not in id_order:
+                    new_searches.append(s)
+            if [s["id"] for s in searches] != [s["id"] for s in new_searches]:
+                searches[:] = new_searches
                 modified = True
-            # Prefer clean query (parenthetical OR groups break eBay HTML search).
-            if search.get("query") in (
-                "samsung odyssey oled g6 500hz (G60SF, LS27FG602)",
-                "samsung odyssey oled g6 500hz",
-            ) or "odyssey" in _normalize(search.get("query") or "") and "g6" in _normalize(
-                search.get("query") or ""
-            ):
-                if search.get("query") != "samsung odyssey oled g6 500hz":
-                    search["query"] = "samsung odyssey oled g6 500hz"
-                    modified = True
-            if search.get("display_name") != "Samsung Odyssey OLED G6 500Hz":
-                search["display_name"] = "Samsung Odyssey OLED G6 500Hz"
-                modified = True
-            filters = search.setdefault("filters", {})
-            expected = {
-                "min_price": min_price,
-                "limit_price": 400,
-                "max_price": 2500,
-                "condition": "any",
-                "listing_type": listing_type,
-                "seller_type": "any",
-                "location": "worldwide",
-                "category": "monitors",
-            }
-            for key, value in expected.items():
-                if filters.get(key) != value:
-                    filters[key] = value
-                    modified = True
 
-        ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_buy", "buy_now_offer", None)
-        ensure_odyssey_g6_search("samsung_odyssey_oled_g6_500hz_auc", "auction", None)
+            # 4. iPhone exclude_words are NOT programmatically overridden here.
+            # The min_price floor of 50 EUR and the PHONE_HARD_ACCESSORY_WORDS
+            # filter in _is_category_blocked_title already handle accessory spam.
+            # Adding words like "kabel", "display", "glass" etc. was blocking
+            # real phone listings (e.g. "iPhone 16 Pro Max mit Ladekabel").
 
-        # Clean LG UltraGear query — parentheses OR-groups zero eBay HTML results.
-        for s in searches:
-            qn = _normalize(s.get("query") or "")
-            if "ultragear" in qn or "27gx790" in qn or "32gs95" in qn:
-                if s.get("query") != "lg ultragear oled 480hz":
-                    s["query"] = "lg ultragear oled 480hz"
-                    if not s.get("display_name"):
-                        s["display_name"] = "LG UltraGear OLED"
-                    modified = True
-                filters = s.setdefault("filters", {})
-                if filters.get("category") != "monitors":
-                    filters["category"] = "monitors"
-                    modified = True
-
-        # Second Superlight 2 row (limit 65) was empty at end of long stats runs
-        # while the std row found stock — keep one enabled pair to avoid tail empty.
-        for s in searches:
-            sid = s.get("id") or ""
-            if sid.startswith("logitech_superlight_2_c_"):
-                if s.get("enabled", True):
-                    s["enabled"] = False
-                    modified = True
-
-        def ensure_z70s_search(source_id, new_id, listing_type, min_price):
-            nonlocal modified
-            if new_id in by_id:
-                search = by_id[new_id]
-            else:
-                template = copy.deepcopy(by_id.get(source_id) or {})
-                if not template:
-                    return
-                template["id"] = new_id
-                template["query"] = "Nubia Z70S Ultra"
-                searches.append(template)
-                by_id[new_id] = template
-                search = template
-                modified = True
-            if search.get("query") != "Nubia Z70S Ultra":
-                search["query"] = "Nubia Z70S Ultra"
-                modified = True
-            filters = search.setdefault("filters", {})
-            expected = {
-                "min_price": min_price,
-                "limit_price": 325,
-                "max_price": 2500,
-                "condition": "any",
-                "listing_type": listing_type,
-                "seller_type": "any",
-                "location": "worldwide",
-                "category": "all",
-            }
-            for key, value in expected.items():
-                if filters.get(key) != value:
-                    filters[key] = value
-                    modified = True
-
-        ensure_z70s_search("nubia_z70_ultra_buy", "nubia_z70s_ultra_buy", "buy_now_offer", 50)
-        ensure_z70s_search("nubia_z70_ultra_auc", "nubia_z70s_ultra_auc", "auction", None)
-
-        by_id = {s["id"]: s for s in searches}
-        new_searches = []
-        for s_id in id_order:
-            if s_id in by_id:
-                new_searches.append(by_id[s_id])
-        for s in searches:
-            if s["id"] not in id_order:
-                new_searches.append(s)
-        if [s["id"] for s in searches] != [s["id"] for s in new_searches]:
-            searches[:] = new_searches
-            modified = True
-
-        # 4. iPhone exclude_words are NOT programmatically overridden here.
-        # The min_price floor of 50 EUR and the PHONE_HARD_ACCESSORY_WORDS
-        # filter in _is_category_blocked_title already handle accessory spam.
-        # Adding words like "kabel", "display", "glass" etc. was blocking
-        # real phone listings (e.g. "iPhone 16 Pro Max mit Ladekabel").
-
-        if modified:
-            config.save()
-            logger.info("Programmatically migrated searches configuration (reordering, excludes, price limits)")
+            if modified:
+                config.save()
+                logger.info("Programmatically migrated searches configuration (reordering, excludes, price limits)")
         if not searches:
             logger.info("No searches configured")
             return
@@ -7359,8 +7729,12 @@ async def process_searches(bot, once=False):
                             auc_item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
                             if not item.get("best_offer"):
                                 auc_no_bo.append(auc_item)
-                            elif item.get("bids_count") in (0, None):
-                                auc_bo.append(auc_item)
+                            else:
+                                if item.get("bids_count") in (0, None):
+                                    auc_bo.append(auc_item)
+                                minutes = _parse_time_left_to_minutes(item.get("time_left") or "")
+                                if minutes is not None and minutes <= 1440:
+                                    auc_no_bo.append(auc_item)
                     return bin_no_bo, bin_bo, auc_no_bo, auc_bo
 
                 bin_no_bo, bin_bo, auc_no_bo, auc_bo = _split_buckets(filtered)
@@ -7466,20 +7840,30 @@ async def process_searches(bot, once=False):
                     sorted(auc_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
                 )
 
-                def get_verdict_for_item(item):
-                    """🟢 = default mode would alert; 🟡 = price ok but wait 24h; 🟣 = over limit."""
+                def get_verdict_for_item(item, bucket=None):
+                    """🟢 = default mode would alert; 🟡 = wait / uncertain Auktion+; 🟣 = over limit."""
                     if not item:
                         return "❌ Не найдено"
                     if _is_implausibly_cheap_device(item, search):
-                        return "❌ Фейк/часть"
+                        return "❌ дешевле пола"
                     eligible, reason = _notify_eligibility(item, search)
+                    clock = _auction_meta(item)
+                    tail = f" · {clock}" if clock else ""
+                    bucket_s = (bucket or "").strip()
+                    offer_only = item.get("auction") and item.get("best_offer") and not item.get("buy_now")
                     if reason == "too_cheap":
-                        return "❌ Фейк/часть"
+                        return "❌ дешевле пола"
                     if reason == "over_limit":
                         return "🟣 Дорого"
+                    if bucket_s.startswith("Auktion") and not bucket_s.startswith("Auktion+") and offer_only:
+                        return f"🟡 Auktion+{tail}"
                     if reason == "wait_24h":
-                        return "🟡 Ждёт 24ч"
+                        return f"🟡{tail}" if tail else "🟡 аукцион"
                     if eligible:
+                        if offer_only:
+                            return f"🟢 Auktion+{tail}"
+                        if item.get("auction") and tail:
+                            return f"🟢 Подходит{tail}"
                         return "🟢 Подходит"
                     return "🟣 Дорого"
 
@@ -7615,16 +7999,16 @@ async def process_searches(bot, once=False):
                     row_lines = []
                     if item:
                         url = get_short_url(item["item_id"])
-                        raw_verdict = get_verdict_for_item(item)
+                        raw_verdict = get_verdict_for_item(item, bucket=label)
 
                         if raw_verdict.startswith("🟢"):
-                            v_emoji, v_text = "🟢", "Подходит"
+                            v_emoji, v_text = "🟢", raw_verdict[2:].strip() or "Подходит"
                         elif raw_verdict.startswith("🟡"):
-                            v_emoji, v_text = "🟡", "Ждёт 24ч"
+                            v_emoji, v_text = "🟡", raw_verdict[2:].strip() or "аукцион"
                         elif raw_verdict.startswith("🟣"):
                             v_emoji, v_text = "🟣", "Дорого"
                         elif raw_verdict.startswith("❌"):
-                            v_emoji, v_text = "❌", "Фейк/часть"
+                            v_emoji, v_text = "❌", raw_verdict[2:].strip() or "отсев"
                         else:
                             v_emoji, v_text = "🟣", "Дорого"
 
@@ -7685,8 +8069,8 @@ async def process_searches(bot, once=False):
                 limit_val = search.get("filters", {}).get("limit_price")
                 max_price_val = search.get("filters", {}).get("max_price")
                 
-                limit_str_part = f"🎯 {limit_val:.0f}€" if limit_val else ""
-                max_str_part = f"⬆️ {max_price_val:.0f}€" if max_price_val else "⬆️ без лимита"
+                limit_str_part = f"🎯 {limit_val:.0f}€" if limit_val is not None else ""
+                max_str_part = f"⬆️ {max_price_val:.0f}€" if max_price_val is not None else "⬆️ без лимита"
                 min_str_part = f"⬇️ {min_price_val:.0f}€" if min_price_val is not None else "⬇️ без лимита"
                 
                 parts = []

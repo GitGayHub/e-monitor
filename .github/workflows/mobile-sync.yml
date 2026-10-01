@@ -17,8 +17,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: android-app-sync
-  cancel-in-progress: true
+  group: e-monitor-v2
+  cancel-in-progress: false
 
 jobs:
   build_sync_manifest:
@@ -41,6 +41,7 @@ jobs:
         env:
           CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
         run: |
+          git pull --ff-only origin main
           if [ -n "$CONFIG_PASSPHRASE" ] && [ -f config.json.enc ]; then
             python config_crypt.py decrypt config.json.enc config.json
           else
@@ -54,7 +55,8 @@ jobs:
           EBAY_MARKETPLACE_ID: EBAY_DE
           EBAY_SOURCE: auto
         run: |
-          if [ -f config.json ]; then
+          WRITER="$(python -c 'import json; print(json.load(open("mobile/app_sync.json")).get("writer", "server"))')"
+          if [ -f config.json ] && [ "$WRITER" = "android" ]; then
             python mobile/merge_app_sync_to_config.py
           fi
           python mobile/build_app_sync.py

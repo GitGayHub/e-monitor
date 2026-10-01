@@ -1,0 +1,2324 @@
+{
+  "schema": 1,
+  "cases": [
+    {
+      "name": "valid mouse",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "price with shipping equals limit",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 35,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "shipping crosses soft limit",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 34.99,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "over_limit",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "minimum uses total, not base",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": 34,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "below minimum",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": 36,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "too_cheap",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "zero notify limit preserved",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 0,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "over_limit",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "null limits unlimited",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": null,
+        "hardMaxPrice": null,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "hard ceiling",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 29,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "over_limit",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "manual hidden item",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {
+        "hiddenItems": [
+          "fixture-item"
+        ]
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "global seller blacklist",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {
+        "bannedSellers": [
+          "TRUSTED_SELLER"
+        ]
+      },
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "per search seller blacklist",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [
+          "trusted_seller"
+        ],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "required word matches",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [
+          "Logitech"
+        ],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "required word missing",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [
+          "Razer"
+        ],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "excluded word",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [
+          "gaming"
+        ],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "business seller rejected",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "private",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "commercial",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "private seller name contains shop",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "private",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "myshop_private",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "used condition normalized",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "used",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "new condition mismatch",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "new",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "Germany code accepted",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "de",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "foreign region rejected",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "de",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Paris, FR",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "EU includes Ireland",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "eu",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Dublin, IE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "EU excludes UK",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "eu",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "United Kingdom",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "non EU tax estimate",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 200,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 100,
+        "shipping_cost": 10,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "London, GB",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": true,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 140.3
+      }
+    },
+    {
+      "name": "non EU custom tax zero",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 200,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 100,
+        "shipping_cost": 10,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "London, GB",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": true,
+        "non_eu_tax_rate": 0
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 119.4
+      }
+    },
+    {
+      "name": "non EU actual import charges",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 200,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 100,
+        "shipping_cost": 10,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "London, GB",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "",
+        "actual_import_charges": 26.71
+      },
+      "settings": {
+        "warn_non_eu": true,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 136.71
+      }
+    },
+    {
+      "name": "Sofort",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "buy_now",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "Sofort plus",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "buy_now_offer",
+        "bestOffer": true,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": true,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "missing best offer",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": true,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "offer auction is not BIN",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "buy_now_offer",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": false,
+        "auction": true,
+        "best_offer": true,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "auction at 24 hour boundary",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "auction",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "24 Std"
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "auction outside 24 hours",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "auction",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "1 T 1 Min"
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "wait_24h",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "auction unknown time",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "auction",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "wait_24h",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "auction seconds remaining",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "auction",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "40 Sekunden"
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "Auktion plus can notify early",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "auction",
+        "bestOffer": true,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": false,
+        "auction": true,
+        "best_offer": true,
+        "seller_type": "private",
+        "time_left": "7 T"
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "hybrid auction selects bid",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "auction",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 80,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": true,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "1 Std",
+        "auc_price": 30,
+        "bin_price": 80
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "hybrid BIN selects fixed price",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "buy_now",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 10,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": true,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "1 Std",
+        "auc_price": 10,
+        "bin_price": 30
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "valid bargain below old fixed floor",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 15,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 20
+      }
+    },
+    {
+      "name": "bait floor",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 1,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "too_cheap",
+        "totalPrice": 1
+      }
+    },
+    {
+      "name": "multivariation bait",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "",
+        "is_multivariation": true
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "notifications disabled",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": false,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notifications_disabled",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "search disabled",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": false
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "disabled",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "already sent",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech G Pro X Superlight 2 Gaming Mouse",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {
+        "alreadySent": true
+      },
+      "expected": {
+        "accepted": true,
+        "reason": "already_sent",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "mouse accessory",
+      "search": {
+        "id": "fixture",
+        "query": "logitech superlight 2",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "mice",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Logitech Superlight 2 skates replacement feet",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "wrong phone model",
+      "search": {
+        "id": "fixture",
+        "query": "iPhone 15 Pro Max",
+        "minPrice": null,
+        "maxPrice": 700,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "phones",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Apple iPhone 16 Pro Max 256GB",
+        "price": 500,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 500
+      }
+    },
+    {
+      "name": "real phone",
+      "search": {
+        "id": "fixture",
+        "query": "iPhone 15 Pro Max",
+        "minPrice": null,
+        "maxPrice": 700,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "phones",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Apple iPhone 15 Pro Max 256GB",
+        "price": 500,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 500
+      }
+    },
+    {
+      "name": "broken phone",
+      "search": {
+        "id": "fixture",
+        "query": "iPhone 15 Pro Max",
+        "minPrice": null,
+        "maxPrice": 700,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "phones",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Apple iPhone 15 Pro Max Display defekt",
+        "price": 500,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 500
+      }
+    },
+    {
+      "name": "controller drift",
+      "search": {
+        "id": "fixture",
+        "query": "dualsense controller",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "consoles",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Sony DualSense Controller PS5 Stickdrift",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "working controller",
+      "search": {
+        "id": "fixture",
+        "query": "dualsense controller",
+        "minPrice": null,
+        "maxPrice": 45,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "consoles",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Sony DualSense Controller PS5",
+        "price": 30,
+        "shipping_cost": 5,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 35
+      }
+    },
+    {
+      "name": "console",
+      "search": {
+        "id": "fixture",
+        "query": "PlayStation 5 Pro",
+        "minPrice": null,
+        "maxPrice": 750,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "consoles",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "Sony PlayStation 5 Pro Konsole 2TB",
+        "price": 500,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 500
+      }
+    },
+    {
+      "name": "rtx OLED laptop",
+      "search": {
+        "id": "fixture",
+        "query": "4050 oled",
+        "minPrice": null,
+        "maxPrice": 1000,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "laptops",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "ASUS Vivobook Laptop RTX 4050 OLED",
+        "price": 700,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 700
+      }
+    },
+    {
+      "name": "monitor",
+      "search": {
+        "id": "fixture",
+        "query": "LG UltraGear OLED 480hz",
+        "minPrice": null,
+        "maxPrice": 1000,
+        "hardMaxPrice": 2500,
+        "listingType": "all",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "monitors",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "fixture-item",
+        "title": "LG UltraGear OLED 27GX790A 480Hz Monitor",
+        "price": 600,
+        "shipping_cost": 0,
+        "seller_name": "trusted_seller",
+        "condition": "Gebraucht",
+        "location": "Berlin, DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": ""
+      },
+      "settings": {
+        "warn_non_eu": false,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 600
+      }
+    }
+  ]
+}

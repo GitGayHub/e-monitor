@@ -64,6 +64,16 @@ def get_distance_km(plz):
     return haversine_km(USER_LAT, USER_LON, lat, lon)
 
 
+def distance_between_plz(from_plz, to_plz):
+    """An explicit search radius uses its actual center, without city exceptions."""
+    _load()
+    start = _PLZ_DATA.get(str(from_plz or "").zfill(5))
+    end = _PLZ_DATA.get(str(to_plz or "").zfill(5))
+    if start is None or end is None:
+        return None
+    return haversine_km(*start, *end)
+
+
 def get_distance_from_location(location_text):
     """Try to extract PLZ from location text and calculate distance.
     Returns (distance_km, plz) or (None, None)."""

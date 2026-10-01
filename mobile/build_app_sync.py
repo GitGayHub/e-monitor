@@ -37,14 +37,16 @@ def convert_search(search):
         "id": search.get("id") or "",
         "query": search.get("query") or "",
         "minPrice": filters.get("min_price"),
-        "maxPrice": filters.get("limit_price") or filters.get("max_price"),
+        "maxPrice": filters.get("limit_price") if "limit_price" in filters else filters.get("max_price"),
+        "hardMaxPrice": filters.get("max_price", 2500),
         "condition": filters.get("condition") or "any",
         "listingType": filters.get("listing_type") or "all",
+        "bestOffer": bool(filters.get("best_offer", False)),
         "sellerType": filters.get("seller_type") or "any",
         "location": filters.get("location") or "de",
         "category": filters.get("category") or "all",
         "plzCenter": filters.get("plz_center") or search.get("plz_center") or "",
-        "maxDistanceKm": filters.get("max_distance_km") or search.get("max_distance_km"),
+        "maxDistanceKm": filters.get("max_distance_km", search.get("max_distance_km")),
         "includeWords": search.get("include_words") or [],
         "excludeWords": search.get("exclude_words") or [],
         "excludeSellers": search.get("exclude_sellers") or [],
@@ -57,17 +59,27 @@ def convert_search(search):
 
 
 def main():
+    if CONFIG_PATH.exists():
+        # An unreadable config is not an empty, intentionally deleted search list.
+        with open(CONFIG_PATH, "r", encoding="utf-8") as handle:
+            checked = json.load(handle)
+        if not isinstance(checked, dict) or not isinstance(checked.get("searches"), list):
+            raise ValueError("Config must contain a searches array")
     config = load_json(CONFIG_PATH, {})
     existing = load_json(OUTPUT_PATH, {})
+    if existing.get("writer") == "android" and str(existing.get("updatedAt", "")) != str(config.get("mobile_manifest_revision", "")):
+        print("Preserving pending Android changes until they have been applied")
+        return
     settings = config.get("settings") or {}
     searches = [
         convert_search(search)
         for search in config.get("searches", [])
         if search.get("query")
-    ] or existing.get("searches", [])
+    ] if CONFIG_PATH.exists() else existing.get("searches", [])
     logic_ts = read_logic_version_timestamp()
     document = {
         "schema": 1,
+        "writer": "server",
         "source": os.environ.get("GITHUB_REPOSITORY", "GitGayHub/e-monitor"),
         "commit": os.environ.get("GITHUB_SHA", ""),
         "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -83,7 +95,7 @@ def main():
             "warn_non_eu": str(settings.get("warn_non_eu", True)).lower(),
         },
         "searches": searches,
-        "items": existing.get("items", []),
+        "items": [],
         "bannedSellers": config.get("global_banned_sellers", existing.get("bannedSellers", [])),
         "hiddenItems": config.get("banned_item_ids", existing.get("hiddenItems", [])),
     }

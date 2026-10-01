@@ -69,6 +69,10 @@ def _migrate_searches(data):
     cards even when a matching auction exists. The monitor still validates these
     searches as headphones later via `_effective_category()` and title filters.
     """
+    if os.environ.get("EMOBILE_CONFIG") == "1":
+        data["mobile_managed"] = True
+    if data.get("mobile_managed"):
+        return False
     changed = False
     for search in data.get("searches", []):
         if not isinstance(search, dict):

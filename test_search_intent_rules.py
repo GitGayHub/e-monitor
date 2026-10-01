@@ -66,6 +66,18 @@ class SearchIntentRuleTests(unittest.TestCase):
         bad_details = {"title": "ASUS Vivobook Pro 14X OLED", "description": "Ryzen 7 5800H 16 GB RAM OLED"}
         self.assertFalse(monitor._intent_details_match(search, candidate, bad_details))
 
+    def test_rtx_oled_search_variants(self):
+        search = {"query": "4050 oled", "filters": {"category": "laptops"}}
+        self.assertEqual(
+            monitor._search_query_variants(search),
+            [
+                "rtx 4050 oled laptop",
+                "rtx 4050 oled notebook",
+                "laptop 4050 oled",
+                "4050 oled",
+            ],
+        )
+
     def test_rtx_oled_laptop_rules(self):
         search = {"query": "4050 oled", "filters": {"category": "laptops", "listing_type": "auction"}}
         good = item("Lenovo Legion Laptop RTX 4050 OLED", auction=True, buy_now=False, time_left="4h")
@@ -125,6 +137,61 @@ class SearchIntentRuleTests(unittest.TestCase):
         cfg = DummyConfig()
         self.assertEqual(len(monitor.filter_results([good], search, cfg, skip_seen=True, is_statistics=True)), 1)
         self.assertEqual(monitor.filter_results([bad], search, cfg, skip_seen=True, is_statistics=True), [])
+
+    def test_5070_ti_ebay_url_is_clean_nkw_sitewide_price_asc(self):
+        """Parentheses + _sacat=179 hid auctions / cheap BIN. Match the live SERP."""
+        search = {
+            "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+            "filters": {"category": "computers", "listing_type": "auction"},
+        }
+        prepared = monitor._prepare_monitor_fetch_search(search)
+        url = monitor._build_url_with_host("ebay.de", prepared)
+        nkw = url.split("_nkw=", 1)[1].split("&", 1)[0]
+        self.assertIn("5070", nkw)
+        self.assertIn("ti", nkw)
+        self.assertIn("pc", nkw)
+        self.assertNotIn("rechner", nkw)
+        self.assertNotIn("(", nkw)
+        self.assertNotIn("_sacat=179", url)
+        self.assertIn("LH_Auction=1", url)
+        self.assertIn("_sop=15", url)
+        auc = item(
+            "Lenovo Gaming PC Legion T5 RTX 5070TI Ultra 9",
+            item_id="auc1",
+            price=1799,
+            auction=True,
+            buy_now=False,
+            time_left="1d 18h",
+        )
+        cheap_bin = item(
+            "Gaming PC (Rtx5070Ti, Ryzen 7 5800x, 32gb DDR4 Ram)",
+            item_id="bin1",
+            price=1450,
+        )
+        cfg = DummyConfig()
+        auc_search = {**search, "filters": {**search["filters"], "listing_type": "auction"}}
+        bin_search = {**search, "filters": {**search["filters"], "listing_type": "buy_now_offer"}}
+        self.assertEqual(
+            [x["item_id"] for x in monitor.filter_results([auc], auc_search, cfg, skip_seen=True, is_statistics=True)],
+            ["auc1"],
+        )
+        self.assertEqual(
+            [x["item_id"] for x in monitor.filter_results([cheap_bin], bin_search, cfg, skip_seen=True, is_statistics=True)],
+            ["bin1"],
+        )
+
+    def test_sony_wh_accessories_are_not_the_headset(self):
+        search = {"query": "Sony WH-1000XM6", "filters": {"category": "all", "listing_type": "buy_now_offer"}}
+        cfg = DummyConfig()
+        junk = [
+            item("EVA Hartschalen Tragetasche für Sony WH-1000XM6", item_id="j1", price=52),
+            item("Leichte Silikonhülle für Sony WH-1000XM6", item_id="j2", price=29),
+            item("Silikon Sweat Cover für Sony WH-1000XM6", item_id="j3", price=27),
+            item("Protein Leder Ohrpolster für Sony WH-1000XM6", item_id="j4", price=28),
+        ]
+        good = item("Sony WH-1000XM6 Wireless Kopfhörer Schwarz", item_id="ok", price=220)
+        kept = monitor.filter_results(junk + [good], search, cfg, skip_seen=True, is_statistics=True)
+        self.assertEqual([x["item_id"] for x in kept], ["ok"])
 
     def test_ps5_pro_cover_and_vr_only_rejected_console_bundle_allowed(self):
         search = {"query": "(playstation 5 pro, ps5 pro)", "filters": {"category": "consoles", "listing_type": "buy_now_offer"}}

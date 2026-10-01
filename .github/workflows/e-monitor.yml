@@ -10,6 +10,8 @@ on:
       - "price_history.db"
       - "run_log.json"
       - "mobile/app_sync.json"
+      - "mobile/feed.json"
+      - "mobile/feed_pending.json"
       - "details_test_output.json"
       - "monitor_debug_tail.txt"
   schedule:
@@ -68,6 +70,7 @@ jobs:
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_MARKETPLACE_ID: EBAY_DE
+          EMOBILE_CONFIG: "1"
           # HTML first (curl_cffi + m.ebay + Playwright). Browse API only last resort.
           EBAY_SOURCE: auto
           EBAY_HTML_PLAYWRIGHT: "1"
@@ -101,7 +104,15 @@ jobs:
             echo "===== E MONITOR ITERATION $i (budget ${RUN_BUDGET_SEC}s) =====" | tee -a run_output_all.log
             echo "iteration_start=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a run_output_all.log
 
+            git pull --ff-only origin main || exit 1
             pass_start=$SECONDS
+            # Refresh explicit phone settings before each sweep, never overwrite
+            # a pending Android manifest with a stale server config.
+            python config_crypt.py decrypt config.json.enc config.json || exit 1
+            WRITER="$(python -c 'import json; print(json.load(open("mobile/app_sync.json")).get("writer", "server"))')"
+            if [ "$WRITER" = "android" ]; then
+              python mobile/merge_app_sync_to_config.py || exit 1
+            fi
             python monitor.py --once 2>&1 | tee run_output.log
             MONITOR_STATUS=${PIPESTATUS[0]}
             pass_dur=$(( SECONDS - pass_start ))
@@ -202,27 +213,18 @@ jobs:
           print(f'Log: {entry}')
           PY
 
-            git add seen_ids.json price_history.db run_log.json || true
+            python config_crypt.py encrypt config.json config.json.enc || exit 1
+            python mobile/build_app_sync.py || exit 1
+            git add seen_ids.json price_history.db run_log.json config.json.enc || true
+            [ -f mobile/feed.json ] && git add mobile/feed.json
+            [ -f mobile/feed_pending.json ] && git add mobile/feed_pending.json
             [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
             [ -f details_test_output.json ] && git add details_test_output.json
             [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
             if ! git diff --cached --quiet; then
               git commit -m "Checkpoint monitor state"
               # seen_ids must reach origin so the next run does not re-notify.
-              push_ok=0
-              for attempt in 1 2 3 4 5; do
-                git pull --rebase --autostash origin main || true
-                if git push; then
-                  push_ok=1
-                  break
-                fi
-                echo "Checkpoint push failed (attempt $attempt/5), retrying..."
-                sleep 3
-              done
-              if [ "$push_ok" -ne 1 ]; then
-                echo "ERROR: failed to push checkpoint state after 5 attempts" >&2
-                exit 1
-              fi
+              python mobile/checkpoint_push.py || exit 1
             fi
 
             # The 4-bucket report is one long diagnostic pass, never a loop.
@@ -262,6 +264,8 @@ jobs:
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
           git add seen_ids.json price_history.db run_log.json || true
+          [ -f mobile/feed.json ] && git add mobile/feed.json
+          [ -f mobile/feed_pending.json ] && git add mobile/feed_pending.json
           [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
           [ -f details_test_output.json ] && git add details_test_output.json
           [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
@@ -270,19 +274,6 @@ jobs:
             exit 0
           fi
           git commit -m "Update monitor state"
-          push_ok=0
-          for attempt in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main || true
-            if git push; then
-              push_ok=1
-              break
-            fi
-            echo "Final state push failed (attempt $attempt/5), retrying..."
-            sleep 3
-          done
-          if [ "$push_ok" -ne 1 ]; then
-            echo "ERROR: failed to push final monitor state after 5 attempts" >&2
-            exit 1
-          fi
+          python mobile/checkpoint_push.py
 
 # Trigger: 2026-07-01T07:22:00Z

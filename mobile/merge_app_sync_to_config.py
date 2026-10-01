@@ -37,9 +37,10 @@ def app_search_to_config(search):
     filters = {
         "min_price": as_number(search.get("minPrice")),
         "limit_price": as_number(search.get("maxPrice")),
-        "max_price": 2500,
+        "max_price": as_number(search.get("hardMaxPrice")) if "hardMaxPrice" in search else 2500,
         "condition": search.get("condition") or "any",
         "listing_type": search.get("listingType") or "all",
+        "best_offer": as_bool(search.get("bestOffer"), False),
         "seller_type": search.get("sellerType") or "any",
         "location": search.get("location") or "de",
         "category": search.get("category") or "all",
@@ -67,10 +68,17 @@ def main():
     manifest = load_json(MANIFEST_PATH, {})
     if manifest.get("schema") != 1:
         raise SystemExit("Unsupported or missing app sync schema")
+    if not isinstance(manifest.get("searches"), list):
+        raise SystemExit("Invalid manifest searches; refusing to replace config")
 
-    config = load_json(CONFIG_PATH, {})
+    config = json.loads(CONFIG_PATH.read_text(encoding="utf-8")) if CONFIG_PATH.exists() else {}
+    if not isinstance(config, dict) or (CONFIG_PATH.exists() and not isinstance(config.get("searches"), list)):
+        raise SystemExit("Invalid existing config; refusing to replace it")
     config.setdefault("settings", {})
     config.setdefault("item_hashes", [])
+    # Legacy migrations must not overwrite explicit settings from the phone.
+    config["mobile_managed"] = True
+    config["mobile_manifest_revision"] = str(manifest.get("updatedAt", ""))
 
     searches = [
         app_search_to_config(search)
@@ -87,7 +95,8 @@ def main():
     if "user_country" in app_config:
         config["settings"]["user_country"] = str(app_config.get("user_country") or "de")
     if "non_eu_tax_rate" in app_config:
-        config["settings"]["non_eu_tax_rate"] = as_number(app_config.get("non_eu_tax_rate")) or 0.19
+        rate = as_number(app_config.get("non_eu_tax_rate"))
+        config["settings"]["non_eu_tax_rate"] = rate if rate is not None else 0.19
     if "warn_non_eu" in app_config:
         config["settings"]["warn_non_eu"] = as_bool(app_config.get("warn_non_eu"), True)
 

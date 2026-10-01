@@ -185,6 +185,68 @@ class DetailsFilterTest(unittest.TestCase):
         desc = "Das Backcover ist nicht gebrochen, keine Risse."
         self.assertFalse(monitor._is_description_blocked(desc, "phones"))
 
+    def test_review_stickdrift_does_not_block(self):
+        html = """
+        <div class="x-item-description-child">DualSense wie neu. Keine Mängel.</div>
+        <section id="rwid">
+          <h2>Produktbewertungen</h2>
+          <p>18. Feb. 2025</p>
+          <p>Stickdrift musste es selber aufschrauben</p>
+        </section>
+        """
+        self.assertFalse(monitor._is_description_blocked(html, "consoles"))
+
+    def test_seller_stickdrift_still_blocks(self):
+        desc = "Der linke Stick hat einen leichten Stickdrift"
+        self.assertTrue(monitor._is_description_blocked(desc, "consoles"))
+
+    def test_dualsense_gamepad_matches_controller_query(self):
+        title = monitor._normalize("Sony DualSense Wireless Gamepad - Weiß")
+        self.assertTrue(monitor._has_query_word(title, "controller"))
+        self.assertTrue(monitor._query_matches_title(title, "dualsense controller"))
+
+    def test_iphone_display_parts_are_accessories(self):
+        titles = [
+            "iPhone 15 14 13 13pro 12 11 Pro Pro Max Display Touch LCD Glas ReparaturService",
+            "Original iPhone 15 Pro Max Refurbed Display Bildschirm Touchscreen",
+            "Apple iPhone 15 Pro Max Super Retina Pro OLED LCD Display Pulled",
+            "Original Genuine Display für iPhone 15 Pro Max Bildschirm von Apple geliefert",
+            "Ori Displayeinheit für Apple iPhone 15 Pro Max Serviceware",
+        ]
+        for raw in titles:
+            self.assertTrue(
+                monitor._is_phone_accessory_title(monitor._normalize(raw)),
+                raw,
+            )
+        phone = monitor._normalize("Apple iPhone 15 Pro Max 256GB Titan Natur")
+        self.assertFalse(monitor._is_phone_accessory_title(phone))
+
+    def test_dualsense_plus_dock_and_hall_sticks_ignore_stop_words(self):
+        pad_dock = monitor._normalize(
+            "Sony PlayStation 5 DualSense Wireless-Controller Camouflage + ISY Ladestation"
+        )
+        hall = monitor._normalize(
+            "Sony DualSense Wireless Ps5 Controller Galactic Purple (Hall Effect Sticks)"
+        )
+        dock_only = monitor._normalize("PS5 DualSense Ladestation Charging Station")
+        stick_parts = monitor._normalize("PS5 DualSense Analog Sticks Ersatzteile")
+        self.assertFalse(monitor._exclude_word_hits(pad_dock, "ladestation"))
+        self.assertTrue(monitor._exclude_word_hits(dock_only, "ladestation"))
+        self.assertFalse(monitor._exclude_word_hits(hall, "sticks"))
+        self.assertFalse(monitor._exclude_word_hits(hall, "hall"))
+        self.assertTrue(monitor._exclude_word_hits(stick_parts, "sticks"))
+
+    def test_plain_text_reviews_heading_is_stripped(self):
+        text = (
+            "DualSense Midnight Black, alles ok.\n"
+            "Produktbewertungen\n"
+            "18. Feb. 2025\n"
+            "Stickdrift musste es selber aufschrauben"
+        )
+        cleaned = monitor._strip_review_sections(text)
+        self.assertIn("alles ok", cleaned)
+        self.assertNotIn("Stickdrift", cleaned)
+
     def test_hybrid_listing_prices_and_grouping(self):
         # 1. HTML search result parsing of a hybrid listing
         html = """
@@ -195,6 +257,7 @@ class DetailsFilterTest(unittest.TestCase):
             <span class="s-item__price">EUR 2.720,00</span>
             <span class="s-item__price">oder Sofort-Kaufen: EUR 3.808,00</span>
             <span>0 Gebote</span>
+            <span class="s-item__time-left">Endet in 1 Std</span>
             <span>+ EUR 24,00 Lieferung</span>
           </li>
         </ul>
