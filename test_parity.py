@@ -56,6 +56,13 @@ def evaluate(case):
 
 
 class SharedParityTests(unittest.TestCase):
+    def test_captured_browse_api_cases(self):
+        document = json.loads((Path(__file__).parent / "qa/fixtures/api_cases.json").read_text(encoding="utf-8"))
+        for case in document["cases"]:
+            with self.subTest(case=case["name"]):
+                accepted, reason, total = evaluate(case)
+                self.assertEqual(case["expected"], {"accepted": accepted, "reason": reason, "totalPrice": total})
+
     def test_captured_live_cases(self):
         document = json.loads((Path(__file__).parent / "qa/fixtures/live_cases.json").read_text(encoding="utf-8"))
         for case in document["cases"]:
