@@ -71,7 +71,7 @@ jobs:
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_MARKETPLACE_ID: EBAY_DE
           EMOBILE_CONFIG: "1"
-          # HTML first (curl_cffi + m.ebay + Playwright). Browse API only last resort.
+          # Prefer Browse API, respect quota across runner checkpoints.
           EBAY_SOURCE: auto
           EBAY_HTML_PLAYWRIGHT: "1"
           EBAY_HTML_MOBILE_FIRST: "1"

@@ -33,6 +33,7 @@ from price_history import (
     get_last_run, record_search_run,
     record_api_call, get_api_calls_count_24h,
 )
+from ebay_access import access as browse_access
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -3890,8 +3891,7 @@ def _build_ebay_api_query(search):
     q = _intent_query(search)
     if not q:
         q = _build_smart_search_query(search)
-    q = re.sub(r"[()\"'\"]", " ", q)
-    q = re.sub(r"\bredmagic\b", "red magic", q, flags=re.IGNORECASE)
+    q = re.sub(r"\bred\s*magic\b", '(redmagic, "red magic")', q, flags=re.IGNORECASE)
     q = re.sub(r"\s+", " ", q).strip()
     return q
 
@@ -3903,6 +3903,8 @@ def _build_ebay_api_params(search, market=None):
     sort_param = "newlyListed"
     if filters.get("sort") == "price_asc":
         sort_param = "price"
+    elif filters.get("sort") == "ending_soon":
+        sort_param = "endingSoonest"
     params = {
         "q": _build_ebay_api_query(search),
         "limit": "200",
@@ -3952,9 +3954,9 @@ def _build_ebay_api_params(search, market=None):
     }
     if lt in buying_map:
         buying_options = [buying_map[lt]]
-        if filters.get("best_offer") and "BEST_OFFER" not in buying_options:
-            buying_options.append("BEST_OFFER")
         filter_parts.append(f"buyingOptions:{{{'|'.join(buying_options)}}}")
+    else:
+        filter_parts.append("buyingOptions:{FIXED_PRICE|AUCTION}")
 
     st = filters.get("seller_type", "any")
     seller_map = {
@@ -3989,120 +3991,44 @@ _ebay_api_circuit_reason = None
 
 
 def fetch_ebay_api_ex(search, force=False):
-    global _ebay_api_circuit_open, _ebay_api_circuit_reason
-    if _ebay_api_circuit_open:
-        logger.info(
-            "eBay API circuit open (%s) — skip '%s'",
-            _ebay_api_circuit_reason or "rate_limit",
-            search.get("query"),
-        )
-        return [], "api_rate_limit"
+    """Browse API on the same configured marketplace as the phone.
 
+    Force bypasses scheduling, never the provider's quota/cooldown.
+    """
     token, err = _get_ebay_api_token()
     if err:
         return [], err
-
-    markets = [EBAY_MARKETPLACE_ID]
-    loc = (search.get("filters") or {}).get("location", "de")
-    if loc == "eu":
-        loc = "worldwide"
-    
-    if loc in ("eu", "worldwide"):
-        extra_markets = ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]
-        for m in extra_markets:
-            if m not in markets:
-                markets.append(m)
-
-    all_items = []
-    seen_item_ids = set()
-    last_err = None
-    hit_hard_rate_limit = False
-
-    for market in markets:
-        if hit_hard_rate_limit:
-            logger.info(
-                "Skipping remaining API markets after 429 (next would be %s for '%s')",
-                market, search.get("query"),
-            )
-            break
-        # Check rate-limiting if force is False
-        if not force:
-            search_id = search.get("id", "")
-            if (search_id, market) not in _allowed_api_targets_this_run:
-                logger.debug("Skipping API call for %s on %s (not in priority queue this run)", 
-                             search["query"], market)
-                continue
-            # Discard so we don't query it again in this run
-            _allowed_api_targets_this_run.discard((search_id, market))
-        
-        # Query API. On 429: short retry on same market, then stop the multi-market
-        # chain — hammering GB/ES/FR after DE 429 only burns the daily cap.
-        params = _build_ebay_api_params(search, market=market)
-        url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
-        country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(market, "DE")
-        market_ok = False
-        for attempt in range(2):
-            try:
-                req = urllib.request.Request(
-                    url,
-                    headers={
-                        "Authorization": f"Bearer {token}",
-                        "Accept": "application/json",
-                        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-                        "X-EBAY-C-MARKETPLACE-ID": market,
-                        "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
-                    },
-                )
-                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
-                    data = json.loads(resp.read().decode("utf-8", errors="replace"))
-                items = parse_ebay_api_results(data)
-
-                try:
-                    record_api_call()
-                    record_search_run(search.get("id", ""), market)
-                except Exception as ex:
-                    logger.warning("Error recording search run: %s", ex)
-
-                for item in items:
-                    if item["item_id"] not in seen_item_ids:
-                        seen_item_ids.add(item["item_id"])
-                        all_items.append(item)
-                market_ok = True
-                break
-            except urllib.error.HTTPError as e:
-                try:
-                    body = e.read().decode("utf-8", errors="replace")
-                    logger.warning(
-                        "eBay API HTTP %s for '%s' on %s (try %d/2): %s",
-                        e.code, search["query"], market, attempt + 1, body[:300],
-                    )
-                except Exception:
-                    pass
-                last_err = _ebay_api_http_error(e.code)
-                if e.code == 429:
-                    if attempt < 1:
-                        time.sleep(4.0)
-                        continue
-                    hit_hard_rate_limit = True
-                    # Open global circuit so remaining products don't each burn 2+ 429s.
-                    _ebay_api_circuit_open = True
-                    _ebay_api_circuit_reason = "429"
-                    logger.warning(
-                        "eBay API circuit OPEN after 429 on %s for '%s' — no more Browse API this run",
-                        market, search.get("query"),
-                    )
-                break
-            except Exception as e:
-                logger.warning("eBay API network error for '%s' on %s: %s", search["query"], market, e)
-                last_err = "api_network"
-                break
-        if not market_ok and last_err is None:
-            last_err = "api_error"
-
-    logger.info("  %s -> %d items via eBay Browse API (markets: %s)", search["query"], len(all_items), ", ".join(markets))
-    if all_items:
-        return all_items, None
-    return [], last_err
+    market = EBAY_MARKETPLACE_ID
+    target = (search.get("id", ""), market)
+    if not force and target not in _allowed_api_targets_this_run:
+        return [], "api_deferred"
+    if not browse_access.acquire():
+        return [], "api_rate_limit"
+    _allowed_api_targets_this_run.discard(target)
+    params = _build_ebay_api_params(search, market=market)
+    url = "https://api.ebay.com/buy/browse/v1/item_summary/search?" + urllib.parse.urlencode(params)
+    country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(market, "DE")
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Bearer {token}", "Accept": "application/json",
+        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+        "X-EBAY-C-MARKETPLACE-ID": market,
+        "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="replace"))
+        record_search_run(search.get("id", ""), market)
+        items = parse_ebay_api_results(data)
+        logger.info("  %s -> %d items via eBay Browse API (%s)", search.get("query"), len(items), market)
+        return items, None
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            browse_access.pause(e.headers.get("Retry-After") if e.headers else None)
+        logger.warning("eBay Browse HTTP %s for %s", e.code, search.get("query"))
+        return [], _ebay_api_http_error(e.code)
+    except Exception as e:
+        logger.warning("eBay Browse search failed for %s: %s", search.get("query"), e)
+        return [], "api_network"
 
 
 
@@ -4167,6 +4093,7 @@ def parse_ebay_api_results(data):
 
         items.append({
             "item_id": _api_item_id(summary),
+            "source": "api",
             "title": title,
             "price": price,
             "auc_price": auc_price,
@@ -4408,59 +4335,43 @@ def _fetch_item_details_html(item_id):
     return result
 
 
-def _fetch_item_details(item_id):
-    """Fetches the item details. First tries HTML scraping fallback, then falls back to eBay Browse API details."""
-    html_details = None
-    try:
-        html_details = _fetch_item_details_html(item_id)
-        if html_details is None:
-            time.sleep(0.7)
-            html_details = _fetch_item_details_html(item_id)
-        if html_details is not None and html_details.get("price") and html_details.get("itemEndDate"):
-            logger.info("Successfully fetched item %s details via HTML scraping", item_id)
-            return html_details
-        else:
-            logger.warning("_fetch_item_details: HTML scraping details missing critical fields for %s", item_id)
-    except Exception as e:
-        logger.warning("_fetch_item_details: HTML scraping error for item %s: %s", item_id, e)
+_item_details_cache = {}
 
-    logger.info("Falling back to eBay Browse API details for item %s", item_id)
+
+def _fetch_item_details(item_id):
+    """Read the complete seller description before classifying a candidate."""
+    cached = _item_details_cache.get(str(item_id))
+    if cached and time.time() - cached[0] < 120:
+        return copy.deepcopy(cached[1])
+    if not _ebay_api_configured() or EBAY_SOURCE == "html":
+        return _fetch_item_details_html(item_id)
     token, err = _get_ebay_api_token()
-    if err:
-        logger.warning("_fetch_item_details: token error: %s", err)
+    if err or not browse_access.acquire():
         return None
-    # Browse API item ID format is v1|{legacyItemId}|0
     browse_id = f"v1|{item_id}|0"
     url = f"https://api.ebay.com/buy/browse/v1/item/{urllib.parse.quote(browse_id)}"
     country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "DE")
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Bearer {token}", "Accept": "application/json",
+        "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+        "X-EBAY-C-MARKETPLACE-ID": EBAY_MARKETPLACE_ID,
+        "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
+    })
     try:
-        req = urllib.request.Request(
-            url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Accept": "application/json",
-                "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-                "X-EBAY-C-MARKETPLACE-ID": EBAY_MARKETPLACE_ID,
-                "X-EBAY-C-ENDUSERCTX": f"contextualLocation=country={country}",
-            },
-        )
         with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
-        if html_details:
-            for key in ("description", "itemLocationText", "title", "itemEndDate", "price", "currentBidPrice", "buyingOptions", "htmlShippingCost", "htmlImportCharges"):
-                if html_details.get(key) and not data.get(key):
-                    data[key] = html_details[key]
-        return data
+        if not str(data.get("description") or "").strip():
+            logger.warning("Description missing for item %s; leaving unverified", item_id)
+            return None
+        _item_details_cache[str(item_id)] = (time.time(), data)
+        return copy.deepcopy(data)
     except urllib.error.HTTPError as e:
-        try:
-            body = e.read().decode("utf-8", errors="replace")
-            logger.warning("_fetch_item_details: eBay API HTTP %s for item %s: %s", e.code, item_id, body[:300])
-        except Exception:
-            pass
-        return html_details
+        if e.code == 429:
+            browse_access.pause(e.headers.get("Retry-After") if e.headers else None)
+        logger.warning("eBay Browse details HTTP %s for item %s", e.code, item_id)
     except Exception as e:
-        logger.warning("_fetch_item_details: eBay API network error for item %s: %s", item_id, e)
-        return html_details
+        logger.warning("eBay Browse details unavailable for item %s: %s", item_id, e)
+    return None
 
 
 _REVIEW_NODE_SELECTORS = (
@@ -5992,6 +5903,13 @@ def fetch_ebay_ex(search, force=False):
                         search["query"], int(now - cached[0]), len(items), err)
             return items, err
 
+    # With credentials, auto uses Browse immediately. Empty is a valid result;
+    # quota/network failures must not launch an HTML/Playwright retry storm.
+    if source == "api" or (source == "auto" and _ebay_api_configured()):
+        items, err = fetch_ebay_api_ex(search, force=force)
+        _ebay_query_cache[cache_key] = (time.time(), items, err)
+        return items, err
+
     variants = _search_query_variants(search)
     if len(variants) > 1 and not search.get("_variant_child"):
         merged_items = []
@@ -6317,6 +6235,20 @@ def _get_version_string():
     return _get_stable_version_string()
 
 
+def _apk_version_label():
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "mobile", "app_version.json"), encoding="utf-8") as stream:
+            return str(json.load(stream)["versionName"])
+    except (OSError, ValueError, KeyError):
+        return "unknown"
+
+
+def _fetch_source_label(source=None):
+    if source:
+        return "eBay Browse API" if source == "api" else str(source)
+    return "eBay Browse API" if EBAY_SOURCE != "html" and _ebay_api_configured() else "eBay HTML"
+
+
 def get_category_emoji(cat_name):
     cat_name = (cat_name or "").strip().lower()
     mapping = {
@@ -6516,7 +6448,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     
     is_github = os.environ.get("GITHUB_ACTIONS") == "true"
     source_line = "🤖 GitHub автомониторинг" if is_github else "💻 Локальный автомониторинг"
-    source_line += f"\nℹ️ Версия: {_get_version_string()}\n🔎 Поиск: full html"
+    source_line += f"\nℹ️ Сервер: {_get_version_string()}\n📱 APK: {_apk_version_label()}\n🔎 Поиск: {_fetch_source_label(item.get('source'))}"
 
     details_block = f"{cond_line}\n{country_line}\n{seller_line}\n{limit_line}"
 
@@ -6701,6 +6633,7 @@ async def _validate_candidate(item, search):
 
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
+        item["_details_status"] = "rejected"
         if not _details_match_contract(item, search, details):
             return False, details
         _refresh_candidate_details(item, details, config.get_settings())
@@ -6711,38 +6644,17 @@ async def _validate_candidate(item, search):
         if not filter_results([item], structural, config, skip_seen=True, is_statistics=True):
             return False, details
     else:
-        # Fallback check using HTML scraping of the item page if Browse API fails (e.g. returns 404)
-        is_mv = await asyncio.to_thread(_is_item_page_multivariation, item["item_id"])
-        if is_mv:
-            logger.info("Blocking multi-variation item %s detected via HTML scraping fallback", item["item_id"])
-            return False, None
-        # No details + absurdly low price for this device → never accept as floor
-        if cheap:
-            logger.info(
-                "Blocking item %s: no details and implausibly cheap (%.0f€) for %s",
-                item.get("item_id"), card_price, search.get("query"),
-            )
-            return False, None
+        item["_details_status"] = "unavailable"
+        return False, None
 
-    # Extra multi-SKU HTML check for suspicious floors (API sometimes omits itemGroupType)
     if cheap or _is_implausibly_cheap_device(item, search):
-        is_mv = await asyncio.to_thread(_is_item_page_multivariation, item["item_id"])
-        if is_mv:
-            logger.info("Blocking multi-variation item %s (HTML check, cheap floor)", item.get("item_id"))
-            return False, details
-        if _is_implausibly_cheap_device(item, search):
-            logger.info(
-                "Blocking item %s: price %.0f€ below device floor for %s",
-                item.get("item_id"),
-                float(item.get("total_price") or item.get("price") or 0),
-                search.get("query"),
-            )
-            return False, details
+        return False, details
 
     if not _intent_details_match(search, item, details):
         logger.info("Blocking item %s: does not satisfy search intent for %s", item.get("item_id"), search.get("query"))
         return False, details
 
+    item["_details_status"] = "verified"
     return True, details
 
 
@@ -6772,7 +6684,7 @@ def _live_validation_limit(search_cfg):
 
 async def _select_cheapest_valid_candidate(items, search_cfg, limit=None, stats_soft_fallback=False):
     if limit is None:
-        limit = _live_validation_limit(search_cfg)
+        limit = len(items)
     price_window = _live_validation_price_window(search_cfg)
     valid_items = []
     soft_pool = []
@@ -6818,8 +6730,9 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None, stats_
                 card_total,
                 (item.get("title") or "")[:60],
             )
-    if not valid_items and stats_soft_fallback and soft_pool:
-        selected = min(soft_pool, key=lambda x: float(x.get("total_price") or 0))
+    unavailable_pool = [x for x in soft_pool if x.get("_details_status") == "unavailable"]
+    if not valid_items and stats_soft_fallback and unavailable_pool:
+        selected = min(unavailable_pool, key=lambda x: float(x.get("total_price") or 0))
         logger.info(
             "Stats soft-fallback [%s] total=%.0f for %s (details validation all failed)",
             selected.get("item_id"),
@@ -6848,71 +6761,35 @@ _allowed_api_targets_this_run = set()
 
 def initialize_api_budget_and_queue(searches):
     global _allowed_api_targets_this_run
-    _allowed_api_targets_this_run = set()
-    
-    # 1. Calculate allowed number of API calls M this run based on last 24h count
-    try:
-        api_calls_24h = get_api_calls_count_24h()
-    except Exception as e:
-        logger.warning("Error getting API calls count from DB: %s", e)
-        api_calls_24h = 0
-        
-    if api_calls_24h < 4000:
-        M = 15
-    elif api_calls_24h < 4500:
-        M = 8
-    elif api_calls_24h < 4800:
-        M = 4
-    else:
-        M = 0
-        
-    logger.info("eBay API budget this run: M=%d (API calls in last 24h: %d/5000)", M, api_calls_24h)
-    if M <= 0:
-        return
-        
-    # 2. Build list of all possible (search_id, market) targets
-    all_targets = []
-    for search in searches:
-        search_id = search.get("id", "")
-        if not search_id:
-            continue
-        markets = ["EBAY_DE"]
-        loc = (search.get("filters") or {}).get("location", "de")
-        if loc == "eu":
-            loc = "worldwide"
-        if loc in ("eu", "worldwide"):
-            for m in ["EBAY_GB", "EBAY_ES", "EBAY_FR", "EBAY_IT"]:
-                if m not in markets:
-                    markets.append(m)
-        for market in markets:
-            all_targets.append((search_id, market))
-            
-    # 3. Retrieve last_run_at and calculate priority scores
-    scored_targets = []
+    active = [s for s in searches if s.get("enabled", True)]
+    token, err = _get_ebay_api_token()
+    state = browse_access.state()
+    if token and time.time() - state.get("checked", 0) >= 900:
+        req = urllib.request.Request(
+            "https://api.ebay.com/developer/analytics/v1_beta/rate_limit?api_name=browse&api_context=buy",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                browse_access.update_quota(json.loads(resp.read().decode("utf-8")))
+        except Exception as exc:
+            logger.warning("eBay quota refresh unavailable: %s", exc)
+    interval = browse_access.interval(len(active))
     from datetime import datetime
     now = datetime.now()
-    for search_id, market in all_targets:
-        last_run_str = get_last_run(search_id, market)
-        if last_run_str:
-            try:
-                last_dt = datetime.fromisoformat(last_run_str)
-                elapsed = (now - last_dt).total_seconds() / 60.0 # minutes
-            except Exception:
-                elapsed = 1000000.0 # very old
-        else:
-            elapsed = 1000000.0 # never run
-            
-        target_interval = 15.0 if market == "EBAY_DE" else 150.0
-        score = elapsed / target_interval
-        scored_targets.append(((search_id, market), score))
-        
-    # 4. Sort by priority score descending and pick top M
-    scored_targets.sort(key=lambda x: x[1], reverse=True)
-    top_targets = scored_targets[:M]
-    
-    _allowed_api_targets_this_run = {target for target, score in top_targets}
-    logger.info("Top %d priority API targets queued: %s", len(_allowed_api_targets_this_run), 
-                [f"{tid}:{m}" for tid, m in _allowed_api_targets_this_run])
+    due = set()
+    for search in active:
+        last = get_last_run(search.get("id", ""), EBAY_MARKETPLACE_ID)
+        try:
+            elapsed = (now - datetime.fromisoformat(last)).total_seconds() if last else float("inf")
+        except (ValueError, TypeError):
+            elapsed = float("inf")
+        if elapsed >= interval:
+            due.add((search.get("id", ""), EBAY_MARKETPLACE_ID))
+    _allowed_api_targets_this_run = due
+    state = browse_access.state()
+    logger.info("eBay Browse: %d/%d searches due; interval %.0fs; real quota remaining=%s, reset=%s",
+                len(due), len(active), interval, state.get("remaining", "unknown"), state.get("reset", "unknown"))
+
 
 
 def _notify_candidates_from_filtered(filtered):
@@ -7463,6 +7340,8 @@ async def process_searches(bot, once=False):
                     base["filters"].pop("_stats_bucket_filter", None)
                     base["filters"]["category"] = "all"
                     base["filters"].pop("sort_code", None)
+                    if EBAY_SOURCE != "html" and _ebay_api_configured():
+                        return await _stats_one_fetch("Auction API", base)
                     q = base.get("query") or search.get("query") or ""
                     last_err = None
                     saw_clean_empty = False
@@ -7787,6 +7666,8 @@ async def process_searches(bot, once=False):
                     """🟢 = default mode would alert; 🟡 = wait / uncertain Auktion+; 🟣 = over limit."""
                     if not item:
                         return "❌ Не найдено"
+                    if item.get("_details_status") != "verified":
+                        return "🟡 описание недоступно (eBay API)"
                     if _is_implausibly_cheap_device(item, search):
                         return "❌ дешевле пола"
                     eligible, reason = _notify_eligibility(item, search)
@@ -8068,7 +7949,7 @@ async def process_searches(bot, once=False):
             is_github = os.environ.get("GITHUB_ACTIONS") == "true"
             footer_str = "📋 <b>Автомониторинг: Git 🤖</b>" if is_github else "📋 <b>Автомониторинг: Локальный 💻</b>"
             # Version = last logical code change, not run end time (see _get_stable_version_string).
-            footer_str += f"\nℹ️ <i>Версия: {_get_stable_version_string()}</i>\n🔎 Поиск: full html"
+            footer_str += f"\nℹ️ <i>Сервер: {_get_stable_version_string()}</i>\n📱 APK: {_apk_version_label()}\n🔎 Поиск: {_fetch_source_label()}"
 
             report_lines.append(footer_str)
 
@@ -8118,6 +7999,9 @@ async def process_searches(bot, once=False):
             # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
             fetch_search = _prepare_monitor_fetch_search(search)
             results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
+            if fetch_err == "api_deferred":
+                logger.debug("%s: waiting for next quota-aware refresh", search["query"])
+                continue
             if fetch_err:
                 if fetch_err in ("blocked", "rate_limit", "cooldown"):
                     blocked_searches.append(search)

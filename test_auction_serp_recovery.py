@@ -152,7 +152,7 @@ def _escalates(msg, attempt):
 
 
 class AuctionApiZeroTest(unittest.TestCase):
-    """HTML transport-failed + Browse API 0 items: honest only for BIN."""
+    """API-first auctions do not inherit failures from unused HTML transport."""
 
     def setUp(self):
         monitor._ebay_query_cache.clear()
@@ -173,15 +173,13 @@ class AuctionApiZeroTest(unittest.TestCase):
             p.start()
             self.addCleanup(p.stop)
 
-    def test_auction_zero_is_transport_fail_not_empty(self):
+    def test_auction_api_clean_empty_does_not_start_html_recovery(self):
         with mock.patch.object(monitor, "fetch_ebay_api_ex", return_value=([], None)):
             items, err = monitor.fetch_ebay_ex(_search("auction"), force=True)
         self.assertEqual(items, [])
-        self.assertIn(
-            err, ("network", "parse"),
-            "auction API 0 after a dead HTML chain must stay a transport fail, "
-            "otherwise the bucket prints «Не найдено» over a live auction",
-        )
+        self.assertIsNone(err)
+        monitor._do_fetch_one.assert_not_called()
+        monitor._do_fetch_playwright.assert_not_called()
 
     def test_auction_zero_does_not_arm_cooldown(self):
         """One thin auction bucket is not an eBay outage."""

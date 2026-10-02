@@ -22,7 +22,7 @@ def main():
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=True)
     report = {"startedAt": datetime.now(timezone.utc).isoformat(), "searches": [], "cases": []}
-    with tempfile.TemporaryDirectory(prefix="emonitor-live-audit-") as folder:
+    with tempfile.TemporaryDirectory(prefix="emonitor-live-audit-", ignore_cleanup_errors=True) as folder:
         import price_history, config_manager
         price_history.DB_PATH = str(Path(folder) / "price_history.db")
         config_manager.CONFIG_PATH = str(Path(folder) / "config.json")
@@ -33,6 +33,7 @@ def main():
         monitor.SEEN_IDS_FILE = str(Path(folder) / "seen_ids.json")
         logging.getLogger().setLevel(logging.ERROR)
         active = [s for s in source["searches"] if s.get("enabled", True)]
+        monitor.initialize_api_budget_and_queue(active)
         for n, search in enumerate(active, 1):
             started = datetime.now(timezone.utc).isoformat()
             rows, error = monitor.fetch_ebay_ex(monitor._prepare_monitor_fetch_search(search), force=False)
