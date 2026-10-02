@@ -4092,6 +4092,126 @@
         "reason": "filtered",
         "totalPrice": 35.0
       }
+    },
+    {
+      "name": "physical SIM broken despite eSIM",
+      "search": {
+        "id": "fixture",
+        "query": "iPhone 15 Pro Max",
+        "minPrice": null,
+        "maxPrice": 800,
+        "hardMaxPrice": 2500,
+        "listingType": "buy_now",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "phones",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "sim-reader-test",
+        "title": "Apple iPhone 15 Pro Max 256GB",
+        "price": 500,
+        "shipping_cost": 0,
+        "seller_name": "seller",
+        "condition": "Gebraucht",
+        "location": "DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "",
+        "total_price": 500,
+        "bin_price": 500,
+        "auc_price": null
+      },
+      "settings": {
+        "warn_non_eu": true,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 500.0
+      },
+      "details": {
+        "title": "Apple iPhone 15 Pro Max 256GB",
+        "description": "Seit dem neusten iOS 26 Update werden physische Sim Karten nicht mehr erkannt. Alternativ geht hier aber auch eine eSIM.",
+        "price": {
+          "value": "500",
+          "currency": "EUR"
+        },
+        "condition": "Gebraucht",
+        "buyingOptions": [
+          "FIXED_PRICE"
+        ]
+      }
+    },
+    {
+      "name": "SIM reader works no SIM lock",
+      "search": {
+        "id": "fixture",
+        "query": "iPhone 15 Pro Max",
+        "minPrice": null,
+        "maxPrice": 800,
+        "hardMaxPrice": 2500,
+        "listingType": "buy_now",
+        "bestOffer": false,
+        "condition": "any",
+        "sellerType": "any",
+        "location": "worldwide",
+        "category": "phones",
+        "includeWords": [],
+        "excludeWords": [],
+        "excludeSellers": [],
+        "notify": true,
+        "enabled": true
+      },
+      "item": {
+        "item_id": "sim-reader-test",
+        "title": "Apple iPhone 15 Pro Max 256GB",
+        "price": 500,
+        "shipping_cost": 0,
+        "seller_name": "seller",
+        "condition": "Gebraucht",
+        "location": "DE",
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "seller_type": "private",
+        "time_left": "",
+        "total_price": 500,
+        "bin_price": 500,
+        "auc_price": null
+      },
+      "settings": {
+        "warn_non_eu": true,
+        "non_eu_tax_rate": 0.19
+      },
+      "state": {},
+      "expected": {
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 500.0
+      },
+      "details": {
+        "title": "Apple iPhone 15 Pro Max 256GB",
+        "description": "SIM Karten werden erkannt. Kein SIM-Lock, eSIM funktioniert.",
+        "price": {
+          "value": "500",
+          "currency": "EUR"
+        },
+        "condition": "Gebraucht",
+        "buyingOptions": [
+          "FIXED_PRICE"
+        ]
+      }
     }
   ]
 }

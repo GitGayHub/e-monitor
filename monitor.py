@@ -4542,6 +4542,10 @@ def _is_description_blocked(desc_html, category):
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
 
+    # A working eSIM does not make a failed physical SIM reader defect-free.
+    if re.search(r"\bsim(?:\s*(?:karten?|cards?))?\b[^.!?]{0,80}\b(?:nicht(?:\s+mehr)?\s+(?:erkannt|gelesen)|(?:not|no longer)\s+(?:recognized|recognised|detected|working))\b", desc_norm) or re.search(r"\b(?:erkennt|erkennen)\s+(?:keine|keinen|nicht)\s+.{0,20}\bsim\b", desc_norm):
+        return True
+
     if _has_damage_in_description(desc_norm):
         logger.info("Description blocked due to damage check (part + defect words)")
         return True
