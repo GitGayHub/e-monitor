@@ -6964,6 +6964,11 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         return False
     h = _item_hash(item["seller_name"], item["title"], item["price"])
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
+    if not details:
+        # APK also keeps unavailable descriptions preliminary. Leave the stage
+        # unconfirmed so a later scan can retry after eBay becomes reachable.
+        logger.warning("Skipping notification for item %s: details unavailable; will retry", item["item_id"])
+        return False
     if not _details_match_contract(item, search, details):
         logger.info("Skipping notification for item %s: details do not pass common rules", item["item_id"])
         return False

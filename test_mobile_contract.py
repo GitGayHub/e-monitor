@@ -61,9 +61,10 @@ class MobileContractTests(unittest.TestCase):
                     "total_price": 30, "auction": True, "buy_now": False, "time_left": "5 Min"}
             search = {"query": "DualSense", "filters": {"category": "all", "limit_price": 40}}
             with patch.object(monitor, "seen_state", {"retry": before.copy()}), patch.object(monitor, "save_seen_ids"), \
-                 patch.object(monitor, "_fetch_item_details", return_value=None), \
-                 patch.object(monitor, "send_notification", new=AsyncMock(return_value=False)):
+                 patch.object(monitor, "_fetch_item_details", return_value={"title": "DualSense", "price": {"value": "30"}}), \
+                 patch.object(monitor, "send_notification", new=AsyncMock(return_value=False)) as sender:
                 self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(), item, search, None, stage)))
+                sender.assert_awaited_once()
                 self.assertEqual(monitor.get_seen_entry("retry"), before)
 
     def test_unknown_seller_and_waiting_auction_are_not_marked_delivered(self):
@@ -183,6 +184,32 @@ class MobileContractTests(unittest.TestCase):
             self.assertTrue(asyncio.run(monitor._process_notify_candidate(Mock(),item,search,None,"initial")))
             self.assertEqual(item["total_price"],30)
             self.assertTrue(monitor.get_seen_entry(item["item_id"])["initial"])
+
+    def test_unavailable_details_wait_for_retry_then_send_once(self):
+        document = json.loads((Path(__file__).parent / "qa/fixtures/parity_cases.json").read_text(encoding="utf-8"))
+        case = next(x for x in document["cases"] if x["name"] == "details contract: lower BIN authoritative")
+        item = copy.deepcopy(case["item"])
+        search = merge.app_search_to_config(case["search"])
+        cfg = Mock()
+        cfg.get_settings.return_value = case["settings"]
+        cfg.get_global_banned_sellers.return_value = []
+        cfg.get_banned_item_ids.return_value = set()
+        cfg.get_item_hashes.return_value = set()
+        with patch.object(monitor, "config", cfg), patch.object(monitor, "seen_state", {}), \
+             patch.object(monitor, "save_seen_ids"), \
+             patch.object(monitor, "_fetch_item_details", side_effect=[None, {}, case["details"]]) as fetch, \
+             patch.object(monitor, "send_notification", new=AsyncMock(return_value=True)) as sender, \
+             patch.object(feed, "enqueue") as enqueue:
+            for _ in range(2):
+                self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(), item, search, None, "initial")))
+                self.assertFalse(monitor.get_seen_entry(item["item_id"])["initial"])
+                sender.assert_not_awaited()
+                enqueue.assert_not_called()
+            self.assertTrue(asyncio.run(monitor._process_notify_candidate(Mock(), item, search, None, "initial")))
+            self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(), item, search, None, "initial")))
+            sender.assert_awaited_once()
+            enqueue.assert_called_once()
+            self.assertEqual(fetch.call_count, 3)
 
     def test_rejected_details_never_claim_successful_delivery(self):
         item={"item_id":"retry-rejected","title":"Logitech Superlight 2","price":30,"shipping_cost":5,"seller_name":"seller","buy_now":True,"auction":False,"location":"DE","condition":"Gebraucht"}
