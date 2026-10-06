@@ -94,10 +94,15 @@ class ConfigManager:
         if os.path.exists(self._path):
             try:
                 with open(self._path, "r", encoding="utf-8") as f:
-                    self._data = json.load(f)
-            except (json.JSONDecodeError, IOError) as e:
+                    candidate = json.load(f)
+                if not isinstance(candidate, dict) or not isinstance(candidate.get("searches", []), list) or not isinstance(candidate.get("settings", {}), dict):
+                    raise ValueError("Invalid configuration structure")
+                self._data = candidate
+            except (ValueError, IOError) as e:
                 logger.error("config load error: %s", e)
-                self._data = {}
+                if self._data:
+                    return False
+                raise
         for k, v in DEFAULT_CONFIG.items():
             if k not in self._data:
                 self._data[k] = copy.deepcopy(v)
@@ -108,6 +113,7 @@ class ConfigManager:
         if _migrate_searches(self._data):
             self.save()
             logger.info("Migrated Sony headphone searches to all-category eBay fetch")
+        return True
 
     def save(self):
         try:

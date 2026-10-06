@@ -12,6 +12,19 @@ from unittest.mock import Mock
 
 
 class MobileContractTests(unittest.TestCase):
+    def test_price_and_metadata_without_seller_description_cannot_send(self):
+        item = {"item_id": "unverified", "title": "Sony DualSense Wireless Controller", "price": 30,
+                "shipping_cost": 0, "seller_name": "seller", "buy_now": True, "auction": False}
+        search = {"query": "DualSense", "filters": {"category": "all", "limit_price": 40}}
+        for description in (None, "", '<div class="product_crosssell">Other working products</div>'):
+            details = {"title": item["title"], "price": {"value": "30"}}
+            if description is not None:
+                details["description"] = description
+            with patch.object(monitor, "seen_state", {}), patch.object(monitor, "_fetch_item_details", return_value=details), \
+                 patch.object(monitor, "send_notification", new=AsyncMock()) as sender:
+                self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(), copy.deepcopy(item), search, None, "initial")))
+                sender.assert_not_awaited()
+
     def test_refreshed_foreign_country_cannot_bypass_germany_filter(self):
         item = {"item_id":"foreign","title":"Sony DualSense Wireless Controller", "price":30,"shipping_cost":0,"total_price":30,"seller_name":"seller","condition":"Gebraucht","location":"","buy_now":True,"auction":False,"best_offer":False}
         search = {"id":"pad","query":"DualSense", "filters":{"location":"de", "category":"all", "listing_type":"buy_now", "limit_price":40}}
@@ -61,7 +74,7 @@ class MobileContractTests(unittest.TestCase):
                     "total_price": 30, "auction": True, "buy_now": False, "time_left": "5 Min"}
             search = {"query": "DualSense", "filters": {"category": "all", "limit_price": 40}}
             with patch.object(monitor, "seen_state", {"retry": before.copy()}), patch.object(monitor, "save_seen_ids"), \
-                 patch.object(monitor, "_fetch_item_details", return_value={"title": "DualSense", "price": {"value": "30"}}), \
+                 patch.object(monitor, "_fetch_item_details", return_value={"title": "DualSense", "description": "Sony DualSense, fully functional controller.", "price": {"value": "30"}}), \
                  patch.object(monitor, "send_notification", new=AsyncMock(return_value=False)) as sender:
                 self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(), item, search, None, stage)))
                 sender.assert_awaited_once()
@@ -180,7 +193,8 @@ class MobileContractTests(unittest.TestCase):
         item=copy.deepcopy(c["item"]);search=merge.app_search_to_config(c["search"])
         cfg=Mock();cfg.get_settings.return_value=c["settings"];cfg.get_global_banned_sellers.return_value=[]
         cfg.get_banned_item_ids.return_value=set();cfg.get_item_hashes.return_value=set()
-        with patch.object(monitor,"config",cfg),patch.object(monitor,"seen_state",{}),patch.object(monitor,"save_seen_ids"),patch.object(monitor,"_fetch_item_details",return_value=c["details"]),patch.object(monitor,"send_notification",new=AsyncMock(return_value=True)),patch.object(feed,"enqueue"):
+        details = dict(c["details"], description="Fully functional Logitech Superlight 2 mouse.")
+        with patch.object(monitor,"config",cfg),patch.object(monitor,"seen_state",{}),patch.object(monitor,"save_seen_ids"),patch.object(monitor,"_fetch_item_details",return_value=details),patch.object(monitor,"send_notification",new=AsyncMock(return_value=True)),patch.object(feed,"enqueue"):
             self.assertTrue(asyncio.run(monitor._process_notify_candidate(Mock(),item,search,None,"initial")))
             self.assertEqual(item["total_price"],30)
             self.assertTrue(monitor.get_seen_entry(item["item_id"])["initial"])
@@ -197,7 +211,7 @@ class MobileContractTests(unittest.TestCase):
         cfg.get_item_hashes.return_value = set()
         with patch.object(monitor, "config", cfg), patch.object(monitor, "seen_state", {}), \
              patch.object(monitor, "save_seen_ids"), \
-             patch.object(monitor, "_fetch_item_details", side_effect=[None, {}, case["details"]]) as fetch, \
+             patch.object(monitor, "_fetch_item_details", side_effect=[None, {}, dict(case["details"], description="Fully functional Logitech Superlight 2 mouse.")]) as fetch, \
              patch.object(monitor, "send_notification", new=AsyncMock(return_value=True)) as sender, \
              patch.object(feed, "enqueue") as enqueue:
             for _ in range(2):

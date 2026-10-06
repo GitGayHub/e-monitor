@@ -83,6 +83,7 @@ def main():
         "source": os.environ.get("GITHUB_REPOSITORY", "GitGayHub/e-monitor"),
         "commit": os.environ.get("GITHUB_SHA", ""),
         "updatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "settingsRevision": config.get("mobile_settings_revision"),
         # Android app shows this as «на основе e-monitor · Версия: …»
         # Same stamp as Telegram stats footer (logic_version.txt, not git HEAD).
         "logicVersion": logic_ts if logic_ts is not None else existing.get("logicVersion"),

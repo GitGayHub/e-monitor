@@ -34,7 +34,9 @@ def evaluate(case):
     raw = rows[0]
     details = case.get("details")
     if details:
-        if not monitor._details_match_contract(raw, search, details):
+        # These historical snapshots test individual metadata/price rules. They
+        # are not full seller-description evidence and cannot authorize delivery.
+        if not monitor._details_match_contract(raw, search, details, require_description=False):
             return False, "filtered", raw["total_price"]
         monitor._refresh_candidate_details(raw, details, settings)
         rows = monitor.filter_results([copy.deepcopy(raw)], search, config, skip_seen=True, is_statistics=True)

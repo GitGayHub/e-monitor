@@ -1,4 +1,6 @@
 import json
+import os
+import tempfile
 from pathlib import Path
 
 
@@ -79,6 +81,7 @@ def main():
     # Legacy migrations must not overwrite explicit settings from the phone.
     config["mobile_managed"] = True
     config["mobile_manifest_revision"] = str(manifest.get("updatedAt", ""))
+    config["mobile_settings_revision"] = manifest.get("settingsRevision")
 
     searches = [
         app_search_to_config(search)
@@ -100,9 +103,18 @@ def main():
     if "warn_non_eu" in app_config:
         config["settings"]["warn_non_eu"] = as_bool(app_config.get("warn_non_eu"), True)
 
-    with open(CONFIG_PATH, "w", encoding="utf-8") as handle:
-        json.dump(config, handle, ensure_ascii=False, indent=2)
-        handle.write("\n")
+    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(dir=CONFIG_PATH.parent, prefix=".config-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            json.dump(config, handle, ensure_ascii=False, indent=2, allow_nan=False)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, CONFIG_PATH)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
 
     print(
         "Merged Android manifest into config: "

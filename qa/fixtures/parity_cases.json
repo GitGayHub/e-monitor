@@ -3260,15 +3260,29 @@
       },
       "state": {},
       "expected": {
-        "accepted": false,
-        "reason": "filtered",
-        "totalPrice": 35
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 37
       },
       "details": {
         "price": {
           "value": "32",
           "currency": "EUR"
         }
+      },
+      "originalExpected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      },
+      "validationScope": "listing_metadata_only",
+      "ruleEvidence": {
+        "rule": "Refresh a changed price then reapply limits; seller description remains mandatory in production",
+        "browserPriceChanges": [
+          "https://www.ebay.de/itm/407262159763",
+          "https://www.ebay.de/itm/366710839027"
+        ],
+        "limitation": "These synthetic metadata slices omit seller description. They cannot authorize a real notification; separate delivery tests reject missing description."
       }
     },
     {
@@ -3992,15 +4006,29 @@
       },
       "state": {},
       "expected": {
-        "accepted": false,
-        "reason": "filtered",
-        "totalPrice": 35
+        "accepted": true,
+        "reason": "notify",
+        "totalPrice": 40
       },
       "details": {
         "currentBidPrice": {
           "value": "35",
           "currency": "EUR"
         }
+      },
+      "originalExpected": {
+        "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 35
+      },
+      "validationScope": "listing_metadata_only",
+      "ruleEvidence": {
+        "rule": "Refresh a changed price then reapply limits; seller description remains mandatory in production",
+        "browserPriceChanges": [
+          "https://www.ebay.de/itm/407262159763",
+          "https://www.ebay.de/itm/366710839027"
+        ],
+        "limitation": "These synthetic metadata slices omit seller description. They cannot authorize a real notification; separate delivery tests reject missing description."
       }
     },
     {

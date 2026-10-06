@@ -49,6 +49,26 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
+    def test_browser_verified_console_generation_and_cover_bundle(self):
+        query = 'playstation 5 pro'
+        wrong = [
+            'Sony PlayStation 4 Pro Konsole Schwarz Bundle mit 5 Controllern, Spielen..',
+            'PlayStation 5 Digital Edition + 1TB Samsung 980 Pro + DualSense Edge + Headset',
+            'Sony PS5 Pro Konsole Cover & DualSense Controller Wolverine Battle Yellow Ltd Ed',
+        ]
+        for title in wrong:
+            with self.subTest(title=title):
+                self.assertFalse(monitor._has_ps5_pro_console_hint(monitor._normalize(title)))
+        for title in ['Sony PlayStation 5 Pro Konsole 2TB mit Controller',
+                      'Sony Playstation 5 Pro PS5 Pro 2TB CFI-7021 + Controller + OVP + Kabel',
+                      'Playstation Pro Konsole CFI-7121 mit Laufwerk']:
+            self.assertTrue(monitor._has_ps5_pro_console_hint(monitor._normalize(title)))
+        for title,category in [('Sony PS5 Pro Konsole Cover & Controller','consoles'),
+                               ('Asus Laptop Tastatur + Kabel','laptops'),
+                               ('Sony Kopfhörer Ohrpolster + Case','headphones'),
+                               ('Samsung Monitor Netzteil + Kabel','monitors')]:
+            self.assertTrue(monitor._is_category_blocked_title(monitor._normalize(title),category))
+
     def test_vivobook_requires_3050_in_details(self):
         search = {
             "query": "asus vivobook 14x oled",
@@ -446,6 +466,7 @@ class SearchIntentRuleTests(unittest.TestCase):
         )
         details = {
             "title": "Samsung Galaxy S24 Ultra - 256 GB - Titan Schwarz Graphite",
+            "description": "Samsung S24 Ultra 256 GB, fully functional phone.",
             "price": {"value": "430.0", "currency": "EUR"},
             "htmlShippingCost": {"value": "6.19", "currency": "EUR"},
             "itemLocationText": "Erkner, Deutschland",
@@ -477,11 +498,13 @@ class SearchIntentRuleTests(unittest.TestCase):
         details_by_id = {
             "236905989506": {
                 "title": first_by_card["title"],
+                "description": "Samsung S24 Ultra 256 GB, fully functional phone.",
                 "price": {"value": "450.0", "currency": "EUR"},
                 "htmlShippingCost": {"value": "6.19", "currency": "EUR"},
             },
             "117236309864": {
                 "title": cheaper_after_details["title"],
+                "description": "Samsung S24 Ultra 256 GB, fully functional phone.",
                 "price": {"value": "430.0", "currency": "EUR"},
                 "htmlShippingCost": {"value": "6.19", "currency": "EUR"},
             },
@@ -505,6 +528,7 @@ class SearchIntentRuleTests(unittest.TestCase):
         )
         details = {
             "title": candidate["title"],
+            "description": "Samsung S24 Ultra 256 GB, fully functional phone.",
             "price": {"value": "430.0", "currency": "EUR"},
             "htmlShippingCost": {"value": "242.40", "currency": "EUR"},
             "itemLocationText": "Erkner, Deutschland",
@@ -520,7 +544,7 @@ class SearchIntentRuleTests(unittest.TestCase):
         search = {"query": "samsung s24 ultra", "filters": {"category": "phones", "listing_type": "buy_now_offer"}}
         cheap = item("Samsung Galaxy S24 Ultra 256 GB Grau", item_id="1", price=450, total_price=450)
         far = item("Samsung Galaxy S24 Ultra 1TB", item_id="2", price=900, total_price=900)
-        with patch.object(monitor, "_fetch_item_details", return_value={"title": cheap["title"], "price": {"value": "450", "currency": "EUR"}}) as fetch:
+        with patch.object(monitor, "_fetch_item_details", return_value={"title": cheap["title"], "description": "Samsung S24 Ultra 256 GB, fully functional phone.", "price": {"value": "450", "currency": "EUR"}}) as fetch:
             selected = asyncio.run(monitor._select_cheapest_valid_candidate([cheap, far], search))
         self.assertEqual(selected["item_id"], "1")
         self.assertEqual(fetch.call_count, 1)
@@ -691,7 +715,8 @@ class SearchIntentRuleTests(unittest.TestCase):
         ok, reason = monitor._notify_eligibility(long_auc, search)
         self.assertFalse(ok)
         self.assertEqual(reason, "wait_24h")
-        # Absurd 6€ floor is bait, not a real XM6
+        # A low opening bid does not establish bait. Model, purpose and full
+        # seller description decide whether it is a device; time controls alerts.
         bait_auc = item(
             "Sony WH-1000XM6",
             item_id="1b",
@@ -704,7 +729,7 @@ class SearchIntentRuleTests(unittest.TestCase):
         )
         ok, reason = monitor._notify_eligibility(bait_auc, search)
         self.assertFalse(ok)
-        self.assertEqual(reason, "too_cheap")
+        self.assertEqual(reason, "wait_24h")
 
         # Auktion+ under limit → alertable (green)
         bo = item(

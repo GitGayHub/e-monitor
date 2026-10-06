@@ -36,16 +36,16 @@ def _udlo(search):
 
 class FloorStaysOutOfTheDealBandTest(unittest.TestCase):
     def test_mouse_lot_just_under_the_limit_is_fetchable(self):
-        s = _search("logitech superlight 2", 45, category="mice")
+        s = _search("logitech superlight 2", 45, category="mice", listing_type="buy_now")
         self.assertLess(float(_udlo(s)), 36.69,
                         "the 36.69€ SUPERLIGHT 2 has to be inside the fetched band")
 
     def test_pixel_5_band_is_not_inverted(self):
-        s = _search("Pixel 5", 70, category="phones")
+        s = _search("Pixel 5", 70, category="phones", listing_type="buy_now")
         self.assertLess(float(_udlo(s)), 70, "asking for ≥120€ under a 70€ limit matches nothing")
 
     def test_low_limit_is_a_bet_not_a_misconfiguration(self):
-        s = _search("sony ult wear", 30, category="headphones")
+        s = _search("sony ult wear", 30, category="headphones", listing_type="buy_now")
         self.assertLess(float(_udlo(s)), 30)
 
     def test_bait_floor_survives_on_a_high_limit(self):
@@ -65,13 +65,30 @@ class FloorStaysOutOfTheDealBandTest(unittest.TestCase):
 
     def test_big_market_keeps_a_usable_page_one(self):
         """iPhone: the floor still skips most accessory noise (≈112€ of 450€)."""
-        s = _search("iPhone 15 Pro Max", 450, category="phones")
+        s = _search("iPhone 15 Pro Max", 450, category="phones", listing_type="buy_now")
         self.assertGreater(float(_udlo(s)), 100)
         self.assertLessEqual(float(_udlo(s)), 450 * monitor._BAIT_FLOOR_SHARE_OF_LIMIT)
 
     def test_searches_without_a_limit_keep_the_old_floor(self):
-        s = _search("samsung odyssey oled g6 500hz", None, category="monitors")
+        s = _search("samsung odyssey oled g6 500hz", None, category="monitors", listing_type="buy_now")
         self.assertEqual(float(_udlo(s)), 150.0)
+
+    def test_real_s24_opening_bid_is_fetchable_and_waits_for_notification_time(self):
+        # Browser audit 2026-10-05, 168761406827: original working SM-S928B/DS,
+        # 1.50 EUR + 6.19 delivery; opening bid is not a fixed purchase price.
+        s = _search("samsung s24 ultra", 350, category="phones")
+        s["filters"]["min_price"] = 50
+        self.assertIsNone(_udlo(s))
+        row = {"auction": True, "buy_now": False, "price": 1.5,
+               "total_price": 7.69, "time_left": "6T 22Std"}
+        self.assertFalse(monitor._is_implausibly_cheap_device(row, s))
+        self.assertEqual((False, "wait_24h"), monitor._notify_eligibility(row, s))
+        row["time_left"] = "23Std"
+        self.assertEqual((True, "notify"), monitor._notify_eligibility(row, s))
+
+    def test_mixed_search_cannot_hide_auction_opening_bids(self):
+        s = _search("sony ult wear", 30, category="headphones", listing_type="all")
+        self.assertIsNone(_udlo(s))
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ on:
       - "mobile/app_sync.json"
       - "mobile/feed.json"
       - "mobile/feed_pending.json"
+      - "mobile/runtime_status.json"
       - "details_test_output.json"
       - "monitor_debug_tail.txt"
   schedule:
@@ -221,6 +222,7 @@ jobs:
             [ -f mobile/feed.json ] && git add mobile/feed.json
             [ -f mobile/feed_pending.json ] && git add mobile/feed_pending.json
             [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
+            [ -f mobile/runtime_status.json ] && git add mobile/runtime_status.json
             [ -f details_test_output.json ] && git add details_test_output.json
             [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
             if ! git diff --cached --quiet; then
@@ -274,6 +276,7 @@ jobs:
           [ -f mobile/feed.json ] && git add mobile/feed.json
           [ -f mobile/feed_pending.json ] && git add mobile/feed_pending.json
           [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
+          [ -f mobile/runtime_status.json ] && git add mobile/runtime_status.json
           [ -f details_test_output.json ] && git add details_test_output.json
           [ -f monitor_debug_tail.txt ] && git add monitor_debug_tail.txt
           if git diff --cached --quiet; then
@@ -282,5 +285,19 @@ jobs:
           fi
           git commit -m "Update monitor state"
           python mobile/checkpoint_push.py
+
+      - name: Publish failure without acknowledging pending settings
+        if: failure()
+        env:
+          CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
+        run: |
+          python mobile/runtime_status.py "Рабочий прогон завершился ошибкой; новая конфигурация не подтверждена"
+          git config user.name "E Bot"
+          git config user.email "bot@noreply.github.com"
+          git add mobile/runtime_status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish monitor failure status"
+            python mobile/checkpoint_push.py
+          fi
 
 # Trigger: 2026-07-01T07:22:00Z
