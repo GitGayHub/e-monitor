@@ -6,6 +6,24 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_s25_edge_does_not_accept_base_plus_or_ultra(self):
+        for title,expected in [('Samsung Galaxy S25 Edge 256GB',True),('Samsung S25Edge 512GB',True),('Samsung Galaxy S25 256GB',False),('Samsung Galaxy S25 Ultra 256GB',False),('Samsung Galaxy S25 Plus 256GB',False)]:
+            with self.subTest(title=title):
+                self.assertEqual(expected,monitor._matches_phone_query_model(monitor._normalize(title),'samsung galaxy s25 edge'))
+    def test_headphone_seller_model_and_actual_case_bundle(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/headphone_manual_details.json').read_text(encoding='utf8'))
+        for category in ('all','headphones'):
+            search={'query':'sony wh-1000xm6','filters':{'category':category}}
+            for case in cases:
+                with self.subTest(category=category,item=case['id']):
+                    title=monitor._normalize(case['title'])
+                    result=not monitor._is_category_blocked_title(title,'headphones') and monitor._details_match_contract({'title':case['title']},search,case)
+                    self.assertEqual(case['expected'],result)
+        self.assertFalse(monitor._headphone_details_match('sony wh1000xm5','Sony WH1000XM6','Sony WH1000XM6 Headphones',[]))
+        self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WF1000XM6','Sony WF1000XM6 earphones',[]))
+        self.assertTrue(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6','Selling Sony WH1000XM6 headphones. Upgrading to WH1000XM7.',[]))
+        self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6 | Original Case','Original case for Sony WH1000XM6 headphones. Headphones not included.',[]))
+
     def test_actual_monitor_category_placeholder_and_panel_conflict(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/monitor_manual_details.json').read_text(encoding='utf-8'))
         for category in ('monitors','all'):

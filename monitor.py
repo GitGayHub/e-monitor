@@ -1258,7 +1258,7 @@ def _phone_model_aspect_params(query_norm):
         model = "Apple iPhone " + " ".join(parts)
 
     galaxy = re.search(
-        r"\b(?:samsung\s+)?galaxy\s+((?:s|z|a)\d{1,2})(?:\s+(ultra|plus|fe|fold|flip))?\b",
+        r"\b(?:samsung\s+)?galaxy\s+((?:s|z|a)\d{1,2})(?:\s+(ultra|plus|fe|edge|fold|flip))?\b",
         query_norm,
     )
     if galaxy:
@@ -1578,7 +1578,7 @@ _IPHONE_PRO_MAX_CODES = {
 
 _PHONE_MODEL_PATTERNS = (
     r"\biphone\s*(\d{1,2}|xs|xr|x|se)(?:\s*(pro\s*max|pro|max|plus|mini|air|se))?\b",
-    r"\b(?:galaxy\s*)?s(\d{2})(?:\s*(ultra|plus|fe))?\b",
+    r"\b(?:galaxy\s*)?s(\d{2})(?:\s*(ultra|plus|fe|edge))?\b",
     r"\bpixel\s*(\d+[a-z]?)(?:\s*(pro\s*xl|pro|xl|fold))?\b",
     r"\boneplus\s*(\d{1,2}[a-z]?|ace)(?:\s*(pro|ultra))?\b",
     r"\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro))?(?:\s*(leading))?\b",
@@ -2118,7 +2118,7 @@ def _is_device_bundle(title_norm, category):
     if re.search(r"\b(?:fuer|for|voor|para|pour|per|kompatibel|compatible|fits)\b|\bf\s*\.\s*", title_norm):
         return False
     nouns = {
-        "headphones": "kopfhoerer|headphones|headset",
+        "headphones": r"kopfhoerer|headphones|headset|(?:sony\s+)?wh[\s-]*1000[\s-]*xm\d+",
         "consoles": "konsole|spielkonsole|console|digital edition|disc edition",
         "laptops": "laptop|notebook|macbook|vivobook|zenbook",
         "mice": r"maus|mouse|gaming mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|superstrike",
@@ -2136,7 +2136,11 @@ def _is_device_bundle(title_norm, category):
     if category == "headphones" and re.search(r"\b(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge)\b", title_norm):
         return False
     receiver_feature = category == "mice" and re.search(r"\b(?:maus|mouse)\b", title_norm) and re.search(r"\b(?:kabellos|wireless)\b.{0,25}\b(?:usb[- ]?)?(?:empfaenger|receiver)\b", title_norm)
-    return bool(re.search(r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm[device.end():]) or receiver_feature)
+    implicit_headphone = category == "headphones" and not re.search(r"\b(?:kopfhoerer|headphones|headset)\b", title_norm)
+    connector = r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)"
+    if implicit_headphone:
+        connector = r"\|"
+    return bool(re.search(connector, title_norm[device.end():]) or receiver_feature)
 
 
 @functools.lru_cache(maxsize=1)
@@ -5139,6 +5143,40 @@ def _details_price_mismatch(item, details):
     return (abs(details_price - item_price) > 1.0 if item.get("auction") else details_price > item_price + 1.0), item_price, details_price
 
 
+def _headphone_models(text):
+    pattern = r"\b(?:(wh|wf)[\s-]*1000[\s-]*)?xm(\d+)\b|\b(?:wh[\s-]*ult900n|ult\s*wear)\b"
+    return [(match.group(1) or 'wh') + '1000xm' + match.group(2) if match.group(2) else 'ult900n'
+            for match in re.finditer(pattern, _normalize(text))]
+
+
+def _headphone_details_match(query, title, description, aspects):
+    expected = _headphone_models(query)
+    if not expected:
+        return True
+    expected = expected[0]
+    declared = _headphone_models(title)
+    if declared and declared[0] != expected:
+        return False
+    own = _normalize(_clean_description(description))
+    described = _headphone_models(own)
+    if described and described[0] != expected:
+        return False
+    for aspect in aspects:
+        if _normalize(aspect.get('name') or '') in ('model', 'modell'):
+            models = _headphone_models(aspect.get('value') or '')
+            if models and models[0] != expected:
+                return False
+    # An implicit model + case title is preliminary until the seller confirms
+    # that headphones are actually included, rather than a case for that model.
+    if '|' in title and not re.search(r"\b(?:kopfhoerer|headphones|headset)\b", _normalize(title)):
+        device = re.search(r"\b(?:kopfhoerer|headphones|headset)\b", own)
+        if not device or re.search(r"\b(?:case|cover|hulle|huelle|schutzhulle|tasche)\b", own[:device.start()]):
+            return False
+        if re.search(r"\b(?:headphones|headset|kopfhoerer)\s+(?:are\s+|sind\s+)?(?:not\s+included|nicht\s+enthalten)\b", own):
+            return False
+    return True
+
+
 def _details_match_contract(item, search, details, *, require_description=True):
     """Common checks; only isolated legacy metadata fixtures may omit description."""
     if require_description and (not details or not _clean_description(details.get("description") or "").strip()):
@@ -5159,6 +5197,10 @@ def _details_match_contract(item, search, details, *, require_description=True):
     if allowed and cat_id and cat_id not in allowed and not any(cid in allowed for cid in path):
         return False
     query = _normalize(_intent_query(search))
+    if _effective_category(category, query) == 'headphones' and not _headphone_details_match(
+            query, details.get('title') or item.get('title') or '', details.get('description') or '',
+            details.get('localizedAspects') or []):
+        return False
     if _effective_category(category, query) == "monitors" and "oled" in query:
         non_oled = r"(?:ips|tn|va|lcd|led|qled)"
         panel_label = r"(?:panel(?:[ -]*(?:typ|type|technologie|technology))?|display[ -]*(?:typ|type|technologie|technology)|bildschirm[ -]*(?:typ|technologie))"

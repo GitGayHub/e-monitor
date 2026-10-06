@@ -94,7 +94,12 @@ class BrowseTransportTest(unittest.TestCase):
         self.assertEqual(params["sort"], "endingSoonest")
 
     def test_release_footer_contains_apk_and_actual_source(self):
-        self.assertEqual(monitor._apk_version_label(), "0.028")
+        with tempfile.TemporaryDirectory() as folder:
+            version=Path(folder)/'mobile/app_version.json'
+            version.parent.mkdir()
+            version.write_text(json.dumps({'schema':1,'versionName':'0.123'}),encoding='utf8')
+            with patch.object(monitor,'__file__',str(Path(folder)/'monitor.py')):
+                self.assertEqual(monitor._apk_version_label(), "0.123")
         self.assertEqual(monitor._fetch_source_label("api"), "eBay Browse API")
 
     def test_unavailable_description_does_not_pass_statistics_or_scrape_html(self):
