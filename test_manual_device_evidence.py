@@ -23,6 +23,7 @@ class ManualDeviceEvidenceTests(unittest.TestCase):
         self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WF1000XM6','Sony WF1000XM6 earphones',[]))
         self.assertTrue(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6','Selling Sony WH1000XM6 headphones. Upgrading to WH1000XM7.',[]))
         self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6 | Original Case','Original case for Sony WH1000XM6 headphones. Headphones not included.',[]))
+        self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6 Bluetooth Headphones Case Inc','Original case for Sony WH1000XM6 headphones. Headphones not included.',[]))
 
     def test_actual_monitor_category_placeholder_and_panel_conflict(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/monitor_manual_details.json').read_text(encoding='utf-8'))

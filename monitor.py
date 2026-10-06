@@ -2150,7 +2150,13 @@ def _is_device_bundle(title_norm, category):
     connector = r"\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)"
     if implicit_headphone:
         connector = r"\|"
-    return bool(re.search(connector, title_norm[device.end():]) or receiver_feature)
+    headphone_case = category == 'headphones' and not implicit_headphone and re.search(
+        r"\b(?:anc|wireless|bluetooth|ldac|noise\s*cancell?ing)\b.*\bcase\b", title_norm[device.end():])
+    # Model may occur before the explicit noun; require a technical feature,
+    # then verify in the own description that the device is included.
+    if category == 'headphones' and not implicit_headphone:
+        headphone_case = headphone_case or re.search(r"\b(?:anc|wireless|bluetooth|ldac|noise\s*cancell?ing)\b.*\b(?:kopfhoerer|headphones|headset)\b.*\bcase\b",title_norm)
+    return bool(re.search(connector, title_norm[device.end():]) or receiver_feature or headphone_case)
 
 
 @functools.lru_cache(maxsize=1)
@@ -5178,7 +5184,9 @@ def _headphone_details_match(query, title, description, aspects):
                 return False
     # An implicit model + case title is preliminary until the seller confirms
     # that headphones are actually included, rather than a case for that model.
-    if '|' in title and not re.search(r"\b(?:kopfhoerer|headphones|headset)\b", _normalize(title)):
+    title_norm = _normalize(title)
+    case_bundle = _is_device_bundle(title_norm,'headphones') and re.search(r"\b(?:case|cover|hulle|huelle|schutzhulle|tasche)\b",title_norm)
+    if case_bundle:
         device = re.search(r"\b(?:kopfhoerer|headphones|headset)\b", own)
         if not device or re.search(r"\b(?:case|cover|hulle|huelle|schutzhulle|tasche)\b", own[:device.start()]):
             return False
