@@ -1,0 +1,41 @@
+"""Alternate spellings retain the same generation and modification."""
+import re
+
+def stored_aliases(query):
+    query=query.strip()
+    whole=re.fullmatch(r'\((.*)\)',query)
+    if whole:return [q.strip().strip('"') for q in whole[1].split(',') if q.strip()]
+    embedded=re.fullmatch(r'(.*?)\(([^()]*)\)',query)
+    if embedded:return [(embedded[1].strip()+' '+q.strip().strip('"')).strip() for q in embedded[2].split(',') if q.strip()]
+    return None
+
+def phone_aliases(query):
+    q=' '.join(query.lower().replace('-', ' ').split())
+    if re.search(r'\bvivobook\s*14\s*x\b',q) and 'oled' in q:
+        return ['asus vivobook 14x oled','asus vivobook14x oled','vivobook 14 x oled']
+    m=re.search(r'\biphone\s*(\d{1,2})(?:\s*(pro\s*max|pro|plus|mini|air))?\b',q)
+    if m:
+        n=m[1];mod=' '.join((m[2] or '').split());suffix=(' '+mod) if mod else ''
+        return [f'iphone {n}{suffix}',f'apple iphone {n}{suffix}',f'iphone{n}{suffix}',f'iphone{n}{mod.replace(" ","")}']
+    m=re.search(r'\b(?:galaxy\s*)?s(\d{2})(?:\s*(ultra|plus|fe|edge))?\b',q)
+    if m:
+        n=m[1];mod=m[2] or '';suffix=(' '+mod) if mod else ''
+        return [f'samsung galaxy s{n}{suffix}',f'samsung s{n}{suffix}',f'galaxy s{n}{suffix}',f's{n}{mod}']
+    m=re.search(r'\bpixel\s*(\d+[a-z]?)(?:\s*(pro\s*xl|pro|xl|fold))?\b',q)
+    if m:
+        n=m[1];mod=' '.join((m[2] or '').split());suffix=(' '+mod) if mod else ''
+        return [f'google pixel {n}{suffix}',f'pixel {n}{suffix}',f'pixel{n}{suffix}']
+    m=re.search(r'\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro))?(?:\s*(leading))?\b',q)
+    if m:
+        n=m[1];letter=m[2] or '';mod=m[3] or '';leading=' leading' if m[4] or re.search(r'\b(?:lv|leading)\b',q) else '';suffix=(' '+mod) if mod else ''
+        if leading:return [f'nubia z{n}{letter}{suffix}{leading}',f'zte nubia z{n}{letter}{suffix}{leading}',f'nubia z{n}{letter}{suffix}{leading} version',f'nubia z{n}{letter}{suffix} lv leading version']
+        return [f'nubia z{n}{letter}{suffix}{leading}',f'zte nubia z{n}{letter}{suffix}{leading}',f'nubia z{n} {letter}{suffix}{leading}'.replace('  ',' ')]
+    m=re.search(r'\b(?:red\s*magic)\s*(\d{1,2})\s*(s)?(?:\s*(pro|air))?\b',q)
+    if m:
+        n=m[1];s=m[2] or '';mod=m[3] or '';suffix=(' '+mod) if mod else ''
+        return [f'redmagic {n}{s}{suffix}',f'red magic {n}{s}{suffix}',f'nubia redmagic {n}{s}{suffix}',f'redmagic {n} {s}{suffix}'.replace('  ',' ')]
+    m=re.search(r'\b(?:(wh|wf)\s*1000\s*)?xm(\d+)\b',q)
+    if m:
+        family=m[1] or 'wh';generation=m[2]
+        return [f'sony {family}-1000xm{generation}',f'sony {family}1000xm{generation}',f'sony {family} 1000 xm{generation}']
+    return None

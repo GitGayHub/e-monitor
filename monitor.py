@@ -908,6 +908,16 @@ def _intent_query(search):
 
 
 def _search_query_variants(search):
+    from query_variants import stored_aliases, phone_aliases
+    if isinstance(search,dict) and search.get('_variant_child'):
+        return [_intent_query(search)]
+    raw=search.get('query','') if isinstance(search,dict) else str(search)
+    explicit=stored_aliases(raw)
+    if explicit:
+        return list(dict.fromkeys(explicit))
+    phone=phone_aliases(_intent_query(search))
+    if phone:
+        return list(dict.fromkeys(phone))
     intent = _search_intent(search)
     if not intent:
         return [_intent_query(search)]
@@ -6270,7 +6280,21 @@ def fetch_ebay_ex(search, force=False):
     # With credentials, auto uses Browse immediately. Empty is a valid result;
     # quota/network failures must not launch an HTML/Playwright retry storm.
     if source == "api" or (source == "auto" and _ebay_api_configured()):
-        items, err = fetch_ebay_api_ex(search, force=force)
+        variants=_search_query_variants(search)
+        if len(variants)>1:
+            merged=[];errors=[]
+            for index, query in enumerate(variants):
+                child=copy.deepcopy(search);child['_query_override']=query;child['_variant_child']=True
+                # The scheduler reserves one product. Later aliases belong to
+                # that reservation; acquire() still checks quota and cooldown.
+                rows,error=fetch_ebay_api_ex(child,force=force or index > 0)
+                merged.extend(rows)
+                if error:
+                    errors.append(error)
+                    break
+            items,err=_merge_items_by_id(merged), errors[0] if errors else None
+        else:
+            items, err = fetch_ebay_api_ex(search, force=force)
         _ebay_query_cache[cache_key] = (time.time(), items, err)
         return items, err
 
