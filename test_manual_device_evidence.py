@@ -6,6 +6,61 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_spare_parts_inventory_needs_explicit_whole_phone_supply(self):
+        body='zahlung nur durch paypul oder uberweisung! akku in guten zustand; ersatzteile alle parat und in original; keine beschadigungen oder sonstiges'
+        self.assertFalse(monitor._phone_description_purpose_confirmed(body))
+        self.assertTrue(monitor._phone_description_purpose_confirmed('Das Smartphone ist voll funktionsfähig. '+body))
+        self.assertTrue(monitor._phone_description_purpose_confirmed('Lieferumfang: iPhone 17 Pro Max und Ladekabel. '+body))
+        self.assertTrue(monitor._phone_description_purpose_confirmed('Akku in gutem Zustand, keine Beschädigungen.'))
+    def test_only_whole_headphones_without_box_is_not_only_a_part(self):
+        search={'query':'sony wh-1000xm6','filters':{'category':'headphones'}}
+        for suffix,expected in [('NUR KOPFHÖRER',True),('ONLY HEADPHONES',True),('Only Case',False),('Nur Ohrpolster',False),('Left Ear Only',False),('Only Headphones Replacement Earpads',False)]:
+            title=monitor._normalize('Sony WH-1000XM6 Wireless Noise Cancelling '+suffix)
+            self.assertEqual(expected,monitor._matches_category_query(title,'headphones',monitor._normalize(search['query'])))
+    def test_real_seller_phone_purpose_chipset_and_privacy_terms(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/phone_manual_purpose.json').read_text(encoding='utf8'))
+        for case in cases:
+            for category in ('phones','all'):
+                search={'query':case['query'],'filters':{'category':category}}
+                with self.subTest(item=case['id'],category=category):
+                    self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['title']},search,case))
+    def test_all_categories_still_rejects_phone_parts_from_its_real_category(self):
+        title='ZTE Nubia Z80 Ultra NX741J Marco Intermedio Placa Bisel (Negro)'
+        self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(title)))
+        for category in ('all','phones'):
+            search={'query':'nubia z80 ultra','filters':{'category':category}}
+            # Even a part renamed to a phone must fail its real part category.
+            details={'title':'Nubia Z80 Ultra 512GB','categoryId':'43304','categoryIdPath':'15032|43304','description':'New middle frame for Nubia Z80 Ultra.'}
+            self.assertFalse(monitor._details_match_contract({'title':details['title']},search,details))
+            details={'title':'Nubia Z80 Ultra 512GB','categoryId':'9355','description':'Nubia Z80 Ultra smartphone, fully working.'}
+            self.assertTrue(monitor._details_match_contract({'title':details['title']},search,details))
+    def test_gpu_model_number_cannot_override_declared_graphics_card(self):
+        bad='Captiva Business PC 10-4080 R5 9600X 16GB DDR5 RTX 5050 1TB Win11'
+        self.assertFalse(monitor._intent_prelim_matches_title(monitor._normalize(bad),{'query':'4080 (pc, rechner)','filters':{'category':'computers'}}))
+        self.assertFalse(monitor._has_rtx_gpu('business pc 20 4060 rtx 4050 oled laptop','4060'))
+        self.assertFalse(monitor._has_rtx_5070_ti('gaming pc model 5070 ti rtx 5070'))
+        self.assertTrue(monitor._has_rtx_gpu('gaming pc rtx4080 super','4080'))
+        self.assertTrue(monitor._has_rtx_5070_ti('gaming pc rtx5070ti'))
+        search={'query':'4080 (pc, rechner)','filters':{'category':'computers'}}
+        details={'title':'Gaming PC RTX4080 Ryzen 7','categoryId':'179','description':'Gaming PC. Grafikkarte: NVIDIA GeForce RTX5050 8GB.'}
+        self.assertFalse(monitor._details_match_contract({'title':details['title']},search,details))
+    def test_ult_repair_slider_is_a_part_even_in_wrong_headphone_category(self):
+        title='Sony ULT Wear WH-ULT900N Original Slider Außenpanel Rechts Schwarz Reparaturteil'
+        self.assertTrue(monitor._is_category_blocked_title(monitor._normalize(title),'headphones','sony ult wear'))
+    def test_customer_data_restriction_does_not_erase_real_phone_lock(self):
+        privacy='Nach vollständiger Vertragsabwicklung werden Ihre Daten für die weitere Verwendung gesperrt.'
+        self.assertFalse(monitor._is_description_blocked(privacy,'phones'))
+        self.assertTrue(monitor._is_description_blocked(privacy+' Das Telefon ist gesperrt.','phones'))
+        self.assertTrue(monitor._is_description_blocked('Der Bildschirm ist defekt. '+privacy,'phones'))
+    def test_s25_edge_rejects_explicit_wrong_chip_without_requiring_missing_specs(self):
+        query='samsung galaxy s25 edge'
+        self.assertFalse(monitor._phone_specifications_match('Samsung S25 Edge','Der leistungsfähige Exynos 990 Prozessor sorgt für Multitasking.',query))
+        self.assertFalse(monitor._phone_specifications_match('Samsung S25 Edge','Processor: Snapdragon 8 Gen 3.',query))
+        self.assertFalse(monitor._phone_specifications_match('Samsung S25 Edge 16GB RAM','',query))
+        for body in ('', 'Processor: Octa-Core.', 'Processor: Snapdragon 8 Elite for Galaxy.', 'Compared to the old Exynos 990, this phone is faster. Processor: Snapdragon 8 Elite.'):
+            self.assertTrue(monitor._phone_specifications_match('Samsung S25 Edge',body,query))
+        for value,expected in [('Exynos 990',False),('Snapdragon 8 Gen 3',False),('Snapdragon 8 Elite',True),('Qualcomm Snapdragon 8',True),('Octa Core',True)]:
+            self.assertEqual(expected,monitor._phone_chipset_matches(value,query))
     def test_s25_edge_does_not_accept_base_plus_or_ultra(self):
         for title,expected in [('Samsung Galaxy S25 Edge 256GB',True),('Samsung S25Edge 512GB',True),('Samsung Galaxy S25 256GB',False),('Samsung Galaxy S25 Ultra 256GB',False),('Samsung Galaxy S25 Plus 256GB',False)]:
             with self.subTest(title=title):

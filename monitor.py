@@ -304,6 +304,7 @@ PHONE_HARD_PART_WORDS = (
     "middle frame", "mittelrahmen", "mitte rahmen", "bezel", "frame bezel",
     "central frame", "center frame", "mid frame", "inner frame",
     "cornice", "cornice centrale", "telaio", "telaio centrale",
+    "marco intermedio", "placa bisel", "marco central", "bisel de marco",
     "replacement bezel", "displayrahmen", "rahmen", "photography kit",
     "photo kit", "fotografie-kit", "camera kit", "photography-kit",
     "photography set", "photography-set", "photo set", "photo-set", "fotografie set", "fotografie-set",
@@ -591,6 +592,7 @@ CATEGORY_HARD_PART_WORDS = {
         "schaumstoff", "einlagen", "polster paar", "nur ohrpolster",
         "foam earpad", "ear cushions", "pads pair", "earmuff", "earmuffs",
         "ear muff", "ear muffs", "gehoerschuetzer", "gehoerschutz", "schrauben",
+        "reparaturteil", "slider", "aussenpanel", "außenpanel", "kopfbandschieber", "kopfbuegelschieber", "schwenkgelenk", "schwenkscharnier",
     ),
     "vr_headsets": (
         "lens protector", "gurte", "strap", "controllergriffe", "aufsatz", "lentes",
@@ -991,12 +993,20 @@ def _has_pc_hint(text_norm):
     return any(w in text_norm for w in PC_DEVICE_HINTS)
 
 
+def _declared_rtx_matches(text_norm, gpu):
+    declared = re.findall(r"\brtx\s*(\d{4})(?:\s*(ti|super))?\b", text_norm)
+    expected = re.fullmatch(r"(\d{4})(ti|super)?", str(gpu))
+    if not declared or not expected:
+        return True
+    return any(number == expected.group(1) and (not expected.group(2) or modifier == expected.group(2)) for number,modifier in declared)
+
+
 def _has_rtx_gpu(text_norm, gpu):
-    return re.search(rf"\b(?:rtx\s*)?{re.escape(str(gpu))}\b", text_norm) is not None
+    return _declared_rtx_matches(text_norm,gpu) and re.search(rf"\b(?:rtx\s*)?{re.escape(str(gpu))}\b", text_norm) is not None
 
 
 def _has_rtx_5070_ti(text_norm):
-    return re.search(r"\b(?:rtx\s*)?5070\s*ti\b|\b(?:rtx\s*)?5070ti\b", text_norm) is not None
+    return _declared_rtx_matches(text_norm,'5070ti') and re.search(r"\b(?:rtx\s*)?5070\s*ti\b|\b(?:rtx\s*)?5070ti\b", text_norm) is not None
 
 
 def _intent_prelim_matches_title(title_norm, search):
@@ -1606,13 +1616,42 @@ def _phone_model_aspect_matches(value, query):
     return all(code in _IPHONE_PRO_MAX_CODES[generation.group(1)] for code in re.findall(r"\ba\d{4}\b", value))
 
 
+def _phone_chipset_matches(value, query):
+    if not re.search(r"\bs25\s*edge\b", _normalize(query)):
+        return True
+    # Samsung specifies Snapdragon 8 Elite globally for Galaxy S25 Edge:
+    # https://news.samsung.com/uk/meet-the-samsung-galaxy-s25-edge-an-engineering-marvel-of-new-slim-hardware-innovation
+    value = _normalize(value)
+    if re.search(r"\b(?:exynos|mediatek|dimensity|bionic)\b", value):
+        return False
+    chip = re.search(r"\bsnapdragon\s*(\d+)(?:\s*(elite|gen\s*\d+))?\b", value)
+    return not chip or (chip.group(1) == '8' and chip.group(2) in (None, 'elite'))
+
+
+def _phone_description_purpose_confirmed(description):
+    own = _normalize(_clean_description(description or ''))
+    # 307191399998: the short seller body only inventories spare parts.
+    # That does not independently establish that a whole phone is supplied.
+    parts_inventory = re.search(r"\bersatzteile\s+(?:sind\s+)?(?:alle\s+)?(?:parat|vorhanden|komplett)\b", own)
+    if not parts_inventory:
+        return True
+    phone = r"(?:iphone|smartphone|telefon|handy|geraet)"
+    supplied = re.search(rf"\b(?:lieferumfang|enthalten|verkaufe|verkauft\s+wird)\b[^.!?]{{0,80}}\b{phone}\b", own)
+    functional = re.search(rf"\b{phone}\b[^.!?]{{0,70}}\b(?:funktioniert|funktionsfaehig|funktionstuechtig)\b", own)
+    return bool(supplied or functional)
+
+
 def _phone_specifications_match(title, description, query):
     q = _normalize(query)
     own_description = _normalize(_clean_description(description))
     if re.search(r"\b(?:typ|produkttyp|produktart|device\s+type|type)\s*:?\s*(?:notebook|laptop|desktop|gaming\s*pc|monitor|headphones|kopfhoerer)\b", own_description):
         return False
     # Samsung's official S24 Ultra specification lists 12GB for every variant.
-    if re.search(r"\bs24\s*ultra\b", q) and re.search(r"\b(?:8|16)\s*gb\s*(?:ram|arbeitsspeicher)\b|\b(?:ram|arbeitsspeicher)\s*:?\s*(?:8|16)\s*gb\b", _normalize(title) + " " + own_description):
+    if re.search(r"\bs24\s*ultra\b|\bs25\s*edge\b", q) and re.search(r"\b(?:8|16)\s*gb\s*(?:ram|arbeitsspeicher)\b|\b(?:ram|arbeitsspeicher)\s*:?\s*(?:8|16)\s*gb\b", _normalize(title) + " " + own_description):
+        return False
+    declared_chips = re.findall(r"\b(?:prozessor|processor|chipsatz|chipset|cpu)\s*:\s*([^.!?]{1,70})", own_description)
+    declared_chips += re.findall(r"\b(?:leistungsfaehig\w*|powerful)\s+((?:qualcomm\s+)?(?:exynos|snapdragon|dimensity|mediatek)[a-z0-9 +]*?)\s+(?:prozessor|processor)\b", own_description)
+    if any(not _phone_chipset_matches(chip,q) for chip in declared_chips):
         return False
     generation = re.search(r"\biphone\s*(15|16|17)\s*pro\s*max\b", _normalize(query))
     if not generation:
@@ -2372,9 +2411,12 @@ def _matches_category_query(title_norm, category, query_norm):
             "zubehoer", "zubehör", "sweat", "earcup", "ear cup", "pad set",
             "swivel", "spindle", "buckle", "drehgelenk", "gelenk", "scharnier", "hinge",
         )
-        if any(_has_term(title_norm, w) for w in ("linke", "rechte", "left ear", "right ear", "only", "nur")):
+        # 206593245393 sells complete functional headphones without the box.
+        # Only remove the explicit whole-device scope, never "only case/pads".
+        purpose_title = re.sub(r"\b(?:nur|only)\s+(?:(?:die|the)\s+)?(?:kopfhoerer|headphones|headset)\b", " ", title_norm)
+        if any(_has_term(purpose_title, w) for w in ("linke", "rechte", "left ear", "right ear", "only", "nur")):
             return False
-        if any(_has_term(title_norm, w) for w in part_words) and not _is_device_bundle(title_norm, "headphones"):
+        if any(_has_term(purpose_title, w) for w in part_words) and not _is_device_bundle(title_norm, "headphones"):
             return False
         if re.search(r"\bf\s*\.\s*(?:sony|wh[\s-]*|ult|kopfhoerer)", title_norm):
             return False
@@ -4785,6 +4827,11 @@ def _is_description_blocked(desc_html, category):
     desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+    # 318450377900: the merchant restricts customer DATA after fulfillment,
+    # not the phone. Remove only this data-subject clause, never a device lock.
+    data_subject = r"(?:(?:ihre|die)\s+)?(?:personenbezogenen?\s+)?(?:kunden)?daten"
+    data_use = r"(?:fuer\s+die\s+weitere\s+verwendung\s+)?"
+    desc_norm = re.sub(rf"\b(?:werden\s+{data_subject}\s+{data_use}gesperrt|{data_subject}\s+werden\s+{data_use}gesperrt)\b", " ", desc_norm)
     # A private-sale exclusion of exchange is not an offer to swap the device.
     # Independently read on Sony ULT Wear auction 168749410138.
     policy = r"(?:ruecknahme|wandlung|tausch|preisminderung)"
@@ -5208,13 +5255,21 @@ def _details_match_contract(item, search, details, *, require_description=True):
         availability = details.get("estimatedAvailabilities") or []
         if any(entry.get("estimatedAvailabilityStatus") in ("OUT_OF_STOCK", "UNAVAILABLE") for entry in availability):
             return False
-    category = search.get("filters", {}).get("category", "all")
+    query = _normalize(_intent_query(search))
+    category = _effective_category(search.get("filters", {}).get("category", "all"), query)
     allowed = ALLOWED_SUBCATEGORIES.get(category)
     cat_id = str(details.get("categoryId") or "")
     path = str(details.get("categoryIdPath") or "").split("|")
     if allowed and cat_id and cat_id not in allowed and not any(cid in allowed for cid in path):
         return False
-    query = _normalize(_intent_query(search))
+    gpu_intent = _search_intent(search)
+    if gpu_intent and gpu_intent.get('kind') in ('gpu_pc','rtx_oled_laptop','vivobook_14x_oled_3050'):
+        gpu = gpu_intent.get('gpu') or '3050'
+        values = [aspect.get('value') or '' for aspect in details.get('localizedAspects') or []
+                  if _normalize(aspect.get('name') or '') in ('grafikkarte','grafikprozessor','graphics card','graphics processor','gpu')]
+        values += re.findall(r"\b(?:grafikkarte|graphics card|grafikprozessor|graphics processor|gpu)\s*:\s*([^.!?]{1,80})",_normalize(_clean_description(details.get('description') or '')))
+        if any(not _declared_rtx_matches(_normalize(value),gpu) for value in values):
+            return False
     if _effective_category(category, query) == 'headphones' and not _headphone_details_match(
             query, details.get('title') or item.get('title') or '', details.get('description') or '',
             details.get('localizedAspects') or []):
@@ -5265,6 +5320,8 @@ def _details_match_contract(item, search, details, *, require_description=True):
             return False
         if not _phone_specifications_match(title, details.get("description") or "", query):
             return False
+        if not _phone_description_purpose_confirmed(details.get("description") or ""):
+            return False
         if "iphone" in query and re.search(r"\b(?:nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b|\b(?:nicht|kein)\s+(?:um\s+)?(?:ein\s+)?(?:original(?:es|er|en)?\s+)?(?:apple\s+)?iphone\b", _normalize(_clean_description(details.get("description") or ""))):
             return False
         for aspect in details.get("localizedAspects") or []:
@@ -5272,7 +5329,9 @@ def _details_match_contract(item, search, details, *, require_description=True):
             value = _normalize(aspect.get("value") or "")
             if name in ("modell", "model") and value and not _phone_model_aspect_matches(value, query):
                 return False
-            if name in ("ram", "arbeitsspeicher", "memory") and re.search(r"\bs24\s*ultra\b", query):
+            if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query):
+                return False
+            if name in ("ram", "arbeitsspeicher", "memory") and re.search(r"\bs24\s*ultra\b|\bs25\s*edge\b", query):
                 ram = re.search(r"\b(\d+)\s*gb\b", value)
                 if ram and int(ram.group(1)) != 12:
                     return False
