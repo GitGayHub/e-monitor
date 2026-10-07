@@ -916,6 +916,9 @@ def _search_query_variants(search):
     raw=search.get('query','') if isinstance(search,dict) else str(search)
     explicit=stored_aliases(raw)
     if explicit:
+        intent = _search_intent(search)
+        if intent and intent.get('kind') == 'rtx_oled_laptop':
+            explicit += [f"rtx {intent['gpu']} (aero,vivobook,spectre,yoga,xps,legion,proart)"]
         return list(dict.fromkeys(explicit))
     phone=phone_aliases(_intent_query(search))
     if phone:
@@ -969,6 +972,7 @@ def _search_query_variants(search):
             f"rtx {gpu} oled notebook",
             f"laptop {gpu} oled",
             f"{gpu} oled",
+            f"rtx {gpu} (aero,vivobook,spectre,yoga,xps,legion,proart)",
         ]
     return [_intent_query(search)]
 
@@ -1058,6 +1062,24 @@ def _intent_prelim_matches_title(title_norm, search):
     return True
 
 
+def _known_oled_configuration(model_text, screen_text):
+    # Lenovo PSREF Yoga Pro 7 14IMH9: 2880x1800 is OLED, whereas
+    # 2560x1600 and 3072x1920 are IPS. Model name alone proves nothing.
+    # Source: psref.lenovo.com/syspool/Sys/PDF/Yoga/Yoga_Pro_7_14IMH9/Yoga_Pro_7_14IMH9_Spec.PDF
+    # Dell XPS 15 9530 (2023): 3456x2160 is OLED, 1920x1200 is LCD.
+    # dell.com/support/manuals/de-ch/xps-15-9530-laptop/xps-15-9530-setup-and-specifications/display
+    resolution = r"2880\s*(?:x|\*|×)?\s*1800" if re.search(r"\b14imh9\b", model_text) else (
+        r"3456\s*(?:x|\*|×)?\s*2160" if re.search(r"\bxps\s*15\s*9530\b", model_text) else None
+    )
+    if resolution is None:
+        return False
+    for match in re.finditer(r"\b(?:display(?:aufloesung)?|bildschirm|screen|aufloesung|resolution)\b[^.!?]{0,100}\b" + resolution + r"\b", screen_text):
+        context=screen_text[max(0,match.start()-50):match.end()]
+        if not re.search(r"\b(?:extern\w*|external|ausgang|output|hdmi|displayport)\b", context):
+            return True
+    return False
+
+
 def _intent_details_match(search, item=None, details=None):
     intent = _search_intent(search)
     if not intent:
@@ -1076,7 +1098,9 @@ def _intent_details_match(search, item=None, details=None):
     if kind == "sony_ult_wear":
         return _matches_sony_ult_wear(title_only or text_norm)
     if kind == "rtx_oled_laptop":
-        return _has_rtx_gpu(text_norm, intent["gpu"]) and _has_term(text_norm, "oled") and _has_laptop_hint(text_norm)
+        own_model = _normalize((details or {}).get('title') or (item or {}).get('title') or '')
+        panel_confirmed = _has_term(text_norm, "oled") or _known_oled_configuration(own_model,text_norm)
+        return _has_rtx_gpu(text_norm, intent["gpu"]) and panel_confirmed and _has_laptop_hint(text_norm)
     if kind == "vivobook_14x_oled_3050":
         # 3050 text OR official ASUS model codes that are 3050-class
         if details:
@@ -4820,6 +4844,22 @@ def _has_damage_in_description(desc_norm):
     return False
 
 
+def _has_display_blemish(text_norm):
+    # 257624149520 explicitly discloses a blemish in the middle of the panel.
+    # A lid dent is cosmetic and "no panel blemishes" must remain allowed.
+    panel=r"(?:display|bildschirm|screen|panel)"
+    mark=r"(?:macke|macken|druckstelle|druckstellen)"
+    patterns=(rf"\b{mark}\b[^.!?]{{0,45}}\b(?:auf|im|am|in|an)\s+(?:(?:dem|der|des|den|the)\s+)?{panel}\b",
+              rf"\b{panel}\b\s+(?:hat|zeigt|mit|has)\s+(?:(?:eine?|kleine?|leichte?|sichtbare?)\s+){{0,3}}{mark}\b")
+    for pattern in patterns:
+        for match in re.finditer(pattern,text_norm):
+            before=text_norm[max(0,match.start()-35):match.start()]
+            if re.search(r"\b(?:kein\w*|ohne|no|without)\s+(?:\w+\s+){0,2}$",before):
+                continue
+            return True
+    return False
+
+
 def _is_description_blocked(desc_html, category):
     """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
     if not desc_html:
@@ -4851,6 +4891,8 @@ def _is_description_blocked(desc_html, category):
         return True
 
     desc_norm = _strip_negated_condition_terms(desc_norm)
+    if _has_display_blemish(desc_norm):
+        return True
     if _has_damage_in_description(desc_norm):
         logger.info("Description blocked due to damage check (part + defect words)")
         return True
@@ -5274,7 +5316,7 @@ def _details_match_contract(item, search, details, *, require_description=True):
             query, details.get('title') or item.get('title') or '', details.get('description') or '',
             details.get('localizedAspects') or []):
         return False
-    if _effective_category(category, query) == "monitors" and "oled" in query:
+    if _effective_category(category, query) in ("monitors", "laptops") and "oled" in query:
         non_oled = r"(?:ips|tn|va|lcd|led|qled)"
         panel_label = r"(?:panel(?:[ -]*(?:typ|type|technologie|technology))?|display[ -]*(?:typ|type|technologie|technology)|bildschirm[ -]*(?:typ|technologie))"
         if re.search(rf"\b{panel_label}\s*:?\s*{non_oled}\b", _normalize(_clean_description(details.get("description") or ""))):

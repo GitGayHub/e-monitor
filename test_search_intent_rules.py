@@ -95,6 +95,7 @@ class SearchIntentRuleTests(unittest.TestCase):
                 "rtx 4050 oled notebook",
                 "laptop 4050 oled",
                 "4050 oled",
+                'rtx 4050 (aero,vivobook,spectre,yoga,xps,legion,proart)',
             ],
         )
 

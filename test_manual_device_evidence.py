@@ -6,6 +6,43 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_xps_oled_resolution_is_scoped_to_own_model_and_screen(self):
+        title='Dell XPS 15 9530 RTX4060 Laptop'
+        search={'query':'4060 oled','filters':{'category':'laptops'}}
+        details={'title':title,'categoryId':'177','description':'Displayauflösung: 3456x2160. Fully working laptop.'}
+        self.assertTrue(monitor._details_match_contract({'title':title},search,details))
+        for wrong in ('Display: 1920x1200.','Supports external display: 3456x2160.','Display: 3456x2160. Paneltyp: IPS.'):
+            self.assertFalse(monitor._details_match_contract({'title':title},search,{**details,'description':wrong}))
+        self.assertFalse(monitor._known_oled_configuration('dell xps 16 9640','display: 3456x2160'))
+        self.assertFalse(monitor._known_oled_configuration('dell xps 15 9520','display: 3456x2160'))
+    def test_panel_blemish_is_not_a_cosmetic_lid_dent_or_its_negation(self):
+        for body,expected in [('Kleine Macke mittig auf dem Display, nicht fotografierbar.',True),('Das Display hat eine kleine Macke.',True),('Keine Macke auf dem Display.',False),('Keine sichtbaren Macken auf dem Display.',False),('Leichte Delle auf dem Deckel, kein Funktionseinfluss.',False),('Eine Macke am Gehäuse. Das Display ist einwandfrei.',False),('Keine Macke auf dem Display. Das Display hat eine kleine Druckstelle.',True)]:
+            self.assertEqual(expected,monitor._is_description_blocked(body,'laptops'))
+    def test_actual_oled_laptops_and_hidden_body_damage(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/laptop_manual_details.json').read_text(encoding='utf8'))
+        for case in cases:
+            search={'query':case.get('query','4050 oled'),'filters':{'category':'laptops'}}
+            details={k:v for k,v in case.items() if k not in ('itemEndDate','estimatedAvailabilities')}
+            with self.subTest(item=case['id']):
+                self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['title']},search,details))
+    def test_oled_missing_from_title_requires_confirmed_model_panel_configuration(self):
+        title='Lenovo Yoga 7 Pro 14IMH9 Core Ultra 7 RTX4050 32GB 1TB'
+        search={'query':'4050 oled','filters':{'category':'laptops'}}
+        details={'title':title,'categoryId':'177','description':'Display: 2880 x 1800. Original power supply. Used, working laptop.'}
+        self.assertTrue(monitor._details_match_contract({'title':title},search,details))
+        for wrong in ('Display: 2560x1600.','Display: 3072x1920.','Display: 2880x1800. Paneltyp: IPS.'):
+            self.assertFalse(monitor._details_match_contract({'title':title},search,{**details,'description':wrong}))
+        self.assertFalse(monitor._known_oled_configuration(monitor._normalize(title.replace('14IMH9','14IRH8')),'display: 2880x1800'))
+        self.assertFalse(monitor._known_oled_configuration(monitor._normalize(title),'supports external display: 2880x1800'))
+        self.assertFalse(monitor._details_match_contract({'title':'Lenovo Yoga RTX4050'},search,{**details,'title':'Lenovo Yoga RTX4050','description':'Previous laptop was14IMH9. Display: 2880x1800.'}))
+        for category in ('laptops','all'):
+            search['filters']['category']=category
+            self.assertTrue(monitor._details_match_contract({'title':title},search,details))
+            self.assertFalse(monitor._details_match_contract({'title':title},search,{**details,'localizedAspects':[{'name':'Paneltyp','value':'IPS'}]}))
+        for gpu in ('4050','4060'):
+            variants=monitor._search_query_variants({'query':f'(rtx {gpu} oled notebook, laptop {gpu} oled, rtx {gpu} oled laptop)'})
+            self.assertEqual(4,len(variants))
+            self.assertIn(f'rtx {gpu} (aero,vivobook,spectre,yoga,xps,legion,proart)',variants)
     def test_spare_parts_inventory_needs_explicit_whole_phone_supply(self):
         body='zahlung nur durch paypul oder uberweisung! akku in guten zustand; ersatzteile alle parat und in original; keine beschadigungen oder sonstiges'
         self.assertFalse(monitor._phone_description_purpose_confirmed(body))
@@ -23,7 +60,10 @@ class ManualDeviceEvidenceTests(unittest.TestCase):
             for category in ('phones','all'):
                 search={'query':case['query'],'filters':{'category':category}}
                 with self.subTest(item=case['id'],category=category):
-                    self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['title']},search,case))
+                    # Purpose/specification snapshots are independent of today's
+                    # auction clock. Availability is covered by a separate test.
+                    details={k:v for k,v in case.items() if k not in ('itemEndDate','estimatedAvailabilities')}
+                    self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['title']},search,details))
     def test_all_categories_still_rejects_phone_parts_from_its_real_category(self):
         title='ZTE Nubia Z80 Ultra NX741J Marco Intermedio Placa Bisel (Negro)'
         self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(title)))
