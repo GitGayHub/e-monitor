@@ -88,6 +88,14 @@ class BrowseAccess:
             self.last_request = time.monotonic()
             return True
 
+    def is_paused(self):
+        """Inspect persisted quota without spending a request or changing state."""
+        value = self.state()
+        now = time.time()
+        return now < value.get("pause_until", 0) or (
+            now < value.get("reset", 0) and value.get("remaining", 1) <= 0
+        )
+
     def interval(self, searches):
         value = self.state()
         now = time.time()

@@ -1,6 +1,30 @@
 """Alternate spellings retain the same generation and modification."""
 import re
 
+
+def api_query_batches(aliases, max_length=100):
+    """Pack simple OR alternatives within Browse's documented100-character cap.
+
+    An existing parenthesized expression keeps its original grouping. No alias
+    or model qualifier is truncated or silently discarded.
+    """
+    result, group = [], []
+    def flush():
+        if group:
+            result.append(group[0] if len(group)==1 else '('+','.join(group)+')')
+            group.clear()
+    for raw in aliases:
+        alias=raw.strip()
+        if not alias: continue
+        if any(character in alias for character in '(),'):
+            flush();result.append(alias);continue
+        proposed='('+','.join(group+[alias])+')'
+        if group and len(proposed)>max_length:
+            flush()
+        group.append(alias)
+    flush()
+    return result
+
 def stored_aliases(query):
     query=query.strip()
     whole=re.fullmatch(r'\((.*)\)',query)

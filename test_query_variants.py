@@ -2,9 +2,32 @@ import io
 import unittest
 from unittest.mock import patch
 import monitor
-from query_variants import phone_aliases,stored_aliases
+from query_variants import phone_aliases,stored_aliases,api_query_batches
 
 class QueryVariantsTests(unittest.TestCase):
+    def test_long_individual_alias_never_reaches_provider_truncation(self):
+        search={'query':'x'*101,'_query_override':'x'*101,'_api_query_batch':True}
+        with patch.object(monitor,'_get_ebay_api_token') as token,patch.object(monitor.urllib.request,'urlopen') as network:
+            self.assertEqual(([],'api_query_too_long'),monitor.fetch_ebay_api_ex(search,force=True))
+            token.assert_not_called()
+            network.assert_not_called()
+    def test_alias_batches_preserve_all_terms_without_provider_truncation(self):
+        iphone=phone_aliases('iPhone 17 Pro Max')
+        batches=api_query_batches(iphone)
+        self.assertEqual(1,len(batches))
+        self.assertEqual(iphone,stored_aliases(batches[0]))
+        leading=phone_aliases('nubia z80 ultra leading')
+        batches=api_query_batches(leading)
+        self.assertEqual(2,len(batches))
+        self.assertTrue(all(len(q)<=100 for q in batches))
+        self.assertEqual(leading,[alias for q in batches for alias in (stored_aliases(q) or [q])])
+        nested='rtx 4050 (aero,vivobook,spectre,yoga,xps,legion,proart)'
+        self.assertEqual(['(rtx 4050 oled laptop,laptop 4050 oled)',nested],api_query_batches(['rtx 4050 oled laptop','laptop 4050 oled',nested]))
+
+    def test_redmagic_batch_does_not_create_nested_alternatives(self):
+        batch=api_query_batches(phone_aliases('redmagic 11 pro'))[0]
+        self.assertEqual(batch,monitor._build_ebay_api_query({'query':'redmagic 11 pro','_query_override':batch,'_api_query_batch':True}))
+        self.assertEqual(1,batch.count('('))
     def test_generation_and_modification_remain_in_every_alias(self):
         self.assertEqual(['iphone 17 pro max','apple iphone 17 pro max','iphone17 pro max','iphone17promax'],phone_aliases('iPhone 17 Pro Max'))
         self.assertEqual(['samsung galaxy s25 edge','samsung s25 edge','galaxy s25 edge','s25edge'],phone_aliases('Samsung S25 Edge'))
@@ -21,18 +44,20 @@ class QueryVariantsTests(unittest.TestCase):
         def fetch(search,force=False):
             requests.append(search['_query_override'])
             return [{'item_id':'shared','title':'Sony WH-1000XM6','price':300,'buy_now':True},{'item_id':str(len(requests)),'title':'Sony WH-1000XM6','price':300,'buy_now':True}],None
-        search={'query':'Sony WH-1000XM6','filters':{}}
+        search={'query':'nubia z80 ultra leading','filters':{}}
         with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor,'fetch_ebay_api_ex',side_effect=fetch),patch.dict(monitor._ebay_query_cache,{},clear=True):
             items,error=monitor.fetch_ebay_ex(search,force=True)
         self.assertIsNone(error)
-        self.assertEqual(phone_aliases(search['query']),requests)
-        self.assertEqual(4,len(items))
+        self.assertEqual(api_query_batches(phone_aliases(search['query'])),requests)
+        self.assertEqual(3,len(items))
     def test_alias_failure_is_visible_even_after_a_successful_primary(self):
+        requests=[]
         def fetch(search,force=False):
-            if search['_query_override'].startswith('apple'):return [],'network'
+            requests.append(search['_query_override'])
+            if len(requests)==2:return [],'network'
             return [{'item_id':'primary','title':'iPhone 17 Pro Max','price':1000,'buy_now':True}],None
         with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor,'fetch_ebay_api_ex',side_effect=fetch) as request,patch.dict(monitor._ebay_query_cache,{},clear=True):
-            items,error=monitor.fetch_ebay_ex({'query':'iphone 17 pro max','filters':{}},force=True)
+            items,error=monitor.fetch_ebay_ex({'query':'nubia z80 ultra leading','filters':{}},force=True)
         self.assertEqual('network',error)
         self.assertEqual(1,len(items))
         self.assertEqual(2,request.call_count)
@@ -43,8 +68,8 @@ class QueryVariantsTests(unittest.TestCase):
             items,error=monitor.fetch_ebay_ex(search)
         self.assertIsNone(error)
         self.assertEqual([],items)
-        self.assertEqual(4,request.call_count)
-        self.assertEqual(4,acquire.call_count)
+        self.assertEqual(1,request.call_count)
+        self.assertEqual(1,acquire.call_count)
         with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor,'_get_ebay_api_token',return_value=('test-token',None)),patch.object(monitor,'_allowed_api_targets_this_run',set()),patch.object(monitor.urllib.request,'urlopen') as request,patch.dict(monitor._ebay_query_cache,{},clear=True):
             items,error=monitor.fetch_ebay_ex(search)
         self.assertEqual('api_deferred',error)

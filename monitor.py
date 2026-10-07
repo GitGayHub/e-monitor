@@ -2621,6 +2621,9 @@ def _build_url_with_host(host, search, sub="www"):
     """
     filters = search.get("filters", {})
     params = {"_nkw": _build_smart_search_query(search)}
+    postal_code = str(config.get_settings().get("user_zip") or "").strip()
+    if host == "ebay.de" and postal_code:
+        params.update(_stpos=postal_code, _fcid="77")
 
     category = filters.get("category", "all")
     query_norm = _normalize(_intent_query(search))
@@ -4203,7 +4206,8 @@ def _build_ebay_api_query(search):
     q = _intent_query(search)
     if not q:
         q = _build_smart_search_query(search)
-    q = re.sub(r"\bred\s*magic\b", '(redmagic, "red magic")', q, flags=re.IGNORECASE)
+    if not search.get('_api_query_batch'):
+        q = re.sub(r"\bred\s*magic\b", '(redmagic, "red magic")', q, flags=re.IGNORECASE)
     q = re.sub(r"\s+", " ", q).strip()
     return q
 
@@ -4321,6 +4325,8 @@ def fetch_ebay_api_ex(search, force=False):
 
     Force bypasses scheduling, never the provider's quota/cooldown.
     """
+    if len(_build_ebay_api_query(search))>100:
+        return [], 'api_query_too_long'
     token, err = _get_ebay_api_token()
     if err:
         return [], err
@@ -4474,7 +4480,7 @@ def _fetch_item_details_html(item_id):
         resp = session.get(url, headers=headers, timeout=15)
     except Exception as e:
         logger.warning("_fetch_item_details_html: network error for %s: %s", item_id, e)
-        return None
+        return _fetch_item_details_browser(item_id)
 
     if resp.status_code != 200 and host == "ebay.de":
         try:
@@ -4485,7 +4491,7 @@ def _fetch_item_details_html(item_id):
 
     if resp.status_code != 200:
         logger.warning("_fetch_item_details_html: HTTP %d for item %s", resp.status_code, item_id)
-        return None
+        return _fetch_item_details_browser(item_id)
 
     html = resp.text or ""
     challenge_markers = (
@@ -4505,6 +4511,46 @@ def _fetch_item_details_html(item_id):
     if "/splashui/" in resp.url.lower() or any(m in title_text.lower() for m in challenge_markers) or any(m in html[:8000].lower() for m in challenge_markers):
         logger.warning("_fetch_item_details_html: challenge page hit for item %s", item_id)
         return None
+
+    details = _parse_item_details_html(html, session=session, host=host)
+    if not _clean_description(details.get("description") or "").strip() and not details.get("estimatedAvailabilities"):
+        return _fetch_item_details_browser(item_id)
+    return details
+
+
+def _fetch_item_details_browser(item_id):
+    """One bounded ordinary browser visit; never solve or retry a challenge."""
+    if os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
+        return None
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+            try:
+                page = browser.new_page(locale="de-DE")
+                page.goto(f"https://www.ebay.de/itm/{item_id}", wait_until="domcontentloaded", timeout=25000)
+                if _is_challenge_html(page.content(), page.url):
+                    return None
+                # Wait only for the seller's own iframe, excluding reviews/recs.
+                frame = page.frame_locator("#desc_ifr")
+                frame.locator("body").wait_for(state="visible", timeout=6000)
+                desc = frame.locator("body").inner_html(timeout=6000)
+                if not _clean_description(desc).strip():
+                    return None
+                return _parse_item_details_html(page.content(), description=desc)
+            finally:
+                browser.close()
+    except Exception as exc:
+        logger.warning("HTML browser details unavailable for %s: %s", item_id, type(exc).__name__)
+        return None
+
+
+def _parse_item_details_html(html, description=None, session=None, host="ebay.de"):
+    """Parse own listing fields. Characteristics cannot substitute seller text."""
+    soup = BeautifulSoup(html, "html.parser")
+    title_el = soup.select_one("h1.x-item-title, .x-item-title__mainTitle") or soup.find("title")
+    title_text = title_el.get_text(" ", strip=True) if title_el else ""
+    headers = {}
 
     is_mv = any(k in html for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo"))
     item_group_type = "SELLER_DEFINED_VARIATIONS" if is_mv else None
@@ -4586,7 +4632,7 @@ def _fetch_item_details_html(item_id):
     current_bid_price = _extract_html_current_bid_price(html, soup)
 
     desc_html = ""
-    desc_ifr = soup.find("iframe", id="desc_ifr") or soup.find("iframe", name="desc_ifr")
+    desc_ifr = soup.find("iframe", id="desc_ifr") or soup.find("iframe", attrs={"name":"desc_ifr"})
     if not desc_ifr:
         for iframe in soup.find_all("iframe"):
             src = iframe.get("src") or ""
@@ -4594,7 +4640,9 @@ def _fetch_item_details_html(item_id):
                 desc_ifr = iframe
                 break
 
-    if desc_ifr:
+    if description is not None:
+        desc_html = description
+    elif desc_ifr:
         desc_src = desc_ifr.get("src") or ""
         if desc_src:
             if desc_src.startswith("//"):
@@ -4607,7 +4655,7 @@ def _fetch_item_details_html(item_id):
                     "User-Agent": headers["User-Agent"] if "User-Agent" in headers else "Mozilla/5.0",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 }
-                desc_resp = session.get(desc_src, headers=desc_headers, timeout=10)
+                desc_resp = (session or _get_ebay_session()).get(desc_src, headers=desc_headers, timeout=10)
                 if desc_resp.status_code == 200:
                     desc_html = desc_resp.text or ""
                 else:
@@ -4622,9 +4670,15 @@ def _fetch_item_details_html(item_id):
     # Buyer reviews (Produktbewertungen) are never seller description.
     if desc_html:
         desc_html = _strip_review_sections(desc_html)
-    specs_html = _item_specifics_html(soup)
-    if specs_html:
-        desc_html = ((desc_html or "") + "\n" + specs_html).strip()
+    # Keep the description separate: specs-only pages remain unverified.
+    aspects = []
+    for term in soup.select("dt.ux-labels-values__labels"):
+        value = term.find_next_sibling("dd")
+        if value:
+            name = term.get_text(" ", strip=True)
+            text = value.get_text(" ", strip=True)
+            if name and text:
+                aspects.append({"name": name, "value": text})
 
     location_text = ""
     page_lines = [line.strip() for line in soup.get_text("\n", strip=True).splitlines() if line.strip()]
@@ -4651,7 +4705,22 @@ def _fetch_item_details_html(item_id):
         "description": desc_html,
         "itemEndDate": end_date_iso,
         "title": title_text,
+        "localizedAspects": aspects,
     }
+    status = " ".join(el.get_text(" ", strip=True) for el in soup.select(".d-top-panel-message, .d-statusmessage__notice-live-region"))
+    if re.search(r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)", status, re.I):
+        result["estimatedAvailabilities"] = [{"estimatedAvailabilityStatus":"UNAVAILABLE"}]
+    condition = next((a["value"] for a in aspects if a["name"].lower() in ("artikelzustand", "condition")), "")
+    if condition:
+        result["condition"] = condition.split(":", 1)[0].strip()
+    categories = []
+    for link in soup.select("nav.breadcrumbs a[href], nav.breadcrumb a[href]"):
+        match = re.search(r"/b/[^/]+/(\d+)/", link.get("href", ""))
+        if match:
+            categories.append(match.group(1))
+    if categories:
+        result["categoryId"] = categories[-1]
+        result["categoryIdPath"] = "|".join(categories)
     if location_text:
         result["itemLocationText"] = location_text
     if item_group_type:
@@ -4667,6 +4736,12 @@ def _fetch_item_details_html(item_id):
     # Purchase actions belong to this listing. Words in seller descriptions,
     # scripts or recommended listings cannot restore a removed purchase side.
     buying_options = _html_buying_options(soup)
+    primary = soup.select_one(".x-price-primary")
+    primary_price = _parse_labeled_money(["price: " + primary.get_text(" ", strip=True)], (r"^price\b",)) if primary else None
+    if primary_price is not None and (price_val is None or buying_options == ["AUCTION"]):
+        result["price"] = _money_obj_eur(primary_price)
+    if primary_price is not None and "AUCTION" in buying_options and "FIXED_PRICE" not in buying_options:
+        result["currentBidPrice"] = _money_obj_eur(primary_price)
     if buying_options:
         result["buyingOptions"] = buying_options
 
@@ -4683,11 +4758,21 @@ def _fetch_item_details(item_id):
     cached = _item_details_cache.get(cache_key)
     if cached and time.time() - cached[0] < 120:
         return copy.deepcopy(cached[1])
-    if not _ebay_api_configured() or EBAY_SOURCE == "html":
-        return _fetch_item_details_html(item_id)
-    token, err = _get_ebay_api_token()
-    if err or not browse_access.acquire():
+    def html_details():
+        global _runtime_html_fallback
+        _runtime_html_fallback = True
+        data = _fetch_item_details_html(item_id)
+        if data and (_clean_description(data.get("description") or "").strip() or data.get("estimatedAvailabilities")):
+            _item_details_cache[cache_key] = (time.time(), data)
+            return copy.deepcopy(data)
         return None
+    if not _ebay_api_configured() or EBAY_SOURCE == "html" or browse_access.is_paused() is True:
+        return html_details()
+    token, err = _get_ebay_api_token()
+    if err:
+        return None
+    if not browse_access.acquire():
+        return html_details()
     browse_id = f"v1|{item_id}|0"
     url = f"https://api.ebay.com/buy/browse/v1/item/{urllib.parse.quote(browse_id)}"
     country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, "DE")
@@ -4702,12 +4787,13 @@ def _fetch_item_details(item_id):
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
         if not _clean_description(data.get("description") or "").strip():
             logger.warning("Description missing for item %s; leaving unverified", item_id)
-            return None
+            return html_details()
         _item_details_cache[cache_key] = (time.time(), data)
         return copy.deepcopy(data)
     except urllib.error.HTTPError as e:
         if e.code == 429:
             browse_access.pause(e.headers.get("Retry-After") if e.headers else None)
+            return html_details()
         logger.warning("eBay Browse details HTTP %s for item %s", e.code, item_id)
     except Exception as e:
         logger.warning("eBay Browse details unavailable for item %s: %s", item_id, e)
@@ -6413,7 +6499,7 @@ def _query_cache_key(search):
     """Stable key for the search-input portion that affects eBay results."""
     filters = search.get("filters", {}) or {}
     keys = ("category", "max_price", "min_price", "condition", "condition_code", "listing_type", "best_offer", "seller_type", "location", "sort", "sort_code", "_ipg")
-    source = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
+    source = "html" if search.get("_html_fallback") else EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
     parts = [f"source={source}", f"market={EBAY_MARKETPLACE_ID}", search.get("query", "").strip().lower()]
     if search.get("_query_override"):
         parts.append(f"query_override={str(search.get('_query_override')).strip().lower()}")
@@ -6461,6 +6547,34 @@ def _tag_items_for_search(items, search):
     return out
 
 
+def _fetch_quota_html(search, force=False):
+    global _runtime_html_fallback
+    _runtime_html_fallback = True
+    target = (search.get("id", ""), EBAY_MARKETPLACE_ID)
+    if not force and target not in _allowed_api_targets_this_run:
+        return [], "api_deferred"
+    _allowed_api_targets_this_run.discard(target)
+    child = copy.deepcopy(search)
+    child["_html_fallback"] = True
+    # Return the HTML error itself if it fails. No API loop and no fake empty.
+    logger.info("Browse quota paused; checking %s through HTML", search.get("query"))
+    from query_variants import api_query_batches
+    batches = api_query_batches(_search_query_variants(search))
+    collected, errors = [], []
+    for query in batches or [_intent_query(search)]:
+        variant = copy.deepcopy(child)
+        variant.update(_query_override=query, _variant_child=True)
+        found, error = fetch_ebay_ex(variant, force=force)
+        collected.extend(found)
+        if error:
+            errors.append(error)
+            break
+    rows, error = _merge_items_by_id(collected), errors[0] if errors else None
+    if error is None:
+        record_search_run(search.get("id", ""), EBAY_MARKETPLACE_ID)
+    return [{**row,"source":"html"} for row in rows], error
+
+
 def fetch_ebay_ex(search, force=False):
     """Returns (items, error). Tries host chain: remembers a working one,
     falls back to next host on block/rate_limit. After sustained blocks the
@@ -6469,7 +6583,9 @@ def fetch_ebay_ex(search, force=False):
     """
     global _ebay_active_host, _ebay_block_until, _ebay_consecutive_blocks
     now = time.time()
-    source = EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
+    source = "html" if search.get("_html_fallback") else EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
+    if source != "html" and _ebay_api_configured() and browse_access.is_paused() is True:
+        return _fetch_quota_html(search, force=force)
 
     # Short per-query cache: absorbs duplicate calls from the UI ('Retry'
     # button spam, double-presses) so we don't hammer eBay.
@@ -6484,13 +6600,14 @@ def fetch_ebay_ex(search, force=False):
             return items, err
 
     # With credentials, auto uses Browse immediately. Empty is a valid result;
-    # quota/network failures must not launch an HTML/Playwright retry storm.
+    # A quota pause switches to the existing paced HTML transport exactly once.
     if source == "api" or (source == "auto" and _ebay_api_configured()):
-        variants=_search_query_variants(search)
+        from query_variants import api_query_batches
+        variants=api_query_batches(_search_query_variants(search))
         if len(variants)>1:
             merged=[];errors=[]
             for index, query in enumerate(variants):
-                child=copy.deepcopy(search);child['_query_override']=query;child['_variant_child']=True
+                child=copy.deepcopy(search);child['_query_override']=query;child['_variant_child']=True;child['_api_query_batch']=True
                 # The scheduler reserves one product. Later aliases belong to
                 # that reservation; acquire() still checks quota and cooldown.
                 rows,error=fetch_ebay_api_ex(child,force=force or index > 0)
@@ -6500,7 +6617,12 @@ def fetch_ebay_ex(search, force=False):
                     break
             items,err=_merge_items_by_id(merged), errors[0] if errors else None
         else:
-            items, err = fetch_ebay_api_ex(search, force=force)
+            child=copy.deepcopy(search)
+            if variants:
+                child['_query_override']=variants[0];child['_variant_child']=True;child['_api_query_batch']=True
+            items, err = fetch_ebay_api_ex(child, force=force)
+        if err == "api_rate_limit":
+            return _fetch_quota_html(search, force=force)
         _ebay_query_cache[cache_key] = (time.time(), items, err)
         return items, err
 
@@ -6839,8 +6961,8 @@ def _apk_version_label():
 
 def _fetch_source_label(source=None):
     if source:
-        return "eBay Browse API" if source == "api" else str(source)
-    return "eBay Browse API" if EBAY_SOURCE != "html" and _ebay_api_configured() else "eBay HTML"
+        return "eBay Browse API" if source == "api" else "eBay HTML" if source == "html" else str(source)
+    return "eBay HTML (резерв после квоты API)" if _runtime_html_fallback else "eBay Browse API" if EBAY_SOURCE != "html" and _ebay_api_configured() else "eBay HTML"
 
 
 def get_category_emoji(cat_name):
@@ -7345,7 +7467,8 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None, stats_
 _allowed_api_targets_this_run = set()
 
 def initialize_api_budget_and_queue(searches):
-    global _allowed_api_targets_this_run
+    global _allowed_api_targets_this_run, _runtime_html_fallback
+    _runtime_html_fallback = False
     active = [s for s in searches if s.get("enabled", True)]
     token, err = _get_ebay_api_token()
     state = browse_access.state()
@@ -7358,14 +7481,13 @@ def initialize_api_budget_and_queue(searches):
                 browse_access.update_quota(json.loads(resp.read().decode("utf-8")))
         except Exception as exc:
             logger.warning("eBay quota refresh unavailable: %s", exc)
-    interval = browse_access.interval(len(active))
+    interval = 900 if browse_access.is_paused() is True else browse_access.interval(len(active))
     state = browse_access.state()
     if state.get('remaining',1)<=0 and state.get('reset',0)>time.time():
         from datetime import datetime, timezone
         reset = datetime.fromtimestamp(state['reset'],timezone.utc).isoformat()
-        message = f"eBay Browse: quota exhausted; retry after {reset}"
-        if message not in _runtime_errors:
-            _runtime_errors.append(message)
+        _runtime_html_fallback = True
+        logger.info("Browse quota exhausted until %s; using paced HTML checks", reset)
     from datetime import datetime
     now = datetime.now()
     due = set()
@@ -8947,11 +9069,15 @@ def _log_startup_banner(mode):
 
 
 _runtime_errors = []
+_runtime_html_fallback = False
 
 
 def _publish_runtime(state, error=None):
     from mobile.runtime_status import publish
-    publish(config.raw, _read_logic_version_timestamp(), state, error)
+    fallback = _runtime_html_fallback or browse_access.is_paused() is True
+    publish(config.raw, _read_logic_version_timestamp(), state, error,
+            data_source="html" if fallback or EBAY_SOURCE == "html" else "api",
+            warning="Квота API закончилась: проверяю сайт eBay через HTML" if fallback else None)
 
 
 async def run_once():

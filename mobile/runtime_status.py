@@ -24,7 +24,7 @@ def application_failure(message, path=None):
     return previous
 
 
-def publish(active_config, logic_version, state, error=None, path=None):
+def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None):
     path = Path(path or STATUS_PATH)
     try:
         previous = json.loads(path.read_text(encoding="utf-8"))
@@ -46,6 +46,8 @@ def publish(active_config, logic_version, state, error=None, path=None):
         "updatedAt": now,
         "state": state,
         "error": str(error)[:1000] if error else None,
+        "dataSource": data_source,
+        "warning": str(warning)[:1000] if warning else None,
         "activeSearches": sum(bool(row.get("enabled", True)) for row in active_config.get("searches", [])),
         "configFingerprint": fingerprint,
     }

@@ -48,18 +48,17 @@ class BrowseAccessTest(unittest.TestCase):
         self.assertEqual(self.access.state()["remaining"], 90)
         self.assertGreater(self.access.interval(46), 900)
 
-    def test_exhausted_quota_is_a_runtime_error_even_when_no_search_is_due(self):
+    def test_exhausted_quota_uses_html_cadence_without_false_runtime_error(self):
         self.access.save({'remaining':0,'reset':time.time()+21600,'checked':time.time()})
         with patch.object(monitor,'browse_access',self.access), \
              patch.object(monitor,'_get_ebay_api_token',return_value=('qa',None)), \
              patch.object(monitor,'_runtime_errors',[]) as errors, \
              patch.object(monitor.urllib.request,'urlopen') as requests:
             monitor.initialize_api_budget_and_queue([])
-            self.assertEqual(1,len(errors))
-            self.assertIn('quota exhausted',errors[0])
-            self.assertIn('retry after',errors[0])
+            self.assertEqual([],errors)
+            self.assertTrue(monitor._runtime_html_fallback)
             monitor.initialize_api_budget_and_queue([])
-            self.assertEqual(1,len(errors))
+            self.assertEqual([],errors)
             requests.assert_not_called()
 
 
@@ -68,12 +67,40 @@ class BrowseTransportTest(unittest.TestCase):
         monitor._ebay_query_cache.clear()
         monitor._item_details_cache.clear()
 
-    def test_rate_limit_never_launches_html_fallback(self):
+    def test_rate_limit_switches_to_html_once_and_keeps_its_errors(self):
         with patch.object(monitor, "EBAY_SOURCE", "auto"), patch.object(monitor, "_ebay_api_configured", return_value=True), \
              patch.object(monitor, "fetch_ebay_api_ex", return_value=([], "api_rate_limit")), \
-             patch.object(monitor, "_do_fetch_one") as html:
-            self.assertEqual(monitor.fetch_ebay_ex({"id":"x", "query":"phone"}, force=True), ([], "api_rate_limit"))
-            html.assert_not_called()
+             patch.object(monitor, "_fetch_quota_html",return_value=([], "blocked")) as html:
+            self.assertEqual(monitor.fetch_ebay_ex({"id":"x", "query":"phone"}, force=True), ([], "blocked"))
+            html.assert_called_once()
+
+    def test_known_quota_pause_skips_api_and_html_never_loops_back(self):
+        rows=[{"item_id":"123456789012","title":"Phone"}]
+        with patch.object(monitor,"EBAY_SOURCE","auto"), patch.object(monitor,"_ebay_api_configured",return_value=True), \
+             patch.object(monitor.browse_access,"is_paused",return_value=True), \
+             patch.object(monitor,"fetch_ebay_api_ex") as api, \
+             patch.object(monitor,"_do_fetch_one",return_value=(rows,None)) as html:
+            self.assertEqual(([{**rows[0],"source":"html"}],None),monitor.fetch_ebay_ex({"id":"x","query":"phone"},force=True))
+            html.assert_called_once()
+            self.assertTrue(html.call_args.args[1]["_html_fallback"])
+            api.assert_not_called()
+
+    def test_details_under_quota_use_complete_html_and_cache_without_api(self):
+        details={"description":"A complete working phone", "price":{"value":"500","currency":"EUR"}}
+        with patch.object(monitor,"_ebay_api_configured",return_value=True), \
+             patch.object(monitor.browse_access,"is_paused",return_value=True), \
+             patch.object(monitor,"_get_ebay_api_token") as token, \
+             patch.object(monitor,"_fetch_item_details_html",return_value=details) as html:
+            self.assertEqual(details,monitor._fetch_item_details("123456789012"))
+            self.assertEqual(details,monitor._fetch_item_details("123456789012"))
+            html.assert_called_once()
+            token.assert_not_called()
+
+    def test_specs_without_seller_description_remain_unverified_under_quota(self):
+        with patch.object(monitor,"_ebay_api_configured",return_value=True), \
+             patch.object(monitor.browse_access,"is_paused",return_value=True), \
+             patch.object(monitor,"_fetch_item_details_html",return_value={"description":"","localizedAspects":[{"name":"Modell","value":"Phone"}]}):
+            self.assertIsNone(monitor._fetch_item_details("123456789012"))
 
     def test_not_scheduled_is_error_not_empty_success(self):
         with patch.object(monitor, "_get_ebay_api_token", return_value=("token", None)), \
@@ -98,9 +125,9 @@ class BrowseTransportTest(unittest.TestCase):
         with patch.object(monitor, "EBAY_SOURCE", "auto"), patch.object(monitor, "_ebay_api_configured", return_value=True), \
              patch.object(monitor, "_get_ebay_api_token", return_value=("token", None)), \
              patch.object(monitor, "browse_access"), patch.object(monitor.urllib.request, "urlopen", return_value=response), \
-             patch.object(monitor, "_fetch_item_details_html") as html:
+             patch.object(monitor, "_fetch_item_details_html",return_value=None) as html:
             self.assertIsNone(monitor._fetch_item_details("123456789"))
-            html.assert_not_called()
+            html.assert_called_once()
 
     def test_mixed_listing_and_ending_soon_api_filters(self):
         params = monitor._build_ebay_api_params({"query":"phone", "filters":{"listing_type":"all", "sort":"ending_soon"}})

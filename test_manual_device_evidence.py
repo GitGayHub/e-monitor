@@ -6,6 +6,25 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_sold_status_is_own_listing_state_not_recommendations(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/html_listing_status.json').read_text(encoding='utf8'))
+        for case in cases:
+            details=monitor._parse_item_details_html(case['html'],description='')
+            self.assertEqual(case['unavailable'],bool(details.get('estimatedAvailabilities')))
+    def test_rendered_html_characteristics_use_the_same_model_contract(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/html_item_details.json').read_text(encoding='utf8'))
+        for case in cases:
+            details=monitor._parse_item_details_html(case['html'],description=case['description'])
+            with self.subTest(item=case['id']):
+                self.assertEqual(case['categoryId'],details['categoryId'])
+                self.assertTrue(details['localizedAspects'])
+                self.assertEqual('Gebraucht',details['condition'])
+                self.assertEqual(case['expected'],monitor._details_match_contract({'title':details['title']},{'query':case['query'],'filters':{'category':'phones'}},details))
+                self.assertEqual('',monitor._parse_item_details_html(case['html'],description='')['description'])
+                if case['id']=='128121409205':
+                    self.assertAlmostEqual(297.13,float(details['currentBidPrice']['value']))
+                    self.assertAlmostEqual(6.19,float(details['htmlShippingCost']['value']))
+                    self.assertEqual(['AUCTION','BEST_OFFER'],details['buyingOptions'])
     def test_charging_failure_remains_a_fault_when_wireless_works(self):
         for body in ('Der Akku lädt nicht mehr mit der Ladebuchse sondern nur mit einem MagSafe charger.', 'Ladebuchse funktioniert nicht. MagSafe funktioniert.', 'The phone does not charge via USB; wireless charging works.', 'Battery won’t charge.'):
             self.assertTrue(monitor._is_description_blocked(body, 'phones'), body)

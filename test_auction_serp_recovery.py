@@ -162,7 +162,7 @@ class AuctionApiZeroTest(unittest.TestCase):
             mock.patch.object(monitor, "_ebay_block_until", 0),
             mock.patch.object(monitor, "_ebay_consecutive_blocks", 0),
             mock.patch.object(monitor, "_ebay_api_configured", return_value=True),
-            mock.patch.object(monitor, "_search_query_variants", side_effect=lambda s: [s]),
+            mock.patch.object(monitor, "_search_query_variants", side_effect=lambda s: [s['query']]),
             # curl chain soft-empties (container, itm=0) -> "parse", never a
             # confirmed empty SERP.
             mock.patch.object(monitor, "_do_fetch_one", return_value=([], "parse")),
