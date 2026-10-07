@@ -4423,6 +4423,15 @@ def parse_ebay_api_results(data):
     return items
 
 
+def _html_buying_options(soup):
+    """Read this listing's purchase actions, excluding prose and recommendations."""
+    action_labels = {button.get_text(" ", strip=True).lower() for button in soup.select("a.ux-call-to-action, button.ux-call-to-action")}
+    return [option for option, labels in (("FIXED_PRICE", {"sofort-kaufen", "buy it now"}),
+                                          ("AUCTION", {"bieten", "place bid"}),
+                                          ("BEST_OFFER", {"preisvorschlag senden", "make offer", "make an offer"}))
+            if action_labels & labels]
+
+
 def _fetch_item_details_html(item_id):
     """Fetches item details (description, exact end date, etc.) by scraping the item page."""
     session = _get_ebay_session()
@@ -4628,10 +4637,10 @@ def _fetch_item_details_html(item_id):
         result["price"] = {"value": str(price_val), "currency": currency}
     if current_bid_price is not None:
         result["currentBidPrice"] = _money_obj_eur(current_bid_price)
-        buying_options = ["AUCTION"]
-        lower_html = html.lower()
-        if price_val is not None and ("sofort-kaufen" in lower_html or "buy it now" in lower_html):
-            buying_options.append("FIXED_PRICE")
+    # Purchase actions belong to this listing. Words in seller descriptions,
+    # scripts or recommended listings cannot restore a removed purchase side.
+    buying_options = _html_buying_options(soup)
+    if buying_options:
         result["buyingOptions"] = buying_options
 
     return result
@@ -5159,14 +5168,18 @@ def _calculate_total(item, settings, details=None):
     if details:
         buying_options = details.get("buyingOptions") or []
         if buying_options:
-            # If the item was stashed as a pure one, do not restore the other flag
+            # Preserve a selected hybrid side only while it is still offered.
+            # After the first bid eBay may remove Buy It Now: its API `price`
+            # then represents the bid, never a refreshed fixed purchase price.
             is_stashed_bin = item.get("buy_now") and not item.get("auction")
             is_stashed_auc = item.get("auction") and not item.get("buy_now")
-            if not is_stashed_bin and not is_stashed_auc:
+            selected_side_available = (is_stashed_bin and "FIXED_PRICE" in buying_options) or (is_stashed_auc and "AUCTION" in buying_options)
+            if not selected_side_available:
                 item["buy_now"] = "FIXED_PRICE" in buying_options
                 item["auction"] = "AUCTION" in buying_options
                 if item.get("buy_now") and item.get("auction"):
                     item["_was_hybrid"] = True
+            item["best_offer"] = "BEST_OFFER" in buying_options
 
         api_price = _api_float(details.get("price"))
         api_auc_price = _api_float(details.get("currentBidPrice"))
@@ -5175,11 +5188,12 @@ def _calculate_total(item, settings, details=None):
         if item.get("buy_now") and not item.get("auction"):
             if api_price is not None:
                 item["price"] = api_price
+                item["bin_price"] = api_price
         elif item.get("auction") and not item.get("buy_now"):
             if api_auc_price is not None:
                 item["price"] = api_auc_price
                 item["auc_price"] = api_auc_price
-            elif not item.get("_was_hybrid") and api_price is not None:
+            elif (not item.get("_was_hybrid") or buying_options and "FIXED_PRICE" not in buying_options) and api_price is not None:
                 # Only use details price for pure auction if it wasn't hybrid originally
                 item["price"] = api_price
                 item["auc_price"] = api_price

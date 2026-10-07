@@ -1,9 +1,45 @@
 import unittest
+import copy
+import json
+from pathlib import Path
 
 import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_html_purchase_actions_ignore_mentions_of_other_formats(self):
+        from bs4 import BeautifulSoup
+        for actions, expected in ((['Bieten'], ['AUCTION']),
+                                  (['Sofort-Kaufen','Preisvorschlag senden'], ['FIXED_PRICE','BEST_OFFER']),
+                                  (['Bieten','Sofort-Kaufen'], ['FIXED_PRICE','AUCTION']),
+                                  ([], [])):
+            with self.subTest(actions=actions):
+                html = '<div>Andere Artikel Sofort-Kaufen, Bieten, Preisvorschlag senden</div>' + ''.join(
+                    f'<a class="ux-call-to-action" role="button"><span>{label}</span></a>' for label in actions)
+                self.assertEqual(expected, monitor._html_buying_options(BeautifulSoup(html, 'html.parser')))
+
+    def test_shared_format_transitions_use_current_buying_options(self):
+        cases = json.loads((Path(__file__).parent/'qa/fixtures/hybrid_refresh_cases.json').read_text(encoding='utf8'))['cases']
+        for case in cases:
+            with self.subTest(case=case['name']):
+                refreshed = monitor._calculate_total(copy.deepcopy(case['item']), {'warn_non_eu': False}, case['details'])
+                for field, value in case['expected'].items():
+                    self.assertEqual(value, refreshed[field], field)
+                if refreshed['buy_now']:
+                    self.assertAlmostEqual(refreshed['price']+6.19, refreshed['bin_total_price'])
+
+    def test_disappeared_purchase_is_rejected_before_notification(self):
+        from test_search_intent_rules import DummyConfig, item
+        row = item('Apple iPhone 16 Pro Max 256GB', price=510, shipping_cost=6.19,
+                   bin_price=510, _was_hybrid=True, time_left='2 Tage')
+        monitor._refresh_candidate_details(row, {'buyingOptions':['AUCTION'],
+            'price':{'value':'351','currency':'EUR'},'currentBidPrice':{'value':'351','currency':'EUR'}}, {})
+        buy_search = {'query':'iPhone 16 Pro Max','filters':{'category':'phones','listing_type':'buy_now','limit_price':610}}
+        self.assertEqual([], monitor.filter_results([row], buy_search, DummyConfig(), skip_seen=True, is_statistics=True))
+        # The remaining auction must wait for its normal ending-time rule.
+        auc_search = {'query':'iPhone 16 Pro Max','filters':{'category':'phones','listing_type':'auction','limit_price':610}}
+        self.assertEqual([], monitor.filter_results([row], auc_search, DummyConfig(), skip_seen=True))
+
     def test_description_noise_does_not_block_valid_phone_metadata(self):
         search = {"query": "iPhone 15 Pro Max", "filters": {"category": "phones"}}
         details = {

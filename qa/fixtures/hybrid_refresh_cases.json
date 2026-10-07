@@ -1,0 +1,286 @@
+{
+  "cases": [
+    {
+      "name": "Observed 137823064010 first bid removed fixed purchase",
+      "source": "Actual API projection at 2026-10-07T19:54:53.709850+00:00; independently read eBay detail had only Bieten",
+      "item": {
+        "price": 510.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "_was_hybrid": true
+      },
+      "details": {
+        "buyingOptions": [
+          "AUCTION"
+        ],
+        "price": {
+          "value": "351.00",
+          "currency": "EUR"
+        },
+        "currentBidPrice": {
+          "value": "351.00",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "price": 351.0,
+        "total_price": 357.19
+      }
+    },
+    {
+      "name": "Removed purchase with only auction price",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 510.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "_was_hybrid": true
+      },
+      "details": {
+        "buyingOptions": [
+          "AUCTION"
+        ],
+        "price": {
+          "value": "355",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "price": 355.0,
+        "total_price": 361.19
+      }
+    },
+    {
+      "name": "Removed auction replaced by fixed purchase",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 350.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "_was_hybrid": true,
+        "auc_price": 350.0
+      },
+      "details": {
+        "buyingOptions": [
+          "FIXED_PRICE"
+        ],
+        "price": {
+          "value": "520",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "price": 520.0,
+        "total_price": 526.19
+      }
+    },
+    {
+      "name": "Selected purchase preserves its hybrid side",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 510.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": true,
+        "auction": false,
+        "best_offer": false,
+        "_was_hybrid": true
+      },
+      "details": {
+        "buyingOptions": [
+          "FIXED_PRICE",
+          "AUCTION",
+          "BEST_OFFER"
+        ],
+        "price": {
+          "value": "520",
+          "currency": "EUR"
+        },
+        "currentBidPrice": {
+          "value": "355",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": true,
+        "auction": false,
+        "best_offer": true,
+        "price": 520.0,
+        "total_price": 526.19
+      }
+    },
+    {
+      "name": "Selected auction preserves its hybrid side",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 350.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "_was_hybrid": true,
+        "auc_price": 350.0
+      },
+      "details": {
+        "buyingOptions": [
+          "FIXED_PRICE",
+          "AUCTION",
+          "BEST_OFFER"
+        ],
+        "price": {
+          "value": "520",
+          "currency": "EUR"
+        },
+        "currentBidPrice": {
+          "value": "355",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": false,
+        "auction": true,
+        "best_offer": true,
+        "price": 355.0,
+        "total_price": 361.19
+      }
+    },
+    {
+      "name": "Unsliced hybrid refreshes both prices",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 510.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": true,
+        "auction": true,
+        "best_offer": false,
+        "_was_hybrid": true,
+        "auc_price": 350.0
+      },
+      "details": {
+        "buyingOptions": [
+          "FIXED_PRICE",
+          "AUCTION",
+          "BEST_OFFER"
+        ],
+        "price": {
+          "value": "520",
+          "currency": "EUR"
+        },
+        "currentBidPrice": {
+          "value": "355",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": true,
+        "auction": true,
+        "best_offer": true,
+        "price": 520.0,
+        "total_price": 526.19
+      }
+    },
+    {
+      "name": "Removed best offer does not notify as auction offer",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 350.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": false,
+        "auction": true,
+        "best_offer": true,
+        "_was_hybrid": true,
+        "auc_price": 350.0
+      },
+      "details": {
+        "buyingOptions": [
+          "AUCTION"
+        ],
+        "currentBidPrice": {
+          "value": "355",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "price": 355.0,
+        "total_price": 361.19
+      }
+    },
+    {
+      "name": "Missing options preserve known purchase format",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 510.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": true,
+        "auction": false,
+        "best_offer": true,
+        "_was_hybrid": true
+      },
+      "details": {
+        "price": {
+          "value": "520",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": true,
+        "auction": false,
+        "best_offer": true,
+        "price": 520.0,
+        "total_price": 526.19
+      }
+    },
+    {
+      "name": "Missing options preserve hybrid auction bid",
+      "source": "Synthetic format-transition scenario",
+      "item": {
+        "price": 350.0,
+        "shipping_cost": 6.19,
+        "bin_price": 510.0,
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "_was_hybrid": true,
+        "auc_price": 350.0
+      },
+      "details": {
+        "price": {
+          "value": "520",
+          "currency": "EUR"
+        }
+      },
+      "expected": {
+        "buy_now": false,
+        "auction": true,
+        "best_offer": false,
+        "price": 350.0,
+        "total_price": 356.19
+      }
+    }
+  ]
+}
