@@ -696,6 +696,7 @@ LAPTOP_DEVICE_HINTS = (
 
 PC_DEVICE_HINTS = (
     "gaming pc", "desktop pc", "pc system", "komplett pc", "komplettpc",
+    "mini pc", "mini-pc", "minipc",
     "gaming rechner", "rechner", "desktop", "computer", "workstation",
     "tower", "system", "setup", "windows", "win11", "win10", "ryzen",
     "core i", " i5", " i7", " i9", "ram", "ssd",

@@ -6,6 +6,16 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_actual_nuc_mini_pc_survives_preliminary_selection(self):
+        query = '5070 ti (pc, rechner, computer, desktop, gaming pc)'
+        title = 'ASUS ROG NUC 2025 Gaming Mini PC Intel Core Ultra 9 275HX RTX 5070TI 32GB 2TB'
+        for name in (title, 'Gaming Mini-PC RTX5070Ti', 'Gaming MiniPC RTX5070Ti'):
+            normalized = monitor._normalize(name)
+            self.assertTrue(monitor._intent_prelim_matches_title(normalized, {'query':query}), name)
+            self.assertTrue(monitor._matches_category_query(normalized, 'computers', monitor._normalize(query)), name)
+        self.assertFalse(monitor._intent_prelim_matches_title(monitor._normalize('ASUS ROG Zephyrus G14 RTX5070Ti'), {'query':query}))
+        self.assertTrue(monitor._is_category_blocked_title(monitor._normalize('Grafikkarte RTX5070Ti for Mini PC'), 'computers', monitor._normalize(query)))
+
     def test_actual_pc_details_match_independent_purpose_and_gpu_verdicts(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/pc_manual_details.json').read_text(encoding='utf8'))
         for case in cases:
