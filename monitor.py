@@ -5906,6 +5906,8 @@ def _parse_search_body(body, host, query):
         return items, None
     raw = body or ""
     low = raw[:12000].lower()
+    if "something went wrong on our end" in low:
+        return [], "network"
     has_result_container = (
         'class="srp-results' in raw
         or "srp-river-results" in raw
@@ -5980,6 +5982,20 @@ def _parse_search_body(body, host, query):
         )
         return [], "parse"
     return [], None
+
+
+def _statistics_empty_bucket_label(*, side_ok=False, genuine_empty=False, error=None):
+    if side_ok:
+        return "❌", "Не найдено подходящих"
+    if error in ("rate_limit", "api_rate_limit", "api_rate"):
+        return "⚠️", "Rate limit"
+    if error in ("blocked", "cooldown"):
+        return "⚠️", "eBay block"
+    if error:
+        return "⚠️", "сбой загрузки"
+    if genuine_empty:
+        return "❌", "Не найдено"
+    return "⚠️", "Проверка не завершена"
 
 
 # Subresources we never parse. eBay SERP pulls 60+ thumbnails per page and the
@@ -8283,44 +8299,16 @@ async def process_searches(bot, once=False):
                     return not any(w in t_lower for w in ("tag", "std", "d", "h", "day", "hour", "день", "дня", "дней", "дн", "д", "ч"))
 
                 def _empty_bucket_label(is_auction=False):
-                    """Two different empty meanings — never mix them up.
-
-                    ❌ Не найдено     = search finished OK, 0 matching listings
-                                       (real empty stock — e.g. model not listed yet)
-                    ⚠️ сбой загрузки = this side's fetch failed (transport),
-                                       NOT «no stock on eBay»
-                    ⚠️ Rate limit    = 429
-                    ⚠️ eBay block    = hard block only when we never saw a clean empty page
-                    """
                     side = "auc" if is_auction else "bin"
-                    # Had raw items of this type (filter may have dropped them).
-                    if side_ok.get(side):
-                        return "❌", "Не найдено"
-                    # Clean empty SERP (Playwright/HTML real 0) = stock empty.
-                    if side_genuine_empty.get(side):
-                        return "❌", "Не найдено"
-                    err = side_err.get(side)
-                    other = "bin" if is_auction else "auc"
-                    # Sibling worked → never claim full eBay outage on this row.
-                    if results or side_ok.get(other):
-                        if err in (
-                            "side_fetch_failed", "blocked", "cooldown", "network", "parse",
-                            "rate_limit", "api_rate_limit", "api_rate",
-                        ):
-                            return "⚠️", "сбой загрузки"
-                        return "❌", "Не найдено"
-                    # Whole product empty: if any side saw clean 0, it's empty not block.
-                    if side_genuine_empty["bin"] or side_genuine_empty["auc"]:
-                        return "❌", "Не найдено"
-                    err = err or fetch_err
-                    # network/parse after empty attempts = often unlisted model + PW crash
-                    if err in ("network", "parse"):
-                        return "❌", "Не найдено"
-                    if err in ("rate_limit", "api_rate_limit", "api_rate"):
-                        return "⚠️", "Rate limit"
-                    if err in ("blocked", "cooldown"):
-                        return "⚠️", "eBay block"
-                    return "❌", "Не найдено"
+                    # A successful sibling cannot prove that this basket was fetched.
+                    error = side_err.get(side)
+                    if not side_genuine_empty.get(side) and not side_ok.get(side):
+                        error = error or fetch_err
+                    return _statistics_empty_bucket_label(
+                        side_ok=side_ok.get(side, False),
+                        genuine_empty=side_genuine_empty.get(side, False),
+                        error=error,
+                    )
 
                 def make_aligned_row(emoji, label, item, total_price_val, total_price_str, is_auction=False, link_spaces_len=9):
                     row_lines = []

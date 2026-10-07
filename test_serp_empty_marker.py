@@ -39,6 +39,19 @@ def _page(marker_html, *, container=True, items=0, head_filler=True):
 
 
 class DeepEmptyMarkerTest(unittest.TestCase):
+    def test_real_sorry_error_page_is_network_failure_not_empty_or_captcha(self):
+        body='<html><body><p>SORRY</p><p>Something went wrong on our end</p><p>Please go back and try again or go to eBay Homepage.</p></body></html>'
+        self.assertEqual(([], 'network'),monitor._parse_search_body(body,'ebay.de','4080 rechner'))
+
+    def test_transport_error_never_becomes_not_found_in_statistics(self):
+        for error in ('network','parse','http_503','side_fetch_failed'):
+            self.assertEqual(('⚠️','сбой загрузки'),monitor._statistics_empty_bucket_label(error=error))
+        self.assertEqual(('❌','Не найдено'),monitor._statistics_empty_bucket_label(genuine_empty=True))
+        self.assertEqual(('⚠️','Проверка не завершена'),monitor._statistics_empty_bucket_label())
+        self.assertEqual(('⚠️','сбой загрузки'),monitor._statistics_empty_bucket_label(genuine_empty=True,error='network'))
+        self.assertEqual(('❌','Не найдено подходящих'),monitor._statistics_empty_bucket_label(side_ok=True))
+        self.assertEqual(('⚠️','eBay block'),monitor._statistics_empty_bucket_label(error='blocked'))
+        self.assertEqual(('⚠️','Rate limit'),monitor._statistics_empty_bucket_label(error='api_rate_limit'))
     def test_german_null_search_deep_in_body_is_honest_empty(self):
         body = _page("<h2>Keine exakten Treffer gefunden</h2>")
         self.assertGreater(body.lower().find("keine exakten treffer"), 12000)
