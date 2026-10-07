@@ -2137,9 +2137,10 @@ _PANEL_IS_PRODUCT_CATEGORIES = ("monitors", "tvs")
 
 
 def _is_display_replacement_description(text_norm):
-    repair_words = "(?:aus)?getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|erneuert|reparatur"
-    p1 = rf"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b[^.!?]{{0,80}}\b{_DISPLAY_NEG}(?:{repair_words})\b"
-    p2 = rf"\b{_DISPLAY_NEG}(?:(?:aus)?getauschtes|gewechseltes|repariertes|ersetztes|erneuertes)\b[^.!?]{{0,80}}\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
+    repair_words = "(?:aus)?getauscht|tauschen\\s+lassen|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|erneuert|reparatur"
+    part = r"(?:display|bildschirm|screen|oled|glas|glass|scheibe|rueckseitenglas|rueckglas|hinterglas|backglass|back\s*glass|rear\s*glass)"
+    p1 = rf"\b{part}\b[^.!?]{{0,80}}\b{_DISPLAY_NEG}(?:{repair_words})\b"
+    p2 = rf"\b{_DISPLAY_NEG}(?:(?:aus)?getauschtes|gewechseltes|repariertes|ersetztes|erneuertes)\b[^.!?]{{0,80}}\b{part}\b"
     return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
 
 
@@ -4876,6 +4877,17 @@ def _has_display_blemish(text_norm):
     return False
 
 
+def _has_charging_failure(text):
+    # 227556560158: wireless charging works only at1%; USB charging is broken.
+    # Mentioning MagSafe or omitting a charger is not itself a device fault.
+    patterns = (
+        r"\blaedt\s+nicht(?:\s+mehr)?(?:\s*(?:[.!?,;:]|$)|\s+(?:mit|ueber|am|an|per|via|durch|auf|richtig|zuverlaessig)\b)",
+        r"\b(?:does\s+not|doesn['’]t|will\s+not|won['’]t|cannot|can['’]t|no\s+longer)\s+charg(?:e|ing)\b(?!\s+(?:slow|slowly|slower)\b)",
+        r"\b(?:ladebuchse|ladeanschluss|ladeport|charging\s*port|usb[\s-]*c[\s-]*(?:port|anschluss|buchse))\b[^.!?]{0,40}\b(?:(?:funktioniert|geht)\s+nicht|does\s+not\s+work|doesn['’]t\s+work|not\s+working)\b",
+    )
+    return any(re.search(pattern, text) for pattern in patterns)
+
+
 def _is_description_blocked(desc_html, category):
     """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
     if not desc_html:
@@ -4898,7 +4910,12 @@ def _is_description_blocked(desc_html, category):
     # 298435287203: only the removable protector is broken, not the screen.
     # Remove just that explicit clause; any later device damage remains checked.
     desc_norm = re.sub(r"\b(?:nur|lediglich|only)\s+(?:(?:das|die|der|the)\s+)?(?:panzerglas|schutzglas|schutzfolie|screen\s*protector|tempered\s*glass)\b[^.!?\n]{0,60}?\b(?:kaputt|gebrochen\w*|gesprungen\w*|beschaedig\w*|gerissen\w*|crack(?:ed|s)?|broken|damaged)\b", " ", desc_norm)
+    # A precise denial of back-glass replacement must not trigger the generic
+    # spare-part noun. Remove only that noun; preserve every later defect.
+    desc_norm = re.sub(r"\b(?:rueckglas|hinterglas|backglass)\b(?=\s+(?:(?:wurde|was)\s+)?(?:nie|nicht|never|not)\s+(?:(?:aus)?getauscht|ersetzt|repariert|replaced)\b)", " ", desc_norm)
 
+    if _has_charging_failure(desc_norm):
+        return True
     # A working eSIM does not make a failed physical SIM reader defect-free.
     # PS5 Pro 137809113124 includes a controller whose touchpad cannot swipe.
     if re.search(r"\btouchpad\b.{0,180}\bnicht\s+als\s+(?:fingerwisch|wisch|touch)", desc_norm) or re.search(r"\b(?:touchpad|touchscreen|fingerabdrucksensor|fingerprint\s*(?:reader|sensor))\b[^.!?]{0,60}\b(?:funktioniert|reagiert|geht)\s+nicht\b", desc_norm):

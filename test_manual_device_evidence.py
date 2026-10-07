@@ -6,6 +6,18 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_charging_failure_remains_a_fault_when_wireless_works(self):
+        for body in ('Der Akku lädt nicht mehr mit der Ladebuchse sondern nur mit einem MagSafe charger.', 'Ladebuchse funktioniert nicht. MagSafe funktioniert.', 'The phone does not charge via USB; wireless charging works.', 'Battery won’t charge.'):
+            self.assertTrue(monitor._is_description_blocked(body, 'phones'), body)
+        for body in ('Akku lädt ohne Probleme. MagSafe funktioniert.', 'Der Akku lädt nicht langsam, sondern schnell.', 'The phone does not charge slowly.', 'Ladegerät ist nicht dabei; USB-C und MagSafe funktionieren.'):
+            self.assertFalse(monitor._is_description_blocked(body, 'phones'), body)
+
+    def test_repaired_back_glass_is_not_negated_by_no_exchange_policy(self):
+        self.assertTrue(monitor._is_description_blocked('Das Rückseitenglas habe ich vor einem Jahr wegen Bruch tauschen lassen. Kein Umtausch. Voll funktionsfähig.', 'phones'))
+        self.assertTrue(monitor._is_description_blocked('Das Rückglas wurde nicht getauscht. Das Display ist gebrochen.', 'phones'))
+        for body in ('Das Rückseitenglas wurde nie getauscht.', 'Das Rückglas wurde nicht getauscht.', 'Das back glass wurde ohne Reparatur genutzt.'):
+            self.assertFalse(monitor._is_description_blocked(body, 'phones'), body)
+
     def test_actual_nuc_mini_pc_survives_preliminary_selection(self):
         query = '5070 ti (pc, rechner, computer, desktop, gaming pc)'
         title = 'ASUS ROG NUC 2025 Gaming Mini PC Intel Core Ultra 9 275HX RTX 5070TI 32GB 2TB'
