@@ -1068,7 +1068,11 @@ def _known_oled_configuration(model_text, screen_text):
     # Source: psref.lenovo.com/syspool/Sys/PDF/Yoga/Yoga_Pro_7_14IMH9/Yoga_Pro_7_14IMH9_Spec.PDF
     # Dell XPS 15 9530 (2023): 3456x2160 is OLED, 1920x1200 is LCD.
     # dell.com/support/manuals/de-ch/xps-15-9530-laptop/xps-15-9530-setup-and-specifications/display
-    resolution = r"2880\s*(?:x|\*|×)?\s*1800" if re.search(r"\b14imh9\b", model_text) else (
+    # ASUS official specifications: ProArt PX13 HN7306 / Vivobook N6506CU.
+    # asus.com/us/laptops/for-creators/proart/proart-px13-hn7306/techspec/
+    # press.asus.com/news/press-releases/asus-vivobook-pro-15-intel-core-ultra-nvidia-geforce-rtx/
+    resolution = r"2880\s*(?:x|\*|×)?\s*1800" if re.search(r"\b14imh9\b|\b(?:px13\s*)?hn7306[a-z]*\b", model_text) else (
+        r"2880\s*(?:x|\*|×)?\s*1620" if re.search(r"\bn6506cu\b", model_text) else
         r"3456\s*(?:x|\*|×)?\s*2160" if re.search(r"\bxps\s*15\s*9530\b", model_text) else None
     )
     if resolution is None:
@@ -2296,6 +2300,10 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     # Kopfbügel followed by the form factor describes a complete over-ear headset,
     # as independently confirmed on 366021140413. Damage checks use the original title.
     title_norm = re.sub(r"\b(?:kein|keine|keinen|ohne|no|without)\s+(?:box|ovp|verpackung|karton|originalverpackung)\b", " ", title_norm)
+    if category == "laptops" and re.search(r"\brtx\s*\d{4}\b", title_norm) and not re.match(r"^(?:akku|battery)\b", title_norm):
+        # A declared health percentage describes the laptop's own battery.
+        # Replacement batteries, compatibility and actual defects stay blocked.
+        title_norm = re.sub(r"\b(?:akku|battery)(?:\s*(?:zustand|health|kapazitaet))?\s*(?:ca\.?|approx\.?|about|:)?\s*\d{1,3}\s*%", " ", title_norm)
     if category == "headphones" and re.search(r"\b(?:kopfhoerer|headphones|headset)\b.*\bkopfbuegel\b.*\b(?:over[- ]ear|on[- ]ear|bluetooth|faltbar|anc)\b", title_norm):
         title_norm = re.sub(r"\bkopfbuegel\b", " ", title_norm)
     # Components are rejected unless explicitly supplied with the main device.

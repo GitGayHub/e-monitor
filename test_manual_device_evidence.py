@@ -6,6 +6,16 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_laptop_battery_health_is_metadata_not_a_spare_battery(self):
+        title=monitor._normalize('DELL XPS 16 9640 64GB 4TB Intel Ultra 9 RTX4060 Super Zustand Akku ca.99%')
+        self.assertFalse(monitor._is_category_blocked_title(title,'laptops','4060 oled'))
+        self.assertTrue(monitor._is_category_blocked_title('battery 99% for dell xps16 rtx4060','laptops','4060 oled'))
+        self.assertTrue(monitor._is_category_blocked_title(title+' display defekt','laptops','4060 oled'))
+    def test_factory_asus_panel_requires_matching_own_model_and_resolution(self):
+        for title,panel in [('asus proart px13hn7306w rtx4060 laptop','2880x1800'),('asus vivobook pro15 n6506cu-ma029x rtx4050 laptop','2880x1620')]:
+            self.assertTrue(monitor._known_oled_configuration(title,'display: '+panel))
+            self.assertFalse(monitor._known_oled_configuration(title,'display: 1920x1200'))
+            self.assertFalse(monitor._known_oled_configuration(title,'external display: '+panel))
     def test_xps_oled_resolution_is_scoped_to_own_model_and_screen(self):
         title='Dell XPS 15 9530 RTX4060 Laptop'
         search={'query':'4060 oled','filters':{'category':'laptops'}}
