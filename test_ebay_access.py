@@ -48,6 +48,20 @@ class BrowseAccessTest(unittest.TestCase):
         self.assertEqual(self.access.state()["remaining"], 90)
         self.assertGreater(self.access.interval(46), 900)
 
+    def test_exhausted_quota_is_a_runtime_error_even_when_no_search_is_due(self):
+        self.access.save({'remaining':0,'reset':time.time()+21600,'checked':time.time()})
+        with patch.object(monitor,'browse_access',self.access), \
+             patch.object(monitor,'_get_ebay_api_token',return_value=('qa',None)), \
+             patch.object(monitor,'_runtime_errors',[]) as errors, \
+             patch.object(monitor.urllib.request,'urlopen') as requests:
+            monitor.initialize_api_budget_and_queue([])
+            self.assertEqual(1,len(errors))
+            self.assertIn('quota exhausted',errors[0])
+            self.assertIn('retry after',errors[0])
+            monitor.initialize_api_budget_and_queue([])
+            self.assertEqual(1,len(errors))
+            requests.assert_not_called()
+
 
 class BrowseTransportTest(unittest.TestCase):
     def setUp(self):

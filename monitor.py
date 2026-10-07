@@ -1651,6 +1651,13 @@ def _phone_model_aspect_matches(value, query):
 
 
 def _phone_chipset_matches(value, query):
+    pro = re.search(r"\biphone\s*(15|16|17)\s*pro\b", _normalize(query))
+    if pro:
+        # Apple specifications: support.apple.com/en-us/111828, /121032,
+        # apple.com/am/iphone-17-pro/specs/ (checked2026-10-07).
+        expected = {'15':'17','16':'18','17':'19'}[pro.group(1)]
+        chip = re.search(r"\b(?:apple\s+)?a(\d{1,2})(?:\s*(pro|bionic))?\b", _normalize(value))
+        return not chip or (chip.group(1) == expected and chip.group(2) == 'pro')
     if not re.search(r"\bs25\s*edge\b", _normalize(query)):
         return True
     # Samsung specifies Snapdragon 8 Elite globally for Galaxy S25 Edge:
@@ -1660,6 +1667,17 @@ def _phone_chipset_matches(value, query):
         return False
     chip = re.search(r"\bsnapdragon\s*(\d+)(?:\s*(elite|gen\s*\d+))?\b", value)
     return not chip or (chip.group(1) == '8' and chip.group(2) in (None, 'elite'))
+
+
+def _phone_model_number_matches(value, query):
+    """Code fields can abbreviate a family (S25); explicit conflicts still fail."""
+    value, query = _normalize(value), _normalize(query)
+    for pattern in _PHONE_MODEL_PATTERNS:
+        actual, wanted = re.search(pattern,value), re.search(pattern,query)
+        if actual and wanted:
+            return all(not a or a.replace(' ','') == (b or '').replace(' ','')
+                       for a,b in zip(actual.groups(),wanted.groups()))
+    return _phone_model_aspect_matches(value,query)
 
 
 def _phone_description_purpose_confirmed(description):
@@ -1687,6 +1705,13 @@ def _phone_specifications_match(title, description, query):
     declared_chips += re.findall(r"\b(?:leistungsfaehig\w*|powerful)\s+((?:qualcomm\s+)?(?:exynos|snapdragon|dimensity|mediatek)[a-z0-9 +]*?)\s+(?:prozessor|processor)\b", own_description)
     if any(not _phone_chipset_matches(chip,q) for chip in declared_chips):
         return False
+    if re.search(r"\biphone\s*(15|16|17)\s*pro\b", q):
+        for chip in re.finditer(r"\b(?:apple\s+)?a\d{1,2}(?:\s*(?:pro|bionic))?\s*(?:chip(?:satz|set)?|processor|prozessor)\b", own_description):
+            before = own_description[max(0,chip.start()-45):chip.start()]
+            if re.search(r"\b(?:als|than|vs|versus|gegenueber|compared\s+to|vergleich\s+zu)\s+(?:(?:dem|the)\s+)?$", before):
+                continue
+            if not _phone_chipset_matches(chip.group(),q):
+                return False
     generation = re.search(r"\biphone\s*(15|16|17)\s*pro\s*max\b", _normalize(query))
     if not generation:
         return True
@@ -1696,8 +1721,6 @@ def _phone_specifications_match(title, description, query):
     for gb, tb in re.findall(r"\b(64|128|256|512|1024|2000|2048)\s*gb\b|\b([12])\s*tb\b", own_title):
         if (int(gb) if gb else int(tb) * 1024) not in allowed:
             return False
-    if generation == "17" and re.search(r"\b(?:apple\s+)?a1[0-8]\s*pro\s*(?:chip(?:satz)?|processor|prozessor)\b", _normalize(_clean_description(description))):
-        return False
     return True
 
 
@@ -1926,7 +1949,9 @@ def _has_accessory_term(title_norm, term):
 
     words = re.findall(r'[a-z0-9]+', title_norm)
     for w in words:
-        if term_norm == "stand" and w in ("zustand", "zustands", "bestzustand", "topzustand", "neuzustand", "originalzustand"):
+        # German condition compounds (including common `tustand` spelling)
+        # describe the device; they are not a phone stand.
+        if term_norm == "stand" and re.search(r"(?:zu|tu)stands?$", w):
             continue
         if term_norm == "kabel" and w.startswith("kabellos"):
             continue
@@ -1964,6 +1989,8 @@ def _is_phone_accessory_title(title_norm):
     # Titles starting with "für/fuer/for/voor/para/pour/per" are always accessories
     if re.match(r"^(?:fuer|für|for|voor|para|pour|per)\s+", title_norm):
         return True
+    if re.match(r"^(?:original\s+|replacement\s+)?(?:\d{1,3}\s*%\s*)?(?:akku|battery|batterie|batteries)\b", title_norm):
+        return True
 
     # Standalone bundle indicator checks
     is_bundle = re.search(r"\b(?:mit|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
@@ -1974,8 +2001,8 @@ def _is_phone_accessory_title(title_norm):
     is_battery_health_desc = False
     if any(_has_accessory_term(title_norm, w) for w in battery_words):
         has_storage = re.search(r"\b\d+\s*(?:gb|go|tb)\b", title_norm) is not None
-        has_health = re.search(r"\b\d+%\b", title_norm) is not None or any(w in title_norm for w in ("zyklen", "cycles", "kapazität", "kapazitaet", "zustand", "health", "neu", "top", "gut"))
-        health_label = r"(?:batteriekapazitaet|akkukapazitaet|akkuzustand|battery\s*health)"
+        has_health = re.search(r"\b\d{1,3}\s*%(?!\d)", title_norm) is not None or any(w in title_norm for w in ("zyklen", "cycles", "kapazität", "kapazitaet", "zustand", "health", "neu", "top", "gut"))
+        health_label = r"(?:batteriekapazitaet|akkukapazitaet|akkuzustand|battery\s*health|akku|batterie|battery)"
         explicit_health = re.search(rf"\b\d{{1,3}}\s*%\s*{health_label}\b|\b{health_label}\s*:?\s*\d{{1,3}}\s*%", title_norm) is not None
         if has_storage and has_health or explicit_health and _title_leads_with_phone_model(title_norm):
             is_battery_health_desc = True
@@ -4925,6 +4952,11 @@ def _is_description_blocked(desc_html, category):
 
     if _has_charging_failure(desc_norm):
         return True
+    # 227554664933: recurring SIM-Fehler persists with a newly supplied SIM.
+    sim_error = r"\bsim[\s-]*(?:fehler|errors?)\b"
+    sim_error_text = re.sub(rf"\b(?:kein\w*|ohne|no|without)\s+{sim_error}", " ", desc_norm)
+    if re.search(sim_error, sim_error_text):
+        return True
     # A working eSIM does not make a failed physical SIM reader defect-free.
     # PS5 Pro 137809113124 includes a controller whose touchpad cannot swipe.
     if re.search(r"\btouchpad\b.{0,180}\bnicht\s+als\s+(?:fingerwisch|wisch|touch)", desc_norm) or re.search(r"\b(?:touchpad|touchscreen|fingerabdrucksensor|fingerprint\s*(?:reader|sensor))\b[^.!?]{0,60}\b(?:funktioniert|reagiert|geht)\s+nicht\b", desc_norm):
@@ -5416,7 +5448,9 @@ def _details_match_contract(item, search, details, *, require_description=True):
         for aspect in details.get("localizedAspects") or []:
             name = _normalize(aspect.get("name") or "")
             value = _normalize(aspect.get("value") or "")
-            if name in ("modell", "model") and value and not _phone_model_aspect_matches(value, query):
+            if name in ('modell','model') and value and not _phone_model_aspect_matches(value, query):
+                return False
+            if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno') and value and not _phone_model_number_matches(value, query):
                 return False
             if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query):
                 return False
@@ -7325,6 +7359,13 @@ def initialize_api_budget_and_queue(searches):
         except Exception as exc:
             logger.warning("eBay quota refresh unavailable: %s", exc)
     interval = browse_access.interval(len(active))
+    state = browse_access.state()
+    if state.get('remaining',1)<=0 and state.get('reset',0)>time.time():
+        from datetime import datetime, timezone
+        reset = datetime.fromtimestamp(state['reset'],timezone.utc).isoformat()
+        message = f"eBay Browse: quota exhausted; retry after {reset}"
+        if message not in _runtime_errors:
+            _runtime_errors.append(message)
     from datetime import datetime
     now = datetime.now()
     due = set()

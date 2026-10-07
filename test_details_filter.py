@@ -7,6 +7,47 @@ import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_phone_chip_declaration_belongs_to_the_requested_generation(self):
+        for generation, correct in (('15','17'),('16','18'),('17','19')):
+            query = f'iPhone {generation} Pro Max'
+            with self.subTest(generation=generation):
+                self.assertTrue(monitor._phone_specifications_match(query+' 256GB',f'Apple A{correct} Pro Chipsatz.',query))
+                self.assertFalse(monitor._phone_specifications_match(query+' 256GB',f'Apple A{int(correct)-1} Pro Chipsatz.',query))
+                self.assertTrue(monitor._phone_specifications_match(query+' 256GB',f'Apple A{correct} Pro Chip schneller als Apple A{int(correct)-1} Pro Chip.',query))
+                self.assertFalse(monitor._phone_chipset_matches(f'Apple A{int(correct)-1} Pro',query))
+                self.assertTrue(monitor._phone_specifications_match(query+' 256GB','iOS17. Bildschirm17cm. 6-Core GPU.',query))
+
+    def test_separate_phone_model_number_cannot_conflict_with_title(self):
+        search={'query':'iPhone 16 Pro Max','filters':{'category':'phones'}}
+        for code, accepted in (('A3296',True),('A2221 (CDMA + GSM)',False)):
+            detail={'title':'Apple iPhone 16 Pro Max 256GB','description':'Voll funktionsfaehig.',
+                    'localizedAspects':[{'name':'Modellnummer','value':code}]}
+            self.assertEqual(accepted,monitor._details_match_contract({'title':detail['title']},search,detail))
+        self.assertTrue(monitor._phone_model_number_matches('S25','Samsung Galaxy S25 Edge'))
+        self.assertFalse(monitor._phone_model_number_matches('S24','Samsung Galaxy S25 Edge'))
+        self.assertFalse(monitor._phone_model_number_matches('S25 Ultra','Samsung Galaxy S25 Edge'))
+
+    def test_recurring_sim_errors_reject_the_phone_without_rejecting_explicit_denials(self):
+        for description, expected in (
+            ('Manchmal auftauchende Fehlermeldung "SIM-Fehler". Neue SIM-Karte ausprobiert, Fehler bleibt.',True),
+            ('Intermittent SIM error. Phone needs SIM PIN again.',True),
+            ('Keine SIM-Fehler. Frei fuer alle Netze.',False),
+            ('No SIM errors, all functions work.',False),
+            ('Keine SIM-Fehler. Aber dann SIM error beim Telefonieren.',True)):
+            with self.subTest(description=description):
+                self.assertEqual(expected,monitor._is_description_blocked(description,'phones'))
+
+    def test_battery_health_titles_do_not_turn_whole_phones_into_parts(self):
+        for title, accessory in (
+            ('Apple iPhone 16 Pro Max - Geprueft - 89% Batterie - Guter Zustand',False),
+            ('iPhone 16 Pro Max 256GB Titan Schwarz /battrietustand 89%',False),
+            ('Apple iPhone 16 Pro Max 256GB Batteriezustand 89%',False),
+            ('Batterie 100% iPhone 16 Pro Max 256GB',True),
+            ('iPhone 16 Pro Max 89% Batterie nur OVP',True),
+            ('Handystand fuer iPhone 16 Pro Max',True)):
+            with self.subTest(title=title):
+                self.assertEqual(accessory,monitor._is_phone_accessory_title(monitor._normalize(title)))
+
     def test_html_purchase_actions_ignore_mentions_of_other_formats(self):
         from bs4 import BeautifulSoup
         for actions, expected in ((['Bieten'], ['AUCTION']),

@@ -14081,8 +14081,18 @@
       },
       "expected": {
         "accepted": false,
+        "reason": "over_limit",
+        "totalPrice": 677.99
+      },
+      "historicalExpected": {
+        "accepted": false,
         "reason": "filtered",
         "totalPrice": 677.99
+      },
+      "expectationCorrection": {
+        "rule": "Battery-health percentage describes a whole phone, not a replacement battery.",
+        "independentEvidence": "browser/iphone16-details-oct7.json:820170817255,267788253824,318082216618,398397322397,307172077148; browser/battery-health-compatibility-oct7.json:336222118473.",
+        "scope": "Historical metadata-only classification. Original178542744266 redirects; its title95%Akku is a health label. No current-description or delivery confirmation is inferred."
       }
     },
     {
@@ -17243,8 +17253,18 @@
       },
       "expected": {
         "accepted": false,
+        "reason": "over_limit",
+        "totalPrice": 731.19
+      },
+      "historicalExpected": {
+        "accepted": false,
         "reason": "filtered",
         "totalPrice": 731.19
+      },
+      "expectationCorrection": {
+        "rule": "Battery-health percentage describes a whole phone, not a replacement battery.",
+        "independentEvidence": "browser/iphone16-details-oct7.json:820170817255,267788253824,318082216618,398397322397,307172077148; browser/battery-health-compatibility-oct7.json:336222118473.",
+        "scope": "Historical metadata-only classification. Original178542744266 redirects; its title95%Akku is a health label. No current-description or delivery confirmation is inferred."
       }
     },
     {
@@ -152750,8 +152770,18 @@
       },
       "expected": {
         "accepted": false,
+        "reason": "over_limit",
+        "totalPrice": 656.19
+      },
+      "historicalExpected": {
+        "accepted": false,
         "reason": "filtered",
         "totalPrice": 656.19
+      },
+      "expectationCorrection": {
+        "rule": "Battery-health percentage describes a whole phone, not a replacement battery.",
+        "independentEvidence": "browser/iphone16-details-oct7.json:820170817255,267788253824,318082216618,398397322397,307172077148; browser/battery-health-compatibility-oct7.json:336222118473.",
+        "scope": "Historical metadata-only classification. Original178542744266 redirects; its title95%Akku is a health label. No current-description or delivery confirmation is inferred."
       }
     },
     {
@@ -158175,9 +158205,19 @@
         ]
       },
       "expected": {
+        "accepted": true,
+        "reason": "wait_24h",
+        "totalPrice": 312.19
+      },
+      "historicalExpected": {
         "accepted": false,
         "reason": "filtered",
         "totalPrice": 312.19
+      },
+      "expectationCorrection": {
+        "rule": "Battery-health percentage describes a whole phone, not a replacement battery.",
+        "independentEvidence": "browser/iphone16-details-oct7.json:820170817255,267788253824,318082216618,398397322397,307172077148; browser/battery-health-compatibility-oct7.json:336222118473.",
+        "scope": "Historical metadata-only classification. Original178542744266 redirects; its title95%Akku is a health label. No current-description or delivery confirmation is inferred."
       }
     },
     {
