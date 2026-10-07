@@ -998,7 +998,7 @@ def _has_pc_hint(text_norm):
 
 
 def _declared_rtx_matches(text_norm, gpu):
-    declared = re.findall(r"\brtx\s*(\d{4})(?:\s*(ti|super))?\b", text_norm)
+    declared = re.findall(r"\brtx[\s®™]*(\d{4})(?:\s*(ti|super))?\b", text_norm)
     expected = re.fullmatch(r"(\d{4})(ti|super)?", str(gpu))
     if not declared or not expected:
         return True
@@ -1006,7 +1006,12 @@ def _declared_rtx_matches(text_norm, gpu):
 
 
 def _has_rtx_gpu(text_norm, gpu):
-    return _declared_rtx_matches(text_norm,gpu) and re.search(rf"\b(?:rtx\s*)?{re.escape(str(gpu))}\b", text_norm) is not None
+    if not _declared_rtx_matches(text_norm,gpu):
+        return False
+    if re.search(rf"\b(?:rtx\s*)?{re.escape(str(gpu))}\b", text_norm):
+        return True
+    # Seller shorthand, independently confirmed by the own RTX 4080 Super specs.
+    return str(gpu) in ('4080','4080super') and re.search(r"\brtx[\s®™]*4080s\b",text_norm) is not None
 
 
 def _has_rtx_5070_ti(text_norm):
@@ -1969,7 +1974,9 @@ def _is_phone_accessory_title(title_norm):
     if any(_has_accessory_term(title_norm, w) for w in battery_words):
         has_storage = re.search(r"\b\d+\s*(?:gb|go|tb)\b", title_norm) is not None
         has_health = re.search(r"\b\d+%\b", title_norm) is not None or any(w in title_norm for w in ("zyklen", "cycles", "kapazität", "kapazitaet", "zustand", "health", "neu", "top", "gut"))
-        if has_storage and has_health:
+        health_label = r"(?:batteriekapazitaet|akkukapazitaet|akkuzustand|battery\s*health)"
+        explicit_health = re.search(rf"\b\d{{1,3}}\s*%\s*{health_label}\b|\b{health_label}\s*:?\s*\d{{1,3}}\s*%", title_norm) is not None
+        if has_storage and has_health or explicit_health and _title_leads_with_phone_model(title_norm):
             is_battery_health_desc = True
 
     # Hard parts — always accessory, no override possible

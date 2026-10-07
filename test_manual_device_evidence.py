@@ -6,6 +6,27 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_actual_pc_details_match_independent_purpose_and_gpu_verdicts(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/pc_manual_details.json').read_text(encoding='utf8'))
+        for case in cases:
+            details={k:v for k,v in case.items() if k not in ('itemEndDate','estimatedAvailabilities')}
+            with self.subTest(item=case['id']):
+                self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['title']},{'query':case['query'],'filters':{'category':'computers'}},details))
+    def test_actual_rtx4080s_shorthand_survives_preliminary_selection(self):
+        title=monitor._normalize('High End Gaming PC intel i9 13900KS NVIDIA RTX4080S 16GB')
+        self.assertTrue(monitor._intent_prelim_matches_title(title,{'query':'4080 (pc, rechner)'}))
+        self.assertFalse(monitor._has_rtx_gpu(monitor._normalize('Gaming PC RTX4080S, actual GPU RTX5050'),'4080'))
+        self.assertFalse(monitor._has_rtx_gpu(monitor._normalize('Gaming PC 4080ST RTX5050'),'4080'))
+    def test_gpu_trademark_does_not_hide_generation_or_wrong_actual_gpu(self):
+        self.assertTrue(monitor._has_rtx_gpu(monitor._normalize('Current GPU RTX™ 4080 SUPER. New PC RTX5090.'),'4080'))
+        self.assertFalse(monitor._has_rtx_gpu(monitor._normalize('Captiva PC 10-4080 RTX™5050'),'4080'))
+        self.assertTrue(monitor._has_rtx_5070_ti(monitor._normalize('GPU RTX®5070 Ti')))
+        self.assertFalse(monitor._has_rtx_5070_ti(monitor._normalize('PC 5070Ti GPU RTX™5070')))
+    def test_explicit_battery_health_does_not_require_storage_in_phone_title(self):
+        for title in ('Apple iPhone 17 Pro Max Blau OVP 93% Batteriekapazität','Samsung Galaxy S25 Edge battery health: 96%'):
+            self.assertFalse(monitor._is_phone_accessory_title(monitor._normalize(title)),title)
+        for title in ('Akku 93% Batteriekapazität für iPhone 17 Pro Max','Battery health:93% replacement for iPhone 17 Pro Max','Apple iPhone 17 Pro Max 93% Batteriekapazität nur OVP','Apple iPhone 17 Pro Max 93% Batteriekapazität Ersatzteile'):
+            self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(title)),title)
     def test_german_screen_replacement_verb_includes_prefix_and_negation(self):
         for body in ('Display-(Original ausgetauscht) Drittanbieter Soft Oled 120Hz','Das Display wurde ausgetauscht.','Ausgetauschtes Display, voll funktionstüchtig.'):
             self.assertTrue(monitor._is_description_blocked(body,'phones'),body)
