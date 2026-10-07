@@ -2091,8 +2091,8 @@ def _is_for_accessory_title(title_norm, query_norm, category):
 
 _DISPLAY_PART_WORDS = r"(?:display|bildschirm|screen|oled|glas|glass|scheibe)"
 _DISPLAY_REPAIR_WORDS = (
-    r"(?:getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch"
-    r"|bekommen|erneuert|reparatur|getauschtes|gewechseltes|repariertes"
+    r"(?:(?:aus)?getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch"
+    r"|bekommen|erneuert|reparatur|(?:aus)?getauschtes|gewechseltes|repariertes"
     r"|ersetztes|erneuertes)"
 )
 # "neu" alone only means a swapped screen when it sits *next to* the part.
@@ -2129,9 +2129,9 @@ _PANEL_IS_PRODUCT_CATEGORIES = ("monitors", "tvs")
 
 
 def _is_display_replacement_description(text_norm):
-    repair_words = "getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|erneuert|reparatur"
+    repair_words = "(?:aus)?getauscht|gewechselt|repariert|ersetzt|wechsel|wechseln|austausch|erneuert|reparatur"
     p1 = rf"\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b[^.!?]{{0,80}}\b{_DISPLAY_NEG}(?:{repair_words})\b"
-    p2 = rf"\b{_DISPLAY_NEG}(?:getauschtes|gewechseltes|repariertes|ersetztes|erneuertes)\b[^.!?]{{0,80}}\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
+    p2 = rf"\b{_DISPLAY_NEG}(?:(?:aus)?getauschtes|gewechseltes|repariertes|ersetztes|erneuertes)\b[^.!?]{{0,80}}\b(?:display|bildschirm|screen|oled|glas|glass|scheibe)\b"
     return bool(re.search(p1, text_norm, re.IGNORECASE) or re.search(p2, text_norm, re.IGNORECASE))
 
 

@@ -6,6 +6,11 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_german_screen_replacement_verb_includes_prefix_and_negation(self):
+        for body in ('Display-(Original ausgetauscht) Drittanbieter Soft Oled 120Hz','Das Display wurde ausgetauscht.','Ausgetauschtes Display, voll funktionstüchtig.'):
+            self.assertTrue(monitor._is_description_blocked(body,'phones'),body)
+        for body in ('Das Display wurde nie ausgetauscht.','Das Display wurde nicht ausgetauscht.','Nie ausgetauschtes Display.'):
+            self.assertFalse(monitor._is_description_blocked(body,'phones'),body)
     def test_laptop_battery_health_is_metadata_not_a_spare_battery(self):
         title=monitor._normalize('DELL XPS 16 9640 64GB 4TB Intel Ultra 9 RTX4060 Super Zustand Akku ca.99%')
         self.assertFalse(monitor._is_category_blocked_title(title,'laptops','4060 oled'))
