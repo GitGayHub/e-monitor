@@ -2369,6 +2369,9 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         title_norm = re.sub(r"\b(?:akku|battery)(?:\s*(?:zustand|health|kapazitaet))?\s*(?:ca\.?|approx\.?|about|:)?\s*\d{1,3}\s*%", " ", title_norm)
     if category == "headphones" and re.search(r"\b(?:kopfhoerer|headphones|headset)\b.*\bkopfbuegel\b.*\b(?:over[- ]ear|on[- ]ear|bluetooth|faltbar|anc)\b", title_norm):
         title_norm = re.sub(r"\bkopfbuegel\b", " ", title_norm)
+    if category == "mice" and re.search(r"\b(?:mouse|maus)\b", title_norm) and not re.search(r"\b(?:fuer|for|fits|replacement|spare|ersatz\w*|repair|reparatur\w*|set|only|nur)\b", title_norm):
+        # Own complete mouse 318767580494: 5-Button is a feature count.
+        title_norm = re.sub(r"\b[1-9]\d?[-\s]+buttons?\b", " ", title_norm)
     # Components are rejected unless explicitly supplied with the main device.
     hard_parts = CATEGORY_HARD_PART_WORDS.get(category, ())
     if any(_has_accessory_term(title_norm, w) for w in hard_parts) and not _is_device_bundle(title_norm, category):

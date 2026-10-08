@@ -1,5 +1,5 @@
 {
-  "checkedAtUtc": "2026-10-08T09:31:47.972475+00:00",
+  "checkedAtUtc": "2026-10-08T09:54:35.663385+00:00",
   "command": "python tools/cloud-check.py --bot-dir ../e-monitor --android-dir .",
   "exitCode": 0,
   "pythonTests": 238,
@@ -11,25 +11,30 @@
     "skipped": 0
   },
   "apkBuilt": true,
-  "localDebugApkSha256": "e0796d146f54b760680fc5aa66cddc0b59f8dee49875814ad1495236cb6a0b86",
-  "publishedPairedLiveFixtureCases": 25,
-  "privateCompleteInputReplayCases": 13,
+  "localDebugApkSha256": "d6beeb65bb86245b073514c5e1690315701b2f72cd64a0cfbe68aa9711039c2f",
+  "publishedPairedLiveFixtureCases": 31,
+  "privateCompleteInputReplayCases": 14,
   "privateCompleteInputReplayPassed": true,
   "sourceGitBlobHashes": {
-    "e-monitor/monitor.py": "d995c34b7fecfc9ce74dfe3018fe7dbc1ec29a98",
-    "e-monitor/logic_version.txt": "351c110b11d507d012efccf1a5c3ba2f72ecdb64",
-    "e-monitor/qa/fixtures/cloud_live_model_cases_2026-10-08.json": "6811c7ff975ac4f7a2a66935e98c01d8257d3dd4",
+    "e-monitor/monitor.py": "ea27e497a314b4f22dc5d84dd3d6b2124fbbe5fb",
+    "e-monitor/logic_version.txt": "f9dacd0546e2565ee70d19e7d29b8250c1920b60",
+    "e-monitor/qa/fixtures/cloud_live_model_cases_2026-10-08.json": "e2437cd0c9c0dc5f382b2cc5c63eae1fa8d14510",
     "e-monitor-android/app/src/main/java/com/emonitor/app/core/monitor/CategoryRules.kt": "4a04e6e1dab91b725c9a1793a18bddacc3cce3ad",
     "e-monitor-android/app/src/main/java/com/emonitor/app/core/monitor/DetailsRules.kt": "e39dcf99b6f2fcba521afef22b2519f94bd67e75",
-    "e-monitor-android/app/src/main/java/com/emonitor/app/core/monitor/MonitorFilters.kt": "53f36155eeb60d6d3d36617c87c88be57be070ad"
+    "e-monitor-android/app/src/main/java/com/emonitor/app/core/monitor/MonitorFilters.kt": "53f36155eeb60d6d3d36617c87c88be57be070ad",
+    "e-monitor-android/app/src/main/java/com/emonitor/app/core/monitor/ProductPurpose.kt": "321df2aaca2d7524fc32cee5819a0a836a17baa8"
   },
   "productionActionsExecuted": false,
   "phoneOrTelegramVerified": false,
   "earlierCodeCheckpointCI": {
-    "androidCommit": "e700deae10f6a70cd5a08de62b0bfeb38c5ac052",
-    "runUrl": "https://github.com/GitGayHub/e-monitor-android/actions/runs/37754559306",
+    "androidCommit": "ff85bd030d324bcdc5f90865b1090786a68ae612",
+    "pythonCommit": "66a033562014a2f2d951ec31ab5c44b2e6c6bd5b",
+    "runUrl": "https://github.com/GitGayHub/e-monitor-android/actions/runs/37758006402",
     "conclusion": "success",
+    "apkSha256": "9dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7",
+    "artifactId": 11541087919,
     "coversFinalCode": false
   },
-  "finalCI": "Pending publication of this new code checkpoint; earlier green run is not final HEAD proof."
+  "finalCI": "Pending publication of the additional5-Button fix; previous green CI does not cover it.",
+  "privateOwnerManifestKotlinBanReplayPassed": true
 }

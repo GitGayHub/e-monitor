@@ -152,3 +152,14 @@ Final local cloud-check:238 Python +5 sync +233 Android tests passed;APK built. 
 Cloud inherited network proxy began returning HTTP503 on GitHub and eBay during final recheck; use available GitHub Connector for safe non-force branch publication and CI reads. No protection bypass. Production main/mode/Telegram/searches/limits/enabled/seen/ban lists/raw manifest and physical phone preserved. All16 hidden IDs and seller-ban controls verified in isolated state; not live-owner retrieval proof.
 
 Next: accessible .de40–50 unique reviewed IDs/group or complete smaller catalogue,4 basket profiles, Germany shipping/import totals, pagination/minima, actual seller/time Android HTTP. Ambiguous insured iPhone/chipped S24 and counted-button/scroll-wheel mice require own-photo/full-product clarification before filtering changes. PC cloud_sync --check before integration; no blind reset/clean/pull or phone install.
+
+
+## Additional live mouse-feature checkpoint 2026-10-08T09:54:35.663385+00:00
+
+Full seller body + own Type/Model/MPN/5-button aspects prove318767580494 is a whole Superstrike mouse. Both engines now remove counted-button feature wording only from declared mouse titles without compatibility/replacement/spare/repair/set/only wording. Real button sets/PCB/damage retained. Additional historical whole5-button Superlight rejection reason corrected to over-limit. No confirmed Germany delivered cheap deal.
+
+Latest local cloud-check238 Python +5 sync +233 Android tests and APK passed;31 paired public cases,14 identical complete seller-body/aspect inputs. Owner16 hidden IDs + global/search-specific seller bans also passed isolated Kotlin replay, with allowed control kept; no state/list changes. Local APK SHA256 d6beeb65bb86245b073514c5e1690315701b2f72cd64a0cfbe68aa9711039c2f; Cloud logic_version 1791453018. Coverage now26 reviewed/23 full bodies read;500 records/498 IDs,483 own pages,478 fetched bodies;96 baskets still BLOCKED.
+
+Previous exact Android ff85bd030d324bcdc5f90865b1090786a68ae612 CI37758006402 passed with Python66a033562014a2f2d951ec31ab5c44b2e6c6bd5b, artifact11541087919, APK9dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7. It does not cover this last fix; monitor new current-HEAD CI after publishing. Companion Cloud branch retains paired source; exact new counterpart recorded on publication. Production settings/Telegram/seen/searches/bans/main and physical phone untouched.
+
+Continue only available DE profile/basket/delivery/minimum live acceptance, unresolved scroll-wheel accessory ambiguity, and authorized PC/device checks. Report remains PARTIAL: https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/REPORT.md
