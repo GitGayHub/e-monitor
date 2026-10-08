@@ -44,3 +44,12 @@ Local current suite250 Python +5 sync and251 Android tests/APKs verified (final 
 
 
 Private owner-ban replay repeated:16 hidden IDs,1 global seller and allowed control passed in both engines using read-only manifest;0 configured search-specific sellers, synthetic per-search ban still passed. No lists/state writes. Initial GitHub UI37778181504 failed before boot:API36 emulator fatal insufficient userdata disk6650.61MB available/7372.80MB required. KVM available; disposable-runner unused .NET/GHC cleanup added, rerun pending. No UI result claimed from failed boot.
+
+
+## Verified Actions source checkpoint and external-window limit
+
+Both source commits Python2fac998 / Android631e0a9 are green in [readiness37780829091](https://github.com/GitGayHub/e-monitor-android/actions/runs/37780829091):250 Python+5sync, Android unit/APK build. Downloaded artifact11552816199 and independently hashed its APK:445c8eee4ffc8d475310524e93cb002d828c40f566d887b89a792a1dafe8e1b8 (expires2026-10-22T13:04:26Z).
+
+[API36 UI37780828987](https://github.com/GitGayHub/e-monitor-android/actions/runs/37780828987) boots with KVM after disk fix; all4 instrumentation tests passed,0skip/fail. Downloaded XML verifies persistence/cap15, legacy repeat, four-basket longpress+alias and actualopenUrl ACTION_VIEW interception. External adb launch correctly resolves Chrome, but downloaded browser screenshot shows SystemUI ANR; it is NOT proof of a rendered browser window.
+
+Only isolated workflow changes follow: stop the4GB Gradle daemon before emulator, run prebuilt connected tests with1.5GB heap, API35/Nexus4/3GBRAM/4cores, and explicitly assert focused Chrome window after offline ACTION_VIEW -W. No new eBay network requests. Both API36 component proof and external-window limit remain recorded; next test pending. App/Python source unchanged since green631e0a9/2fac998.
