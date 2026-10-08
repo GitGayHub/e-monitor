@@ -49,10 +49,9 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
-    def test_html_queries_preserve_negated_defects_and_redmagic_spelling(self):
+    def test_html_queries_do_not_pre_exclude_valid_listings_and_redmagic_spelling(self):
         redmagic = {"query": "Redmagic 11 Pro", "filters": {"category": "phones"}}
-        self.assertEqual(monitor._build_smart_search_query(redmagic),
-                         "Redmagic 11 Pro -teildefekt -ersatzteil")
+        self.assertEqual(monitor._build_smart_search_query(redmagic), "Redmagic 11 Pro")
         aliases = monitor._search_query_variants(redmagic)
         self.assertIn("redmagic 11 pro", aliases)
         self.assertIn("red magic 11 pro", aliases)
@@ -62,6 +61,10 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertNotIn("-reparatur", q)
         self.assertNotIn("-icloud", q)
         self.assertNotIn("-sperre", q)
+        self.assertEqual("iPhone 16 Pro Max", q)
+        self.assertEqual("iPhone 16 Pro Max -hülle", monitor._build_smart_search_query(
+            {"query": "iPhone 16 Pro Max -hülle", "filters": {"category": "phones"}}))
+        # Retrieval must not drop working stock; local rules still reject parts.
         self.assertFalse(monitor._is_category_blocked_title(
             monitor._normalize("iPhone 16 Pro Max 256GB ohne Defekt"), "phones"))
         self.assertTrue(monitor._is_category_blocked_title(
