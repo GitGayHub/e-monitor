@@ -4,7 +4,7 @@
 
 Источник: публично индексируемые карточки/каталоги `ebay.de` и синтетические контрольные примеры. **Это не живой интерактивный браузерный аудит**: прямой HTTP/браузерный доступ к каталогу из этого окружения блокируется. Цены, наличие, продавец и окончание аукциона из индекса не считаются актуальными без свежей проверки. Каждая ссылка / название ниже — свидетельство типа товара, не заявка на отправку уведомления.
 
-Оба проекта работают над одинаковым набором JSON-примеров, сохранённым в `qa/fixtures/web_indexed_listing_cases_2026-10-08.json` бота и `app/src/test/resources/web_indexed_listing_cases_2026-10-08.json` Android. Всего 28 контрольных карточек, из них 15 имеют ссылки на индексированную eBay-страницу (прочие контроли синтетические или из прежних локальных материалов). Независимость источника относится только к названиям/типу товара; ожидаемые вердикты задаются вручную.
+Оба проекта работают над одинаковым набором JSON-примеров, сохранённым в `qa/fixtures/web_indexed_listing_cases_2026-10-08.json` бота и `app/src/test/resources/web_indexed_listing_cases_2026-10-08.json` Android. Всего 31 контрольных карточек, из них 18 имеют ссылки на индексированную eBay-страницу (прочие контроли синтетические или из прежних локальных материалов). Независимость источника относится только к названиям/типу товара; ожидаемые вердикты задаются вручную.
 
 ## Проверяемые семействá
 
@@ -34,6 +34,9 @@
 | Sony ULT Wear WH-ULT900N Ohrpolster Ersatzteile Paar Schwarz OEM | Отсеять | https://www.ebay.de/itm/327178408900 |
 | Sony ULT Wear Bluetooth-Kopfhörer Schwarz Kopfbügel Over-Ear faltbar ANC | Допустить к дальнейшей проверке | https://www.ebay.de/shop/ult-wear?_nkw=ult+wear |
 | ZTE Nubia Redmagic 11 Pro 16GB / 512GB | Допустить к дальнейшей проверке | https://www.ebay.de/itm/227534369510 |
+| Original Display für Samsung Galaxy S25 Edge SM-S937B OLED mit Rahmen Schwarz | Отсеять | https://www.ebay.de/itm/397349158680 |
+| Original Display für Samsung Galaxy S25 Edge Service Pack mit Rahmen | Отсеять | https://www.ebay.de/itm/137722598679 |
+| Samsung S25 Edge OLED Display Ersatz mit Rahmen Titan Schwarz Aftermarket+ | Отсеять | https://www.ebay.de/itm/168409770689 |
 
 ## Подтверждённая ошибка и изменение
 
