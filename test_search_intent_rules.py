@@ -49,6 +49,26 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
+    def test_independently_indexed_ebay_device_titles_and_seller_bans(self):
+        """Public search index cases; only title intent, not live stock."""
+        import json
+        from pathlib import Path
+        fixture = Path(__file__).resolve().parent / "qa/fixtures/web_indexed_listing_cases_2026-10-08.json"
+        cases = json.loads(fixture.read_text(encoding="utf-8"))["cases"]
+        config = DummyConfig(sellers=["talk point gmbh"])
+        for index, case in enumerate(cases):
+            with self.subTest(source=case["source"], title=case["title"]):
+                search = {
+                    "query": case["query"],
+                    "filters": {"category": case["category"], "listing_type": "buy_now_offer",
+                                "location": "worldwide", "condition": "any",
+                                "max_price": 3000, "limit_price": 3000}}
+                candidate = item(case["title"], item_id=str(800000 + index),
+                                 price=500, seller_name=case["seller"])
+                kept = monitor.filter_results([candidate], search, config,
+                                              skip_seen=True, is_statistics=True)
+                self.assertEqual(case["keep"], bool(kept), case)
+
     def test_html_queries_do_not_pre_exclude_valid_listings_and_redmagic_spelling(self):
         redmagic = {"query": "Redmagic 11 Pro", "filters": {"category": "phones"}}
         self.assertEqual(monitor._build_smart_search_query(redmagic), "Redmagic 11 Pro")
