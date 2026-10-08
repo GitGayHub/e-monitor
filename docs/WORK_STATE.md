@@ -174,3 +174,8 @@ Actions debug APK SHA256 09aa6f1d2fd86c446f4b44f0495c97e7b6075f2aca930ab86f46b9f
 Final acceptance PARTIAL:24 groups recorded;96 baskets BLOCKED with directBucketAcceptancePerformed=false,0 suitable Germany/minimum proofs.68 .com requests,500 records/498 IDs,483 own pages,478 fetched bodies;26 independently reviewed,23 full bodies read. Six rule classes repaired including both mouse-feature false rejections; actual parts/damage preserved. All16 owner hidden IDs and global/search-specific seller controls passed isolated Python/Kotlin checks. Production main/mode/config/Telegram/searches/limits/enabled/seen/lists and phone untouched.
 
 Next available task is fresh original DE-profile4-basket catalogue/delivery/import/minimum acceptance once access works, then authorized PC/device-specific Android HTTP/installation/Telegram checks. Remaining scroll-wheel purpose and insured/chipped devices require own-photo evidence; do not invent new owner policies. Companion instructions: read Android WORK_STATE, run cloud_sync --check before integration; no blind reset/clean/pull.
+
+
+## Cloud search correction 2026-10-08T12:13:50.606445+00:00
+
+Fresh source Python8a84533 / Androidebd216e, both codex/cloud-work. Confirmed live DE HTML OR collapse (60→1 card) and missed Kostenlose Abholung marker; repaired both engines with isolated regressions. Python243 unit +baseline5 sync passed. Android current Gradle/tests pending at this checkpoint. User manifest/main/mode/Telegram/seen/limits/bans/phone unchanged. Evidence: qa/results/cloud-search-20261008/REPORT.md. Independent24×4 collection ongoing; no full acceptance or UI claim.

@@ -797,7 +797,9 @@ def _search_intent(search_or_query):
             "category": "laptops",
             "details_can_satisfy": True,
         }
-    if re.search(r"\b4080\b", ident) and _has_term(ident, "pc"):
+    from query_variants import gpu_pc_model
+    pc_gpu = gpu_pc_model(ident)
+    if pc_gpu == "4080":
         return {
             "kind": "gpu_pc",
             # Clean _nkw — parentheses OR-groups scramble eBay (same as monitors).
@@ -805,7 +807,7 @@ def _search_intent(search_or_query):
             "gpu": "4080",
             "category": "computers",
         }
-    if re.search(r"\b5070\s*ti\b|\b5070ti\b", ident) and _has_term(ident, "pc"):
+    if pc_gpu == "5070ti":
         return {
             "kind": "gpu_pc",
             # Live check 2026-08-15: `_nkw=5070+ti+pc&_sacat=0` finds auctions
@@ -914,10 +916,13 @@ def _intent_query(search):
 
 
 def _search_query_variants(search):
-    from query_variants import stored_aliases, phone_aliases
+    from query_variants import stored_aliases, phone_aliases, gpu_pc_aliases
     if isinstance(search,dict) and search.get('_variant_child'):
         return [_intent_query(search)]
     raw=search.get('query','') if isinstance(search,dict) else str(search)
+    pc_aliases = gpu_pc_aliases(raw)
+    if pc_aliases:
+        return pc_aliases
     explicit=stored_aliases(raw)
     if explicit:
         intent = _search_intent(search)
@@ -3635,7 +3640,7 @@ def parse_ebay_results(html):
 
             is_pickup_only = False
             for txt in all_texts:
-                if any(marker in txt for marker in ("nur abholung", "nur selbstabholung", "abholung: nur abholung", "kein versand", "no shipping", "collection in person", "local pickup only", "pickup only")):
+                if any(marker in txt for marker in ("nur abholung", "nur selbstabholung", "abholung: nur abholung", "kostenlose abholung", "free local pickup", "kein versand", "no shipping", "collection in person", "local pickup only", "pickup only")):
                     is_pickup_only = True
                     break
 
@@ -6650,8 +6655,8 @@ def _fetch_quota_html(search, force=False):
     child["_html_fallback"] = True
     # Return the HTML error itself if it fails. No API loop and no fake empty.
     logger.info("Browse quota paused; checking %s through HTML", search.get("query"))
-    from query_variants import api_query_batches
-    batches = api_query_batches(_search_query_variants(search))
+    # HTML does not share Browse API OR semantics: each alias is a real query.
+    batches = _search_query_variants(search)
     collected, errors = [], []
     formats = ["buy_now", "auction"] if (search.get("filters") or {}).get("listing_type","all") == "all" else [None]
     for listing in formats:
@@ -6727,43 +6732,22 @@ def fetch_ebay_ex(search, force=False):
         merged_items = []
         errors = []
         saw_clean_empty = False
-        # On GH: primary query first; if empty try at most ONE alias.
-        # Full 3–5 variant bursts × many products was the main reason eBay
-        # flipped to soft-empty / rate-limit mid statistics report.
-        if _on_github_actions():
-            order = list(variants)[:2]
-        else:
-            order = list(variants)
-        for qi, query in enumerate(order):
-            # Stop at the first alias that worked — but only when nothing failed
-            # on the way. eBay answers curl with a 403 or a 14 KB shell now and
-            # then (measured 2026-07-27), and stopping on a set collected around
-            # such a failure silently reports a partial market as complete.
-            if qi > 0 and merged_items and not errors:
-                break
-            # Primary already saw a real empty SERP — do not burn a second
-            # alias (PW crashes + API) and then upgrade empty → network/block.
-            if qi > 0 and saw_clean_empty and not errors:
-                break
+        order = list(variants)
+        for query in order:
             variant = copy.deepcopy(search)
             variant["_query_override"] = query
             variant["_variant_child"] = True
             variant_items, variant_err = fetch_ebay_ex(variant, force=force)
-            if variant_items:
-                merged_items.extend(variant_items)
-            elif variant_err is None:
-                saw_clean_empty = True
-            elif variant_err:
+            merged_items.extend(variant_items)
+            if variant_err:
                 errors.append(variant_err)
+                # Stop on protection/transport failures; retain partial results
+                # and the error, never call an incomplete alias union empty.
+                break
+            if not variant_items:
+                saw_clean_empty = True
         merged_items = _merge_items_by_id(merged_items)
-        if merged_items:
-            err = None
-        elif saw_clean_empty:
-            # At least one variant returned a clean empty page — honest empty,
-            # not the last alias's network/PW crash.
-            err = None
-        else:
-            err = errors[-1] if errors else None
+        err = errors[0] if errors else None
         logger.info(
             "  %s -> %d merged items via %d/%d query variants (empty_ok=%s err=%s)",
             search["query"], len(merged_items), len(order), len(variants),

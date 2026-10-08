@@ -71,3 +71,24 @@ def phone_aliases(query):
             aliases += [f'sony 1000xm{generation}', f'1000xm{generation}']
         return aliases
     return None
+
+
+def gpu_pc_model(query):
+    """GPU plus a whole-PC term; bare graphics-card searches are unchanged."""
+    q = query.lower()
+    if not re.search(r"\b(?:pc|rechner|computer|desktop)\b", q):
+        return None
+    match = re.search(r"(?<![a-z0-9])(?:rtx\s*)?(5070\s*ti|4080)\b", q)
+    return match[1].replace(' ', '') if match else None
+
+
+def gpu_pc_aliases(query):
+    model = gpu_pc_model(query)
+    if not model:
+        return None
+    gpu = '5070 ti' if model == '5070ti' else model
+    aliases = (stored_aliases(query) or []) + [
+        f'{gpu} pc', f'{gpu} rechner', f'{gpu} computer', f'{gpu} desktop',
+        f'gaming pc {gpu}', f'rtx {gpu} gaming pc', f'RTX{model.upper()}',
+    ]
+    return list({alias.lower(): alias for alias in aliases}.values())

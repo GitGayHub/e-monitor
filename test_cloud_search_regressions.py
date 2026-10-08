@@ -1,0 +1,51 @@
+"""Confirmed 8 Oct DE SERP regressions; captured fields plus synthetic transport controls."""
+import unittest
+from unittest.mock import patch
+import monitor
+from query_variants import gpu_pc_aliases, api_query_batches
+
+class CloudSearchRegressions(unittest.TestCase):
+    def test_live_pc_with_single_price_is_pickup_not_variation(self):
+        html='''<li class="s-card"><a class="s-card__link" href="https://www.ebay.de/itm/800423940260"></a><div class="s-card__title"><span class="su-styled-text primary default">Gaming PC (Rtx5070TI, Ryzen 7 5800x, 32gb DDR4 Ram)</span></div><span class="s-card__price">EUR 1.450,00</span><span>Sofort-Kaufen</span><span>Kostenlose Abholung</span></li>'''
+        row=monitor.parse_ebay_results(html)[0]
+        self.assertTrue(row['is_pickup_only'])
+        self.assertFalse(row['is_multivariation'])
+        self.assertEqual(1450,row['price'])
+    def test_pickup_station_delivery_is_not_pickup_only(self):
+        html='''<li class="s-card"><a class="s-card__link" href="https://www.ebay.de/itm/123456789012"></a><span class="su-styled-text primary default">Gaming PC RTX 5070 Ti</span><span class="s-card__price">EUR 1.450,00</span><span>Gratis Lieferung</span><span>Lieferung an Abholstation möglich</span></li>'''
+        self.assertFalse(monitor.parse_ebay_results(html)[0]['is_pickup_only'])
+    def test_pc_aliases_include_compact_and_reverse_order_without_changing_model(self):
+        for raw,gpu in [('5070 ti (pc, rechner, computer, desktop, gaming pc)','5070ti'),('RTX4080 rechner','4080')]:
+            aliases=gpu_pc_aliases(raw)
+            self.assertTrue(any(q==f'RTX{gpu.upper()}' for q in aliases))
+            self.assertTrue(any(q.startswith('gaming pc ') for q in aliases))
+            self.assertTrue(all(len(q)<=100 for q in api_query_batches(aliases)))
+            self.assertEqual('gpu_pc',monitor._search_intent({'query':raw})['kind'])
+        self.assertIsNone(gpu_pc_aliases('MSI RTX5070TI graphics card'))
+    def test_quota_html_uses_separate_queries_and_merges_duplicate_ids(self):
+        search={'id':'pc','query':'5070 ti (pc, rechner, computer, desktop, gaming pc)','filters':{'listing_type':'buy_now'}}
+        called=[]
+        def fetch(child,force=False):
+            called.append(child['_query_override'])
+            return [{'item_id':'same','price':1450,'buy_now':True}],None
+        with patch.object(monitor,'fetch_ebay_ex',side_effect=fetch),patch.object(monitor,'record_search_run'):
+            rows,error=monitor._fetch_quota_html(search,force=True)
+        self.assertIsNone(error)
+        self.assertEqual(monitor._search_query_variants(search),called)
+        self.assertFalse(any('(' in q for q in called))
+        self.assertEqual(1,len(rows))
+    def test_html_partial_failure_stays_visible_and_stops_requests(self):
+        search={'query':'nubia z80 ultra leading','filters':{}}
+        # Call the actual dispatcher; child calls are intercepted at the HTTP layer.
+        original=monitor.fetch_ebay_ex
+        calls=[]
+        def child(s,force=False):
+            if s.get('_variant_child'):
+                calls.append(s['_query_override'])
+                return ([{'item_id':'one','price':500,'buy_now':True}],None) if len(calls)==1 else ([], 'blocked')
+            return original(s,force)
+        with patch.object(monitor,'EBAY_SOURCE','html'),patch.object(monitor,'fetch_ebay_ex',side_effect=child):
+            rows,error=original(search,force=True)
+        self.assertEqual('blocked',error)
+        self.assertEqual(1,len(rows))
+        self.assertEqual(2,len(calls))
