@@ -90,6 +90,16 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertTrue(monitor._is_phone_accessory_title(
             monitor._normalize("iPhone 16 Pro Max Display Ersatzteil")))
 
+    def test_negated_ersatzteil_preserves_full_phones_not_cases_or_defects(self):
+        keep = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, voll funktionsfaehig"
+        case = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, nur Case Cover"
+        fault = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, Display defekt"
+        self.assertFalse(monitor._is_phone_accessory_title(monitor._normalize(keep)))
+        self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(case)))
+        self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(fault)))
+        self.assertTrue(monitor._is_phone_accessory_title(
+            monitor._normalize("Ersatzteil iPhone 16 Pro Max 256GB")))
+
     def test_html_sold_out_notices_only_from_own_listing(self):
         """A seller's sold-out quantity is unavailable; related items are irrelevant."""
         cases = [
