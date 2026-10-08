@@ -1,0 +1,27 @@
+[
+  {
+    "html": "<span class=\"ux-timer\" data-testid=\"ux-timer\"><span class=\"ux-timer__text\" data-testid=\"ux-timer_timer\" aria-live=\"off\" aria-atomic=\"true\"><span class=\"ux-timer__label\">Endet in </span>6 T 18 Std</span><span class=\"ux-timer__time-left\">Mittwoch, 20:45</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": "2026-10-14T18:45:59Z",
+    "source": "visible own auction countdown and exact ending time in browser",
+    "id": "128121409205"
+  },
+  {
+    "html": "<span class=\"ux-timer\" data-testid=\"ux-timer\"><span class=\"ux-timer__text\" data-testid=\"ux-timer_timer\" aria-live=\"off\" aria-atomic=\"true\"><span class=\"ux-timer__label\">Endet in </span>6T18Std</span><span class=\"ux-timer__time-left\">Mittwoch, 20:45</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": "2026-10-14T18:45:59Z",
+    "source": "synthetic compact rendering of the observed countdown"
+  },
+  {
+    "html": "<span class=\"ux-timer\" data-testid=\"ux-timer\"><span class=\"ux-timer__text\" data-testid=\"ux-timer_timer\" aria-live=\"off\" aria-atomic=\"true\"><span class=\"ux-timer__label\">Endet in </span>1 T 0 Std</span><span class=\"ux-timer__time-left\">Mittwoch, 20:45</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": null,
+    "source": "synthetic contradiction: weekday ending cannot be corroborated"
+  },
+  {
+    "html": "<span class=\"ux-timer\" data-testid=\"ux-timer\"><span class=\"ux-timer__text\" data-testid=\"ux-timer_timer\" aria-live=\"off\" aria-atomic=\"true\"><span class=\"ux-timer__label\">Endet in </span>6 T 18 Std</span><span class=\"ux-timer__time-left\">Mittwoch, 99:99</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": null,
+    "source": "synthetic malformed time must not crash or pass"
+  }
+]

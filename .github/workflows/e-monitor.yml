@@ -114,8 +114,15 @@ jobs:
             if [ "$WRITER" = "android" ]; then
               python mobile/merge_app_sync_to_config.py || exit 1
             fi
-            python monitor.py --once 2>&1 | tee run_output.log
+            remaining=$(( RUN_BUDGET_SEC - (SECONDS - loop_start) ))
+            if [ "$remaining" -le 30 ]; then break; fi
+            pass_budget=$(( remaining - 20 ))
+            if [ "$pass_budget" -gt 480 ]; then pass_budget=480; fi
+            timeout --signal=TERM --kill-after=10s "${pass_budget}s" python monitor.py --once 2>&1 | tee run_output.log
             MONITOR_STATUS=${PIPESTATUS[0]}
+            if [ "$MONITOR_STATUS" -eq 124 ] || [ "$MONITOR_STATUS" -eq 137 ]; then
+              python -m mobile.runtime_status "Проверка превысила время одного шага; состояние сохранено, очередь продолжится"
+            fi
             pass_dur=$(( SECONDS - pass_start ))
             echo "pass_seconds=$pass_dur" | tee -a run_output_all.log
             cat run_output.log >> run_output_all.log

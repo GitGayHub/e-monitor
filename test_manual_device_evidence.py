@@ -6,6 +6,24 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_html_seller_identity_refreshes_blacklists_without_using_reviewers(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/html_seller.json').read_text(encoding='utf8'))
+        for case in cases:
+            details=monitor._parse_item_details_html(case['html'],description='Full working phone')
+            self.assertEqual(case['expected'],details.get('seller'))
+            if case['expected']:
+                item={'title':'iPhone 16 Pro Max 512GB','price':297.13,'shipping':6.19,'location':'DE','seller_name':'unknown'}
+                monitor._refresh_candidate_details(item,details,{})
+                self.assertEqual('marclemmor',item['seller_name'])
+                self.assertEqual('private',item['seller_type'])
+                search={'query':'iPhone 16 Pro Max','exclude_sellers':['marclemmor'],'filters':{'category':'phones'}}
+                self.assertFalse(monitor.filter_results([dict(item,item_id='128121409205')],search,monitor.config,skip_seen=True,is_statistics=True))
+    def test_html_auction_time_requires_own_countdown_and_exact_display(self):
+        from bs4 import BeautifulSoup
+        from datetime import datetime
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/html_auction_time.json').read_text(encoding='utf8'))
+        for case in cases:
+            self.assertEqual(case['expected'],monitor._html_auction_end(BeautifulSoup(case['html'],'html.parser'),datetime.fromisoformat(case['now'].replace('Z','+00:00'))))
     def test_sold_status_is_own_listing_state_not_recommendations(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/html_listing_status.json').read_text(encoding='utf8'))
         for case in cases:

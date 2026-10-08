@@ -4465,6 +4465,51 @@ def _html_buying_options(soup):
             if action_labels & labels]
 
 
+def _html_auction_end(soup, now=None):
+    """Own visible ending time, corroborated by its countdown, minute precision."""
+    from datetime import datetime, timezone, timedelta
+    from zoneinfo import ZoneInfo
+    timer = soup.select_one(".ux-timer")
+    if not timer:
+        return None
+    relative = timer.select_one(".ux-timer__text")
+    exact = timer.select_one(".ux-timer__time-left")
+    if not relative or not exact:
+        return None
+    text = relative.get_text(" ",strip=True).lower()
+    def count(pattern):
+        match = re.search(pattern,text)
+        return int(match[1]) if match else 0
+    days=count(r"(\d+)\s*(?:tage?|t|days?|d)(?=\s|\d|$)")
+    hours=count(r"(\d+)\s*(?:stunden?|std|hours?|h)(?=\s|\d|$)")
+    minutes=count(r"(\d+)\s*(?:minuten?|min|minutes?|m)(?=\s|\d|$)")
+    rough=days*1440+hours*60+minutes
+    if rough<=0 or rough>366*1440:
+        return None
+    weekdays=dict(zip(("montag","dienstag","mittwoch","donnerstag","freitag","samstag","sonntag"),range(7)))
+    weekdays.update(zip(("monday","tuesday","wednesday","thursday","friday","saturday","sunday"),range(7)))
+    match=re.search(r"("+"|".join(weekdays)+r")\s*,?\s*(\d{1,2}):(\d{2})",exact.get_text(" ",strip=True).lower())
+    if not match:
+        return None
+    now = now or datetime.now(timezone.utc)
+    local=now.astimezone(ZoneInfo("Europe/Berlin"))
+    try:
+        target=(local+timedelta(days=(weekdays[match[1]]-local.weekday())%7)).replace(hour=int(match[2]),minute=int(match[3]),second=59,microsecond=0)
+    except ValueError:
+        return None
+    if target<=local:
+        target+=timedelta(days=7)
+    def delta():
+        return (target.astimezone(timezone.utc)-now.astimezone(timezone.utc)).total_seconds()/60
+    while delta()+1440<rough:
+        target+=timedelta(days=7)
+    difference=delta()-rough
+    tolerance=2 if re.search(r"\d+\s*(?:minuten?|min|minutes?|m)(?=\s|\d|$)",text) else 61 if re.search(r"\d+\s*(?:stunden?|std|hours?|h)(?=\s|\d|$)",text) else 1441
+    if not -3<=difference<=tolerance:
+        return None
+    return target.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _fetch_item_details_html(item_id):
     """Fetches item details (description, exact end date, etc.) by scraping the item page."""
     session = _get_ebay_session()
@@ -4532,6 +4577,7 @@ def _fetch_item_details_browser(item_id):
                 if _is_challenge_html(page.content(), page.url):
                     return None
                 # Wait only for the seller's own iframe, excluding reviews/recs.
+                page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=6000)
                 frame = page.frame_locator("#desc_ifr")
                 frame.locator("body").wait_for(state="visible", timeout=6000)
                 desc = frame.locator("body").inner_html(timeout=6000)
@@ -4736,6 +4782,11 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     # Purchase actions belong to this listing. Words in seller descriptions,
     # scripts or recommended listings cannot restore a removed purchase side.
     buying_options = _html_buying_options(soup)
+    if "AUCTION" in buying_options:
+        visible_end = _html_auction_end(soup)
+        if visible_end:
+            result["itemEndDate"] = visible_end
+            result["htmlEndPrecision"] = "minute"
     primary = soup.select_one(".x-price-primary")
     primary_price = _parse_labeled_money(["price: " + primary.get_text(" ", strip=True)], (r"^price\b",)) if primary else None
     if primary_price is not None and (price_val is None or buying_options == ["AUCTION"]):
@@ -4744,6 +4795,25 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         result["currentBidPrice"] = _money_obj_eur(primary_price)
     if buying_options:
         result["buyingOptions"] = buying_options
+
+    # Own seller identity must refresh the blacklist/type check after HTML.
+    # Reviewer profiles and promoted shops elsewhere on the page are unrelated.
+    card = soup.select_one(".x-sellercard-atf")
+    name = card.select_one(".x-sellercard-atf__about-seller-item--seller-name a") if card else None
+    if name and name.get_text(strip=True):
+        seller = {"username": name.get_text(strip=True)}
+        text = card.get_text(" ", strip=True)
+        score = re.search(r"\(([\d.,\s]+)\)", text)
+        if score:
+            seller["feedbackScore"] = int(re.sub(r"\D", "", score.group(1)))
+        percentage = re.search(r"([\d.,]+)%\s*(?:positive|positiv)", text, re.I)
+        if percentage:
+            seller["feedbackPercentage"] = float(percentage.group(1).replace(",", "."))
+        if re.search(r"\b(?:gewerblich|business)\b", text, re.I):
+            seller["sellerAccountType"] = "BUSINESS"
+        elif re.search(r"\b(?:privat|private)\b", text, re.I):
+            seller["sellerAccountType"] = "INDIVIDUAL"
+        result["seller"] = seller
 
     return result
 
@@ -5556,6 +5626,16 @@ def _details_match_contract(item, search, details, *, require_description=True):
 
 def _refresh_candidate_details(item, details, settings):
     _calculate_total(item, settings, details)
+    seller = details.get("seller") or {}
+    if seller.get("username"):
+        item["seller_name"] = seller["username"]
+    if seller.get("feedbackScore") is not None:
+        item["seller_rating_count"] = seller["feedbackScore"]
+    if seller.get("feedbackPercentage") is not None:
+        item["seller_rating_percent"] = seller["feedbackPercentage"]
+    account = {"BUSINESS": "commercial", "INDIVIDUAL": "private"}.get(seller.get("sellerAccountType"))
+    if account:
+        item["seller_type"] = account
     if details.get("title"):
         item["title"] = details["title"]
     if details.get("condition") or details.get("itemCondition"):
@@ -6554,6 +6634,8 @@ def _fetch_quota_html(search, force=False):
     if not force and target not in _allowed_api_targets_this_run:
         return [], "api_deferred"
     _allowed_api_targets_this_run.discard(target)
+    if not force:
+        browse_access.record_html_attempt(search.get("id", ""), EBAY_MARKETPLACE_ID)
     child = copy.deepcopy(search)
     child["_html_fallback"] = True
     # Return the HTML error itself if it fails. No API loop and no fake empty.
@@ -6561,14 +6643,18 @@ def _fetch_quota_html(search, force=False):
     from query_variants import api_query_batches
     batches = api_query_batches(_search_query_variants(search))
     collected, errors = [], []
-    for query in batches or [_intent_query(search)]:
-        variant = copy.deepcopy(child)
-        variant.update(_query_override=query, _variant_child=True)
-        found, error = fetch_ebay_ex(variant, force=force)
-        collected.extend(found)
-        if error:
-            errors.append(error)
-            break
+    formats = ["buy_now", "auction"] if (search.get("filters") or {}).get("listing_type","all") == "all" else [None]
+    for listing in formats:
+        for query in batches or [_intent_query(search)]:
+            variant = copy.deepcopy(child)
+            variant.update(_query_override=query, _variant_child=True)
+            if listing:
+                variant.setdefault("filters",{})["listing_type"] = listing
+            found, error = fetch_ebay_ex(variant, force=force)
+            collected.extend(found)
+            if error:
+                errors.append(error)
+                break
     rows, error = _merge_items_by_id(collected), errors[0] if errors else None
     if error is None:
         record_search_run(search.get("id", ""), EBAY_MARKETPLACE_ID)
@@ -6962,7 +7048,11 @@ def _apk_version_label():
 def _fetch_source_label(source=None):
     if source:
         return "eBay Browse API" if source == "api" else "eBay HTML" if source == "html" else str(source)
-    return "eBay HTML (резерв после квоты API)" if _runtime_html_fallback else "eBay Browse API" if EBAY_SOURCE != "html" and _ebay_api_configured() else "eBay HTML"
+    if EBAY_SOURCE == "html" or not _ebay_api_configured():
+        return "eBay HTML"
+    if _runtime_html_fallback:
+        return "eBay HTML (резерв после квоты API)" if browse_access.is_paused() is True else "eBay Browse API / HTML"
+    return "eBay Browse API"
 
 
 def get_category_emoji(cat_name):
@@ -7481,7 +7571,8 @@ def initialize_api_budget_and_queue(searches):
                 browse_access.update_quota(json.loads(resp.read().decode("utf-8")))
         except Exception as exc:
             logger.warning("eBay quota refresh unavailable: %s", exc)
-    interval = 900 if browse_access.is_paused() is True else browse_access.interval(len(active))
+    quota_paused = browse_access.is_paused() is True
+    interval = 900 if quota_paused else browse_access.interval(len(active))
     state = browse_access.state()
     if state.get('remaining',1)<=0 and state.get('reset',0)>time.time():
         from datetime import datetime, timezone
@@ -7491,14 +7582,25 @@ def initialize_api_budget_and_queue(searches):
     from datetime import datetime
     now = datetime.now()
     due = set()
+    priority = {}
     for search in active:
         last = get_last_run(search.get("id", ""), EBAY_MARKETPLACE_ID)
         try:
             elapsed = (now - datetime.fromisoformat(last)).total_seconds() if last else float("inf")
         except (ValueError, TypeError):
             elapsed = float("inf")
+        if quota_paused:
+            attempted = state.get("html_attempts", {}).get(str(search.get("id", ""))+"|"+EBAY_MARKETPLACE_ID)
+            if attempted:
+                elapsed = min(elapsed, time.time()-attempted)
         if elapsed >= interval:
-            due.add((search.get("id", ""), EBAY_MARKETPLACE_ID))
+            target = (search.get("id", ""), EBAY_MARKETPLACE_ID)
+            due.add(target)
+            priority[target] = elapsed
+    if quota_paused:
+        # A HTML sweep must checkpoint before the runner's execution limit.
+        # Oldest due searches go first; subsequent passes continue the queue.
+        due = set(sorted(due, key=lambda target: (-priority[target], target))[:8])
     _allowed_api_targets_this_run = due
     state = browse_access.state()
     logger.info("eBay Browse: %d/%d searches due; interval %.0fs; real quota remaining=%s, reset=%s",
@@ -9074,10 +9176,11 @@ _runtime_html_fallback = False
 
 def _publish_runtime(state, error=None):
     from mobile.runtime_status import publish
-    fallback = _runtime_html_fallback or browse_access.is_paused() is True
+    quota_paused = browse_access.is_paused() is True
+    html_only = quota_paused or EBAY_SOURCE == "html" or not _ebay_api_configured()
     publish(config.raw, _read_logic_version_timestamp(), state, error,
-            data_source="html" if fallback or EBAY_SOURCE == "html" else "api",
-            warning="Квота API закончилась: проверяю сайт eBay через HTML" if fallback else None)
+            data_source="html" if html_only else "api+html" if _runtime_html_fallback else "api",
+            warning="Квота API закончилась: проверяю сайт eBay через HTML" if quota_paused else "Описание проверяется через сайт eBay" if _runtime_html_fallback and not html_only else None)
 
 
 async def run_once():

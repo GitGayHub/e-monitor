@@ -14,6 +14,20 @@ from ebay_access import BrowseAccess
 
 
 class BrowseAccessTest(unittest.TestCase):
+    def test_html_queue_is_bounded_and_failed_attempts_do_not_starve_other_searches(self):
+        self.access.save({'remaining':0,'reset':time.time()+21600,'checked':time.time()})
+        searches=[{'id':f'p{i:02d}','query':'phone'} for i in range(14)]
+        with patch.object(monitor,'browse_access',self.access), patch.object(monitor,'_get_ebay_api_token',return_value=('qa',None)):
+            monitor.initialize_api_budget_and_queue(searches)
+            first=monitor._allowed_api_targets_this_run.copy()
+            self.assertEqual(8,len(first))
+            for search_id,market in first:
+                self.access.record_html_attempt(search_id,market)
+            monitor.initialize_api_budget_and_queue(searches)
+            following=monitor._allowed_api_targets_this_run
+            self.assertEqual(6,len(following))
+            self.assertFalse(first & following)
+
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)
@@ -80,8 +94,12 @@ class BrowseTransportTest(unittest.TestCase):
              patch.object(monitor.browse_access,"is_paused",return_value=True), \
              patch.object(monitor,"fetch_ebay_api_ex") as api, \
              patch.object(monitor,"_do_fetch_one",return_value=(rows,None)) as html:
-            self.assertEqual(([{**rows[0],"source":"html"}],None),monitor.fetch_ebay_ex({"id":"x","query":"phone"},force=True))
-            html.assert_called_once()
+            result,error=monitor.fetch_ebay_ex({"id":"x","query":"phone"},force=True)
+            self.assertIsNone(error)
+            self.assertEqual(["123456789012"],[row['item_id'] for row in result])
+            self.assertTrue(all(row['source']=='html' for row in result))
+            self.assertEqual(2,html.call_count)
+            self.assertEqual({'buy_now','auction'},{call.args[1]['filters']['listing_type'] for call in html.call_args_list})
             self.assertTrue(html.call_args.args[1]["_html_fallback"])
             api.assert_not_called()
 

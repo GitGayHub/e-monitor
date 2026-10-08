@@ -96,6 +96,16 @@ class BrowseAccess:
             now < value.get("reset", 0) and value.get("remaining", 1) <= 0
         )
 
+    def record_html_attempt(self, search_id, market):
+        """Give failed HTML searches a cooldown without starving later products."""
+        with self.lock:
+            value = self.state()
+            now = time.time()
+            attempts = {key: stamp for key, stamp in value.get("html_attempts", {}).items() if now-stamp < 86400}
+            attempts[str(search_id)+"|"+market] = now
+            value["html_attempts"] = attempts
+            self.save(value)
+
     def interval(self, searches):
         value = self.state()
         now = time.time()
