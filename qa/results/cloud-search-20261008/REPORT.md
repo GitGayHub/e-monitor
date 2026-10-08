@@ -58,3 +58,8 @@ Only isolated workflow changes follow: stop the4GB Gradle daemon before emulator
 ## Additional confirmed whole-PC false rejection
 
 198304841229 (2359EUR, fixed full5070TiPC) was incorrectly rejected for case-design phrase `Minimalistisches Design – Hochwertige Materialien, klare Linien`. Both engines now ignore only this exact aesthetic clause, preserving actual display-lines rejections, with Unicode NBSP regression. Current local251 Python +5 sync /252 Android tests and bothAPKs pass;18 public whole-body fixtures /321 private parity /41 independently read bodies. API35 retry did not run tests because minSdk36; API36 component4-pass proof remains valid for prior source; current-source UI pending.
+
+
+## Nubia own-model conflict verified
+
+366530815294 title/body Z70Ultra has own Model NubiaZ17mini. Both skipped unrecognized glued mini modifier; now refuse explicit conflict. Not proven wrong actual phone without photos, no bargain acceptance. Regression and complete public seller-body/aspect input added. Current252 Python +5sync /253 Android units and bothAPKs passed;321 private whole-description replays passed;19 public paired fixtures,49 independently read complete bodies. All96 live catalogue/minimum/destination checks remain BLOCKED.

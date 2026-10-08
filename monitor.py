@@ -1644,7 +1644,7 @@ _PHONE_MODEL_PATTERNS = (
     r"\b(?:galaxy\s*)?s(\d{2})(?:\s*(ultra|plus|fe|edge))?\b",
     r"\bpixel\s*(\d+[a-z]?)(?:\s*(pro\s*xl|pro|xl|fold))?\b",
     r"\boneplus\s*(\d{1,2}[a-z]?|ace)(?:\s*(pro|ultra))?\b",
-    r"\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro))?(?:\s*(leading))?\b",
+    r"\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro|mini|lite))?(?:\s*(leading))?\b",
     r"\b(?:red\s*magic|redmagic)\s*(\d{1,2})\s*(s)?(?:\s*(pro|air))?\b",
 )
 

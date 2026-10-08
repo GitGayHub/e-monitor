@@ -200,3 +200,8 @@ Latest source2fac998/631e0a9 greenCI37780829091; APK445c8eee4ffc8d475310524e93cb
 Both engines falsely rejected real2359EUR fixed5070TiPC198304841229: seller case-design clause `Minimalistisches Design – Hochwertige Materialien, klare Linien` matched display-defect word `linien`. Narrow exact aesthetic clause removed; actual display-lines controls still rejected, Kotlin NBSP fixture handled with Unicode regex. No filter/limit/category weakening.251 Python +5 sync,252 Android units and bothAPKs pass; private321 whole-body parity and18 public fixtures,41 independent bodies read. Full96 basket acceptance remains BLOCKED after DE protection; no further eBay requests.
 
 API36 run37780828987 proved4 component UI tests; external Chrome window unproven due SystemUI ANR. API35 retry37783346807 is incompatible with app minSdk36 and ran no component tests. Workflow corrected to36 with reduced heap/runner footprint; current-source CI/UI pending. Production/main/state/phone unchanged.
+
+
+## Explicit Nubia aspect conflict checkpoint 2026-10-08T13:40:00Z
+
+Full seller-body/aspect independent review now49 captures.366530815294 title/body Z70UltraNX733J conflicts with own Model NubiaZ17mini64GB/5.2inch. Both parsers treated glued mini/lite names as unknown and skipped model refusal; recognize modifiers without changing normal generation/S/Leading checks.19 public identical whole-body fixtures /321 private parity replay prepared. Groups6Leading has no fetched own body in bounded discovery, not proof of no listings; Z70S chipset/body conflict retained as unverified, no policy invented. Latest local252 Python +5sync /253 Android and bothAPKs passed;321 private paired replay passed. Fresh source CI/UI pending.

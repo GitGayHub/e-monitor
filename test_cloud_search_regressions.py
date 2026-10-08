@@ -101,3 +101,9 @@ class CloudSearchRegressions(unittest.TestCase):
         self.assertFalse(monitor._is_description_blocked(style,'computers'))
         self.assertTrue(monitor._is_description_blocked(style+' Das Display hat Linien.','computers'))
         self.assertTrue(monitor._is_description_blocked('Das Display hat klare Linien.','computers'))
+
+    def test_conflicting_nubia_z17mini_model_is_not_an_unknown_aspect(self):
+        self.assertFalse(monitor._phone_model_aspect_matches('Nubia Z17mini','Nubia Z70 Ultra'))
+        self.assertFalse(monitor._phone_model_aspect_matches('Nubia Z17 mini','Nubia Z70 Ultra'))
+        self.assertFalse(monitor._phone_model_aspect_matches('Nubia Z17lite','Nubia Z70 Ultra'))
+        self.assertTrue(monitor._phone_model_aspect_matches('Z70 Ultra','Nubia Z70 Ultra'))
