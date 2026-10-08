@@ -63,3 +63,8 @@ Only isolated workflow changes follow: stop the4GB Gradle daemon before emulator
 ## Nubia own-model conflict verified
 
 366530815294 title/body Z70Ultra has own Model NubiaZ17mini. Both skipped unrecognized glued mini modifier; now refuse explicit conflict. Not proven wrong actual phone without photos, no bargain acceptance. Regression and complete public seller-body/aspect input added. Current252 Python +5sync /253 Android units and bothAPKs passed;321 private whole-description replays passed;19 public paired fixtures,49 independently read complete bodies. All96 live catalogue/minimum/destination checks remain BLOCKED.
+
+
+## Final verified Cloud pair 2026-10-08T14:25Z
+
+CI37790105749 success, Python6ebbb192 / Android121dfa9d.252 Python +5sync /253 local Android units; private321 parity and19 identical public fixtures passed. Downloaded final APK69479857 bytes SHA256 738146881aa08edd9de13cbafd2cec647cf03abf5b628f849cd5bf86315dd828;artifact11555329714 expires22Oct. API36 UI37790105611 success5/5 (4components +1actual-runtime rules),0failures/skips. Chrome focused startup window visible, no eBay page/network claim. XML/screenshot/ui-results.json/ci-source-verified.json preserved. Follow-up commits docs only; all96 full-market acceptance remain BLOCKED after protection,23groups49 bodies independently read, no production/state/phone modifications. See FINAL.md.

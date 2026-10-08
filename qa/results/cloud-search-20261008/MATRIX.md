@@ -34,3 +34,34 @@ Bounded HTTP first-page card counts, **including wrong models, accessories and r
 Independent Chromium:5070Ti Sofort valid62 DOM cards (two promo placeholders,60 parsed real-ID cards); heading460 is not an independently complete catalogue. Next Sofort+ protected with HTTP200 `/splashui/challenge`. Stopped all eBay network requests. Browsers for other95 profiles, pagination, Germany import/delivery totals, cheap minima and all descriptions remain unverified. API credentials absent; actual Android transport only mocked locally, not live-network parity.
 
 Raw owner manifest, cookies, tracking URLs, HTML scripts and unreviewed seller-body dumps excluded. See matrix.json for query parameters/UTC, reviewed-items.json for own-item observations.
+
+## Own seller-body review coverage
+
+Fetched bodies include controls and wrong products. Independent readings may be extremely short seller text; photos and DE delivery remain unverified. A missing capture is not proof of no listings.
+
+|Group|Bodies fetched|Entire bodies independently read|
+|---|---:|---:|
+|1|39|1|
+|2|35|3|
+|3|1|1|
+|4|2|1|
+|5|6|2|
+|6|0|0|
+|7|6|1|
+|8|1|1|
+|9|6|1|
+|10|6|2|
+|11|59|5|
+|12|40|4|
+|13|6|1|
+|14|6|1|
+|15|55|11|
+|16|5|1|
+|17|6|1|
+|18|6|3|
+|19|6|1|
+|20|6|1|
+|21|6|1|
+|22|6|1|
+|23|6|3|
+|24|6|2|
