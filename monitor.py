@@ -1966,6 +1966,13 @@ def _has_accessory_term(title_norm, term):
 
 
 def _is_phone_accessory_title(title_norm):
+    # Keep explicit "kein Ersatzteil" / "ohne Ersatzteile" when a complete
+    # model-led handset with storage is being sold. Never remove actual defects
+    # or parts elsewhere in the title; seller details remain mandatory.
+    if _title_leads_with_phone_model(title_norm) and _has_phone_storage(title_norm):
+        title_norm = re.sub(
+            r"\b(?:kein|keine|keinen|ohne|no)\s+ersatzteile?\b", " ", title_norm
+        )
     service_patterns = (
         r"\b(?:unlock|entsperr|freischalt)[a-z]*\b.{0,30}\bservice\b",
         r"\bservice\b.{0,30}\b(?:unlock|entsperr|freischalt)[a-z]*\b",
