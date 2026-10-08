@@ -2564,51 +2564,20 @@ def _is_console_device_title(title_norm, query_norm):
 
 
 def _build_smart_search_query(search):
-    """Natively appends standard category-specific negative keywords to exclude defects and parts."""
+    """HTML eBay search: preserve good listings before title/detail validation.
+
+    Broad defect negatives (-defekt, -reparatur, -icloud, etc.) also hide
+    descriptions saying "kein Defekt" or "keine iCloud-Sperre". They are not a
+    substitute for the existing title, model, condition and seller checks.
+    Browse API uses its own query and remains unchanged.
+    """
     query = _intent_query(search)
-
-    # Auto-expand Redmagic to match both space and spaceless versions
-    query_lower = query.lower()
-    if "redmagic" in query_lower:
-        import re
-        query = re.sub(r"\bredmagic\b", '(redmagic, "red magic")', query, flags=re.IGNORECASE)
-    elif "red magic" in query_lower:
-        import re
-        query = re.sub(r"\bred\s+magic\b", '(redmagic, "red magic")', query, flags=re.IGNORECASE)
-
     if query.startswith("-") or " -" in query:
         return query
 
-    filters = search.get("filters", {}) or {}
-    category = filters.get("category", "all")
-    eff_category = _effective_category(category, _normalize(query))
-
-    # Common defect exclusions useful for all searches (100% safe, no bundles can have these)
-    excludes = [
-        "defekt", "teildefekt", "ersatzteil", "reparatur",
-        "broken", "cracked", "damage", "damaged", "defect", "defective",
-        "repair", "wasserschaden",
-    ]
-    # "-parts" / "-spares" are dangerous for monitors/PCs (part of model names / "parts pack")
-    intent = _search_intent(search)
-    intent_kind = (intent or {}).get("kind")
-    if intent_kind not in (
-        "samsung_odyssey_oled_g6",
-        "lg_ultragear_oled",
-        "gpu_pc",
-        "rtx_oled_laptop",
-    ):
-        excludes.extend(["spares", "parts"])
-
-    # Category-specific safe defect/parts exclusions
-    if eff_category == "phones":
-        excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
-        # Keep accessory words out of the eBay-side negative query. eBay matches
-        # them against descriptions/specifics too, which hides real phones with
-        # included cases or screen protectors. Title filters handle accessories.
-
-    exclude_str = " ".join(f"-{w}" for w in excludes)
-    return f"{query} {exclude_str}"
+    # eBay HTML does not reliably accept nested parenthesized OR expressions.
+    # Red Magic/Redmagic are searched as distinct aliases by phone_aliases().
+    return f"{query} -teildefekt -ersatzteil"
 
 
 def _build_url_with_host(host, search, sub="www"):

@@ -49,6 +49,24 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
+    def test_html_queries_preserve_negated_defects_and_redmagic_spelling(self):
+        redmagic = {"query": "Redmagic 11 Pro", "filters": {"category": "phones"}}
+        self.assertEqual(monitor._build_smart_search_query(redmagic),
+                         "Redmagic 11 Pro -teildefekt -ersatzteil")
+        aliases = monitor._search_query_variants(redmagic)
+        self.assertIn("redmagic 11 pro", aliases)
+        self.assertIn("red magic 11 pro", aliases)
+        phone = {"query": "iPhone 16 Pro Max", "filters": {"category": "phones"}}
+        q = monitor._build_smart_search_query(phone)
+        self.assertNotIn("-defekt", q)
+        self.assertNotIn("-reparatur", q)
+        self.assertNotIn("-icloud", q)
+        self.assertNotIn("-sperre", q)
+        self.assertFalse(monitor._is_category_blocked_title(
+            monitor._normalize("iPhone 16 Pro Max 256GB ohne Defekt"), "phones"))
+        self.assertTrue(monitor._is_category_blocked_title(
+            monitor._normalize("iPhone 16 Pro Max Display Ersatzteil"), "phones"))
+
     def test_browser_verified_console_generation_and_cover_bundle(self):
         query = 'playstation 5 pro'
         wrong = [
