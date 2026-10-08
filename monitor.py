@@ -2290,6 +2290,12 @@ def _strip_negated_condition_terms(text_norm):
 
 
 def _is_category_blocked_title(title_norm, category, query_norm=None):
+    # Reuse the phone accessory classifier here, too: this helper is called
+    # outside the main filter pipeline (including previews and diagnostics).
+    # Previously "iPhone 16 Pro Max Display Ersatzteil" could return False
+    # even though _is_phone_accessory_title correctly rejected it.
+    if category == "phones" and _is_phone_accessory_title(title_norm):
+        return True
     if _is_accessory_product(title_norm,category):
         return True
     condition_title = _strip_negated_condition_terms(title_norm)
