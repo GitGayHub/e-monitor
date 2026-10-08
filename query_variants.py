@@ -59,7 +59,15 @@ def phone_aliases(query):
         n=m[1];s=m[2] or '';mod=m[3] or '';suffix=(' '+mod) if mod else ''
         return [f'redmagic {n}{s}{suffix}',f'red magic {n}{s}{suffix}',f'nubia redmagic {n}{s}{suffix}',f'redmagic {n} {s}{suffix}'.replace('  ',' ')]
     m=re.search(r'\b(?:(wh|wf)\s*1000\s*)?xm(\d+)\b',q)
-    if m:
-        family=m[1] or 'wh';generation=m[2]
-        return [f'sony {family}-1000xm{generation}',f'sony {family}1000xm{generation}',f'sony {family} 1000 xm{generation}']
+    # eBay sellers also omit WH entirely: "Sony 1000XM6".
+    unprefixed = re.search(r'\b1000\s*xm(\d+)\b',q) if not m else None
+    if m or unprefixed:
+        family = (m[1] or 'wh') if m else 'wh'
+        generation = m[2] if m else unprefixed[1]
+        aliases = [f'sony {family}-1000xm{generation}',
+                   f'sony {family}1000xm{generation}',
+                   f'sony {family} 1000 xm{generation}']
+        if family == 'wh':
+            aliases += [f'sony 1000xm{generation}', f'1000xm{generation}']
+        return aliases
     return None

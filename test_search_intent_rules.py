@@ -69,6 +69,23 @@ class SearchIntentRuleTests(unittest.TestCase):
                                               skip_seen=True, is_statistics=True)
                 self.assertEqual(case["keep"], bool(kept), case)
 
+    def test_sony_xm6_search_aliases_keep_wh_wf_separate(self):
+        from query_variants import phone_aliases
+        headphone = phone_aliases("Sony WH-1000XM6")
+        self.assertIn("sony 1000xm6", headphone)
+        self.assertIn("1000xm6", headphone)
+        self.assertIn("sony wh-1000xm6", headphone)
+        self.assertNotIn("sony wf-1000xm6", headphone)
+        self.assertEqual(headphone, phone_aliases("Sony 1000XM6"))
+        earbud = phone_aliases("Sony WF-1000XM6")
+        self.assertIn("sony wf-1000xm6", earbud)
+        self.assertNotIn("sony 1000xm6", earbud)
+        self.assertNotIn("sony wh-1000xm6", earbud)
+        # Search expansion does not bypass the final device/accessory filter.
+        for title in ("Ersatz Ohrpolster für Sony WH-1000XM6 Kopfhörer",
+                      "SONY WH-1000XM6 Compatible Case"):
+            self.assertTrue(monitor._is_category_blocked_title(monitor._normalize(title), "headphones"))
+
     def test_html_queries_do_not_pre_exclude_valid_listings_and_redmagic_spelling(self):
         redmagic = {"query": "Redmagic 11 Pro", "filters": {"category": "phones"}}
         self.assertEqual(monitor._build_smart_search_query(redmagic), "Redmagic 11 Pro")
