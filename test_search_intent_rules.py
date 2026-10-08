@@ -87,8 +87,8 @@ class SearchIntentRuleTests(unittest.TestCase):
         # Retrieval must not drop working stock; local rules still reject parts.
         self.assertFalse(monitor._is_category_blocked_title(
             monitor._normalize("iPhone 16 Pro Max 256GB ohne Defekt"), "phones"))
-        self.assertTrue(monitor._is_category_blocked_title(
-            monitor._normalize("iPhone 16 Pro Max Display Ersatzteil"), "phones"))
+        self.assertTrue(monitor._is_phone_accessory_title(
+            monitor._normalize("iPhone 16 Pro Max Display Ersatzteil")))
 
     def test_browser_verified_console_generation_and_cover_bundle(self):
         query = 'playstation 5 pro'
