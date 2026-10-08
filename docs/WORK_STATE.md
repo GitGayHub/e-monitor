@@ -128,3 +128,14 @@ Nubia Z80 Ultra Leading/LV должен показывать честное «Н
 ## CLOUD ACCEPTANCE HANDOFF — 2026-10-08
 
 Owner instructed continued autonomous work on accurate live eBay search and banning, not just APK. See **docs/CLOUD_SEARCH_ACCEPTANCE_2026-10-08.md** and machine-readable **docs/qa/CLOUD_ACCEPTANCE_QUEUE_2026-10-08.json**, published in BOTH cloud-work branches. 24 products × 4 buckets = 96 initially PENDING checks derived from 48 stored/46 enabled searches in read-only production manifest. Real live evidence, seller, description, prices, missed cheap items, wrong-device/parts and false positives must be assessed; previous 41 web-index cases only establish titles. Report actual CI HEAD and APK hash. Keep production normal, Telegram, limits, searches, seen and blacklist untouched; physical phone inaccessible. Cloud handoff documents alone do **not** start a Codex Cloud task, and acceptance remains NOT DONE.
+
+
+## Реальная Cloud-сессия 2026-10-08T09:07:32.561248+00:00 — промежуточный checkpoint
+
+Работа в обоих codex/cloud-work; исходные Python 117c9095409c0bce5ae154e1d777f6610d41f4e4 / Android 8553f6634e9a9f8e2c38a86aabf20018fa3c7eae. Окружение теперь действительно доступно: Python3.12, Chromium/Playwright, SDK36, отдельный JDK21. .de выдача/страницы часто CAPTCHA; .com HTTP даёт собственные данные и seller iframe. Без подмены Германии условиями доставки США.
+
+Исправления обеих реализаций: итальянский Numero modello/Modello не может скрыть несовместимый iPhone (реальный 117449336412); собственный Item sold on распознаётся UNAVAILABLE, независимо от end date. Фикстуры одинаковые, synthetic controls явно помечены. Python logic_version 1791449810 — только Cloud, не deployment.
+
+Baseline237 Python +5 sync OK; после первого фикса238 Python OK. Последние Android tests/build и CI пока в работе. Подробные новые доказательства: https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/REPORT.md . Десять специальных лотов повторно открыты, полный текст коротких описаний прочитан; repair/sold/parts/дорогие лоты не пригодные сделки. 128121409205 модель/own seller/time подтверждены HTTP .com, доставка DE и реальный Android HTTP не подтверждены.
+
+Часть24×4 очереди обновлена с явными dependency BLOCKED и verifiedUnique0; directBucketAcceptancePerformed=false означает, что отдельная корзина не пройдена. Сбор оставшихся групп продолжается. Количества fetched descriptions не выдавать за независимые40–50 подходящих товаров. Production main/mode/searches/limits/seen/blacklist/Telegram/телефон не менялись. Общий статус PARTIAL. Следом — завершить доступный сбор, latest tests/build, GitHub CI актуального HEAD и парный checkpoint.

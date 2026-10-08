@@ -4730,6 +4730,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     ))
     if re.search(
         r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)|"
+        r"\bitem sold on\b|"
         r"(?:dieser artikel ist\s+)?nicht mehr vorr[aä]tig|"
         r"(?:this item is\s+)?out of stock|"
         r"this item is no longer available",
@@ -5584,9 +5585,9 @@ def _details_match_contract(item, search, details, *, require_description=True):
         for aspect in details.get("localizedAspects") or []:
             name = _normalize(aspect.get("name") or "")
             value = _normalize(aspect.get("value") or "")
-            if name in ('modell','model') and value and not _phone_model_aspect_matches(value, query):
+            if name in ('modell','model','modello') and value and not _phone_model_aspect_matches(value, query):
                 return False
-            if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno') and value and not _phone_model_number_matches(value, query):
+            if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno','numeromodello') and value and not _phone_model_number_matches(value, query):
                 return False
             if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query):
                 return False
