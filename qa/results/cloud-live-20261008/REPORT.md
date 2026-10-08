@@ -1,4 +1,4 @@
-# Cloud live acceptance checkpoint — 2026-10-08T09:07:32.561248+00:00
+# Cloud live acceptance — PARTIAL (2026-10-08)
 
 Acceptance is **PARTIAL**, not complete. Starting bot SHA `117c9095409c0bce5ae154e1d777f6610d41f4e4`; Android SHA `8553f6634e9a9f8e2c38a86aabf20018fa3c7eae`. Both work on `codex/cloud-work`.
 
@@ -71,7 +71,7 @@ Production main, normal mode, settings/limits, enabled flags, raw searches, Tele
 
 Baseline237 Python +5 Cloud-sync passed. Final **238 Python +5 Cloud-sync +233 Android tests passed**, APK built,14 complete-input paired live replays passed. Same31 published regression cases run in both suites. Java21 and SDK36 installed in separate toolchain; configured proxy and CA retained. Expected D8 API36 warning remains; physical API36 compatibility is not tested. [validation.json](validation.json) and [local-check.log](local-check.log) record source blob hashes and actual local validation.
 
-Local debug APK SHA256 `d6beeb65bb86245b073514c5e1690315701b2f72cd64a0cfbe68aa9711039c2f`. Actions signing can produce a different hash; use the CI artifact/hash for that run. Prior checkpoint [37758006402](https://github.com/GitGayHub/e-monitor-android/actions/runs/37758006402) succeeded for ff85bd03 with Actions APK SHA2569dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7, **not the additional5-Button fix**. Final HEAD readiness CI must be checked after publishing this checkpoint. Cloud-only logic_version `1791453018` is not deployment.
+Local debug APK SHA256 `d6beeb65bb86245b073514c5e1690315701b2f72cd64a0cfbe68aa9711039c2f`. Actions signing can produce a different hash; use the CI artifact/hash for that run. Prior checkpoint [37758006402](https://github.com/GitGayHub/e-monitor-android/actions/runs/37758006402) succeeded for ff85bd03 with Actions APK SHA2569dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7, **not the additional5-Button fix**. Final current Android HEAD `7aa32121e0ff6fb78c138eb71da66508003cede8` passed [CI 37760420537](https://github.com/GitGayHub/e-monitor-android/actions/runs/37760420537) with Python `fe77982b9d7027a376e93061735402701b005fa2`. CI debug APK SHA256 `09aa6f1d2fd86c446f4b44f0495c97e7b6075f2aca930ab86f46b9fde57000b0`; artifact `11541838680` expires 2026-10-22T10:07:18Z. See [ci-current-head.json](ci-current-head.json). Final Python evidence-only followup retains all tested source blob hashes. Cloud-only logic_version `1791453018` is not deployment.
 
 ## Next available stage / PC handoff
 

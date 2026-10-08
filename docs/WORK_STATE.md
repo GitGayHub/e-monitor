@@ -163,3 +163,14 @@ Latest local cloud-check238 Python +5 sync +233 Android tests and APK passed;31 
 Previous exact Android ff85bd030d324bcdc5f90865b1090786a68ae612 CI37758006402 passed with Python66a033562014a2f2d951ec31ab5c44b2e6c6bd5b, artifact11541087919, APK9dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7. It does not cover this last fix; monitor new current-HEAD CI after publishing. Companion Cloud branch retains paired source; exact new counterpart recorded on publication. Production settings/Telegram/seen/searches/bans/main and physical phone untouched.
 
 Continue only available DE profile/basket/delivery/minimum live acceptance, unresolved scroll-wheel accessory ambiguity, and authorized PC/device checks. Report remains PARTIAL: https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/REPORT.md
+
+
+## Verified final Cloud CI 2026-10-08T10:09:04.573149+00:00
+
+Android current HEAD7aa32121e0ff6fb78c138eb71da66508003cede8 is green in https://github.com/GitGayHub/e-monitor-android/actions/runs/37760420537 (push, completed/success). Job verifies paired Pythonfe77982b9d7027a376e93061735402701b005fa2.238 Python +5 sync passed in runner;Android tests/APK build succeeded. Local complete suite233 Android tests;31 shared cases and14 identical own full-description/aspect replays passed.
+
+Actions debug APK SHA256 09aa6f1d2fd86c446f4b44f0495c97e7b6075f2aca930ab86f46b9fde57000b0;artifact11541838680, expires2026-10-22T10:07:18Z. Local debug signing produces a different hash, recorded separately. No signed production update, installation or Telegram test. ci-current-head.json/validation.json/REPORT.md store proof, counterpart commit and source blob hashes. This final Python commit only updates evidence/docs; tested source unchanged. Android branch remains exactly the green HEAD.
+
+Final acceptance PARTIAL:24 groups recorded;96 baskets BLOCKED with directBucketAcceptancePerformed=false,0 suitable Germany/minimum proofs.68 .com requests,500 records/498 IDs,483 own pages,478 fetched bodies;26 independently reviewed,23 full bodies read. Six rule classes repaired including both mouse-feature false rejections; actual parts/damage preserved. All16 owner hidden IDs and global/search-specific seller controls passed isolated Python/Kotlin checks. Production main/mode/config/Telegram/searches/limits/enabled/seen/lists and phone untouched.
+
+Next available task is fresh original DE-profile4-basket catalogue/delivery/import/minimum acceptance once access works, then authorized PC/device-specific Android HTTP/installation/Telegram checks. Remaining scroll-wheel purpose and insured/chipped devices require own-photo evidence; do not invent new owner policies. Companion instructions: read Android WORK_STATE, run cloud_sync --check before integration; no blind reset/clean/pull.
