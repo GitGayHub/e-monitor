@@ -2,6 +2,7 @@
   "product": "pixel_5",
   "rawQuery": "Pixel 5",
   "startedAtUtc": "2026-10-08T08:59:46.406805+00:00",
+  "finishedAtUtc": "2026-10-08T09:03:03.349442+00:00",
   "source": "browser-live-ebay.com-independent-worldwide",
   "requests": [
     {
@@ -125,16 +126,23 @@
     }
   ],
   "completion": "PARTIAL",
-  "finishedAtUtc": "2026-10-08T09:03:03.349442+00:00",
   "discoveredUnique": 192,
   "collectedUnique": 50,
   "descriptionFetched": 50,
-  "limitations": [
-    "ebay.com worldwide search and US default shipping; not the saved ebay.de/DE destination profile",
-    "only bounded first-page discovery; includes accessories and matching-fewer-words results",
-    "descriptionFetched is not independent descriptionVerified",
-    "unreviewed records have no expected verdict; no notification eligibility claim"
-  ],
+  "requestProfile": {
+    "domain": "ebay.com",
+    "discoveryLocation": "worldwide/default US destination",
+    "categoryFilter": null,
+    "priceFloor": null,
+    "priceCeiling": null,
+    "bestOfferFilter": null,
+    "sort": "price ascending including displayed shipping (_sop=15)",
+    "pageLength": 60,
+    "pagination": "first page only",
+    "destinationVerified": false,
+    "apiRequestSent": false,
+    "notes": "Independent bounded comparison source; may contain matching-fewer-words cards. Original saved DE profiles are rendered separately in request-contracts.json; static rendering is not execution."
+  },
   "candidates": [
     {
       "itemId": "206604238695",
@@ -162,27 +170,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "9.19",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "9.19",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-12T12:58:57.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Google Pixel 5"
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
         },
         {
-          "name": "Storage Capacity",
-          "value": "128 GB"
+          "name": "Model",
+          "value": "Google Pixel 5"
         },
         {
           "name": "Processor",
@@ -191,10 +218,6 @@
         {
           "name": "RAM",
           "value": "8 GB"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
         }
       ]
     },
@@ -229,19 +252,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "99.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "19782.76",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Boise, Idaho, United States",
       "endTime": "2026-10-13T00:34:27.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "SamanthaTronics",
+        "feedbackScore": 31219,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Used Cell Phone. 30-Day Return Guarantee.  There are some scratches and wear on the housings and ... Read more about the seller notes “Used Cell Phone. 30-Day Return Guarantee.  There are some scratches and wear on the housings and screen.  (SEE PICS). Works Great. Read Description.” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -256,24 +303,8 @@
           "value": "Google Tensor G2 (5 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Google Fi"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 4 XL"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -307,15 +338,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "57.96",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "57.96",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Castle, Delaware, United States",
       "endTime": "2026-10-10T17:41:06.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ortiz1170",
+        "feedbackScore": 98,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -326,20 +376,8 @@
           "value": "6.2 in"
         },
         {
-          "name": "Network",
-          "value": "AT&T, Verizon, T-Mobile, Sprint"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 4a 5G"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -374,19 +412,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "57.04",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "57.04",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Downingtown, Pennsylvania, United States",
       "endTime": "2026-10-11T20:34:04.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "amykarvonen",
+        "feedbackScore": 115,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Used but in working condition.”"
         },
         {
           "name": "Processor",
@@ -397,20 +458,12 @@
           "value": "6.3 in"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
+          "name": "MPN",
+          "value": "Does Not Apply"
         },
         {
           "name": "Model",
           "value": "Google Pixel 5a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -449,43 +502,51 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "399.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "104.42",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Boise, Idaho, United States",
       "endTime": "2026-10-13T01:07:18.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "SamanthaTronics",
+        "feedbackScore": 31219,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Used Cell Phone. 30-Day Return Guarantee.  There are some scratches and wear on the housings and ... Read more about the seller notes “Used Cell Phone. 30-Day Return Guarantee.  There are some scratches and wear on the housings and screen.  (SEE PICS). Works Great.” Read Less about the seller notes"
+        },
+        {
           "name": "Processor",
           "value": "Octa Core"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "T-Mobile"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 10a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -519,15 +580,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "194.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "126.96",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Boones Mill, Virginia, United States",
       "endTime": "2026-10-11T14:27:45.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "setho-6928",
+        "feedbackScore": 23,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -546,20 +627,8 @@
           "value": "Snapdragon 765 g Sm7250-Ab (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 5"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -598,15 +667,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "196.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "128.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Bridgeview, Illinois, United States",
       "endTime": "2026-10-12T04:39:59.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "macabresteve",
+        "feedbackScore": 1586,
+        "feedbackPercentage": 98.3
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -625,20 +714,8 @@
           "value": "Google Tensor G4 (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 9"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -677,15 +754,33 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "192.74",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "192.74",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Citrus Heights, California, United States",
       "endTime": "2026-10-08T19:32:12.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "techbid_49",
+        "feedbackScore": 0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -704,28 +799,16 @@
           "value": "Google Tensor G3 (4 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
+          "name": "MPN",
+          "value": "G1MNW"
         },
         {
           "name": "Model Number",
           "value": "G1MNW"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 8 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -764,15 +847,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "325.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "225.86",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Woodbridge, Virginia, United States",
       "endTime": "2026-10-09T15:06:40.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "gaberib-87",
+        "feedbackScore": 15,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -791,20 +894,8 @@
           "value": "GXQ96"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 9a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -834,15 +925,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "225.35",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "225.35",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Kansas City, Missouri, United States",
       "endTime": "2026-10-13T00:39:43.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Cargo Largo",
+        "feedbackScore": 689487,
+        "feedbackPercentage": 99.7
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -853,20 +963,8 @@
           "value": "Google Pixel 9"
         },
         {
-          "name": "Storage Capacity",
-          "value": "128 GB"
-        },
-        {
-          "name": "Network",
-          "value": "T-Mobile"
-        },
-        {
           "name": "Screen Size",
           "value": "6.3 in"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Locked"
         },
         {
           "name": "Processor",
@@ -875,10 +973,6 @@
         {
           "name": "RAM",
           "value": "12 GB"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
         }
       ]
     },
@@ -908,19 +1002,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "425.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "240.12",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Gilroy, California, United States",
       "endTime": "2026-10-10T17:58:43.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jgarcia2001",
+        "feedbackScore": 408,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“This phone is used and has minor cosmetic defects.”"
         },
         {
           "name": "Processor",
@@ -935,20 +1053,8 @@
           "value": "Google Tensor G2 (5 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel Fold 5G"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -982,15 +1088,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "420.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "276.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Newark, New Jersey, United States",
       "endTime": "2026-10-12T00:35:32.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "clrichar08",
+        "feedbackScore": 141
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1005,20 +1130,8 @@
           "value": "7.6 in"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel Fold"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1052,15 +1165,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "448.96",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "448.96",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Cranberry Township, Pennsylvania, United States",
       "endTime": "2026-10-08T12:06:02.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "krypto_kat",
+        "feedbackScore": 251,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1079,20 +1211,8 @@
           "value": "Google Tensor G2 (5 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel Fold 5G"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -1131,15 +1251,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "650.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "598.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Orange, California, United States",
       "endTime": "2026-10-10T21:25:44.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "darioy65",
+        "feedbackScore": 325,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1158,24 +1298,8 @@
           "value": "G26BG"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 11 Pro XL"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android 17"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -1205,15 +1329,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Milford, New Jersey, United States",
       "endTime": "2026-10-10T00:42:40.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1228,28 +1371,12 @@
           "value": "Google Tensor"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
           "name": "Model Number",
           "value": "GBC0H"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1283,19 +1410,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1360.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "920.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Holyoke, Massachusetts, United States",
       "endTime": "2026-10-14T04:23:44.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "pr2itdancing",
+        "feedbackScore": 382,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Chipset ModelGoogle Tensor G5 (3 nm)MPNGA10092-USLock StatusFactory UnlockedSIM Card SlotDual SIM ... Read more about the seller notes “Chipset ModelGoogle Tensor G5 (3 nm)MPNGA10092-USLock StatusFactory UnlockedSIM Card SlotDual SIM (SIM + eSIM)Energy StarANetworkUnlockedStyleFoldableOperating SystemAndroidFeaturesAccelerometer, Bluetooth Enabled, Color Screen, Dual Screen, Email, Web, Fast Charging, Front Camera, GPS, HDR Display, Internet Connectivity, Music Player, NFC Connectivity, OLED Display, Proximity Sensor, Rear Camera, Speakerphone, Touch Screen, Water-Resistant, Wi-Fi CapableStorage Capacity512 GB” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -1310,24 +1461,8 @@
           "value": "Google Tensor G6 (3 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Pixel 10 Pro Fold"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -1367,19 +1502,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "83.78",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "83.78",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Bournemouth, United Kingdom",
       "endTime": "2026-10-11T20:27:09.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "vavatechsales",
+        "feedbackScore": 452,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Free Royal Mail Delivery.! Orders Paid Before 1pm Will Be Shipped Out The Same Day.”"
         },
         {
           "name": "Processor",
@@ -1390,20 +1548,8 @@
           "value": "Samsung Exynos 8890"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
+          "name": "MPN",
+          "value": "MN8X2B/A, MLPH3B/A|MLPH3BA, SM-J500FZKABTU, SM-G525FZKDEEA, DUA-L22, SM-A908BZKABTU, MLV93B/A, MLL63B/A, MQAC2B/A, MGDF3B/A"
         },
         {
           "name": "Screen Size",
@@ -1450,19 +1596,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "615.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "615.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Frankfurt, Germany",
       "endTime": "2026-10-08T19:22:19.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "be-happy-be",
+        "feedbackScore": 59,
+        "feedbackPercentage": 97.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Produktart",
+          "value": "Smartphone"
         },
         {
           "name": "Prozessor",
@@ -1473,20 +1642,8 @@
           "value": "A1203 (GSM)"
         },
         {
-          "name": "Betriebssystem",
-          "value": "Android"
-        },
-        {
-          "name": "Bildschirmgröße",
-          "value": "6,8 Zoll"
-        },
-        {
           "name": "Modell",
           "value": "Google Pixel 9 Pro XL"
-        },
-        {
-          "name": "Speicherkapazität",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -1525,15 +1682,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "10.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "9.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-14T18:04:00.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1548,20 +1725,8 @@
           "value": "Qualcomm Snapdragon 835"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "Verizon"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
+          "name": "MPN",
+          "value": "G011A"
         },
         {
           "name": "Screen Size",
@@ -1607,19 +1772,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "92.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "92.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Brooklyn, New York, United States",
       "endTime": "2026-10-08T18:51:20.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "wishmedeals",
+        "feedbackScore": 9263,
+        "feedbackPercentage": 99.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Lot of 2 Smartphones  Google pixel 8a and iphone 8”"
         },
         {
           "name": "Processor",
@@ -1630,24 +1818,8 @@
           "value": "6.1 in"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 8a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -1682,15 +1854,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "60.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "55.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-13T18:00:00.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1713,28 +1905,16 @@
           "value": "Qualcomm Snapdragon 855"
         },
         {
+          "name": "MPN",
+          "value": "G020I"
+        },
+        {
           "name": "Model",
           "value": "Pixel 4"
         },
         {
           "name": "Model Number",
           "value": "G020I"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
         }
       ]
     },
@@ -1769,31 +1949,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "9.19",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "9.19",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-13T15:14:38.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
+        },
+        {
           "name": "Model",
           "value": "Google Pixel 3"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Verizon"
         },
         {
           "name": "Screen Size",
@@ -1806,14 +2001,6 @@
         {
           "name": "RAM",
           "value": "4 GB"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Locked"
         }
       ]
     },
@@ -1848,15 +2035,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "18.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "18.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-14T18:03:00.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1871,20 +2077,8 @@
           "value": "Qualcomm Snapdragon 670"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
+          "name": "MPN",
+          "value": "G020G"
         },
         {
           "name": "Screen Size",
@@ -1930,15 +2124,32 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "0.92",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Linden, New Jersey, United States",
       "endTime": "2026-10-13T07:07:37.000Z",
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "guaranteecellular",
+        "feedbackScore": 199695,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1947,14 +2158,6 @@
         {
           "name": "Model",
           "value": "Google Pixel 9"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
         }
       ]
     },
@@ -1989,19 +2192,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "24.84",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "24.84",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Houston, Texas, United States",
       "endTime": "2026-10-12T05:26:07.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "roscothehusky",
+        "feedbackScore": 257,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Excellent”"
         },
         {
           "name": "Processor",
@@ -2016,24 +2242,8 @@
           "value": "Snapdragon 845 Sdm845 (10 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 3"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2072,15 +2282,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "65.32",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "65.32",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Benton, Arkansas, United States",
       "endTime": "2026-10-12T14:15:48.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "knipknop36",
+        "feedbackScore": 93,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2099,24 +2328,8 @@
           "value": "Tensor (5 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 6a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2150,15 +2363,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "94.30",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "94.30",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Minot, North Dakota, United States",
       "endTime": "2026-10-12T03:17:15.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jlei7552",
+        "feedbackScore": 273,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2177,20 +2409,8 @@
           "value": "Tensor (5 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 6"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2229,19 +2449,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "40.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "36.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-12T18:00:00.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "G013A"
         },
         {
           "name": "Screen Size",
@@ -2254,22 +2498,6 @@
         {
           "name": "Model Number",
           "value": "G013A"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
         }
       ]
     },
@@ -2299,39 +2527,54 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "34.04",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "34.04",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Salt Lake City, Utah, United States",
       "endTime": "2026-10-14T21:21:13.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "National Product Sales",
+        "feedbackScore": 733034,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Used, Tested and functioning properly. The screen has scratches, the back housing and bezel have ... Read more about the seller notes “Used, Tested and functioning properly. The screen has scratches, the back housing and bezel have some small scuffs. Please read notes.” Read Less about the seller notes"
+        },
+        {
+          "name": "MPN",
+          "value": "GXQ96"
+        },
+        {
           "name": "Model",
           "value": "Pixel 9a"
         },
         {
-          "name": "Network",
-          "value": "['T-Mobile']"
-        },
-        {
           "name": "Screen Size",
           "value": "6.3 in"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -2361,15 +2604,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "77.28",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "77.28",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "O'Fallon, Missouri, United States",
       "endTime": "2026-10-10T16:19:41.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "blues1967",
+        "feedbackScore": 496,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2388,20 +2650,8 @@
           "value": "Tensor (5 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 6a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2435,19 +2685,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "56.12",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "56.12",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Downingtown, Pennsylvania, United States",
       "endTime": "2026-10-11T20:14:51.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "amykarvonen",
+        "feedbackScore": 115,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“In good condition.  Was our backup phone.”"
         },
         {
           "name": "Processor",
@@ -2462,24 +2735,8 @@
           "value": "Tensor (5 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 6a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2513,27 +2770,38 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "322.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "322.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Sun City Center, Florida, United States",
       "endTime": "2026-10-09T23:42:26.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jstarry37",
+        "feedbackScore": 173,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
-        },
-        {
-          "name": "Display Technology",
-          "value": "OLED"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
         },
         {
           "name": "Processor",
@@ -2548,20 +2816,8 @@
           "value": "Google Tensor G5 (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 10"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2595,15 +2851,32 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "0.92",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Linden, New Jersey, United States",
       "endTime": "2026-10-14T15:47:10.000Z",
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "guaranteecellular",
+        "feedbackScore": 199695,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2612,14 +2885,6 @@
         {
           "name": "Model",
           "value": "google Pixel 10 Pro"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
         }
       ]
     },
@@ -2649,43 +2914,50 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "57.96",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "57.96",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-08T14:37:42.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
+        },
+        {
           "name": "Model",
           "value": "Apple iPhone 8 Plus"
         },
         {
-          "name": "Storage Capacity",
-          "value": "256 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Processor",
           "value": "Apple A11 Bionic"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         },
         {
           "name": "Screen Size",
@@ -2728,15 +3000,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "220.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "143.06",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Cypress, Texas, United States",
       "endTime": "2026-10-12T17:00:02.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "papapranku",
+        "feedbackScore": 78,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2755,20 +3047,8 @@
           "value": "Google Tensor G3 (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 8a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2802,31 +3082,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "2.07",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "2.07",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Tempe, Arizona, United States",
       "endTime": "2026-10-09T23:28:37.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Buyback Boss",
+        "feedbackScore": 37917,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Please read the description below for exact details about the issues with this device. The device ... Read more about the seller notes “Please read the description below for exact details about the issues with this device. The device has the following issues: Poor Battery, LCD Damage, Cracked Screen, Digitizer, Screen Separation. This device is unlocked for all CDMA and GSM carriers.” Read Less about the seller notes"
+        },
+        {
           "name": "Model",
           "value": "Pixel 6 Pro"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128GB"
         }
       ]
     },
@@ -2861,47 +3156,58 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Cornelius, Oregon, United States",
       "endTime": "2026-10-11T18:12:09.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mari_1414",
+        "feedbackScore": 1054,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Phone works, but it's Network Locked. Read full description.”"
+        },
+        {
           "name": "Screen Size",
           "value": "6.3 in"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
+          "name": "MPN",
+          "value": "GXQ96"
         },
         {
           "name": "Model Number",
           "value": "GXQ96"
         },
         {
-          "name": "Network",
-          "value": "Unknown"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 9a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -2940,15 +3246,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "38.64",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "38.64",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "South Windsor, Connecticut, United States",
       "endTime": "2026-10-14T14:17:05.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jobeau657",
+        "feedbackScore": 25,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2959,20 +3284,8 @@
           "value": "6.1 in"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 6a"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -3011,15 +3324,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "120.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "110.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-14T18:05:00.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3038,24 +3371,8 @@
           "value": "Google Tensor G2"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "Verizon"
-        },
-        {
           "name": "Model",
           "value": "Pixel 7"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -3094,15 +3411,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "4.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-14T18:02:00.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3117,20 +3454,8 @@
           "value": "Qualcomm Snapdragon 670"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "Verizon"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
+          "name": "MPN",
+          "value": "G020G"
         },
         {
           "name": "Screen Size",
@@ -3176,15 +3501,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "200.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "92.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Weare, New Hampshire, United States",
       "endTime": "2026-10-17T19:30:01.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "p4ss-0",
+        "feedbackScore": 34,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3203,20 +3548,8 @@
           "value": "Snapdragon 8 Gen 2 Sm8550-AC (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy Z Flip5"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -3250,27 +3583,44 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "0.92",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Linden, New Jersey, United States",
       "endTime": "2026-10-13T07:49:52.000Z",
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "guaranteecellular",
+        "feedbackScore": 199695,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "iPhone 15 Pro"
+          "name": "Seller Notes",
+          "value": "“This Device is in VERY GOOD cosmetic condition and will show minor scratches and/or scuffs on the ... Read more about the seller notes “This Device is in VERY GOOD cosmetic condition and will show minor scratches and/or scuffs on the body and screen. It has been tested and restored to 100% functionality. Comes in a white or brown box with a generic charger. Batteries are tested to hold a good charge but may not have the performance of a new battery.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "128 GB"
+          "name": "Model",
+          "value": "iPhone 15 Pro"
         }
       ]
     },
@@ -3300,31 +3650,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "41.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "41.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-10T15:32:12.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
+        },
+        {
           "name": "Model",
           "value": "Apple iPhone 13"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
         },
         {
           "name": "Processor",
@@ -3362,35 +3727,50 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "31.28",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "31.28",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-10T16:15:09.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
+        },
+        {
           "name": "Model",
           "value": "Apple iPhone XR"
         },
         {
-          "name": "Storage Capacity",
-          "value": "64 GB"
-        },
-        {
           "name": "Processor",
           "value": "A12 Bionic chip with next-generation Neural Engine"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
         },
         {
           "name": "Screen Size",
@@ -3424,43 +3804,50 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "21.62",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "21.62",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-10T15:24:49.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
+        },
+        {
           "name": "Model",
           "value": "Apple iPhone 12"
         },
         {
-          "name": "Storage Capacity",
-          "value": "64 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Screen Size",
           "value": "6.1 in"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
         },
         {
           "name": "Processor",
@@ -3499,15 +3886,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "110.39",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "110.39",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New York, New York, United States",
       "endTime": "2026-10-12T16:34:23.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "rwwsp48",
+        "feedbackScore": 17,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3526,24 +3932,8 @@
           "value": "Tensor (5 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "verizon"
-        },
-        {
-          "name": "Network",
-          "value": "Verizon"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 6"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -3577,35 +3967,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "561.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "561.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Littleton, Colorado, United States",
       "endTime": "2026-10-11T18:03:10.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "MaxDealsCO",
+        "feedbackScore": 1223,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 10 ProXL"
         },
         {
-          "name": "Storage Capacity",
-          "value": "256 GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "MPN",
+          "value": "Pixel 10 Pro XL"
         }
       ]
     },
@@ -3635,19 +4036,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "9.19",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "9.19",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Falls Church, Virginia, United States",
       "endTime": "2026-10-14T14:58:23.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Mclean-Surplus",
+        "feedbackScore": 92902,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Good overall used condition. Some light scratches or scuffs. No dents, dings or cracks.”"
         },
         {
           "name": "Model",
@@ -3658,28 +4082,12 @@
           "value": "A1662"
         },
         {
-          "name": "Storage Capacity",
-          "value": "64 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Screen Size",
           "value": "4 in"
         },
         {
           "name": "Processor",
           "value": "A9"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
         }
       ]
     },
@@ -3714,15 +4122,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "459.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "459.99",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Monticello, Minnesota, United States",
       "endTime": "2026-10-13T16:49:40.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Monticello Pawn",
+        "feedbackScore": 3743,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3745,24 +4172,8 @@
           "value": "6518"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 10 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -3796,15 +4207,32 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "0.92",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Linden, New Jersey, United States",
       "endTime": "2026-10-13T07:39:59.000Z",
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "guaranteecellular",
+        "feedbackScore": 199695,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3813,10 +4241,6 @@
         {
           "name": "Model",
           "value": "Apple iPhone 16"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128GB"
         }
       ]
     }

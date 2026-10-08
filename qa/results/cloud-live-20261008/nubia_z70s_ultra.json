@@ -2,6 +2,7 @@
   "product": "nubia_z70s_ultra",
   "rawQuery": "Nubia Z70S Ultra",
   "startedAtUtc": "2026-10-08T08:57:47.655034+00:00",
+  "finishedAtUtc": "2026-10-08T08:59:46.382454+00:00",
   "source": "browser-live-ebay.com-independent-worldwide",
   "requests": [
     {
@@ -150,16 +151,23 @@
     }
   ],
   "completion": "PARTIAL",
-  "finishedAtUtc": "2026-10-08T08:59:46.382454+00:00",
   "discoveredUnique": 136,
   "collectedUnique": 50,
   "descriptionFetched": 49,
-  "limitations": [
-    "ebay.com worldwide search and US default shipping; not the saved ebay.de/DE destination profile",
-    "only bounded first-page discovery; includes accessories and matching-fewer-words results",
-    "descriptionFetched is not independent descriptionVerified",
-    "unreviewed records have no expected verdict; no notification eligibility claim"
-  ],
+  "requestProfile": {
+    "domain": "ebay.com",
+    "discoveryLocation": "worldwide/default US destination",
+    "categoryFilter": null,
+    "priceFloor": null,
+    "priceCeiling": null,
+    "bestOfferFilter": null,
+    "sort": "price ascending including displayed shipping (_sop=15)",
+    "pageLength": 60,
+    "pagination": "first page only",
+    "destinationVerified": false,
+    "apiRequestSent": false,
+    "notes": "Independent bounded comparison source; may contain matching-fewer-words cards. Original saved DE profiles are rendered separately in request-contracts.json; static rendering is not execution."
+  },
   "candidates": [
     {
       "itemId": "227552541344",
@@ -197,19 +205,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "4.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Bullhead City, Arizona, United States",
       "endTime": "2026-10-12T02:41:52.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "cohug_7601",
+        "feedbackScore": 17,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Fitted Case/Skin"
+        },
+        {
+          "name": "MPN",
+          "value": "X004VVP37Z"
         }
       ]
     },
@@ -252,19 +288,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "10.44",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Walnut, California, United States",
       "endTime": "2026-10-12T11:00:54.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "california_9969",
+        "feedbackScore": 1809,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -302,19 +362,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.09",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-22T13:51:52.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "3c_happy_shopping",
+        "feedbackScore": 8532,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Screen Protector"
         }
       ]
     },
@@ -352,19 +432,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-23T15:43:56.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "phone_tablet_protectors",
+        "feedbackScore": 794,
+        "feedbackPercentage": 99.1
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Case + Screen Protector"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -407,19 +511,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "GUANG DONG, China",
       "endTime": "2026-10-14T01:49:09.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "aliceshop2023",
+        "feedbackScore": 1622,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -456,19 +584,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "3.25",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Pomona, California, United States",
       "endTime": "2026-10-22T12:08:14.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Amy Deals",
+        "feedbackScore": 7523,
+        "feedbackPercentage": 94.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Screen Protector"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -506,19 +658,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "3.28",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-20T14:43:52.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "vincent31162012",
+        "feedbackScore": 31139,
+        "feedbackPercentage": 98.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -561,19 +733,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "4.96",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "guangdong, shenzhen, China",
       "endTime": "2026-11-01T08:35:58.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Hot Phone Case Shop",
+        "feedbackScore": 94066,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Fitted Case/Skin"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -616,19 +812,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "4.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "guangdong, shenzhen, China",
       "endTime": "2026-10-11T01:22:50.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Hot Phone Case Shop",
+        "feedbackScore": 94066,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Fitted Case/Skin"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -666,19 +886,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "14.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-22T01:08:39.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "yien-ning",
+        "feedbackScore": 170,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Hard Cover"
         }
       ]
     },
@@ -716,19 +956,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "15.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-21T13:59:17.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "yien-ning",
+        "feedbackScore": 170,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Liquid Case"
         }
       ]
     },
@@ -771,19 +1031,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "12.16",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "深圳, 廣東省, China",
       "endTime": "2026-11-08T03:42:11.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lucky24love03",
+        "feedbackScore": 31362,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -821,19 +1105,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "7.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-11-02T15:30:56.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "vincent31162012",
+        "feedbackScore": 31139,
+        "feedbackPercentage": 98.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -876,19 +1180,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "17.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "ShenZhen, China",
       "endTime": "2026-11-03T14:28:25.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mousestore",
+        "feedbackScore": 13968,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -931,19 +1255,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "13.36",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-28T07:43:12.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lucky24love03",
+        "feedbackScore": 31362,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -986,19 +1334,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "13.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "SZ, China",
       "endTime": "2026-11-03T18:35:54.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "yundaexpress",
+        "feedbackScore": 288,
+        "feedbackPercentage": 97.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1036,19 +1404,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "20.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "ShenZhen, China",
       "endTime": "2026-10-17T02:00:21.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "e-essyshoping",
+        "feedbackScore": 61892,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1091,19 +1479,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "15.49",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "深圳, 廣東省, China",
       "endTime": "2026-11-03T03:35:20.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lucky24love03",
+        "feedbackScore": 31362,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -1146,19 +1558,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "12.19",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-17T12:57:59.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "in-and-out-wireless",
+        "feedbackScore": 1027,
+        "feedbackPercentage": 98.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -1196,19 +1632,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "12.98",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-22T12:07:38.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "vincent31162012",
+        "feedbackScore": 31139,
+        "feedbackPercentage": 98.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
         }
       ]
     },
@@ -1251,19 +1707,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "22.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "ShenZhen, China",
       "endTime": "2026-10-29T03:55:50.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mousestore",
+        "feedbackScore": 13968,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1306,19 +1782,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "22.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "ShenZhen, China",
       "endTime": "2026-11-04T03:28:25.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mousestore",
+        "feedbackScore": 13968,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1362,19 +1858,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "9.49",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "shen zhen shi, null, China",
       "endTime": "2026-10-27T13:03:09.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "zhupay",
+        "feedbackScore": 20047,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "360 Case"
         }
       ]
     },
@@ -1417,19 +1933,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "20.49",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "深圳, 廣東省, China",
       "endTime": "2026-10-28T04:10:14.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lucky24love03",
+        "feedbackScore": 31362,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -1467,19 +2007,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "18.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-11-01T12:28:10.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "bigshop-smartfix",
+        "feedbackScore": 1740,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1522,19 +2082,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "26.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "ShenZhen, China",
       "endTime": "2026-10-09T04:33:16.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mousestore",
+        "feedbackScore": 13968,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1577,19 +2157,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "24.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "ShenZhen, China",
       "endTime": "2026-11-02T12:25:14.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mousestore",
+        "feedbackScore": 13968,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1632,19 +2232,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "21.39",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-23T07:14:57.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "sunst-77",
+        "feedbackScore": 432,
+        "feedbackPercentage": 99.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
         }
       ]
     },
@@ -1687,19 +2311,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "19.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-11-08T05:06:08.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Ifixit-Mobile-Repairs",
+        "feedbackScore": 1397,
+        "feedbackPercentage": 99.1
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1742,19 +2386,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "19.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-20T06:43:24.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Phone-Repairs-Centre",
+        "feedbackScore": 1953,
+        "feedbackPercentage": 98.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1797,19 +2461,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "19.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "SZ, China",
       "endTime": "2026-10-21T16:22:46.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lovesky_3C",
+        "feedbackScore": 1062,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -1852,19 +2536,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "20.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-15T12:02:55.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mobilepc-doctor-repair",
+        "feedbackScore": 1573,
+        "feedbackPercentage": 98.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
         }
       ]
     },
@@ -1907,19 +2615,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "21.85",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-17T12:29:02.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "1stchoice_mobileparts",
+        "feedbackScore": 2566,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -1962,19 +2694,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "22.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-09T02:33:27.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "sunst-77",
+        "feedbackScore": 432,
+        "feedbackPercentage": 99.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
+        },
+        {
+          "name": "Type",
+          "value": "Bumper"
         }
       ]
     },
@@ -2014,19 +2770,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "12.21",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Yiwu, China",
       "endTime": "2026-11-04T18:11:24.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "havenharborgoods",
+        "feedbackScore": 13,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Mobile Phone Protective Film"
         }
       ]
     },
@@ -2069,19 +2845,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "24.95",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-15T10:54:07.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "easyfix-gadgets",
+        "feedbackScore": 1265,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2124,19 +2924,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "25.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-15T10:45:26.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "all_in_one_repairs",
+        "feedbackScore": 973,
+        "feedbackPercentage": 98.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2179,19 +3003,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "29.79",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-17T12:30:01.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "1stchoice_mobileparts",
+        "feedbackScore": 2566,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2234,19 +3082,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "31.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-11T01:18:11.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "sunst-77",
+        "feedbackScore": 432,
+        "feedbackPercentage": 99.7
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2289,19 +3161,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "29.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-17T10:11:40.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "the-doctorfix-repair",
+        "feedbackScore": 808,
+        "feedbackPercentage": 99.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -2344,19 +3240,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "30.75",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-17T12:29:23.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "1stchoice_mobileparts",
+        "feedbackScore": 2566,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2399,19 +3319,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "32.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-21T08:17:15.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "accessoriesfixys",
+        "feedbackScore": 632,
+        "feedbackPercentage": 98.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2454,19 +3398,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "19.68",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-28T09:53:37.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "smartshop-smartfix",
+        "feedbackScore": 1268,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "Does not apply"
         }
       ]
     },
@@ -2504,19 +3468,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "36.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-20T08:01:05.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Lucky_Coming",
+        "feedbackScore": 941,
+        "feedbackPercentage": 98.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -2554,19 +3538,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "32.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "SZ, China",
       "endTime": "2026-10-22T15:12:06.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "blingblingshop2013",
+        "feedbackScore": 5328,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Rugged Durable case"
+        },
+        {
+          "name": "MPN",
+          "value": "Does Not Apply"
         }
       ]
     },
@@ -2604,19 +3612,30 @@
       "reason": "NO_SELLER_IFRAME",
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": null,
+      "actualPythonDetailsContractAtCollection": null,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
       "price": null,
+      "bidPrice": null,
       "shipping": null,
       "total": null,
       "region": null,
       "endTime": null,
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": null,
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "360 Case"
         }
       ]
     },
@@ -2654,19 +3673,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "45.99",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Shenzhen, China",
       "endTime": "2026-10-21T05:10:56.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "zhouguoliang",
+        "feedbackScore": 95,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -2704,19 +3743,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "35.95",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "shenzhen, China",
       "endTime": "2026-11-03T08:58:58.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hficy2022",
+        "feedbackScore": 563,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "360 Case"
         }
       ]
     },
@@ -2759,19 +3818,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "37.95",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Cortijo del Cuco, Spain",
       "endTime": "2026-10-09T18:07:46.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "DFVmobile",
+        "feedbackScore": 14108,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Belt Holster"
         }
       ]
     },
@@ -2810,19 +3889,39 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "47.49",
+        "currency": "USD"
+      },
+      "bidPrice": null,
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "shenzhen, China",
       "endTime": "2026-10-12T13:53:16.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "zhupay",
+        "feedbackScore": 20047,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "360 Case"
         }
       ]
     }

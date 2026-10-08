@@ -2,6 +2,7 @@
   "product": "redmagic_11_pro",
   "rawQuery": "Redmagic 11 Pro",
   "startedAtUtc": "2026-10-08T08:54:26.449418+00:00",
+  "finishedAtUtc": "2026-10-08T08:55:46.979115+00:00",
   "source": "browser-live-ebay.com-independent-worldwide",
   "requests": [
     {
@@ -150,16 +151,23 @@
     }
   ],
   "completion": "PARTIAL",
-  "finishedAtUtc": "2026-10-08T08:55:46.979115+00:00",
   "discoveredUnique": 148,
   "collectedUnique": 50,
   "descriptionFetched": 50,
-  "limitations": [
-    "ebay.com worldwide search and US default shipping; not the saved ebay.de/DE destination profile",
-    "only bounded first-page discovery; includes accessories and matching-fewer-words results",
-    "descriptionFetched is not independent descriptionVerified",
-    "unreviewed records have no expected verdict; no notification eligibility claim"
-  ],
+  "requestProfile": {
+    "domain": "ebay.com",
+    "discoveryLocation": "worldwide/default US destination",
+    "categoryFilter": null,
+    "priceFloor": null,
+    "priceCeiling": null,
+    "bestOfferFilter": null,
+    "sort": "price ascending including displayed shipping (_sop=15)",
+    "pageLength": 60,
+    "pagination": "first page only",
+    "destinationVerified": false,
+    "apiRequestSent": false,
+    "notes": "Independent bounded comparison source; may contain matching-fewer-words cards. Original saved DE profiles are rendered separately in request-contracts.json; static rendering is not execution."
+  },
   "candidates": [
     {
       "itemId": "287632133918",
@@ -192,31 +200,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "17.02",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "17.02",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Tempe, Arizona, United States",
       "endTime": "2026-10-09T23:30:37.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Buyback Boss",
+        "feedbackScore": 37917,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Please read the description below for exact details about the issues with this device. The device ... Read more about the seller notes “Please read the description below for exact details about the issues with this device. The device has the following issues: Poor Battery, Cracked Screen, Aftermarket LCD, Back Glass, Back Camera Glass, Aftermarket Battery. This device is unlocked for all CDMA and GSM carriers.” Read Less about the seller notes"
+        },
+        {
           "name": "Model",
           "value": "iPhone 11 Pro"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512GB"
         }
       ]
     },
@@ -251,15 +274,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "249.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Palm Harbor, Florida, United States",
       "endTime": "2026-10-09T03:50:01.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Art Warehousefl",
+        "feedbackScore": 2141,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -278,20 +321,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -330,15 +361,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Milford, New Jersey, United States",
       "endTime": "2026-10-10T00:42:40.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -353,28 +403,12 @@
           "value": "Google Tensor"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
           "name": "Model Number",
           "value": "GBC0H"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -413,23 +447,38 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "492.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "492.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Redlands, California, United States",
       "endTime": "2026-10-10T18:49:38.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "bertspace47712",
+        "feedbackScore": 78,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         },
         {
           "name": "Processor",
@@ -444,20 +493,8 @@
           "value": "Google Tensor G6 (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -496,15 +533,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "716.68",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "716.68",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Anoka, Minnesota, United States",
       "endTime": "2026-10-10T17:30:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "longvu1210",
+        "feedbackScore": 135,
+        "feedbackPercentage": 94.7
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -513,10 +569,6 @@
         {
           "name": "Model",
           "value": "Google Pixel 11 Pro"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "Model Number",
@@ -555,15 +607,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "219.97",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "51.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New York, New York, United States",
       "endTime": "2026-10-12T15:56:48.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "grrod_2212",
+        "feedbackScore": 12,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -582,20 +654,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -634,23 +694,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "0.91",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "0.91",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Redmond, Washington, United States",
       "endTime": "2026-10-12T18:49:58.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ractradingcardemporium",
+        "feedbackScore": 700,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
+          "name": "Seller Notes",
+          "value": "“iPhone 11 Pro Max / Specs Unknown / Great Shape / Unusable / AS-IS”"
         },
         {
           "name": "Processor",
@@ -665,20 +744,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Consumer Cellular"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
         },
         {
           "name": "RAM",
@@ -717,15 +784,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "650.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "598.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Orange, California, United States",
       "endTime": "2026-10-10T21:25:44.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "darioy65",
+        "feedbackScore": 325,
+        "feedbackPercentage": 98.8
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -744,24 +831,8 @@
           "value": "G26BG"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 11 Pro XL"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android 17"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -796,23 +867,38 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "873.08",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "873.08",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Ridgeville, South Carolina, United States",
       "endTime": "2026-10-10T21:43:42.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "allien3",
+        "feedbackScore": 22,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         },
         {
           "name": "Processor",
@@ -827,20 +913,8 @@
           "value": "Google Tensor G6 (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 11 Pro XL"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -879,23 +953,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "11.04",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "11.04",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Spartanburg, South Carolina, United States",
       "endTime": "2026-10-10T19:07:22.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Ideal Mobile",
+        "feedbackScore": 10076,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
+          "name": "Seller Notes",
+          "value": "“The device is in overall very good cosmetic condition. The screen and/or housing may have signs of ... Read more about the seller notes “The device is in overall very good cosmetic condition. The screen and/or housing may have signs of normal use, with light to moderate visible dings and scratches. However, there is no Face ID.Please view all pictures carefully before placing a bid. If you have any questions don't hesitate to contact us.” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -910,20 +1003,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -962,31 +1043,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "41.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "41.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Tempe, Arizona, United States",
       "endTime": "2026-10-09T14:55:17.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Buyback Boss",
+        "feedbackScore": 37917,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Please read the description below for exact details about the issues with this device. The device ... Read more about the seller notes “Please read the description below for exact details about the issues with this device. The device has the following issues: Poor Battery, Back Camera Dark Spot. This device is unlocked for all CDMA and GSM carriers.” Read Less about the seller notes"
+        },
+        {
           "name": "Model",
           "value": "iPhone 11 Pro"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256GB"
         }
       ]
     },
@@ -1016,15 +1112,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "300.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "184.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Broussard, Louisiana, United States",
       "endTime": "2026-10-14T20:01:52.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "rubi_gusta",
+        "feedbackScore": 5
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1035,12 +1150,8 @@
           "value": "Apple iPhone 12 Pro Max"
         },
         {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
+          "name": "MPN",
+          "value": "MGCH3LL/A"
         }
       ]
     },
@@ -1075,19 +1186,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "27.59",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "27.59",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Brooklyn, New York, United States",
       "endTime": "2026-10-15T01:16:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Gadget Solutions",
+        "feedbackScore": 31602,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“FACE ID - The FACE ID on this device DOES NOT WORK. Touch and everything else on the device works.”"
         },
         {
           "name": "Processor",
@@ -1102,28 +1236,12 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
           "name": "Model Number",
           "value": "A2160"
         },
         {
-          "name": "Network",
-          "value": "AT&T, Factory Unlocked, Sprint, T-Mobile, Unlocked, Verizon"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
         },
         {
           "name": "RAM",
@@ -1162,19 +1280,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.52",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "5.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Wooster, Ohio, United States",
       "endTime": "2026-10-08T23:15:29.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "2014xcess",
+        "feedbackScore": 117649,
+        "feedbackPercentage": 98.4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Quality Display"
         }
       ]
     },
@@ -1209,31 +1350,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "77.28",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "77.28",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Tempe, Arizona, United States",
       "endTime": "2026-10-09T14:36:17.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Buyback Boss",
+        "feedbackScore": 37917,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Seller Notes",
+          "value": "“Please read the description below for exact details about the issues with this device. The device ... Read more about the seller notes “Please read the description below for exact details about the issues with this device. The device has the following issues: Poor Battery, LCD Damage, Ghost Image, Back Camera Glass. This device is unlocked for all CDMA and GSM carriers.” Read Less about the seller notes"
+        },
+        {
           "name": "Model",
           "value": "iPhone 12 Pro Max"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256GB"
         }
       ]
     },
@@ -1268,15 +1424,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "183.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "183.99",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Egg Harbor Township, New Jersey, United States",
       "endTime": "2026-10-10T20:22:44.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Beachcomber Coins Collectibles",
+        "feedbackScore": 39950,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1295,24 +1470,12 @@
           "value": "Apple A14 Bionic (5 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
+          "name": "MPN",
+          "value": "MGCF3LL/A"
         },
         {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -1351,19 +1514,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "220.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Patterson, New York, United States",
       "endTime": "2026-10-15T02:16:56.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "eltruj-8525",
+        "feedbackScore": 28,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "MGCH3LL/A"
         },
         {
           "name": "Processor",
@@ -1378,20 +1565,8 @@
           "value": "Apple A14 Bionic (5 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         },
         {
           "name": "RAM",
@@ -1430,15 +1605,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "165.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "165.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Bayfield, Colorado, United States",
       "endTime": "2026-10-14T23:01:12.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "timberlineskier",
+        "feedbackScore": 1461,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1461,20 +1655,8 @@
           "value": "A2160 (CDMA + GSM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1514,19 +1696,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Hamburg, Germany",
       "endTime": "2026-10-11T17:55:30.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "chris474747",
+        "feedbackScore": 2310,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Produktart",
+          "value": "Robuste Schutzhülle"
         },
         {
           "name": "Modell",
@@ -1565,15 +1770,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "9.66",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "9.66",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Brattleboro, Vermont, United States",
       "endTime": "2026-10-09T18:31:34.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mlh101684",
+        "feedbackScore": 236,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1592,20 +1816,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1644,15 +1856,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "81.88",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "81.88",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Indianapolis, Indiana, United States",
       "endTime": "2026-10-09T02:11:25.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "cortes97",
+        "feedbackScore": 803,
+        "feedbackPercentage": 99.7
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1671,20 +1902,8 @@
           "value": "Apple A14 Bionic (5 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -1723,35 +1942,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "27.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "27.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Rossville, Georgia, United States",
       "endTime": "2026-10-14T01:04:20.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "bbs-relics-n-rares",
+        "feedbackScore": 3,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
         }
       ]
     },
@@ -1786,19 +2012,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "22.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "22.99",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Brooklyn, New York, United States",
       "endTime": "2026-10-14T02:26:41.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Gadget Solutions",
+        "feedbackScore": 31602,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“CRACK/SPEAKER/EAR PIECE - The device has been CRACKED on the LCD display/screen as shown in the ... Read more about the seller notes “CRACK/SPEAKER/EAR PIECE - The device has been CRACKED on the LCD display/screen as shown in the pictures. The SPEAKER is LOW. The EAR PIECE on this device DOES NOT WORK.” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -1817,24 +2066,8 @@
           "value": "A2161 (CDMA + GSM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T, Factory Unlocked, Sprint, T-Mobile, Unlocked, Verizon"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1873,19 +2106,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "7.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "6.44",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Bryn Mawr, Pennsylvania, United States",
       "endTime": "2026-10-11T23:46:53.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lesterclim",
+        "feedbackScore": 1029,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Clips"
+        },
+        {
+          "name": "MPN",
+          "value": "iphone 11 Pro"
         }
       ]
     },
@@ -1920,27 +2181,50 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "3.91",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "3.91",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Mesquite, Texas, United States",
       "endTime": "2026-10-10T00:18:03.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "nafbay",
+        "feedbackScore": 4815,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model Number",
-          "value": "A2161 (CDMA + GSM)"
+          "name": "Seller Notes",
+          "value": "“pretty clean with normal wear”"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "MPN",
+          "value": "IPHONE 11 PRO MAX"
+        },
+        {
+          "name": "Model Number",
+          "value": "A2161 (CDMA + GSM)"
         },
         {
           "name": "Processor",
@@ -1955,20 +2239,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Spectrum"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -2007,15 +2279,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "580.52",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "580.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Littleton, Colorado, United States",
       "endTime": "2026-10-11T16:33:20.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "MaxDealsCO",
+        "feedbackScore": 1223,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2030,28 +2321,12 @@
           "value": "6.8 in"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
           "name": "Model Number",
           "value": "GA10868-US"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 11 Pro XL"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -2091,19 +2366,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "24.85",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "24.85",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Kraljevica, Republic of Croatia",
       "endTime": "2026-10-08T18:24:14.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "vjeko007",
+        "feedbackScore": 1396,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Cracked screen, band of unresponsive pixels present.Screen still responds to touch.Haptic system ... Read more about the seller notes “Cracked screen, band of unresponsive pixels present.Screen still responds to touch.Haptic system mildly dysfunctional.Front camera hazy.Dysfunction of faceşcanning, as informed by software.Glass meant to protect facescan and frontcamera chipped away.” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -2118,20 +2416,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
         },
         {
           "name": "RAM",
@@ -2170,19 +2456,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "0.92",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Cedartown, Georgia, United States",
       "endTime": "2026-10-14T12:36:15.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "dukrobi",
+        "feedbackScore": 48,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Wallet Case"
         }
       ]
     },
@@ -2217,35 +2527,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "15.01",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "15.01",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Opa-Locka, Florida, United States",
       "endTime": "2026-10-14T17:55:27.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "dealiohub_1",
+        "feedbackScore": 709,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working: An item that does not function as intended and is not fully operational. ... Read more about the condition For parts or not working: An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "1&1"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
           "name": "Model",
           "value": "Apple Iphone 11 Pro"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256gb"
         }
       ]
     },
@@ -2280,19 +2597,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "15.2",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "13.98",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Millburn, New Jersey, United States",
       "endTime": "2026-10-14T22:28:43.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "shinywidget",
+        "feedbackScore": 216,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "case"
         }
       ]
     },
@@ -2327,35 +2668,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "191.82",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "191.82",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Cordova, Tennessee, United States",
       "endTime": "2026-10-09T02:52:40.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "adem_1979",
+        "feedbackScore": 427,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -2390,43 +2738,54 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "18.86",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "18.86",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Rochester, New York, United States",
       "endTime": "2026-10-14T21:44:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Maven_Technologies",
+        "feedbackScore": 134024,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
+          "name": "Seller Notes",
+          "value": "“This has been tested and it is in good working order. Note that front glass has some deep scratches ... Read more about the seller notes “This has been tested and it is in good working order. Note that front glass has some deep scratches but this is not overly noticeable when phone is in use. The rear glass is smashed and needs to be replaced/covered with a phone case. Charger, SIM card, and other accessories are not included. Sold as pictured.” Read Less about the seller notes"
+        },
+        {
+          "name": "MPN",
+          "value": "A2342"
         },
         {
           "name": "Model Number",
           "value": "A2342"
         },
         {
-          "name": "Network",
-          "value": "Cricket Wireless"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -2461,27 +2820,38 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "211.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "211.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Junction City, Kansas, United States",
       "endTime": "2026-10-11T03:07:23.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "argoz85",
+        "feedbackScore": 240,
+        "feedbackPercentage": 99.2
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
-        },
-        {
-          "name": "Display Technology",
-          "value": "OLED"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         },
         {
           "name": "Model Number",
@@ -2500,20 +2870,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -2552,15 +2910,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "254.16",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "254.16",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Houston, Texas, United States",
       "endTime": "2026-10-09T20:33:22.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "solar108",
+        "feedbackScore": 167,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2579,24 +2956,8 @@
           "value": "Apple A14 Bionic (5 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -2635,15 +2996,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "185.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "170.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Palos Park, Illinois, United States",
       "endTime": "2026-10-14T10:18:05.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "karemurph91",
+        "feedbackScore": 492,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2662,20 +3043,8 @@
           "value": "Apple A13 Bionic Apl1w85 (7 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -2714,15 +3083,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "63.48",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "63.48",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Redford, Michigan, United States",
       "endTime": "2026-10-10T22:54:38.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "thearsonest",
+        "feedbackScore": 432,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2731,14 +3119,6 @@
         {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS 18.0.1"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -2773,35 +3153,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "101.19",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "101.19",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Hollywood, Florida, United States",
       "endTime": "2026-10-08T20:44:35.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "MATRIX-1015 COMICS",
+        "feedbackScore": 159,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "For parts or not working: An item that does not function as intended and is not fully operational. ... Read more about the condition For parts or not working: An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 12 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
         }
       ]
     },
@@ -2836,19 +3223,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "39.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "36.79",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Pasadena, California, United States",
       "endTime": "2026-10-12T23:14:28.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lowmiles20",
+        "feedbackScore": 376,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "MPN",
+          "value": "NU-MK-IPH11PRO-CASE-GRN"
+        },
+        {
+          "name": "Type",
+          "value": "Fitted Case/Skin"
         }
       ]
     },
@@ -2883,23 +3298,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "735.08",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "735.08",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Saint Paul, Minnesota, United States",
       "endTime": "2026-10-09T17:34:42.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "glida",
+        "feedbackScore": 124,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "Seller Notes",
+          "value": "“The box was opened, and the phone was used for approximately one week while I was reviewing it. It ... Read more about the seller notes “The box was opened, and the phone was used for approximately one week while I was reviewing it. It is in practically new condition!” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -2914,20 +3348,8 @@
           "value": "Google Tensor G6 (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Google Pixel 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -2966,19 +3388,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "20.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "18.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Grayslake, Illinois, United States",
       "endTime": "2026-10-09T02:07:24.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "crlake391",
+        "feedbackScore": 527,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Fitted Case/Skin"
         }
       ]
     },
@@ -3013,19 +3459,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "7.36",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "7.36",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Saint Cloud, Florida, United States",
       "endTime": "2026-10-09T00:46:06.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "5370home",
+        "feedbackScore": 532,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Screen Protector"
         }
       ]
     },
@@ -3060,15 +3529,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "110.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "74.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Hackettstown, New Jersey, United States",
       "endTime": "2026-10-12T00:51:36.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "juliames0",
+        "feedbackScore": 23,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3091,20 +3580,8 @@
           "value": "A2160 (CDMA + GSM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 11 Pro"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "64 GB"
         },
         {
           "name": "RAM",
@@ -3143,19 +3620,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "45.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "27590.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Hauppauge, New York, United States",
       "endTime": "2026-10-08T13:59:42.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "cowharborinvestments",
+        "feedbackScore": 611,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -3190,19 +3691,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "6.44",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "6.44",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Wadesville, Indiana, United States",
       "endTime": "2026-10-09T07:32:00.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "eibbedyak",
+        "feedbackScore": 470,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -3237,15 +3761,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "150.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oklahoma City, Oklahoma, United States",
       "endTime": "2026-10-13T18:10:00.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Wireless Solutions and Accessories",
+        "feedbackScore": 12473,
+        "feedbackPercentage": 99.6
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3268,24 +3812,12 @@
           "value": "Apple A14 Bionic"
         },
         {
+          "name": "MPN",
+          "value": "A2342"
+        },
+        {
           "name": "Model",
           "value": "iPhone 12 Pro Max"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "128 GB"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
         }
       ]
     },
@@ -3320,19 +3852,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.52",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "5.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Wadesville, Indiana, United States",
       "endTime": "2026-10-09T07:45:18.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "eibbedyak",
+        "feedbackScore": 470,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Soft"
         }
       ]
     },
@@ -3367,19 +3922,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "20.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "18.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Grayslake, Illinois, United States",
       "endTime": "2026-10-09T02:10:17.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "crlake391",
+        "feedbackScore": 527,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Fitted Case/Skin"
         }
       ]
     },
@@ -3414,19 +3993,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "5.85",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "5.38",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Wickenburg, Arizona, United States",
       "endTime": "2026-10-08T19:09:38.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "brakr89",
+        "feedbackScore": 336,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Back Case"
         }
       ]
     },
@@ -3461,19 +4064,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "19.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "18.39",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Hewlett, New York, United States",
       "endTime": "2026-10-10T16:49:10.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "wolftechrepairs",
+        "feedbackScore": 96,
+        "feedbackPercentage": 99.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Used Mega-Idea motherboard heating/desoldering station for iPhone 11 series logic board repair. ... Read more about the seller notes “Used Mega-Idea motherboard heating/desoldering station for iPhone 11 series logic board repair. Unit shows normal cosmetic wear from previous use. Includes power adapter/cables and accessories shown in photos. Tested and working unless otherwise noted. Please review photos for exact condition and included items.” Read Less about the seller notes"
+        },
+        {
+          "name": "Type",
+          "value": "Motherboard Heating Platform"
         }
       ]
     },
@@ -3508,19 +4139,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "0.91",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "0.91",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Pinebluff, North Carolina, United States",
       "endTime": "2026-10-13T22:25:10.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "italiangirl4eva",
+        "feedbackScore": 3276,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Type",
+          "value": "Hard Cover"
         }
       ]
     }

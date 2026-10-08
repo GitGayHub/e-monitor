@@ -2,6 +2,7 @@
   "product": "iphone_17_pro_max",
   "rawQuery": "iphone 17 pro max",
   "startedAtUtc": "2026-10-08T08:52:53.816860+00:00",
+  "finishedAtUtc": "2026-10-08T08:54:26.439538+00:00",
   "source": "browser-live-ebay.com-independent-worldwide",
   "requests": [
     {
@@ -53,16 +54,23 @@
     }
   ],
   "completion": "PARTIAL",
-  "finishedAtUtc": "2026-10-08T08:54:26.439538+00:00",
   "discoveredUnique": 93,
   "collectedUnique": 50,
   "descriptionFetched": 49,
-  "limitations": [
-    "ebay.com worldwide search and US default shipping; not the saved ebay.de/DE destination profile",
-    "only bounded first-page discovery; includes accessories and matching-fewer-words results",
-    "descriptionFetched is not independent descriptionVerified",
-    "unreviewed records have no expected verdict; no notification eligibility claim"
-  ],
+  "requestProfile": {
+    "domain": "ebay.com",
+    "discoveryLocation": "worldwide/default US destination",
+    "categoryFilter": null,
+    "priceFloor": null,
+    "priceCeiling": null,
+    "bestOfferFilter": null,
+    "sort": "price ascending including displayed shipping (_sop=15)",
+    "pageLength": 60,
+    "pagination": "first page only",
+    "destinationVerified": false,
+    "apiRequestSent": false,
+    "notes": "Independent bounded comparison source; may contain matching-fewer-words cards. Original saved DE profiles are rendered separately in request-contracts.json; static rendering is not execution."
+  },
   "candidates": [
     {
       "itemId": "287626443313",
@@ -90,31 +98,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "15.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "13.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carmel, Indiana, United States",
       "endTime": "2026-10-11T16:23:42.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "darcywade",
+        "feedbackScore": 336,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "Type",
+          "value": "Case Cover"
+        },
+        {
           "name": "Model",
           "value": "For iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "Does Not Apply"
         }
       ]
     },
@@ -144,15 +168,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "130.09",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "130.09",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Ventura, California, United States",
       "endTime": "2026-10-14T18:22:13.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "loveventura805",
+        "feedbackScore": 47,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -163,20 +206,8 @@
           "value": "6.9 in"
         },
         {
-          "name": "Network",
-          "value": "T-Mobile"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "Model Number",
@@ -210,19 +241,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "206.54",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "206.54",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Hollywood, Florida, United States",
       "endTime": "2026-10-12T02:00:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "cashinnsales",
+        "feedbackScore": 8647,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Excellent condition. No accessories included.”"
+        },
+        {
+          "name": "MPN",
+          "value": "MFXH4LL/A"
         },
         {
           "name": "Processor",
@@ -237,20 +295,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -284,15 +330,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1550.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "302.68",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Rio Linda, California, United States",
       "endTime": "2026-10-10T17:24:19.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "roamirk_0",
+        "feedbackScore": 8
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -311,20 +376,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "2 TB"
         },
         {
           "name": "RAM",
@@ -358,15 +411,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "400.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "368.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Lisbon, Ohio, United States",
       "endTime": "2026-10-12T18:54:28.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "cavs-19",
+        "feedbackScore": 5,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -375,10 +448,6 @@
         {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -408,15 +477,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "529.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "529.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Miami, Florida, United States",
       "endTime": "2026-10-09T00:56:14.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "shorelinemarineservices",
+        "feedbackScore": 18,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -427,20 +515,8 @@
           "value": "Hexa Core"
         },
         {
-          "name": "Display Technology",
-          "value": "OLED"
-        },
-        {
           "name": "Chipset Model",
           "value": "Apple A19 Pro (3 NM)"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "Screen Size",
@@ -482,35 +558,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "600.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "552.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Lake Worth, Florida, United States",
       "endTime": "2026-10-15T08:29:33.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jkeating1505",
+        "feedbackScore": 849,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
+          "name": "Seller Notes",
+          "value": "“Excellent condition”"
         },
         {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS - Apple"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         }
       ]
     },
@@ -541,19 +629,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "653.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "653.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Port of Spain, Trinidad and Tobago",
       "endTime": "2026-10-17T12:04:41.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "dealshubtt",
+        "feedbackScore": 45,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“This iPhone was purchased in January 2026 and has been very well kept. It is fully unlocked, has ... Read more about the seller notes “This iPhone was purchased in January 2026 and has been very well kept. It is fully unlocked, has 95% battery health, and still has Apple warranty coverage remaining.” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -568,20 +679,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -615,15 +714,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "653.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "653.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Palmdale, California, United States",
       "endTime": "2026-10-10T20:23:40.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "charlesmag",
+        "feedbackScore": 1081,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -634,28 +752,16 @@
           "value": "Apple A19 Pro"
         },
         {
+          "name": "MPN",
+          "value": "MFXH4LL/A"
+        },
+        {
           "name": "Model Number",
           "value": "MFXH4LL/A"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -685,15 +791,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "662.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "662.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Prospect Heights, Illinois, United States",
       "endTime": "2026-10-12T22:45:48.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ryna_2657",
+        "feedbackScore": 5,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -704,16 +829,16 @@
           "value": "A17 Pro (3 NM)"
         },
         {
+          "name": "MPN",
+          "value": "MU663LL/A"
+        },
+        {
           "name": "Model Number",
           "value": "A2849"
         },
         {
           "name": "Model",
           "value": "Apple iPhone 15 Pro Max"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512GB"
         }
       ]
     },
@@ -743,15 +868,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "677.12",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "677.12",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Palmdale, California, United States",
       "endTime": "2026-10-10T19:47:12.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "charlesmag",
+        "feedbackScore": 1081,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -762,28 +906,16 @@
           "value": "Apple A19 Pro"
         },
         {
+          "name": "MPN",
+          "value": "MFXH4LL/A"
+        },
+        {
           "name": "Model Number",
           "value": "MFXH4LL/A"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -814,31 +946,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1228.02",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "610.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Farm, QLD, Australia",
       "endTime": "2026-10-15T03:41:00.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "bl878491",
+        "feedbackScore": 0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -868,15 +1011,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1000.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "708.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Amite, Louisiana, United States",
       "endTime": "2026-10-09T00:37:17.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "charlescarp02",
+        "feedbackScore": 14,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -887,20 +1050,8 @@
           "value": "6.9 in"
         },
         {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 MB"
         }
       ]
     },
@@ -930,31 +1081,50 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "712.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "712.99",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "American Fork, Utah, United States",
       "endTime": "2026-10-10T16:58:35.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "PurpleTechnado",
+        "feedbackScore": 93565,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
+          "name": "Seller Notes",
+          "value": "“This unit is bent with a cracked back panel. This unit has an Unknown Camera (unable to determine ... Read more about the seller notes “This unit is bent with a cracked back panel. This unit has an Unknown Camera (unable to determine if it is a genuine Apple part). Main camera does not work, front-facing camera works normally. The IMEI/ESN is GOOD. This item was previously used. Unit(s) are tested for LCD, Touch-Screen, Camera, USB Charge Port, Vibration, Loudspeakers and Buttons. Unit(s) have been wiped. Original accessories or SIM cards/SIM trays, or stylus pens may not be included. See photos for included accessories (if any)” Read Less about the seller notes"
         },
         {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Storage Capacity",
-          "value": "256 GB"
+          "name": "MPN",
+          "value": "A3525"
         }
       ]
     },
@@ -984,15 +1154,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "717.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "717.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Jacksonville, Florida, United States",
       "endTime": "2026-10-11T14:13:37.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "the_collective_shop",
+        "feedbackScore": 2,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1011,20 +1200,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
         },
         {
           "name": "RAM",
@@ -1058,15 +1235,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "717.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "717.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "San Jose, California, United States",
       "endTime": "2026-10-12T23:43:36.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ncooper23",
+        "feedbackScore": 3,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1077,8 +1273,8 @@
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Storage Capacity",
-          "value": "256 GB"
+          "name": "MPN",
+          "value": "MFXH4LL/A"
         },
         {
           "name": "Model Number",
@@ -1112,15 +1308,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "745.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "745.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Orlando, Florida, United States",
       "endTime": "2026-10-13T01:30:00.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Godfather Pawn 4",
+        "feedbackScore": 2136,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1139,20 +1354,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unknown Carrier"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1186,19 +1389,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1500.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "772.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Irvine, California, United States",
       "endTime": "2026-10-14T16:37:34.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "webberband.com",
+        "feedbackScore": 593,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Looks new and in excellent condition.”"
         },
         {
           "name": "Processor",
@@ -1209,24 +1436,8 @@
           "value": "6.9 in"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
         },
         {
           "name": "RAM",
@@ -1260,23 +1471,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1149.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "791.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Gardena, California, United States",
       "endTime": "2026-10-11T01:26:45.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "viraparts",
+        "feedbackScore": 0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
+          "name": "Seller Notes",
+          "value": "“Excellent Condition like brand new”"
         },
         {
           "name": "Processor",
@@ -1291,20 +1521,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1338,15 +1556,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "795.80",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "795.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Taunton, Massachusetts, United States",
       "endTime": "2026-10-08T14:14:49.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "camsil_3",
+        "feedbackScore": 93,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1359,22 +1596,6 @@
         {
           "name": "Chipset Model",
           "value": "Apple A19 Pro (3 NM)"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "Screen Size",
@@ -1420,15 +1641,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "791.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "791.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Port Washington, New York, United States",
       "endTime": "2026-10-10T14:05:10.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "golfman28",
+        "feedbackScore": 29,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1443,12 +1683,8 @@
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Storage Capacity",
-          "value": "512 GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Unlocked"
+          "name": "MPN",
+          "value": "A3257"
         },
         {
           "name": "RAM",
@@ -1482,35 +1718,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "790.28",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "790.28",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Colonial Heights, Virginia, United States",
       "endTime": "2026-10-12T21:46:36.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "nekoneji",
+        "feedbackScore": 266,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "Model Number",
@@ -1544,15 +1787,33 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Morrison, Colorado, United States",
       "endTime": "2026-10-09T01:28:02.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "broncos4life1988",
+        "feedbackScore": 16
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1567,20 +1828,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
+          "name": "MPN",
+          "value": "MFXH4LL/A"
         },
         {
           "name": "Screen Size",
@@ -1622,43 +1871,50 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "828.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Salt Lake City, Utah, United States",
       "endTime": "2026-10-13T19:47:03.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "National Product Sales",
+        "feedbackScore": 733034,
+        "feedbackPercentage": 99.8
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
+          "name": "MPN",
+          "value": "A3257"
+        },
+        {
           "name": "Model",
           "value": "MFXJ4LL/A"
         },
         {
-          "name": "Network",
-          "value": "['T-Mobile']"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Locked"
-        },
-        {
           "name": "Screen Size",
           "value": "6.9 in"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -1688,43 +1944,42 @@
       "reason": "NO_SELLER_IFRAME",
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": null,
+      "actualPythonDetailsContractAtCollection": null,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
       "price": null,
+      "bidPrice": null,
       "shipping": null,
       "total": null,
       "region": null,
       "endTime": null,
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": null,
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Screen Size",
-          "value": "6.9\""
+          "name": "Seller Notes",
+          "value": "“**Under Apple's Warranty**  Limited Warranty Expires December 29, 2026The device has passed all ... Read more about the seller notes “**Under Apple's Warranty**  Limited Warranty Expires December 29, 2026The device has passed all diagnostic tests, confirming full functionality. PHYSICAL CONDITION NOTES>> There are small nicks on the frame of phone. The screen has no scratches. There are small scratches around the rim of camera lenses of the (3) cameras on the back. doesn't have any defect which affects images. Please view our close up photos, as these are taken of the actual item being offered for sale.” Read Less about the seller notes"
         },
         {
-          "name": "Network",
-          "value": "Factory Unlocked"
+          "name": "Screen Size",
+          "value": "6.9\""
         },
         {
           "name": "Model",
           "value": "iPhone 17 Pro Max"
         },
         {
-          "name": "Operating System",
-          "value": "26.6.1"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "MPN",
+          "value": "MFXJ4LL/A"
         }
       ]
     },
@@ -1754,15 +2009,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1175.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "850.08",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Tallahassee, Florida, United States",
       "endTime": "2026-10-10T21:34:00.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "wizardoz8",
+        "feedbackScore": 294,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1777,20 +2052,8 @@
           "value": "Apple A18 Pro"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS - Apple"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
+          "name": "MPN",
+          "value": "Does Not Apply"
         },
         {
           "name": "Screen Size",
@@ -1836,15 +2099,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1299.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "851.92",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Monmouth Junction, New Jersey, United States",
       "endTime": "2026-10-09T20:59:22.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "bytesbuddiellc",
+        "feedbackScore": 5,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1867,20 +2150,8 @@
           "value": "A3257"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -1914,39 +2185,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1199.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "841.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "South San Francisco, California, United States",
       "endTime": "2026-10-14T14:20:14.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "frankshee",
+        "feedbackScore": 1399,
+        "feedbackPercentage": 96.6
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
         }
       ]
     },
@@ -1976,15 +2251,33 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "950.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "874.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Takoma Park, Maryland, United States",
       "endTime": "2026-10-13T22:04:35.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "polisai_0"
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1993,14 +2286,6 @@
         {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -2030,15 +2315,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1200.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "887.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Fort Gratiot, Michigan, United States",
       "endTime": "2026-10-12T12:35:58.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "tcgandtech",
+        "feedbackScore": 195,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2053,24 +2358,8 @@
           "value": "MFXQ4LL/A"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
         }
       ]
     },
@@ -2100,39 +2389,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "920.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "920.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Milford, New Jersey, United States",
       "endTime": "2026-10-09T23:54:13.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512gb"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "MPN",
+          "value": "A3257"
         }
       ]
     },
@@ -2162,19 +2458,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "919.08",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "919.08",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Los Angeles, California, United States",
       "endTime": "2026-10-09T18:18:27.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "dtm9587234",
+        "feedbackScore": 1146,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Item is in mint like new condition, has always been in a case with a professionally installed ... Read more about the seller notes “Item is in mint like new condition, has always been in a case with a professionally installed screen protector at the apple store at date of purchase.  Comes with original box and brand new charging cable that has never been opened or used.” Read Less about the seller notes"
         },
         {
           "name": "Processor",
@@ -2185,20 +2504,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
+          "name": "MPN",
+          "value": "MFXM4LL/A"
         },
         {
           "name": "Screen Size",
@@ -2244,39 +2551,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "971.52",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "971.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Sandown, New Hampshire, United States",
       "endTime": "2026-10-08T17:03:50.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "tk0785",
+        "feedbackScore": 546,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Factory Unlocked"
+          "name": "Seller Notes",
+          "value": "“Excellent. No scratches, scuffs, dents, or markings.”"
         },
         {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         }
       ]
     },
@@ -2306,35 +2620,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Milford, New Jersey, United States",
       "endTime": "2026-10-08T23:43:35.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
+          "name": "MPN",
+          "value": "A3257"
         }
       ]
     },
@@ -2364,35 +2689,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Milford, New Jersey, United States",
       "endTime": "2026-10-09T00:24:08.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512gb"
+          "name": "MPN",
+          "value": "A3257"
         }
       ]
     },
@@ -2422,15 +2758,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1540.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Livingston, Montana, United States",
       "endTime": "2026-10-13T00:34:40.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "evandepolder64",
+        "feedbackScore": 387,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2441,20 +2797,8 @@
           "value": "6.9 in"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS - Apple"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "2 TB"
         },
         {
           "name": "Model Number",
@@ -2492,15 +2836,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1600.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Portland, Oregon, United States",
       "endTime": "2026-10-13T18:16:51.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mima.us.jhqg2e2pen",
+        "feedbackScore": 13
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2519,20 +2882,8 @@
           "value": "A3526"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "0.5 MB"
         }
       ]
     },
@@ -2562,15 +2913,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1100.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "North Versailles, Pennsylvania, United States",
       "endTime": "2026-10-08T23:46:39.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mikeyunk0421",
+        "feedbackScore": 707,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2589,20 +2960,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -2636,15 +2995,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1100.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1012.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Bickmore, West Virginia, United States",
       "endTime": "2026-10-15T03:37:15.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "trw9102",
+        "feedbackScore": 508,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2659,24 +3038,8 @@
           "value": "Apple A17 Pro"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -2706,15 +3069,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1044.20",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1044.20",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Streamwood, Illinois, United States",
       "endTime": "2026-10-12T05:00:02.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "t3boosted",
+        "feedbackScore": 170,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2727,22 +3109,6 @@
         {
           "name": "Chipset Model",
           "value": "Apple A19 Pro (3 NM)"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
         },
         {
           "name": "Screen Size",
@@ -2789,15 +3155,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1070.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1070.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Roletto , Italy",
       "endTime": "2026-10-08T20:27:38.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "trunf-2015",
+        "feedbackScore": 533,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -2810,6 +3195,10 @@
         {
           "name": "Modello",
           "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "MPN",
+          "value": "MYPY4QL/A"
         }
       ]
     },
@@ -2839,35 +3228,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1127.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1127.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "New Milford, New Jersey, United States",
       "endTime": "2026-10-09T16:32:59.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
         },
         {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512gb"
+          "name": "MPN",
+          "value": "A3257"
         }
       ]
     },
@@ -2897,23 +3297,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1127.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1127.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Los Angeles, California, United States",
       "endTime": "2026-10-09T16:07:11.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "mc9172",
+        "feedbackScore": 55,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "Seller Notes",
+          "value": "“Great condition.”"
         },
         {
           "name": "Processor",
@@ -2928,20 +3347,8 @@
           "value": "Apple A19 Pro (3 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "2 TB"
         },
         {
           "name": "RAM",
@@ -2976,39 +3383,41 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1656.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1656.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Kitchener, Ontario, Canada",
       "endTime": "2026-10-09T20:42:38.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "legendary7191",
+        "feedbackScore": 26
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "2TB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         }
       ]
     },
@@ -3038,15 +3447,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1300.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1196.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Los Angeles, California, United States",
       "endTime": "2026-10-10T00:22:27.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "lo_944069",
+        "feedbackScore": 0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3061,20 +3489,8 @@
           "value": "A1203 (GSM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS - Apple"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -3108,31 +3524,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1499.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1379.08",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Oakland, California, United States",
       "endTime": "2026-10-10T15:09:53.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jehnwa",
+        "feedbackScore": 496,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
         }
       ]
     },
@@ -3162,27 +3590,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1600.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "1472.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Springtown, Texas, United States",
       "endTime": "2026-10-11T01:23:28.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "louanna-44",
+        "feedbackScore": 4
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Apple iPhone 17 Pro Max"
+          "name": "Seller Notes",
+          "value": "“like new has not been used much very very little!!!”"
         },
         {
-          "name": "Storage Capacity",
-          "value": "1 TB"
+          "name": "Model",
+          "value": "Apple iPhone 17 Pro Max"
         }
       ]
     },
@@ -3212,15 +3659,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1517.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1517.99",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Forest Grove, Oregon, United States",
       "endTime": "2026-10-10T17:00:30.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "psosmith1982",
+        "feedbackScore": 832,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3231,28 +3697,8 @@
           "value": "Hexa Core"
         },
         {
-          "name": "Display Technology",
-          "value": "OLED"
-        },
-        {
           "name": "Chipset Model",
           "value": "Apple A19 Pro (3 NM)"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "2 TB"
         },
         {
           "name": "Screen Size",
@@ -3295,15 +3741,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "792.84",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "708.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Frome, United Kingdom",
       "endTime": "2026-10-12T14:06:06.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "maytree1984",
+        "feedbackScore": 653,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3312,14 +3778,6 @@
         {
           "name": "Model",
           "value": "Apple iPhone 17 Pro Max"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -3350,15 +3808,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "779.38",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "779.38",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Ellesmere Port, United Kingdom",
       "endTime": "2026-10-12T11:55:46.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ian5867",
+        "feedbackScore": 1058,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -3371,22 +3848,6 @@
         {
           "name": "Chipset Model",
           "value": "Apple A17 Pro"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
-          "name": "Operating System",
-          "value": "iOS"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "Screen Size",

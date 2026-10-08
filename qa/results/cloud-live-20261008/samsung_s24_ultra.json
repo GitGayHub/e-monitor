@@ -2,6 +2,7 @@
   "product": "samsung_s24_ultra",
   "rawQuery": "samsung s24 ultra",
   "startedAtUtc": "2026-10-08T09:03:03.364009+00:00",
+  "finishedAtUtc": "2026-10-08T09:06:39.017090+00:00",
   "source": "browser-live-ebay.com-independent-worldwide",
   "requests": [
     {
@@ -149,12 +150,23 @@
     }
   ],
   "completion": "PARTIAL",
-  "limitations": [
-    "ebay.com worldwide search and US default shipping; not the saved ebay.de/DE destination profile",
-    "only bounded first-page discovery; includes accessories and matching-fewer-words results",
-    "descriptionFetched is not independent descriptionVerified",
-    "unreviewed records have no expected verdict; no notification eligibility claim"
-  ],
+  "discoveredUnique": 142,
+  "collectedUnique": 50,
+  "descriptionFetched": 50,
+  "requestProfile": {
+    "domain": "ebay.com",
+    "discoveryLocation": "worldwide/default US destination",
+    "categoryFilter": null,
+    "priceFloor": null,
+    "priceCeiling": null,
+    "bestOfferFilter": null,
+    "sort": "price ascending including displayed shipping (_sop=15)",
+    "pageLength": 60,
+    "pagination": "first page only",
+    "destinationVerified": false,
+    "apiRequestSent": false,
+    "notes": "Independent bounded comparison source; may contain matching-fewer-words cards. Original saved DE profiles are rendered separately in request-contracts.json; static rendering is not execution."
+  },
   "candidates": [
     {
       "itemId": "336834333904",
@@ -192,39 +204,47 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "649.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "80.96",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Boise, Idaho, United States",
       "endTime": "2026-10-14T22:24:36.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "SamanthaTronics",
+        "feedbackScore": 31219,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "Verizon"
+          "name": "Seller Notes",
+          "value": "“Used Cell Phone. 30-Day Return Guarantee.  There are some scratches and wear on the housings and ... Read more about the seller notes “Used Cell Phone. 30-Day Return Guarantee.  There are some scratches and wear on the housings and screen.  (SEE PICS). Works great. PHONE IS MISSING STYLUS, (SEE PICS).” Read Less about the seller notes"
         },
         {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra 5G"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Locked"
         }
       ]
     },
@@ -264,15 +284,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "84.64",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "84.64",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Chicago, Illinois, United States",
       "endTime": "2026-10-13T01:39:48.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "tommym525",
+        "feedbackScore": 452,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -283,20 +322,8 @@
           "value": "6.8 in"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "Model Number",
@@ -344,27 +371,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "170.66",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "170.66",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T02:17:38.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 1TB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "1TB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 1TB"
         }
       ]
     },
@@ -404,27 +450,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "172.50",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "172.50",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T01:47:25.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 512GB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "512GB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
         }
       ]
     },
@@ -464,27 +529,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "175.26",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "175.26",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T01:02:26.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 512GB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Screen Wear - Heavy, Housing Wear - Light. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "512GB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
         }
       ]
     },
@@ -524,27 +608,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "175.26",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "175.26",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T01:32:26.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 512GB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "512GB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
         }
       ]
     },
@@ -584,27 +687,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "175.26",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "175.26",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T02:02:19.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 512GB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "512GB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
         }
       ]
     },
@@ -644,27 +766,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "207.46",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "207.46",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T00:03:10.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 256GB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "256GB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 256GB"
         }
       ]
     },
@@ -704,31 +845,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "450.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "248.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Providence, Rhode Island, United States",
       "endTime": "2026-10-12T21:10:05.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "browneyeuser",
+        "feedbackScore": 68,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         }
       ]
     },
@@ -768,19 +921,43 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "500.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "280.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Pompano Beach, Florida, United States",
       "endTime": "2026-10-11T23:00:20.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "vensou",
+        "feedbackScore": 328,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Samsung Galaxy S24 Ultra 256gb T-mobile UNLOCKED (BUNDLE)”"
         },
         {
           "name": "Processor",
@@ -795,24 +972,8 @@
           "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM)"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "T-Mobile, Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -856,27 +1017,46 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "280.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "280.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Carrollton, Texas, United States",
       "endTime": "2026-10-11T00:47:24.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Model",
-          "value": "Galaxy S24 Ultra 512GB"
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
         },
         {
-          "name": "Storage Capacity",
-          "value": "512GB"
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
         }
       ]
     },
@@ -916,35 +1096,42 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "317.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "317.40",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Benicia, California, United States",
       "endTime": "2026-10-10T21:40:33.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "fish092",
+        "feedbackScore": 679,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
         },
         {
-          "name": "Network",
-          "value": "AT&T"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
         }
       ]
     },
@@ -984,15 +1171,33 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "328.44",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "328.44",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "San Diego, California, United States",
       "endTime": "2026-10-12T05:11:48.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "telavuth",
+        "feedbackScore": 186
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1011,20 +1216,8 @@
           "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1068,15 +1261,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "600.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "373.52",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Yuba City, California, United States",
       "endTime": "2026-10-10T23:28:16.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "abimbuh89",
+        "feedbackScore": 221,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1091,28 +1304,16 @@
           "value": "6.8\""
         },
         {
-          "name": "Lock Status",
-          "value": "Unlocked"
+          "name": "MPN",
+          "value": "SM-S928UZKFXAA"
         },
         {
           "name": "Model Number",
           "value": "S928U"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512GB"
         },
         {
           "name": "RAM",
@@ -1156,15 +1357,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": false,
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "549.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "460.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Inglewood, California, United States",
       "endTime": "2026-10-13T02:00:01.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "er397959",
+        "feedbackScore": 18,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1187,24 +1408,8 @@
           "value": "SM-S928U"
         },
         {
-          "name": "Lock Status",
-          "value": "Network Unlocked"
-        },
-        {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1248,23 +1453,38 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "464.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "464.60",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Pueblo, Colorado, United States",
       "endTime": "2026-10-14T00:38:26.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "joeo444",
+        "feedbackScore": 14,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
-        },
-        {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
         },
         {
           "name": "Processor",
@@ -1279,20 +1499,8 @@
           "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1336,15 +1544,34 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "550.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "506.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Brentwood, Tennessee, United States",
       "endTime": "2026-10-15T03:00:14.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "missmary16",
+        "feedbackScore": 0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1363,20 +1590,8 @@
           "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "256 GB"
         },
         {
           "name": "RAM",
@@ -1420,15 +1635,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "599.89",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "551.90",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Staten Island, New York, United States",
       "endTime": "2026-10-13T22:37:42.000Z",
+      "buyingOptions": [
+        "AUCTION",
+        "BEST_OFFER"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "yuri-shayk",
+        "feedbackScore": 42,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1447,20 +1682,8 @@
           "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM)"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "512 GB"
         },
         {
           "name": "RAM",
@@ -1504,15 +1727,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1190.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "782.00",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Alexandria, Virginia, United States",
       "endTime": "2026-10-12T16:44:58.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "reyes79-38",
+        "feedbackScore": 4,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1521,10 +1764,6 @@
         {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 KB"
         }
       ]
     },
@@ -1564,15 +1803,35 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "1199.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "827990.80",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Chippewa Falls, Wisconsin, United States",
       "endTime": "2026-10-09T21:13:09.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Pi Health Systems",
+        "feedbackScore": 1333,
+        "feedbackPercentage": 99.3
+      },
       "specifics": [
         {
           "name": "Condition",
@@ -1591,28 +1850,16 @@
           "value": "Qualcomm Snapdragon 8 Gen 3 for Galaxy"
         },
         {
-          "name": "Lock Status",
-          "value": "Factory Unlocked"
+          "name": "MPN",
+          "value": "SMS928UZKFVZW"
         },
         {
           "name": "Model Number",
           "value": "sm-s928u1"
         },
         {
-          "name": "Network",
-          "value": "Unlocked"
-        },
-        {
           "name": "Model",
           "value": "Samsung Galaxy S24 Ultra"
-        },
-        {
-          "name": "Operating System",
-          "value": "Android"
-        },
-        {
-          "name": "Storage Capacity",
-          "value": "1 TB"
         },
         {
           "name": "RAM",
@@ -1657,19 +1904,2561 @@
       "reason": null,
       "descriptionVerified": false,
       "verdict": "UNVERIFIABLE",
-      "actualPythonDetailsContractBeforeFix": true,
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
       "actualAndroid": null,
       "expected": null,
       "model": null,
-      "price": null,
+      "price": {
+        "value": "430.94",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "430.94",
+        "currency": "EUR"
+      },
       "shipping": null,
       "total": null,
-      "region": null,
+      "region": "Halstead, United Kingdom",
       "endTime": "2026-10-10T14:32:08.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "allenmere",
+        "feedbackScore": 550,
+        "feedbackPercentage": 100.0
+      },
       "specifics": [
         {
           "name": "Condition",
           "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Pristine condition having had a screen protector and the ESR Case on from day One. Two of the ... Read more about the seller notes “Pristine condition having had a screen protector and the ESR Case on from day One. Two of the photos show the case and the screen protector still on the phone. Battery Charge capacity is still 100%” Read Less about the seller notes"
+        }
+      ]
+    },
+    {
+      "itemId": "800762000074",
+      "url": "https://www.ebay.com/itm/800762000074",
+      "checkedAtUtc": "2026-10-08T09:05:28.893101+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24 Ultra 512GB Unlocked Titanium Violet",
+      "sellerText": "ALLTECH WHOLESALE (306294) 99.5% positive Seller's other items Seller's other items Message",
+      "priceText": "US $228.00",
+      "bidText": "US $228.00 11 bids Ends in 2d 15h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $11.99 Standard Shipping . See details for shipping Located in: Carrollton, Texas, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "fe2583254ce738ca731ec598e3926997bcfae3c93fb5d414fc0be5e929eba2e4",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "209.76",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "209.76",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Carrollton, Texas, United States",
+      "endTime": "2026-10-11T00:32:43.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
+        },
+        {
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
+        }
+      ]
+    },
+    {
+      "itemId": "860012896742",
+      "url": "https://www.ebay.com/itm/860012896742",
+      "checkedAtUtc": "2026-10-08T09:05:31.752348+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24 Ultra 512GB Unlocked Titanium Black",
+      "sellerText": "ALLTECH WHOLESALE (306294) 99.5% positive Seller's other items Seller's other items Message",
+      "priceText": "US $255.00",
+      "bidText": "US $255.00 17 bids Ends in 2d 15h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $11.99 Standard Shipping . See details for shipping Located in: Carrollton, Texas, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "ed03b9e076fcd314d387422044f0b9f9d26905a4476a74b81d4bf2c4f86bc69f",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": true,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "234.60",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "234.60",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Carrollton, Texas, United States",
+      "endTime": "2026-10-11T00:17:54.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
+        },
+        {
+          "name": "Model",
+          "value": "Galaxy S24 Ultra 512GB"
+        }
+      ]
+    },
+    {
+      "itemId": "307212643022",
+      "url": "https://www.ebay.com/itm/307212643022",
+      "checkedAtUtc": "2026-10-08T09:05:34.356941+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24 128GB US Cellular Onyx Black - Excellent condition",
+      "sellerText": "tevfik1 (56) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $150.00",
+      "bidText": "US $150.00 1 bid Ends in 2d 16h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $6.47 USPS Ground Advantage ® . See details for shipping Located in: Philadelphia, Pennsylvania, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "0d3814b1d35f81430d27540c8cefe2e2522612433f815554d44464a010daf56e",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "138.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Philadelphia, Pennsylvania, United States",
+      "endTime": "2026-10-11T01:23:16.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "tevfik1",
+        "feedbackScore": 56,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.2 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM) International Version-Exynos 2400"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "227557202647",
+      "url": "https://www.ebay.com/itm/227557202647",
+      "checkedAtUtc": "2026-10-08T09:05:37.599202+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung S24+ 256gb Unlocked, Onyx Black, Very Good Condition",
+      "sellerText": "Genius Goodz (369) 99.4% positive Seller's other items Seller's other items Message",
+      "priceText": "US $199.00",
+      "bidText": "US $199.00 1 bid Ends in 6d 10h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $17.41 UPS Ground . See details for shipping Located in: Hollywood, Florida, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "8991238c0d0c91e8e5b0c83cc89946adc2ca2de73f3c8ed32ecf24b34fe08a62",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "449.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "183.08",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Hollywood, Florida, United States",
+      "endTime": "2026-10-14T19:19:12.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Genius Goodz",
+        "feedbackScore": 369,
+        "feedbackPercentage": 99.4
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.7 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Qualcomm Snapdragon 8 Gen 3"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24+"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "227554192992",
+      "url": "https://www.ebay.com/itm/227554192992",
+      "checkedAtUtc": "2026-10-08T09:05:40.111020+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Factory Unlocked Samsung Galaxy S25 Ultra 12GB RAM 256GB SM-S938U Titanium Gray",
+      "sellerText": "M My Millennial Group (294) 98% positive Seller's other items Seller's other items Message",
+      "priceText": "US $495.00",
+      "bidText": "US $495.00 1 bid Ends in 4d 16h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $22.95 USPS Ground Advantage ® . See details for shipping Located in: Austin, Texas, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "06f6b3130f2b0fb43136cbbc3a59102c9f1f55d956f24faf9903809c64a01b8f",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "455.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "455.40",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Austin, Texas, United States",
+      "endTime": "2026-10-13T01:54:09.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "My Millennial Group",
+        "feedbackScore": 294,
+        "feedbackPercentage": 98.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.9\""
+        },
+        {
+          "name": "MPN",
+          "value": "SM-S938U"
+        },
+        {
+          "name": "Model",
+          "value": "Galaxy S25 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12GB RAM"
+        }
+      ]
+    },
+    {
+      "itemId": "398450874768",
+      "url": "https://www.ebay.com/itm/398450874768",
+      "checkedAtUtc": "2026-10-08T09:05:43.014372+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S25 Ultra 256GB Black Unlocked Android Phone",
+      "sellerText": "D driftles-34 (34) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $575.00",
+      "bidText": "US $575.00 16 bids Ends in 5h 44m",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $7.23 UPS Ground . See details for shipping Located in: North Freedom, Wisconsin, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "1510aa5ea713ffc3ca350700f8de891099123062e88088e15a75cb9a5de72213",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "529.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "529.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "North Freedom, Wisconsin, United States",
+      "endTime": "2026-10-08T14:49:48.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "driftles-34",
+        "feedbackScore": 34,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S25 Ultra"
+        }
+      ]
+    },
+    {
+      "itemId": "128116980662",
+      "url": "https://www.ebay.com/itm/128116980662",
+      "checkedAtUtc": "2026-10-08T09:05:45.273449+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "SAMSUNG GALAXY S26 ULTRA 256GB/BRAND NEW & SEALED/BLACK",
+      "sellerText": "C caseller4now (166) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $820.00",
+      "bidText": "US $820.00 53 bids Ends in 14h 54m",
+      "conditionText": "Condition: New New More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $24.99 Expedited Shipping from Canada . See details for shipping Located in: WINNIPEG, Canada",
+        "Import fees: Import fees due prior to delivery."
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "6f3b0615ac11808ce7731ef89a85913c4e90677c48eb5bf8da168493af368ff9",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "754.40",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "754.40",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "WINNIPEG, Canada",
+      "endTime": "2026-10-09T00:00:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "caseller4now",
+        "feedbackScore": 166,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Elite Gen 5 for Galaxy Sm8850-1-Ad (3 NM)"
+        },
+        {
+          "name": "MPN",
+          "value": "Samsung Galaxy S26 Ultra"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.9 in"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S26 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "227557148826",
+      "url": "https://www.ebay.com/itm/227557148826",
+      "checkedAtUtc": "2026-10-08T09:05:47.713294+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung S24+ 256gb Unlocked, Cobalt Violet, Excellent Condition",
+      "sellerText": "Genius Goodz (369) 99.4% positive Seller's other items Seller's other items Message",
+      "priceText": "US $199.00",
+      "bidText": "US $199.00 1 bid Ends in 6d 9h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $17.41 UPS Ground . See details for shipping Located in: Hollywood, Florida, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "da330bba2522b662911551d509cf1e265e9e799f26d56e3c2fbc27e2fa613efb",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "449.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "183.08",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Hollywood, Florida, United States",
+      "endTime": "2026-10-14T18:16:54.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Genius Goodz",
+        "feedbackScore": 369,
+        "feedbackPercentage": 99.4
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.7 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 3 Sm8650 (4 NM) International Version-Exynos 2400"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24+"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "128121196789",
+      "url": "https://www.ebay.com/itm/128121196789",
+      "checkedAtUtc": "2026-10-08T09:05:50.762632+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S22 Ultra - 512 GB - Graphite (Verizon)",
+      "sellerText": "jboldman1 (1844) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $162.50",
+      "bidText": "US $162.50 2 bids Ends in 2d 6h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $7.09 USPS Ground Advantage ® . See details for shipping Located in: Barnegat, New Jersey, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "155786fd4f3014c5990a76de39a31799cea94cf65382d34a7d21ce77591eedb5",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "219.99",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "149501.84",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Barnegat, New Jersey, United States",
+      "endTime": "2026-10-10T15:46:06.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jboldman1",
+        "feedbackScore": 1844,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.8 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 1 Sm8450 (4 NM) International Version-Samsung Exynos 2200 (4 NM)"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S22 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "860022017530",
+      "url": "https://www.ebay.com/itm/860022017530",
+      "checkedAtUtc": "2026-10-08T09:05:52.979210+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Unlocked Samsung Galaxy S24 128gb Fully Functional And Excellent Condition",
+      "sellerText": "J jajo9752 (14) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $300.00",
+      "bidText": "US $300.00 0 bids Ends in 9d 22h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $8.95 USPS Ground Advantage ® . See details for shipping Located in: Ceiba, Puerto Rico, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "71acb78ca68bff512c0412f84175b1a9d3e69363df1431bb9547879e863580ad",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "500.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "276.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Ceiba, Puerto Rico, United States",
+      "endTime": "2026-10-18T07:17:36.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "jajo9752",
+        "feedbackScore": 14,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.2 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 3 Sm8650-Ab (4 NM) International Version-Exynos 2400"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "147612919097",
+      "url": "https://www.ebay.com/itm/147612919097",
+      "checkedAtUtc": "2026-10-08T09:05:55.409534+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S25 Ultra - 256 GB - Titanium Black (T-Mobile) - Locked",
+      "sellerText": "R rooel11 (12) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $500.00",
+      "bidText": "US $500.00 0 bids Ends in 9h 22m",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $6.27 USPS Ground Advantage ® . See details for shipping Located in: Minneapolis, Minnesota, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "6b137c118a1ee3fdd32224e6f9c4aadbac8a4952dfa68e29810f78cfd3c21dfd",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "460.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "460.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Minneapolis, Minnesota, United States",
+      "endTime": "2026-10-08T18:28:12.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "rooel11",
+        "feedbackScore": 12,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.9 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Elite for Galaxy Sm8750-Ab (3 NM)"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S25 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "189026223083",
+      "url": "https://www.ebay.com/itm/189026223083",
+      "checkedAtUtc": "2026-10-08T09:05:58.002388+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24 FE - 128 GB - Mint (Unlocked)",
+      "sellerText": "X xenerdiode (1167) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $300.00",
+      "bidText": "US $300.00 0 bids Ends in 6h 55m",
+      "conditionText": "Condition: Open box Open box More information - About this item condition",
+      "shippingText": [
+        "Shipping: Free USPS Ground Advantage ® . See details for shipping Located in: Salt Lake City, Utah, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "42158f4dd11ac69da86ccf4450893fde452df9e592e5807f1e81e6ed17080cf3",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "400.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "276.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Salt Lake City, Utah, United States",
+      "endTime": "2026-10-08T16:01:00.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "xenerdiode",
+        "feedbackScore": 1167,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Open box: An item in excellent, new condition with no wear. The item may be missing the original ... Read more about the condition Open box: An item in excellent, new condition with no wear. The item may be missing the original packaging or protective wrapping, or may be in the original packaging but not sealed. The item includes original accessories. The item may be a factory second. See the seller's listing for full details and description. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Deca Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.7 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Exynos 2400e S5e9945 (4 NM)"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24 FE"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "267807222437",
+      "url": "https://www.ebay.com/itm/267807222437",
+      "checkedAtUtc": "2026-10-08T09:06:00.361927+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S25 Ultra 512GB Unlocked Ready To Go",
+      "sellerText": "hot_feet23 (6288) 99.9% positive Seller's other items Seller's other items Message",
+      "priceText": "US $550.00",
+      "bidText": "US $550.00 1 bid Ends in 2d 10h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: Free USPS Ground Advantage ® . See details for shipping Located in: New Milford, New Jersey, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "67674bf439220900362b562afebd8906bd7332d2e797ac57d364ec477b44fcb9",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "506.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "506.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "New Milford, New Jersey, United States",
+      "endTime": "2026-10-10T19:59:35.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "hot_feet23",
+        "feedbackScore": 6288,
+        "feedbackPercentage": 99.9
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.9 in"
+        },
+        {
+          "name": "Model Number",
+          "value": "SM-S938U"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S25 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "257785921351",
+      "url": "https://www.ebay.com/itm/257785921351",
+      "checkedAtUtc": "2026-10-08T09:06:02.910411+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "READ AS-IS Samsung SM-S921U S24 Galaxy 128GB 8gb Ram Verizon READ AS-IS",
+      "sellerText": "S sold_as-is (367) 97.9% positive Seller's other items Seller's other items Message",
+      "priceText": "US $1.25",
+      "bidText": "US $1.25 2 bids Ends in 5d 20h",
+      "conditionText": "Condition: For parts or not working For parts or not working More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $11.95 Standard Shipping . See details for shipping Located in: North Richland Hills, Texas, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "087747e202b5db2cf9455f2795e4293ee5ab55fd23dae022b34dc8c7f9aa4a4a",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "1.15",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "1.15",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "North Richland Hills, Texas, United States",
+      "endTime": "2026-10-14T06:00:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "sold_as-is",
+        "feedbackScore": 367,
+        "feedbackPercentage": 97.9
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "For parts or not working: An item that does not function as intended and is not fully operational. ... Read more about the condition For parts or not working: An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Single Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.2 in"
+        },
+        {
+          "name": "MPN",
+          "value": "NV"
+        },
+        {
+          "name": "Model Number",
+          "value": "S24"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "278423937560",
+      "url": "https://www.ebay.com/itm/278423937560",
+      "checkedAtUtc": "2026-10-08T09:06:05.507664+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Verizon Samsung Galaxy Black S23 Ultra 512g",
+      "sellerText": "EZCardco (695) 99.7% positive Seller's other items Seller's other items Message",
+      "priceText": "US $250.00",
+      "bidText": "US $250.00 1 bid Ends in 2d 12h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ See photos for condition.  Has nicks and scuffs per photos.  No idea how well battery works ”",
+      "shippingText": [
+        "Shipping: Free USPS Ground Advantage ® . See details for shipping Located in: Phoenix, Arizona, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "6192aac6e3b117c86e5843cc8cad76444ec63536ec6568e1f945c3afa86130c5",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "325.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "230.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Phoenix, Arizona, United States",
+      "endTime": "2026-10-10T21:30:22.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "EZCardco",
+        "feedbackScore": 695,
+        "feedbackPercentage": 99.7
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“See photos for condition.  Has nicks and scuffs per photos.  No idea how well battery works”"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S23 Ultra"
+        }
+      ]
+    },
+    {
+      "itemId": "178560931050",
+      "url": "https://www.ebay.com/itm/178560931050",
+      "checkedAtUtc": "2026-10-08T09:06:08.402902+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S26 Ultra 256GB 12GB 6.9\" 200MP Gray Factory Unlocked w/ Box",
+      "sellerText": "crob43 (332) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $700.00",
+      "bidText": "US $700.00 2 bids Ends in 5d 2h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $7.52 USPS Ground Advantage ® . See details for shipping Located in: New York, New York, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "2472e25a543b68d18d5380e4173ffeef0fedaff7e50c757b69f47200a5fa8a77",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "644.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "644.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "New York, New York, United States",
+      "endTime": "2026-10-13T12:05:04.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "crob43",
+        "feedbackScore": 332,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.9 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Elite for Galaxy Sm8750-Ab (3 NM)"
+        },
+        {
+          "name": "MPN",
+          "value": "SM-S938B"
+        },
+        {
+          "name": "Model Number",
+          "value": "SM-S938B"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S26 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "137819250335",
+      "url": "https://www.ebay.com/itm/137819250335",
+      "checkedAtUtc": "2026-10-08T09:06:11.115421+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S26 Ultra Fully Unlocked Black 256gb NEW 102-450-0031-L S",
+      "sellerText": "guaranteecellular (199695) 99.9% positive Seller's other items Seller's other items Message",
+      "priceText": "US $1.00",
+      "bidText": "US $1.00",
+      "conditionText": "Condition: New New More information - About this item condition",
+      "shippingText": [
+        "Shipping: Free UPS Ground . See details for shipping Located in: Linden, New Jersey, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "2da5f715548bb22bbdf028e16e6e9fd57957925141890a457ebbf97c9b679631",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "1.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "0.92",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Linden, New Jersey, United States",
+      "endTime": "2026-10-13T17:25:12.000Z",
+      "buyingOptions": null,
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "guaranteecellular",
+        "feedbackScore": 199695,
+        "feedbackPercentage": 99.9
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is ... Read more about the condition New: A brand-new, unused, unopened, undamaged item in its original packaging (where packaging is applicable). Packaging should be the same as what is found in a retail store, unless the item is handmade or was packaged by the manufacturer in non-retail packaging, such as an unprinted box or plastic bag. See the seller's listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Model",
+          "value": "Galaxy S26 Ultra"
+        }
+      ]
+    },
+    {
+      "itemId": "117446068428",
+      "url": "https://www.ebay.com/itm/117446068428",
+      "checkedAtUtc": "2026-10-08T09:06:14.252798+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "🔥A Used SAMSUNG GALAXY S22 ULTRA 512GB/1T SM-S908U1 FACTORY UNLOCKED🔥",
+      "sellerText": "rsdboc-h9fhth (84) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $211.00",
+      "bidText": "US $211.00 11 bids Ends in 2d 17h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $8.17 USPS Ground Advantage ® . See details for shipping Located in: Lowell, Massachusetts, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "43f3c9fe0b5c037ca3495c06988ec68dc4dda4cde9e80f1ac2b9b47482a088fd",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "275.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "194.12",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Lowell, Massachusetts, United States",
+      "endTime": "2026-10-11T02:24:37.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "rsdboc-h9fhth",
+        "feedbackScore": 84,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.8 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 1 Sm8450 (4 NM) International Version-Samsung Exynos 2200 (4 NM)"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S22 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "336829557360",
+      "url": "https://www.ebay.com/itm/336829557360",
+      "checkedAtUtc": "2026-10-08T09:06:16.978018+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24+ 5G - 256GB - Onyx Black - Unlocked - (VIBRATION FAILURE)",
+      "sellerText": "Your_Tech_Authority (22930) 99.7% positive Seller's other items Seller's other items Message",
+      "priceText": "US $299.99",
+      "bidText": "US $299.99 0 bids Ends in 4d 11h",
+      "conditionText": "Condition: For parts or not working For parts or not working More information - About this item condition “ For sale is a Samsung Galaxy S24+ 5G Onyx Black 256GB Factory Unlocked Smartphone with 12GB RAM. ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $16.50 UPS Ground . See details for shipping Located in: Fort Myers, Florida, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "0706b93cd9b193b2eaf1b7b7b612ce29c520b8558762ad7d29e871dc5fc44515",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "275.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "275.99",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Fort Myers, Florida, United States",
+      "endTime": "2026-10-12T20:19:17.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Your_Tech_Authority",
+        "feedbackScore": 22930,
+        "feedbackPercentage": 99.7
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“For sale is a Samsung Galaxy S24+ 5G Onyx Black 256GB Factory Unlocked Smartphone with 12GB RAM. ... Read more about the seller notes “For sale is a Samsung Galaxy S24+ 5G Onyx Black 256GB Factory Unlocked Smartphone with 12GB RAM. Based on testing and visual inspection, the following was observed: Tested and confirmed to be partially functional due to a vibration motor that does not work. The phone exhibits moderate visible wear from prior use, which may include minor scratches on the casing or screen, minor dents, and light marking around the frame edges, perceptible to the touch. Please review the photos carefully, as the camera may not capture every minor imperfection. The device has been factory reset and is not connected to any prior Samsung or Google account, and no passcode is set. We did not open or disassemble the device during inspection/testing. Additional faults may exist that were not detected. THIS UNIT IS DESCRIBED AS FOR PARTS OR NOT WORKING AND IS SOLD AS-IS. Unit is sold as Phone Only and is OUT OF WARRANTY.” Read Less about the seller notes"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.7 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Qualcomm Snapdragon 8 Gen 3 for Galaxy"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24+"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "147625071370",
+      "url": "https://www.ebay.com/itm/147625071370",
+      "checkedAtUtc": "2026-10-08T09:06:19.075697+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S23 Ultra  512gb near mint. new screen, frame, rear, battery",
+      "sellerText": "K kcmjr (162) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $76.00",
+      "bidText": "US $76.00 5 bids Ends in 6d 18h Reserve not met A reserve price is the minimum price the seller will accept. This price is hidden from bidders. To win, a bidder must have the highest bid and have met or exceeded the reserve price.",
+      "conditionText": "Condition: Used Used More information - About this item condition “ Refurbished ”",
+      "shippingText": [
+        "Shipping: US $5.78 USPS Ground Advantage ® . See details for shipping Located in: Mountain Ranch, California, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "01a7393953040e8a3ba44c7984a375dd5b676d47f912bdfcbb249616994baff1",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "400.0",
+        "currency": "USD"
+      },
+      "bidPrice": {
+        "value": "69.92",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Mountain Ranch, California, United States",
+      "endTime": "2026-10-15T03:49:57.000Z",
+      "buyingOptions": [
+        "FIXED_PRICE",
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "kcmjr",
+        "feedbackScore": 162,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Refurbished”"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 2 Sm8550 (4 NM)"
+        },
+        {
+          "name": "MPN",
+          "value": "SM-S918UZKFXAA"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.8 in"
+        },
+        {
+          "name": "Model Number",
+          "value": "SM-S918U"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S23 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "820200709344",
+      "url": "https://www.ebay.com/itm/820200709344",
+      "checkedAtUtc": "2026-10-08T09:06:20.702298+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S23 Ultra SM-S918U 256GB Black 8GB RAM 200MP T-Mobile/Metro",
+      "sellerText": "radcr-5957 (261) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $189.50",
+      "bidText": "US $189.50 5 bids Ends in 5d 12h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $13.70 UPS Ground . See details for shipping Located in: Kissimmee, Florida, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "2a1501c3ce3322410104a1a8e6a52d60d2a7d9ed682e883b220c03c78171e9d0",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "174.34",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "174.34",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Kissimmee, Florida, United States",
+      "endTime": "2026-10-13T21:56:16.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "radcr-5957",
+        "feedbackScore": 261,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S23 Ultra"
+        },
+        {
+          "name": "Model Number",
+          "value": "SM-S918U"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "327387189416",
+      "url": "https://www.ebay.com/itm/327387189416",
+      "checkedAtUtc": "2026-10-08T09:06:22.567890+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S22 Ultra S908U 128GB Black AT&T Locked READ",
+      "sellerText": "Gadget Solutions (31602) 99.5% positive Seller's other items Seller's other items Message",
+      "priceText": "US $66.00",
+      "bidText": "US $66.00 14 bids Ends in 2d 17h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ BLACK SPOT/MICROPHONE - The BLACK SPOT on the LCD DISPLAY/SCREEN as shown in the pictures. The ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $6.99 Expedited Shipping . See details for shipping Located in: Brooklyn, New York, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "61e4111cd02aea197612f60841dc06318ab0a1a751ca9997365c32b28ef8ba92",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "60.72",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "60.72",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Brooklyn, New York, United States",
+      "endTime": "2026-10-11T02:15:51.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Gadget Solutions",
+        "feedbackScore": 31602,
+        "feedbackPercentage": 99.5
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“BLACK SPOT/MICROPHONE - The BLACK SPOT on the LCD DISPLAY/SCREEN as shown in the pictures. The ... Read more about the seller notes “BLACK SPOT/MICROPHONE - The BLACK SPOT on the LCD DISPLAY/SCREEN as shown in the pictures. The MICROPHONE on this device DOES NOT WORK.” Read Less about the seller notes"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa-core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.8\""
+        },
+        {
+          "name": "Model Number",
+          "value": "S908U"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S22 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12GB"
+        }
+      ]
+    },
+    {
+      "itemId": "366714148161",
+      "url": "https://www.ebay.com/itm/366714148161",
+      "checkedAtUtc": "2026-10-08T09:06:25.277421+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24+ 512GB Unlocked Onyx Black",
+      "sellerText": "ALLTECH WHOLESALE (306294) 99.5% positive Seller's other items Seller's other items Message",
+      "priceText": "US $110.50",
+      "bidText": "US $110.50 49 bids Ends in 2d 17h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $11.99 Standard Shipping . See details for shipping Located in: Carrollton, Texas, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "461b637b992ad7a1c74744631f6cb02284a991df8deb1aa8b3e455b05c3dfbec",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "101.66",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "101.66",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Carrollton, Texas, United States",
+      "endTime": "2026-10-11T02:32:24.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "ALLTECH WHOLESALE",
+        "feedbackScore": 306294,
+        "feedbackPercentage": 99.5
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, ... Read more about the seller notes “Product shows signs of heavy wear and frequent use.  Cosmetic flaws may include scratches, scuffs, and/or dents, and the display may have clearly visible scratching or scuffing. Housing Wear - Heavy, Screen Wear - Heavy. This item has been professionally tested and is guaranteed to be completely functional.” Read Less about the seller notes"
+        },
+        {
+          "name": "Model",
+          "value": "Galaxy S24+ 512GB"
+        }
+      ]
+    },
+    {
+      "itemId": "237106320909",
+      "url": "https://www.ebay.com/itm/237106320909",
+      "checkedAtUtc": "2026-10-08T09:06:27.182940+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "samsung s24 plus + 256gb unlocked with box and cases perfect screen",
+      "sellerText": "R recessive_zero (215) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $147.50",
+      "bidText": "US $147.50 8 bids Ends in 6d 12h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ works perfectly, no scratches, screen is perfect ”",
+      "shippingText": [
+        "Shipping: US $11.72 USPS Priority Mail ® . See details for shipping Located in: Willow Spring, North Carolina, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "ab5b1d069bdfcb084c01639aa3bd3326afbfdc9e86478e2cb5e46cc64d3458d2",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "135.70",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "135.70",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Willow Spring, North Carolina, United States",
+      "endTime": "2026-10-14T21:30:25.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "recessive_zero",
+        "feedbackScore": 215,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“works perfectly, no scratches, screen is perfect”"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.7 in"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24+"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "287629505855",
+      "url": "https://www.ebay.com/itm/287629505855",
+      "checkedAtUtc": "2026-10-08T09:06:29.456192+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24",
+      "sellerText": "M marg7790 (335) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $108.50",
+      "bidText": "US $108.50 4 bids Ends in 2d 15h Reserve not met A reserve price is the minimum price the seller will accept. This price is hidden from bidders. To win, a bidder must have the highest bid and have met or exceeded the reserve price.",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $6.47 USPS Ground Advantage ® . See details for shipping Located in: New City, New York, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "f605ad1b9765d8ab899704622d4b6dd0fe3e10c364ce447d8c1b5a7b89ba57b7",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "99.82",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "99.82",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "New City, New York, United States",
+      "endTime": "2026-10-11T00:26:58.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "marg7790",
+        "feedbackScore": 335,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24"
+        }
+      ]
+    },
+    {
+      "itemId": "237108282627",
+      "url": "https://www.ebay.com/itm/237108282627",
+      "checkedAtUtc": "2026-10-08T09:06:31.602005+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24 - 256GB - Cobalt Violet - Unlocked - (BLACK SPOT ON SCREEN)",
+      "sellerText": "Your_Tech_Authority (22930) 99.7% positive Seller's other items Seller's other items Message",
+      "priceText": "US $249.99",
+      "bidText": "US $249.99 0 bids Ends in 4d 11h",
+      "conditionText": "Condition: For parts or not working For parts or not working More information - About this item condition “ For sale is a Samsung Galaxy S24 5G Cobalt Violet 256GB Factory Unlocked Smartphone with 8GB RAM. ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $16.50 UPS Ground . See details for shipping Located in: Fort Myers, Florida, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "04494afd056d99d72ad4c5026838397ec3792c1793cf17f524a5cb14d2410efc",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "229.99",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "229.99",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Fort Myers, Florida, United States",
+      "endTime": "2026-10-12T20:12:40.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Your_Tech_Authority",
+        "feedbackScore": 22930,
+        "feedbackPercentage": 99.7
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "For parts or not working An item that does not function as intended and is not fully operational. This includes items that are defective in ways that render them difficult to use, items that require service or repair, or items missing essential components. See the seller’s listing for full details. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“For sale is a Samsung Galaxy S24 5G Cobalt Violet 256GB Factory Unlocked Smartphone with 8GB RAM. ... Read more about the seller notes “For sale is a Samsung Galaxy S24 5G Cobalt Violet 256GB Factory Unlocked Smartphone with 8GB RAM. Based on testing and visual inspection, the following was observed: Tested and confirmed to be partially functional due to a black spot on the display. The phone exhibits moderate visible wear from prior use, which may include minor scratches on the casing or screen, minor dents, and light marking around the frame edges, perceptible to the touch. Please review the photos carefully, as the camera may not capture every minor imperfection. The device has been factory reset and is not connected to any prior Samsung or Google account, and no passcode is set. We did not open or disassemble the device during inspection/testing. Additional faults may exist that were not detected. THIS UNIT IS DESCRIBED AS FOR PARTS OR NOT WORKING AND IS SOLD AS-IS. Unit is sold as Phone Only and is OUT OF WARRANTY.” Read Less about the seller notes"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.2 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Qualcomm Snapdragon 8 Gen 3 for Galaxy"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "237113178937",
+      "url": "https://www.ebay.com/itm/237113178937",
+      "checkedAtUtc": "2026-10-08T09:06:33.403547+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S24 SM-S921U 128GB Gray Bar Style Smartphone",
+      "sellerText": "Y yitzme_0 (126) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $61.00",
+      "bidText": "US $61.00 2 bids Ends in 6d 9h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $6.47 USPS Ground Advantage ® . See details for shipping Located in: Bergenfield, New Jersey, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "74e3717e87db56e55e34e4020213864fab685252ae9d77a8ca191d139faca27f",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "56.12",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "56.12",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Bergenfield, New Jersey, United States",
+      "endTime": "2026-10-14T18:16:41.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "yitzme_0",
+        "feedbackScore": 126,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S24"
+        },
+        {
+          "name": "Model Number",
+          "value": "SM-S921U"
+        }
+      ]
+    },
+    {
+      "itemId": "336834753062",
+      "url": "https://www.ebay.com/itm/336834753062",
+      "checkedAtUtc": "2026-10-08T09:06:35.392841+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "samsung galaxy s23 ultra 1tb unlocked",
+      "sellerText": "1986nymets (1320) 100% positive Seller's other items Seller's other items Message",
+      "priceText": "US $200.00",
+      "bidText": "US $200.00 0 bids Ends in 6d 21h",
+      "conditionText": "Condition: Used Used More information - About this item condition",
+      "shippingText": [
+        "Shipping: US $25.00 USPS Ground Advantage ® . See details for shipping Located in: Pompano Beach, Florida, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        },
+        {
+          "alias": "samsung galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 2
+        },
+        {
+          "alias": "galaxy s24 ultra",
+          "listingType": "auction",
+          "request": 4
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "22ab6b638a63586b2474c3008ae567e3d8c50218c93af16cf3317a0d8276e3db",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "184.00",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "184.00",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Pompano Beach, Florida, United States",
+      "endTime": "2026-10-15T06:54:32.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "1986nymets",
+        "feedbackScore": 1320,
+        "feedbackPercentage": 100.0
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is ... Read more about the condition Used: An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.8 in"
+        },
+        {
+          "name": "Chipset Model",
+          "value": "Snapdragon 8 Gen 2 Sm8550 (4 NM)"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S23 Ultra"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ]
+    },
+    {
+      "itemId": "227549506592",
+      "url": "https://www.ebay.com/itm/227549506592",
+      "checkedAtUtc": "2026-10-08T09:06:37.203771+00:00",
+      "source": "HTTP-live",
+      "observedTitle": "Samsung Galaxy S20 Ultra 5G G988U Black 128GB AT&T Locked READ",
+      "sellerText": "Gadget Solutions (31602) 99.5% positive Seller's other items Seller's other items Message",
+      "priceText": "US $20.50",
+      "bidText": "US $20.50 8 bids Ends in 1d 15h",
+      "conditionText": "Condition: Used Used More information - About this item condition “ CRACK/SHADOW - This device has been CRACKED on the back as shown in the pictures. The device has ” ... Read more about condition",
+      "shippingText": [
+        "Shipping: US $6.99 Expedited Shipping . See details for shipping Located in: Brooklyn, New York, United States"
+      ],
+      "statusText": [],
+      "discoveries": [
+        {
+          "alias": "samsung s24 ultra",
+          "listingType": "auction",
+          "request": 0
+        }
+      ],
+      "descriptionFetched": true,
+      "descriptionSha256": "c2c58288db2baab4411776f733486fcf937b35c2f39d6a237ef0eb323ff73fbc",
+      "reason": null,
+      "descriptionVerified": false,
+      "verdict": "UNVERIFIABLE",
+      "actualPythonDetailsContractAtCollection": false,
+      "pythonCollectionScope": "Details relevance contract only, not full price/notify filter; collector imports at start, including then-current code. Final paired regressions are separate.",
+      "actualAndroid": null,
+      "expected": null,
+      "model": null,
+      "price": {
+        "value": "18.86",
+        "currency": "EUR"
+      },
+      "bidPrice": {
+        "value": "18.86",
+        "currency": "EUR"
+      },
+      "shipping": null,
+      "total": null,
+      "region": "Brooklyn, New York, United States",
+      "endTime": "2026-10-10T01:02:01.000Z",
+      "buyingOptions": [
+        "AUCTION"
+      ],
+      "bucket": null,
+      "destinationVerified": false,
+      "observedShippingIsGermanyQuote": false,
+      "seller": {
+        "username": "Gadget Solutions",
+        "feedbackScore": 31602,
+        "feedbackPercentage": 99.5
+      },
+      "specifics": [
+        {
+          "name": "Condition",
+          "value": "Used An item that has been used previously. The item may have some signs of cosmetic wear, but is fully operational and functions as intended. This item may be a floor model or store return that has been used. See the seller’s listing for full details and description of any imperfections. See all condition definitions opens in a new window or tab"
+        },
+        {
+          "name": "Seller Notes",
+          "value": "“CRACK/SHADOW - This device has been CRACKED on the back as shown in the pictures. The device has ... Read more about the seller notes “CRACK/SHADOW - This device has been CRACKED on the back as shown in the pictures. The device has SHADOW on the LCD display/screen. Touch and everything on the device works.” Read Less about the seller notes"
+        },
+        {
+          "name": "Processor",
+          "value": "Octa Core"
+        },
+        {
+          "name": "Screen Size",
+          "value": "6.9 in"
+        },
+        {
+          "name": "MPN",
+          "value": "SM-G988U"
+        },
+        {
+          "name": "Model Number",
+          "value": "SM-g988U"
+        },
+        {
+          "name": "Model",
+          "value": "Samsung Galaxy S20 Ultra 5G"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
         }
       ]
     }

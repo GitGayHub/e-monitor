@@ -827,6 +827,9 @@ def _search_intent(search_or_query):
 def _matches_samsung_odyssey_g6_500hz(text_norm):
     """True for Odyssey OLED G6 500Hz (G60SF / LS27FG602 / LS27FG604), not 360Hz G60SD."""
     t = text_norm or ""
+    # A model code cannot override an explicit non-500Hz refresh claim.
+    if re.search(r"\b(?:144|165|180|240|360)\s*hz\b", t) and not re.search(r"\b500\s*hz\b", t):
+        return False
     if re.search(r"\bg60sf\b", t) or re.search(r"\bls27fg60[24][a-z0-9]*\b", t):
         return True
     # Explicit non-500Hz sibling models without a 500Hz claim
@@ -1953,6 +1956,9 @@ def _has_accessory_term(title_norm, term):
         # describe the device; they are not a phone stand.
         if term_norm == "stand" and re.search(r"(?:zu|tu)stands?$", w):
             continue
+        # Lightweight describes a whole mouse, not a separately sold weight.
+        if term_norm == "weight" and w == "lightweight":
+            continue
         if term_norm == "kabel" and w.startswith("kabellos"):
             continue
         if w == term_norm:
@@ -2288,6 +2294,20 @@ def _strip_negated_condition_terms(text_norm):
     return re.sub(rf'\b(?:prevent(?:s|ing)?|verhindert|vermeidet|schutz\s+(?:vor|gegen))\s+{burn}\b', ' ', text)
 
 
+def _headphone_structure_damaged(text, is_title=False):
+    # Own Sony ULT listings disclose snapped units / broken headbands.
+    patterns = [r"\b(?:broken|snapped)\s+(?:headband|hinge|earcup)\b",
+                r"\b(?:headband|hinge|earcup|it|item|headphones?)\s+(?:(?:is|are)\s+)?(?:broken|snapped)\b"]
+    if is_title:
+        patterns.append(r"\bsnapped\W*$")
+    for pattern in patterns:
+        for match in re.finditer(pattern, text):
+            before = text[max(0, match.start()-30):match.start()]
+            if not re.search(r"\b(?:not|no|without|kein\w*|nicht|ohne)\s+(?:\w+\s+){0,2}$", before):
+                return True
+    return False
+
+
 def _is_category_blocked_title(title_norm, category, query_norm=None):
     # Reuse the phone accessory classifier here, too: this helper is called
     # outside the main filter pipeline (including previews and diagnostics).
@@ -2296,6 +2316,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     if category == "phones" and _is_phone_accessory_title(title_norm):
         return True
     if _is_accessory_product(title_norm,category):
+        return True
+    if category == "headphones" and _headphone_structure_damaged(title_norm, is_title=True):
         return True
     condition_title = _strip_negated_condition_terms(title_norm)
     if any(_has_term(condition_title, w) for w in BAD_CONDITION_WORDS):
@@ -5068,6 +5090,8 @@ def _is_description_blocked(desc_html, category):
     desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+    if category == "headphones" and _headphone_structure_damaged(desc_norm):
+        return True
     # 318450377900: the merchant restricts customer DATA after fulfillment,
     # not the phone. Remove only this data-subject clause, never a device lock.
     data_subject = r"(?:(?:ihre|die)\s+)?(?:personenbezogenen?\s+)?(?:kunden)?daten"
@@ -5101,6 +5125,8 @@ def _is_description_blocked(desc_html, category):
     if re.search(r"\bsim(?:\s*(?:karten?|cards?))?\b[^.!?]{0,80}\b(?:nicht(?:\s+mehr)?\s+(?:erkannt|gelesen)|(?:not|no longer)\s+(?:recognized|recognised|detected|working))\b", desc_norm) or re.search(r"\b(?:erkennt|erkennen)\s+(?:keine|keinen|nicht)\s+.{0,20}\bsim\b", desc_norm):
         return True
 
+    # Mclean-Surplus return-policy promise is hypothetical, not a device fault.
+    desc_norm = re.sub(r"\bif the item is not working as described,\s*we will work with you on the issue,\s*please contact us to resolve[.!?]?", " ", desc_norm)
     desc_norm = _strip_negated_condition_terms(desc_norm)
     if _has_display_blemish(desc_norm):
         return True
