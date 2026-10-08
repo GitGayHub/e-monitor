@@ -20,3 +20,60 @@ pass_seconds=8
 2026-10-08 09:24:48,434 -   asus vivobook 14x oled -> 0 items via eBay Browse API (EBAY_DE)
 2026-10-08 09:24:48,434 -   asus vivobook 14x oled: 0 results
 2026-10-08 09:24:48,457 - === Done ===
+===== E MONITOR ITERATION 2 (budget 1800s) =====
+iteration_start=2026-10-08 09:25:51 UTC
+pass_seconds=10
+2026-10-08 09:25:53,147 - ╔══════════════════════════════════════════════╗
+2026-10-08 09:25:53,148 - ║              eBay Monitor Bot               ║
+2026-10-08 09:25:53,148 - ╠══════════════════════════════════════════════╣
+2026-10-08 09:25:53,148 -   Mode:       ONE-SHOT
+2026-10-08 09:25:53,148 -   Repo:       GitGayHub/e-monitor
+2026-10-08 09:25:53,148 -   GH Token:   ✅ GitGayHub
+2026-10-08 09:25:53,148 -   GH Actions: 🔄 in_progress 10m ago (E Monitor)
+2026-10-08 09:25:53,148 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-10-08 09:25:53,148 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-10-08 09:25:53,148 -   Chat ID:    5326338543
+2026-10-08 09:25:53,148 - ╠══════════════════════════════════════════════╣
+2026-10-08 09:25:53,148 -   Searches:   48 (746 excl, 8 incl words)
+2026-10-08 09:25:53,148 -   Bans:       1 sellers, 16 items
+2026-10-08 09:25:53,148 -   Seen:       1089 ids
+2026-10-08 09:25:53,148 - ╚══════════════════════════════════════════════╝
+2026-10-08 09:25:58,696 - eBay Browse: 3/46 searches due; interval 981s; real quota remaining=4549, reset=1791529200.0
+2026-10-08 09:25:59,006 -   logitech superstrike -> 2 items via eBay Browse API (EBAY_DE)
+2026-10-08 09:25:59,443 -   logitech superstrike -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 09:25:59,518 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-10-08 09:26:00,097 -   (playstation 5 pro, ps5 pro) -> 46 items via eBay Browse API (EBAY_DE)
+2026-10-08 09:26:00,176 -   (playstation 5 pro, ps5 pro): 0 results, 0 candidates (none)
+2026-10-08 09:26:00,711 -   iPhone 16 Pro Max -> 64 items via eBay Browse API (EBAY_DE)
+2026-10-08 09:26:00,713 -   iPhone 16 Pro Max: newly listed sweep error api_deferred
+2026-10-08 09:26:00,713 -   iPhone 16 Pro Max: ending soon sweep error api_deferred
+2026-10-08 09:26:00,888 -   iPhone 16 Pro Max: 6 results, 2 candidates (initial=2)
+Traceback (most recent call last):
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9322, in <module>
+    main()
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9316, in main
+    asyncio.run(run_once())
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9195, in run_once
+    await process_searches(bot, once=True)
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 8889, in process_searches
+    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7705, in _process_notify_candidate
+    sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7095, in send_notification
+    trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 5231, in _seller_trust
+    if rating_count >= 3 and rating_percent >= 95:
+                             ^^^^^^^^^^^^^^^^^^^^
+TypeError: '>=' not supported between instances of 'str' and 'int'
