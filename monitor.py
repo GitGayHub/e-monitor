@@ -2564,20 +2564,16 @@ def _is_console_device_title(title_norm, query_norm):
 
 
 def _build_smart_search_query(search):
-    """HTML eBay search: preserve good listings before title/detail validation.
+    """HTML eBay discovery: fetch candidates; reject wrong items after parsing.
 
-    Broad defect negatives (-defekt, -reparatur, -icloud, etc.) also hide
-    descriptions saying "kein Defekt" or "keine iCloud-Sperre". They are not a
-    substitute for the existing title, model, condition and seller checks.
-    Browse API uses its own query and remains unchanged.
+    eBay's minus operator suppresses titles containing the negative keyword
+    and can disable search expansion. In particular, -ersatzteil drops titles
+    explicitly saying "kein Ersatzteil". Search terms supplied by the user
+    (including their own operators) are preserved. Parts, faults, repair and
+    excluded sellers remain rejected by the existing title/detail filters.
+    Browse API uses a separate query and is unaffected.
     """
-    query = _intent_query(search)
-    if query.startswith("-") or " -" in query:
-        return query
-
-    # eBay HTML does not reliably accept nested parenthesized OR expressions.
-    # Red Magic/Redmagic are searched as distinct aliases by phone_aliases().
-    return f"{query} -teildefekt -ersatzteil"
+    return _intent_query(search)
 
 
 def _build_url_with_host(host, search, sub="www"):
