@@ -1,79 +1,99 @@
 ===== E MONITOR ITERATION 1 (budget 1800s) =====
-iteration_start=2026-10-08 18:04:44 UTC
-pass_seconds=6
-2026-10-08 18:04:46,513 - ╔══════════════════════════════════════════════╗
-2026-10-08 18:04:46,513 - ║              eBay Monitor Bot               ║
-2026-10-08 18:04:46,513 - ╠══════════════════════════════════════════════╣
-2026-10-08 18:04:46,513 -   Mode:       ONE-SHOT
-2026-10-08 18:04:46,513 -   Repo:       GitGayHub/e-monitor
-2026-10-08 18:04:46,513 -   GH Token:   ✅ GitGayHub
-2026-10-08 18:04:46,513 -   GH Actions: 🔄 in_progress 4m ago (E Monitor)
-2026-10-08 18:04:46,513 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-10-08 18:04:46,513 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-10-08 18:04:46,513 -   Chat ID:    5326338543
-2026-10-08 18:04:46,513 - ╠══════════════════════════════════════════════╣
-2026-10-08 18:04:46,513 -   Searches:   48 (746 excl, 8 incl words)
-2026-10-08 18:04:46,514 -   Bans:       1 sellers, 16 items
-2026-10-08 18:04:46,514 -   Seen:       1093 ids
-2026-10-08 18:04:46,514 - ╚══════════════════════════════════════════════╝
-2026-10-08 18:04:51,886 - eBay Browse: 0/46 searches due; interval 1007s; real quota remaining=2656, reset=1791529200.0
-2026-10-08 18:04:51,935 - === Done ===
-===== E MONITOR ITERATION 2 (budget 1800s) =====
-iteration_start=2026-10-08 18:05:53 UTC
-pass_seconds=11
-2026-10-08 18:05:55,040 - ╔══════════════════════════════════════════════╗
-2026-10-08 18:05:55,041 - ║              eBay Monitor Bot               ║
-2026-10-08 18:05:55,041 - ╠══════════════════════════════════════════════╣
-2026-10-08 18:05:55,041 -   Mode:       ONE-SHOT
-2026-10-08 18:05:55,041 -   Repo:       GitGayHub/e-monitor
-2026-10-08 18:05:55,041 -   GH Token:   ✅ GitGayHub
-2026-10-08 18:05:55,041 -   GH Actions: 🔄 in_progress 5m ago (E Monitor)
-2026-10-08 18:05:55,041 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-10-08 18:05:55,041 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-10-08 18:05:55,041 -   Chat ID:    5326338543
-2026-10-08 18:05:55,041 - ╠══════════════════════════════════════════════╣
-2026-10-08 18:05:55,041 -   Searches:   48 (746 excl, 8 incl words)
-2026-10-08 18:05:55,041 -   Bans:       1 sellers, 16 items
-2026-10-08 18:05:55,041 -   Seen:       1093 ids
-2026-10-08 18:05:55,041 - ╚══════════════════════════════════════════════╝
-2026-10-08 18:06:00,413 - eBay Browse: 2/46 searches due; interval 1005s; real quota remaining=2656, reset=1791529200.0
-2026-10-08 18:06:01,602 -   samsung galaxy s25 edge -> 173 items via eBay Browse API (EBAY_DE)
-2026-10-08 18:06:01,603 -   samsung galaxy s25 edge: auction sweep error api_deferred
-2026-10-08 18:06:01,604 -   samsung galaxy s25 edge: newly listed sweep error api_deferred
-2026-10-08 18:06:01,605 -   samsung galaxy s25 edge: ending soon sweep error api_deferred
-2026-10-08 18:06:01,695 -   samsung galaxy s25 edge: 0 results, 0 candidates (none)
-2026-10-08 18:06:02,855 -   iphone 17 pro max -> 200 items via eBay Browse API (EBAY_DE)
-2026-10-08 18:06:02,856 -   iphone 17 pro max: auction sweep error api_deferred
-2026-10-08 18:06:02,857 -   iphone 17 pro max: newly listed sweep error api_deferred
-2026-10-08 18:06:02,858 -   iphone 17 pro max: ending soon sweep error api_deferred
-2026-10-08 18:06:03,016 -   iphone 17 pro max: 4 results, 4 candidates (initial=4)
-2026-10-08 18:06:03,612 - Skipping notification for item 800772794915: details do not pass common rules
-Traceback (most recent call last):
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9322, in <module>
-    main()
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9316, in main
-    asyncio.run(run_once())
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9195, in run_once
-    await process_searches(bot, once=True)
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 8889, in process_searches
-    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7705, in _process_notify_candidate
-    sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7095, in send_notification
-    trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 5231, in _seller_trust
-    if rating_count >= 3 and rating_percent >= 95:
-                             ^^^^^^^^^^^^^^^^^^^^
-TypeError: '>=' not supported between instances of 'str' and 'int'
+iteration_start=2026-10-08 18:15:59 UTC
+pass_seconds=48
+2026-10-08 18:16:01,636 - ╔══════════════════════════════════════════════╗
+2026-10-08 18:16:01,636 - ║              eBay Monitor Bot               ║
+2026-10-08 18:16:01,636 - ╠══════════════════════════════════════════════╣
+2026-10-08 18:16:01,636 -   Mode:       ONE-SHOT
+2026-10-08 18:16:01,636 -   Repo:       GitGayHub/e-monitor
+2026-10-08 18:16:01,636 -   GH Token:   ✅ GitGayHub
+2026-10-08 18:16:01,636 -   GH Actions: 🔄 queued 43s ago (E Monitor)
+2026-10-08 18:16:01,636 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-10-08 18:16:01,636 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-10-08 18:16:01,636 -   Chat ID:    5326338543
+2026-10-08 18:16:01,636 - ╠══════════════════════════════════════════════╣
+2026-10-08 18:16:01,636 -   Searches:   48 (746 excl, 8 incl words)
+2026-10-08 18:16:01,636 -   Bans:       1 sellers, 16 items
+2026-10-08 18:16:01,636 -   Seen:       1094 ids
+2026-10-08 18:16:01,636 - ╚══════════════════════════════════════════════╝
+2026-10-08 18:16:09,493 - eBay Browse: 31/46 searches due; interval 994s; real quota remaining=2650, reset=1791529200.0
+2026-10-08 18:16:11,290 -   Redmagic 11 Pro -> 13 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:11,503 -   Redmagic 11 Pro: 0 results, 0 candidates (none)
+2026-10-08 18:16:12,493 -   Redmagic 11 Pro -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:12,494 -   Redmagic 11 Pro: 0 results
+2026-10-08 18:16:13,641 -   Redmagic 11S Pro -> 9 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:13,878 -   Redmagic 11S Pro: 0 results, 0 candidates (none)
+2026-10-08 18:16:15,059 -   Redmagic 11S Pro -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:15,059 -   Redmagic 11S Pro: 0 results
+2026-10-08 18:16:15,901 -   Nubia Z80 Ultra Leading -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:16,801 -   Nubia Z80 Ultra Leading -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:16,801 -   Nubia Z80 Ultra Leading: 0 results
+2026-10-08 18:16:17,668 -   Nubia Z70S Ultra -> 17 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:17,802 -   Nubia Z70S Ultra: 0 results, 0 candidates (none)
+2026-10-08 18:16:19,016 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:19,016 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 0 results
+2026-10-08 18:16:20,639 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:20,640 -   4080 (pc, rechner, computer, desktop, gaming pc): 0 results
+2026-10-08 18:16:21,914 -   samsung s24 ultra -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:21,916 -   samsung s24 ultra: newly listed sweep error api_deferred
+2026-10-08 18:16:22,085 -   samsung s24 ultra: 0 results, 0 candidates (none)
+2026-10-08 18:16:22,617 -   samsung s24 ultra -> 39 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:22,771 -   samsung s24 ultra: 1 results, 1 candidates (initial=1)
+2026-10-08 18:16:23,362 - Skipping notification for item 178559702634: details do not pass common rules
+2026-10-08 18:16:24,215 -   4050 oled -> 1 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:25,046 -   4050 oled -> 15 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:25,233 -   4050 oled: 0 results, 0 candidates (none)
+2026-10-08 18:16:25,635 -   4050 oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:26,203 -   4050 oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:26,203 -   4050 oled: 0 results
+2026-10-08 18:16:26,500 -   4060 oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:27,295 -   4060 oled -> 23 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:28,342 -   4060 oled: 0 results, 0 candidates (none)
+2026-10-08 18:16:29,599 -   4060 oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:30,631 -   4060 oled -> 1 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:30,781 -   4060 oled: 0 results, 0 candidates (none)
+2026-10-08 18:16:31,163 -   asus vivobook 14x oled -> 1 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:31,298 -   asus vivobook 14x oled: 0 results, 0 candidates (none)
+2026-10-08 18:16:31,590 -   asus vivobook 14x oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:31,590 -   asus vivobook 14x oled: 0 results
+2026-10-08 18:16:33,257 -   logitech superstrike -> 43 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:33,642 -   logitech superstrike -> 2 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:33,806 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-10-08 18:16:34,483 -   logitech superstrike -> 2 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:34,823 -   logitech superstrike -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:34,954 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-10-08 18:16:35,749 -   logitech superlight 2 -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:35,751 -   logitech superlight 2: newly listed sweep error api_deferred
+2026-10-08 18:16:35,904 -   logitech superlight 2: 0 results, 0 candidates (none)
+2026-10-08 18:16:36,445 -   logitech superlight 2 -> 2 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:36,580 -   logitech superlight 2: 0 results, 0 candidates (none)
+2026-10-08 18:16:37,078 -   logitech superlight 2 dex -> 23 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:37,210 -   logitech superlight 2 dex: 0 results, 0 candidates (none)
+2026-10-08 18:16:37,818 -   logitech superlight 2 dex -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:37,818 -   logitech superlight 2 dex: 0 results
+2026-10-08 18:16:38,738 -   sony ult wear -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:38,740 -   sony ult wear: newly listed sweep error api_deferred
+2026-10-08 18:16:38,998 -   sony ult wear: 0 results, 0 candidates (none)
+2026-10-08 18:16:39,685 -   sony ult wear -> 3 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:39,815 -   sony ult wear: 0 results, 0 candidates (none)
+2026-10-08 18:16:40,258 -   samsung odyssey oled g6 500hz -> 4 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:40,390 -   samsung odyssey oled g6 500hz: 0 results, 0 candidates (none)
+2026-10-08 18:16:40,928 -   samsung odyssey oled g6 500hz -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:40,928 -   samsung odyssey oled g6 500hz: 0 results
+2026-10-08 18:16:41,889 -   (playstation 5 pro, ps5 pro) -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:41,890 -   (playstation 5 pro, ps5 pro): newly listed sweep error api_deferred
+2026-10-08 18:16:42,039 -   (playstation 5 pro, ps5 pro): 0 results, 0 candidates (none)
+2026-10-08 18:16:42,886 -   (playstation 5 pro, ps5 pro) -> 43 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:43,034 -   (playstation 5 pro, ps5 pro): 0 results, 0 candidates (none)
+2026-10-08 18:16:43,794 -   iPhone 16 Pro Max -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:43,796 -   iPhone 16 Pro Max: newly listed sweep error api_deferred
+2026-10-08 18:16:44,024 -   iPhone 16 Pro Max: 0 results, 0 candidates (none)
+2026-10-08 18:16:44,584 -   iPhone 16 Pro Max -> 72 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:44,585 -   iPhone 16 Pro Max: newly listed sweep error api_deferred
+2026-10-08 18:16:44,586 -   iPhone 16 Pro Max: ending soon sweep error api_deferred
+2026-10-08 18:16:44,797 -   iPhone 16 Pro Max: 4 results, 2 candidates (initial=2)
+2026-10-08 18:16:45,370 - Skipping notification for item 860023822589: details do not pass common rules
+2026-10-08 18:16:46,315 - Skipping notification for item 237105298571: details do not pass common rules
+2026-10-08 18:16:47,347 -   lg ultragear oled 480hz -> 5 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:16:47,504 -   lg ultragear oled 480hz: 1 results, 0 candidates (none)
+2026-10-08 18:16:47,515 - === Done ===
