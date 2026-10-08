@@ -1,5 +1,11 @@
 # e-monitor — notes for Grok / other agents
 
+## Continuation between PC and Codex Cloud
+
+Read `docs/WORK_STATE.md` and `docs/MOBILE_CONTINUE.md` before continuing. They contain the current two-repository checkpoint, unfinished acceptance and user decisions. On PC inspect cloud changes with the companion Android repository's `tools/cloud_sync.py --check`; integrate with `--apply` only after reviewing its clean merge plan, then run isolated tests. Preserve dirty work; no blind pull/reset/clean. This takes precedence over the older generic pull instructions in QA.
+
+In Cloud check out both `GitGayHub/e-monitor` and `GitGayHub/e-monitor-android`. Save code plus an updated WORK_STATE in a commit/PR at each completed stage. Record tests actually run, counterpart branch/commit and remaining work. Cloud cannot verify the physical phone or local Telegram client; never describe those as tested there. Production mode/recipient/searches/seen and private backups remain untouched. Do not publish secrets.
+
 ## Mode (production default)
 
 - **`mode.txt` must be `normal`** for day-to-day alerts.
