@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "capturedAt": "2026-10-08",
-  "sourceNotes": "Public search-index titles where an ebay.de URL is provided. Not proof of availability, shipping, price, or complete seller text. Synthetic controls are explicitly labelled. Expected is device/title + stored global seller-ban acceptance with price 500 EUR, no explicit limit.",
+  "sourceNotes": "Public search-index titles where an ebay.de URL is provided. Not proof of availability, shipping, price, or complete seller text. Synthetic controls are explicitly labelled. Expected is device/title + stored global seller-ban acceptance with price 500 EUR, no explicit limit. Newly appended title cases from externally opened item pages; title match alone never verifies current availability, condition or item specifics.",
   "cases": [
     {
       "query": "Sony WH-1000XM6",
@@ -146,6 +146,30 @@
       "seller": "good-shop",
       "keep": true,
       "source": "synthetic allowlist non-banned seller"
+    },
+    {
+      "query": "Pixel 5",
+      "category": "phones",
+      "title": "Original Display für Google Pixel 5 Aufbereitet",
+      "seller": "ErepairShop",
+      "keep": false,
+      "source": "https://www.ebay.de/itm/137748784916"
+    },
+    {
+      "query": "Sony WH-1000XM6",
+      "category": "headphones",
+      "title": "OEM Sony WH-1000XM6 Powerboard PCB SUB-R-11 Rechts Interne Platine - Ersatzteile",
+      "seller": "JoesGE",
+      "keep": false,
+      "source": "https://www.ebay.de/itm/327337313041"
+    },
+    {
+      "query": "iPhone 16 Pro Max",
+      "category": "phones",
+      "title": "Apple iPhone 16 PRO MAX - 256GB - TITAN WÜSTENSAND , sehr gut erhalten in OVP",
+      "seller": "foxperry",
+      "keep": true,
+      "source": "https://www.ebay.de/itm/206576929321"
     }
   ]
 }
