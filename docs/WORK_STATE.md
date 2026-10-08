@@ -179,3 +179,8 @@ Next available task is fresh original DE-profile4-basket catalogue/delivery/impo
 ## Cloud search correction 2026-10-08T12:13:50.606445+00:00
 
 Fresh source Python8a84533 / Androidebd216e, both codex/cloud-work. Confirmed live DE HTML OR collapse (60→1 card) and missed Kostenlose Abholung marker; repaired both engines with isolated regressions. Python243 unit +baseline5 sync passed. Android current Gradle/tests pending at this checkpoint. User manifest/main/mode/Telegram/seen/limits/bans/phone unchanged. Evidence: qa/results/cloud-search-20261008/REPORT.md. Independent24×4 collection ongoing; no full acceptance or UI claim.
+
+
+## Cloud statistics checkpoint 2026-10-08T12:36:59.132119+00:00
+
+Both codex/cloud-work: exclusive offer/bid buckets and format prices; Android refill rejection preservation and alias chooser; no production/main/state/phone changes.246 Python +5 sync +248 Android units and both APKs pass locally. GitHub fixture UI pending; local emulator no KVM/no boot. Browser DE challenge at12:27:47 stopped all eBay access.24×4 bounded HTTP snapshots are discovery only, acceptance PARTIAL. See qa/results/cloud-search-20261008/REPORT.md.

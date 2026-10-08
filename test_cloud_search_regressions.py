@@ -49,3 +49,21 @@ class CloudSearchRegressions(unittest.TestCase):
         self.assertEqual('blocked',error)
         self.assertEqual(1,len(rows))
         self.assertEqual(2,len(calls))
+
+    def test_phone_aspect_retains_the_ebay_specific_nested_encoding(self):
+        from urllib.parse import urlsplit,parse_qs
+        with patch.object(monitor.config,'get_settings',return_value={}):
+            url=monitor._build_url_with_host('ebay.de',{'query':'iPhone 16 Pro Max','filters':{'category':'phones'}})
+        self.assertEqual(['Apple%20iPhone%2016%20Pro%20Max'],parse_qs(urlsplit(url).query)['Modell'])
+        self.assertIn('Apple%2520iPhone%252016%2520Pro%2520Max',url)
+    def test_hybrid_has_one_bid_bucket_and_its_separate_bin_price(self):
+        row={'item_id':'hybrid','buy_now':True,'auction':True,'best_offer':True,'price':100,'total_price':106,'auc_price':100,'auc_total_price':106,'bin_price':1500,'bin_total_price':1506}
+        bins,offers,auctions,auc_offers=monitor.split_statistics_buckets([row])
+        self.assertFalse(bins);self.assertFalse(auc_offers)
+        self.assertEqual(1506,offers[0]['total_price']);self.assertEqual(106,auctions[0]['total_price'])
+        self.assertFalse(auctions[0]['best_offer']);self.assertTrue(row['buy_now'])
+    def test_offer_auction_never_duplicates_merely_because_it_ends_soon(self):
+        row={'item_id':'offer','buy_now':False,'auction':True,'best_offer':True,'bids_count':0,'time_left':'2ч','price':100,'total_price':106}
+        split=monitor.split_statistics_buckets([row]);self.assertFalse(split[2]);self.assertEqual(1,len(split[3]))
+        row['bids_count']=2
+        split=monitor.split_statistics_buckets([row]);self.assertEqual(1,len(split[2]));self.assertFalse(split[3])

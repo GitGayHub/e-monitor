@@ -1332,8 +1332,9 @@ def _phone_model_aspect_params(query_norm):
     if not model:
         return None
 
-    # eBay aspect values in search URLs are encoded once inside the parameter,
-    # then encoded again as part of the query string.
+    # eBay aspects require an encoded value inside the URL parameter.
+    # Live DE DOM: double-encoded value shows the selected model chip;
+    # a plain model value silently removes that aspect.
     return {
         "Modell": requests.utils.quote(model),
         "_dcat": EBAY_DEVICE_CATEGORY_IDS.get("phones") or "9355",
@@ -6231,6 +6232,26 @@ def _parse_search_body(body, host, query):
     return [], None
 
 
+def split_statistics_buckets(rows):
+    """One bid basket and one BIN basket per hybrid, with their actual prices."""
+    bins, offers, auctions, auction_offers = [], [], [], []
+    for item in rows:
+        def side(prefix, **flags):
+            result = copy.deepcopy(item)
+            result.update(flags)
+            for key in ("price", "total_price", "import_charges"):
+                value = item.get(prefix + "_" + key)
+                if value is not None:
+                    result[key] = value
+            return result
+        if item.get("buy_now"):
+            (offers if item.get("best_offer") else bins).append(side("bin", auction=False))
+        if item.get("auction"):
+            active_offer = bool(not item.get("buy_now") and item.get("best_offer") and item.get("bids_count") in (0, None))
+            (auction_offers if active_offer else auctions).append(side("auc", buy_now=False, best_offer=active_offer))
+    return bins, offers, auctions, auction_offers
+
+
 def _statistics_empty_bucket_label(*, side_ok=False, genuine_empty=False, error=None):
     if side_ok:
         return "❌", "Не найдено подходящих"
@@ -6665,6 +6686,8 @@ def _fetch_quota_html(search, force=False):
             variant.update(_query_override=query, _variant_child=True)
             if listing:
                 variant.setdefault("filters",{})["listing_type"] = listing
+                if listing == "auction":
+                    variant["filters"].pop("min_price", None)
             found, error = fetch_ebay_ex(variant, force=force)
             collected.extend(found)
             if error:
@@ -8338,36 +8361,7 @@ async def process_searches(bot, once=False):
 
                 # Group filtered items into Buy It Now and Auction, handling hybrid listings
                 def _split_buckets(rows):
-                    bin_no_bo = []
-                    bin_bo = []
-                    auc_no_bo = []
-                    auc_bo = []
-                    for item in rows:
-                        if item.get("buy_now"):
-                            bin_item = copy.deepcopy(item)
-                            bin_item["auction"] = False
-                            bin_item["price"] = item.get("bin_price") or item["price"]
-                            bin_item["total_price"] = item.get("bin_total_price") or item["total_price"]
-                            bin_item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
-                            if not item.get("best_offer"):
-                                bin_no_bo.append(bin_item)
-                            else:
-                                bin_bo.append(bin_item)
-                        if item.get("auction"):
-                            auc_item = copy.deepcopy(item)
-                            auc_item["buy_now"] = False
-                            auc_item["price"] = item.get("auc_price") or item["price"]
-                            auc_item["total_price"] = item.get("auc_total_price") or item["total_price"]
-                            auc_item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
-                            if not item.get("best_offer"):
-                                auc_no_bo.append(auc_item)
-                            else:
-                                if item.get("bids_count") in (0, None):
-                                    auc_bo.append(auc_item)
-                                minutes = _parse_time_left_to_minutes(item.get("time_left") or "")
-                                if minutes is not None and minutes <= 1440:
-                                    auc_no_bo.append(auc_item)
-                    return bin_no_bo, bin_bo, auc_no_bo, auc_bo
+                    return split_statistics_buckets(rows)
 
                 bin_no_bo, bin_bo, auc_no_bo, auc_bo = _split_buckets(filtered)
 
