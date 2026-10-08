@@ -67,3 +67,31 @@ class CloudSearchRegressions(unittest.TestCase):
         split=monitor.split_statistics_buckets([row]);self.assertFalse(split[2]);self.assertEqual(1,len(split[3]))
         row['bids_count']=2
         split=monitor.split_statistics_buckets([row]);self.assertEqual(1,len(split[2]));self.assertFalse(split[3])
+
+    def test_same_complete_live_seller_inputs_as_android(self):
+        import json
+        from pathlib import Path
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/cloud_search_details_2026-10-08.json').read_text())
+        for case in cases:
+            with self.subTest(item=case['id']):
+                details=case['details']
+                # Project the current own-price format; do not use a stale SERP price.
+                auction='AUCTION' in details['buyingOptions']
+                price=float((details.get('currentBidPrice') if auction else details['price'])['value'])
+                item={'item_id':case['id'],'title':details['title'],'price':price,'auction':auction,'buy_now':not auction}
+                search={'query':case['query'],'filters':{'category':case['category']}}
+                self.assertEqual(case['expected'],monitor._details_match_contract(item,search,details))
+
+    def test_spaced_fake_sale_declaration_preserves_negations_and_warnings(self):
+        for body in ['Ich verkaufe diese ausschließlich als F A K E.', 'Das sind F A K E -- I Phones.', 'This is a fake iPhone.']:
+            self.assertTrue(monitor._phone_description_declares_fake(body),body)
+        for body in ['Das ist kein Fake iPhone.', 'This is not a fake iPhone.', 'Vorsicht vor Fake Angeboten. Mein iPhone ist original.', 'Ich verkaufe es nicht als Fake.']:
+            self.assertFalse(monitor._phone_description_declares_fake(body),body)
+
+    def test_iframe_head_cannot_make_a_placeholder_or_prefix_a_wrong_mouse_model(self):
+        self.assertEqual('',monitor._clean_description('<html><head><title>eBay</title></head><body>N/a</body></html>'))
+        self.assertEqual('Logitech G PRO 2 LIGHTSPEED',monitor._clean_description('<html><head><title>eBay</title></head><body>Logitech G PRO 2 LIGHTSPEED</body></html>').strip())
+    def test_nubia_model_aspect_can_omit_brand_but_not_generation_or_variant(self):
+        self.assertTrue(monitor._phone_model_aspect_matches('Z80 Ultra','Nubia Z80 Ultra'))
+        for other in ['Z70 Ultra','Z80 Ultra Leading','Z70S Ultra']:
+            self.assertFalse(monitor._phone_model_aspect_matches(other,'Nubia Z80 Ultra'))

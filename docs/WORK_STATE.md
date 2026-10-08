@@ -184,3 +184,10 @@ Fresh source Python8a84533 / Androidebd216e, both codex/cloud-work. Confirmed li
 ## Cloud statistics checkpoint 2026-10-08T12:36:59.132119+00:00
 
 Both codex/cloud-work: exclusive offer/bid buckets and format prices; Android refill rejection preservation and alias chooser; no production/main/state/phone changes.246 Python +5 sync +248 Android units and both APKs pass locally. GitHub fixture UI pending; local emulator no KVM/no boot. Browser DE challenge at12:27:47 stopped all eBay access.24×4 bounded HTTP snapshots are discovery only, acceptance PARTIAL. See qa/results/cloud-search-20261008/REPORT.md.
+
+
+## DE discovery/parity checkpoint 2026-10-08T12:54:13.136490+00:00
+
+PARTIAL/BLOCKED.130 requests,94 dedicated profiles(93 valid),36 extra aliases,2702 IDs;35 complete bodies read,321 private paired relevance replays passed. Python shortNubia aspect/headTitle bugs and both spacedFake declarations repaired;17 public paired fixtures. No live DE delivered bargain/minimum/all96 acceptance, no Android liveHTTP. Local250 Python +5 sync +251 Android/APKs; latest emulatorUI/currentHEAD CI pending. Stage2 pair Python5e681fd/Androidc7552c8, CI37778181423 green. Production/phone/main/state/owner bans remain unchanged. See qa/results/cloud-search-20261008/REPORT.md and MATRIX.md for exactcoverage/items.
+
+Owner read-only16hidden/1seller replay passed both. InitialGitHubUI boot blocked by disk, unused hosted-runner packages cleanup fixes environment for next run; no successful gestures yet.

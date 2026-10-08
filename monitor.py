@@ -1651,6 +1651,10 @@ _PHONE_MODEL_PATTERNS = (
 
 def _phone_model_aspect_matches(value, query):
     value, query = _normalize(value), _normalize(query)
+    # Own Model often abbreviates a verified Nubia title as "Z80 Ultra".
+    # Expand only that aspect, retaining generation/S/Leading comparisons.
+    if "nubia" in query and re.match(r"^z\s*\d{2}[a-z]?\b", value):
+        value = "nubia " + value
     if any(re.search(pattern, value) for pattern in _PHONE_MODEL_PATTERNS):
         return _matches_phone_query_model(value, query)
     generation = re.search(r"\biphone\s*(15|16|17)\s*pro\s*max\b", query)
@@ -1687,6 +1691,18 @@ def _phone_model_number_matches(value, query):
             return all(not a or a.replace(' ','') == (b or '').replace(' ','')
                        for a,b in zip(actual.groups(),wanted.groups()))
     return _phone_model_aspect_matches(value,query)
+
+
+def _phone_description_declares_fake(description):
+    """Own positive identity/sale declaration, including 820206597250's F A K E."""
+    text = _normalize(_clean_description(description or ""))
+    text = re.sub(r"\bf[\s.-]*a[\s.-]*k[\s.-]*e\b", "fake", text)
+    pattern = r"\b(?:als|ist|sind|is|are)\s+(?:(?:ein|eine|a|an)\s+)?fake\b|\bfake\s*(?:[-–—]+\s*)?(?:i\s*phones?|iphones?)\b"
+    for match in re.finditer(pattern, text):
+        before = text[max(0, match.start() - 25):match.start()]
+        if not re.search(r"\b(?:kein\w*|nicht|no|not|never)\s+(?:(?:ein|eine|a|an)\s+)?$", before):
+            return True
+    return False
 
 
 def _phone_description_purpose_confirmed(description):
@@ -4968,6 +4984,10 @@ def _clean_description(html_text):
     html_text = _strip_review_sections(html_text)
     if "<" in html_text:
         soup = BeautifulSoup(html_text, "html.parser")
+        # An iframe's <title>eBay</title> is not seller text. It must not
+        # legitimise a body containing only N/a or prefix a model declaration.
+        if soup.head is not None:
+            soup.head.decompose()
         for el in soup.select("script,style,noscript,.product_crosssell"):
             el.decompose()
         # Actual Office Partner template keeps legal warranty examples in a
@@ -5614,6 +5634,8 @@ def _details_match_contract(item, search, details, *, require_description=True):
         if not _phone_specifications_match(title, details.get("description") or "", query):
             return False
         if not _phone_description_purpose_confirmed(details.get("description") or ""):
+            return False
+        if _phone_description_declares_fake(details.get("description") or ""):
             return False
         if "iphone" in query and re.search(r"\b(?:nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b|\b(?:nicht|kein)\s+(?:um\s+)?(?:ein\s+)?(?:original(?:es|er|en)?\s+)?(?:apple\s+)?iphone\b", _normalize(_clean_description(details.get("description") or ""))):
             return False
