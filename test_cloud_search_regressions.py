@@ -95,3 +95,9 @@ class CloudSearchRegressions(unittest.TestCase):
         self.assertTrue(monitor._phone_model_aspect_matches('Z80 Ultra','Nubia Z80 Ultra'))
         for other in ['Z70 Ultra','Z80 Ultra Leading','Z70S Ultra']:
             self.assertFalse(monitor._phone_model_aspect_matches(other,'Nubia Z80 Ultra'))
+
+    def test_pc_design_lines_are_not_display_defects_but_actual_panel_lines_remain(self):
+        style='Minimalistisches Design – Hochwertige Materialien, klare Linien.'
+        self.assertFalse(monitor._is_description_blocked(style,'computers'))
+        self.assertTrue(monitor._is_description_blocked(style+' Das Display hat Linien.','computers'))
+        self.assertTrue(monitor._is_description_blocked('Das Display hat klare Linien.','computers'))

@@ -53,3 +53,8 @@ Both source commits Python2fac998 / Android631e0a9 are green in [readiness377808
 [API36 UI37780828987](https://github.com/GitGayHub/e-monitor-android/actions/runs/37780828987) boots with KVM after disk fix; all4 instrumentation tests passed,0skip/fail. Downloaded XML verifies persistence/cap15, legacy repeat, four-basket longpress+alias and actualopenUrl ACTION_VIEW interception. External adb launch correctly resolves Chrome, but downloaded browser screenshot shows SystemUI ANR; it is NOT proof of a rendered browser window.
 
 Only isolated workflow changes follow: stop the4GB Gradle daemon before emulator, run prebuilt connected tests with1.5GB heap, API35/Nexus4/3GBRAM/4cores, and explicitly assert focused Chrome window after offline ACTION_VIEW -W. No new eBay network requests. Both API36 component proof and external-window limit remain recorded; next test pending. App/Python source unchanged since green631e0a9/2fac998.
+
+
+## Additional confirmed whole-PC false rejection
+
+198304841229 (2359EUR, fixed full5070TiPC) was incorrectly rejected for case-design phrase `Minimalistisches Design – Hochwertige Materialien, klare Linien`. Both engines now ignore only this exact aesthetic clause, preserving actual display-lines rejections, with Unicode NBSP regression. Current local251 Python +5 sync /252 Android tests and bothAPKs pass;18 public whole-body fixtures /321 private parity /41 independently read bodies. API35 retry did not run tests because minSdk36; API36 component4-pass proof remains valid for prior source; current-source UI pending.

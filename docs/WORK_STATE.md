@@ -193,3 +193,10 @@ PARTIAL/BLOCKED.130 requests,94 dedicated profiles(93 valid),36 extra aliases,27
 Owner read-only16hidden/1seller replay passed both. InitialGitHubUI boot blocked by disk, unused hosted-runner packages cleanup fixes environment for next run; no successful gestures yet.
 
 Latest source2fac998/631e0a9 greenCI37780829091; APK445c8eee4ffc8d475310524e93cb002d828c40f566d887b89a792a1dafe8e1b8 verified download. API36 UI37780828987 all4 component tests pass; externalChrome screenshotSystemUI ANR, rendering not certified. Isolated lighterAPI35/heap/window-focus check prepared, app/production unchanged.
+
+
+## Whole-PC description regression 2026-10-08T13:33:00Z
+
+Both engines falsely rejected real2359EUR fixed5070TiPC198304841229: seller case-design clause `Minimalistisches Design – Hochwertige Materialien, klare Linien` matched display-defect word `linien`. Narrow exact aesthetic clause removed; actual display-lines controls still rejected, Kotlin NBSP fixture handled with Unicode regex. No filter/limit/category weakening.251 Python +5 sync,252 Android units and bothAPKs pass; private321 whole-body parity and18 public fixtures,41 independent bodies read. Full96 basket acceptance remains BLOCKED after DE protection; no further eBay requests.
+
+API36 run37780828987 proved4 component UI tests; external Chrome window unproven due SystemUI ANR. API35 retry37783346807 is incompatible with app minSdk36 and ran no component tests. Workflow corrected to36 with reduced heap/runner footprint; current-source CI/UI pending. Production/main/state/phone unchanged.

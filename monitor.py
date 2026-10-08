@@ -5119,6 +5119,9 @@ def _is_description_blocked(desc_html, category):
     desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+    # 198304841229: clear lines describe the PC case's minimalist design,
+    # not screen artefacts. Remove only this exact positive design clause.
+    desc_norm = re.sub(r"\bminimalistisches\s+design\s*[-–—:]\s*hochwertige\s+materialien,?\s*klare\s+linien\b", " ", desc_norm)
     if category == "headphones" and _headphone_structure_damaged(desc_norm):
         return True
     # 318450377900: the merchant restricts customer DATA after fulfillment,
