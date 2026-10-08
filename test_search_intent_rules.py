@@ -171,6 +171,19 @@ class SearchIntentRuleTests(unittest.TestCase):
         bad_details = {"title": "ASUS Vivobook Pro 14X OLED", "description": "Ryzen 7 5800H 16 GB RAM OLED"}
         self.assertFalse(monitor._intent_details_match(search, candidate, bad_details))
 
+    def test_sony_wh_wf_hyphenated_aliases_preserve_headphone_family(self):
+        from query_variants import phone_aliases
+        for family in ("wh", "wf"):
+            query = f"Sony {family.upper()}-1000XM6"
+            aliases = phone_aliases(query)
+            self.assertIsNotNone(aliases, query)
+            self.assertIn(f"sony {family}-1000xm6", aliases)
+            self.assertIn(f"sony {family}1000xm6", aliases)
+            self.assertIn(f"sony {family} 1000 xm6", aliases)
+            self.assertEqual(aliases, monitor._search_query_variants({"query": query, "filters": {"category": "headphones"}}))
+            other = "wf" if family == "wh" else "wh"
+            self.assertFalse(any(f"sony {other}" in value for value in aliases))
+
     def test_rtx_oled_search_variants(self):
         search = {"query": "4050 oled", "filters": {"category": "laptops"}}
         self.assertEqual(
