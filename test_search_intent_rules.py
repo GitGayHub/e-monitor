@@ -90,6 +90,23 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertTrue(monitor._is_phone_accessory_title(
             monitor._normalize("iPhone 16 Pro Max Display Ersatzteil")))
 
+    def test_html_sold_out_notices_only_from_own_listing(self):
+        """A seller's sold-out quantity is unavailable; related items are irrelevant."""
+        cases = [
+            ('<div class="x-quantity__availability">Dieser Artikel ist nicht mehr vorrätig. 3 verkauft</div>', True),
+            ('<div class="x-quantity__availability">This item is out of stock</div>', True),
+            ('<section class="recommended">Dieser Artikel ist nicht mehr vorrätig</section>', False),
+        ]
+        for html, expected in cases:
+            with self.subTest(html=html):
+                details = monitor._parse_item_details_html(
+                    '<h1 class="x-item-title">REDMAGIC 11 Pro 512GB</h1>' + html,
+                    description="Voll funktionsfähiges Smartphone."
+                )
+                unavailable = any(row.get("estimatedAvailabilityStatus") == "UNAVAILABLE"
+                                  for row in details.get("estimatedAvailabilities", []))
+                self.assertEqual(expected, unavailable)
+
     def test_browser_verified_console_generation_and_cover_bundle(self):
         query = 'playstation 5 pro'
         wrong = [
