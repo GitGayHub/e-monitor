@@ -801,9 +801,14 @@ class SearchIntentRuleTests(unittest.TestCase):
             "query": "Sony WH-1000XM6",
             "filters": {"listing_type": "buy_now_offer", "limit_price": 200, "max_price": 2500},
         }
-        prepared = monitor._prepare_monitor_fetch_search(search)
-        self.assertEqual(prepared["filters"]["sort"], "price_asc")
-        self.assertGreaterEqual(prepared["filters"]["_ipg"], 240)
+        # Page size is deliberately bounded on Actions; the old expectation
+        # silently depended on the developer's environment and failed in CI.
+        for on_actions, expected_page in ((False,240),(True,60)):
+            with patch.object(monitor,"_on_github_actions",return_value=on_actions):
+                prepared = monitor._prepare_monitor_fetch_search(search)
+            self.assertEqual(prepared["filters"]["sort"], "price_asc")
+            self.assertEqual(prepared["filters"]["_ipg"], expected_page)
+            self.assertNotIn("_ipg", search["filters"])
 
     def test_xm6_rejects_implausible_4_euro_floor(self):
         search = {
