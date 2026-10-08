@@ -4716,8 +4716,18 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         "title": title_text,
         "localizedAspects": aspects,
     }
-    status = " ".join(el.get_text(" ", strip=True) for el in soup.select(".d-top-panel-message, .d-statusmessage__notice-live-region"))
-    if re.search(r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)", status, re.I):
+    # Only the own listing's status/quantity modules, never recommendations.
+    status = " ".join(el.get_text(" ", strip=True) for el in soup.select(
+        ".d-top-panel-message, .d-statusmessage__notice-live-region, "
+        ".x-quantity__availability, [data-testid=x-quantity__availability]"
+    ))
+    if re.search(
+        r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)|"
+        r"(?:dieser artikel ist\s+)?nicht mehr vorr[aä]tig|"
+        r"(?:this item is\s+)?out of stock|"
+        r"this item is no longer available",
+        status, re.I,
+    ):
         result["estimatedAvailabilities"] = [{"estimatedAvailabilityStatus":"UNAVAILABLE"}]
     condition = next((a["value"] for a in aspects if a["name"].lower() in ("artikelzustand", "condition")), "")
     if condition:
