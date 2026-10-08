@@ -18,3 +18,62 @@ pass_seconds=6
 2026-10-08 18:04:46,514 - ╚══════════════════════════════════════════════╝
 2026-10-08 18:04:51,886 - eBay Browse: 0/46 searches due; interval 1007s; real quota remaining=2656, reset=1791529200.0
 2026-10-08 18:04:51,935 - === Done ===
+===== E MONITOR ITERATION 2 (budget 1800s) =====
+iteration_start=2026-10-08 18:05:53 UTC
+pass_seconds=11
+2026-10-08 18:05:55,040 - ╔══════════════════════════════════════════════╗
+2026-10-08 18:05:55,041 - ║              eBay Monitor Bot               ║
+2026-10-08 18:05:55,041 - ╠══════════════════════════════════════════════╣
+2026-10-08 18:05:55,041 -   Mode:       ONE-SHOT
+2026-10-08 18:05:55,041 -   Repo:       GitGayHub/e-monitor
+2026-10-08 18:05:55,041 -   GH Token:   ✅ GitGayHub
+2026-10-08 18:05:55,041 -   GH Actions: 🔄 in_progress 5m ago (E Monitor)
+2026-10-08 18:05:55,041 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-10-08 18:05:55,041 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-10-08 18:05:55,041 -   Chat ID:    5326338543
+2026-10-08 18:05:55,041 - ╠══════════════════════════════════════════════╣
+2026-10-08 18:05:55,041 -   Searches:   48 (746 excl, 8 incl words)
+2026-10-08 18:05:55,041 -   Bans:       1 sellers, 16 items
+2026-10-08 18:05:55,041 -   Seen:       1093 ids
+2026-10-08 18:05:55,041 - ╚══════════════════════════════════════════════╝
+2026-10-08 18:06:00,413 - eBay Browse: 2/46 searches due; interval 1005s; real quota remaining=2656, reset=1791529200.0
+2026-10-08 18:06:01,602 -   samsung galaxy s25 edge -> 173 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:06:01,603 -   samsung galaxy s25 edge: auction sweep error api_deferred
+2026-10-08 18:06:01,604 -   samsung galaxy s25 edge: newly listed sweep error api_deferred
+2026-10-08 18:06:01,605 -   samsung galaxy s25 edge: ending soon sweep error api_deferred
+2026-10-08 18:06:01,695 -   samsung galaxy s25 edge: 0 results, 0 candidates (none)
+2026-10-08 18:06:02,855 -   iphone 17 pro max -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-08 18:06:02,856 -   iphone 17 pro max: auction sweep error api_deferred
+2026-10-08 18:06:02,857 -   iphone 17 pro max: newly listed sweep error api_deferred
+2026-10-08 18:06:02,858 -   iphone 17 pro max: ending soon sweep error api_deferred
+2026-10-08 18:06:03,016 -   iphone 17 pro max: 4 results, 4 candidates (initial=4)
+2026-10-08 18:06:03,612 - Skipping notification for item 800772794915: details do not pass common rules
+Traceback (most recent call last):
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9322, in <module>
+    main()
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9316, in main
+    asyncio.run(run_once())
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 9195, in run_once
+    await process_searches(bot, once=True)
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 8889, in process_searches
+    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7705, in _process_notify_candidate
+    sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7095, in send_notification
+    trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 5231, in _seller_trust
+    if rating_count >= 3 and rating_percent >= 95:
+                             ^^^^^^^^^^^^^^^^^^^^
+TypeError: '>=' not supported between instances of 'str' and 'int'
