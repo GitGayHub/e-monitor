@@ -2023,26 +2023,18 @@ def _is_phone_accessory_title(title_norm):
         return True
 
     # Soft part/accessory words and hard accessory words
-    has_acc = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS)
+    # Transparent is also a legitimate phone colourway ("Transparent Edition").
+    # Only neutralize that exact descriptor for a complete, model-led handset.
+    # Explicit accessories (case / cover / skin / screen) remain rejected.
+    acc_hits = [w for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS
+                if _has_accessory_term(title_norm, w)]
+    has_acc = bool(acc_hits)
+    if (has_acc and set(acc_hits) == {"transparent"}
+            and _title_leads_with_phone_model(title_norm)
+            and _has_phone_storage(title_norm)
+            and re.search(r"\b(?:smartphone|phone|5g|gaming)\b", title_norm)):
+        return False
     if has_acc:
-        category = None
-        if category == "phones":
-            protective_acc_words = (
-                "case", "cover", "protector", "hülle", "huelle", "h?lle",
-                "displayschutz", "screen protector", "schutzfolie", "panzerglas",
-                "schutzglas", "displayfolie", "panzerfolie", "hardcover",
-                "sto?fest", "stossfest", "shockproof", "bumper",
-            )
-            strong_phone_hint = (
-                _has_phone_storage(title_norm)
-                or any(_has_term(title_norm, w) for w in (
-                    "smartphone", "handy", "phone", "5g", "gaming phone",
-                    "ohne simlock", "dual sim", "single sim", "global version",
-                    "global rom", "unlocked",
-                ))
-            )
-            if any(_has_accessory_term(title_norm, w) for w in protective_acc_words) and not strong_phone_hint:
-                return True
         if is_bundle and _title_leads_with_phone_model(title_norm):
             sep_pattern = re.compile(r"\b(?:mit|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
             m = sep_pattern.search(title_norm)
