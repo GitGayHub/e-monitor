@@ -205,3 +205,10 @@ API36 run37780828987 proved4 component UI tests; external Chrome window unproven
 ## Explicit Nubia aspect conflict checkpoint 2026-10-08T13:40:00Z
 
 Full seller-body/aspect independent review now49 captures.366530815294 title/body Z70UltraNX733J conflicts with own Model NubiaZ17mini64GB/5.2inch. Both parsers treated glued mini/lite names as unknown and skipped model refusal; recognize modifiers without changing normal generation/S/Leading checks.19 public identical whole-body fixtures /321 private parity replay prepared. Groups6Leading has no fetched own body in bounded discovery, not proof of no listings; Z70S chipset/body conflict retained as unverified, no policy invented. Latest local252 Python +5sync /253 Android and bothAPKs passed;321 private paired replay passed. Fresh source CI/UI pending.
+
+
+## Android runtime portability / UI evidence checkpoint 2026-10-08T14:09:00Z
+
+App-source252acad full4 tests pass on API36 (run37786436004); ec8d721 currentCI37787904512 success, APK a78e42336b35ee4727668717682b3d35a6d5555f269e6cf6217c0107642b459b independently downloaded. ecUI37787698185 has4 tests/0failures and actual visible Chrome FirstRun window, verified screenshot; overall failed because GitHub Ubuntu lacks rg. Evidence check uses core grep and full dumpsys window (windows-only lacks focus fields). No web-page fetch: emulator wifi/data disabled.
+
+Kotlin narrow case-design whitespace regex now explicitly includes NBSP/NNBSP rather than JVM Unicode flag. No Android flag failure was measured; portability improvement only. Added5th device-runtime control for real seller phrase, actual panel-lines, fake statement/negation, and Nubia model conflict.253 local JVM tests and bothAPKs passed;5-test API36 and freshcurrentcode CI/APK pending. Python source unchanged; no eBay network/state/phone/main/config modification.
