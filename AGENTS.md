@@ -1,3 +1,7 @@
+# ACTIVE CLOUD HANDOFF — search QA acceptance (2026-10-08)
+
+**Read first:** [docs/CLOUD_SEARCH_ACCEPTANCE_2026-10-08.md](docs/CLOUD_SEARCH_ACCEPTANCE_2026-10-08.md) and [docs/qa/CLOUD_ACCEPTANCE_QUEUE_2026-10-08.json](docs/qa/CLOUD_ACCEPTANCE_QUEUE_2026-10-08.json). User requested complete independent **real eBay discovery + correct bans** on BOTH `codex/cloud-work` repositories; a successful APK build alone does NOT complete the task. Explicit authorization overrides older generic qa/FIRST_TASK and qa/WORKFLOW instructions to wait for stats input, but NEVER permits touching production searches, normal mode, recipient, seen, blacklist or physical phone. Record each verified batch with evidence and GitHub commits. Do not use blind pull/reset.
+
 # e-monitor — notes for Grok / other agents
 
 ## Continuation between PC and Codex Cloud

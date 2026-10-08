@@ -124,3 +124,7 @@ Nubia Z80 Ultra Leading/LV должен показывать честное «Н
 - Android Actions `37750723357` запущен, результат считать не подтверждённым до явного `success`; изменение не развернуто в production `main` и не установлено на телефон.
 
 - Дополнительно добавлено **5 контрольных карточек с открытых публичных eBay-страниц** (Pixel 5 Display/варианты; iPhone 16 Pro Max repair service/стекло; Sony WH-1000XM6 — наушники против compatible case) в общие Python/Android JSON fixtures. В снимке после добавления **41** случай. Сравнение проверяет title/device intent и banned seller, но не утверждает актуальную доступность лотов; CI сборки с новыми cases ещё не подтверждён.
+
+## CLOUD ACCEPTANCE HANDOFF — 2026-10-08
+
+Owner instructed continued autonomous work on accurate live eBay search and banning, not just APK. See **docs/CLOUD_SEARCH_ACCEPTANCE_2026-10-08.md** and machine-readable **docs/qa/CLOUD_ACCEPTANCE_QUEUE_2026-10-08.json**, published in BOTH cloud-work branches. 24 products × 4 buckets = 96 initially PENDING checks derived from 48 stored/46 enabled searches in read-only production manifest. Real live evidence, seller, description, prices, missed cheap items, wrong-device/parts and false positives must be assessed; previous 41 web-index cases only establish titles. Report actual CI HEAD and APK hash. Keep production normal, Telegram, limits, searches, seen and blacklist untouched; physical phone inaccessible. Cloud handoff documents alone do **not** start a Codex Cloud task, and acceptance remains NOT DONE.

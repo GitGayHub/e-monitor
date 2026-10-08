@@ -1,0 +1,1490 @@
+{
+  "schema": 1,
+  "createdAt": "2026-10-08",
+  "purpose": "Independent eBay search relevance and filtering acceptance (NOT completed)",
+  "source": "GitGayHub/e-monitor/main/mobile/app_sync.json (READ ONLY), QA matrix",
+  "basketsPerProduct": 4,
+  "totals": {
+    "productGroups": 24,
+    "storedSearches": 48,
+    "enabled": 46,
+    "disabled": 2,
+    "pendingChecks": 96
+  },
+  "statuses": [
+    "PENDING",
+    "IN_PROGRESS",
+    "PASS",
+    "FAIL",
+    "BLOCKED",
+    "UNVERIFIABLE",
+    "NO_RESULTS_CONFIRMED"
+  ],
+  "statusPolicy": "Do not call PASS or NO_RESULTS_CONFIRMED without live evidence; network errors/CAPTCHA must be BLOCKED.",
+  "groups": [
+    {
+      "number": 1,
+      "slug": "samsung_galaxy_s25_edge",
+      "product": "samsung galaxy s25 edge",
+      "limitSnapshot": "325€",
+      "category": "phones",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "samsung_galaxy_s25_edge",
+          "query": "samsung galaxy s25 edge",
+          "enabled": true,
+          "listingType": "all",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": null,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 2,
+      "slug": "iphone_17_pro_max",
+      "product": "iphone 17 pro max",
+      "limitSnapshot": "910€",
+      "category": "phones",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "iphone_17_pro_max",
+          "query": "iphone 17 pro max",
+          "enabled": true,
+          "listingType": "all",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": null,
+          "maxPrice": 910,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 3,
+      "slug": "redmagic_11_pro",
+      "product": "Redmagic 11 Pro",
+      "limitSnapshot": "400€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "redmagic_11_pro_buy",
+          "query": "Redmagic 11 Pro",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "redmagic_11_pro_auc",
+          "query": "Redmagic 11 Pro",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 4,
+      "slug": "redmagic_11s_pro",
+      "product": "Redmagic 11S Pro",
+      "limitSnapshot": "450€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "redmagic_11s_pro_buy",
+          "query": "Redmagic 11S Pro",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "redmagic_11s_pro_auc",
+          "query": "Redmagic 11S Pro",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 5,
+      "slug": "nubia_z80_ultra",
+      "product": "Nubia Z80 Ultra",
+      "limitSnapshot": "375€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "nubia_z80_ultra_buy",
+          "query": "Nubia Z80 Ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 375,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z80_ultra_auc",
+          "query": "Nubia Z80 Ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 375,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 6,
+      "slug": "nubia_z80_ultra_leading",
+      "product": "Nubia Z80 Ultra Leading",
+      "limitSnapshot": "450€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "nubia_z80_ultra_leading_buy",
+          "query": "Nubia Z80 Ultra Leading",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z80_ultra_leading_auc",
+          "query": "Nubia Z80 Ultra Leading",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 7,
+      "slug": "nubia_z70_ultra",
+      "product": "Nubia Z70 Ultra",
+      "limitSnapshot": "325€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "nubia_z70_ultra_buy",
+          "query": "Nubia Z70 Ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z70_ultra_auc",
+          "query": "Nubia Z70 Ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 8,
+      "slug": "nubia_z70s_ultra",
+      "product": "Nubia Z70S Ultra",
+      "limitSnapshot": "325€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "nubia_z70s_ultra_buy",
+          "query": "Nubia Z70S Ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z70s_ultra_auc",
+          "query": "Nubia Z70S Ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 9,
+      "slug": "pixel_5",
+      "product": "Pixel 5",
+      "limitSnapshot": "70€",
+      "category": "phones",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "pixel_5_buy",
+          "query": "Pixel 5",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 70,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "pixel_5_auc",
+          "query": "Pixel 5",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 70,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 10,
+      "slug": "sony_wh_1000xm6",
+      "product": "Sony WH-1000XM6",
+      "limitSnapshot": "200€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "sony_wh_1000xm6_buy",
+          "query": "Sony WH-1000XM6",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 200,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "sony_wh_1000xm6_auc",
+          "query": "Sony WH-1000XM6",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 200,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 11,
+      "slug": "5070_ti_pc",
+      "product": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+      "limitSnapshot": "1300€",
+      "category": "computers",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "5070_ti_pc_buy",
+          "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1300,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "5070_ti_pc_auc",
+          "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1300,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 12,
+      "slug": "4080_pc",
+      "product": "4080 (pc, rechner, computer, desktop, gaming pc)",
+      "limitSnapshot": "1200€",
+      "category": "computers",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "4080_pc_buy",
+          "query": "4080 (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1200,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "4080_pc_auc",
+          "query": "4080 (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1200,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 13,
+      "slug": "samsung_s24_ultra",
+      "product": "samsung s24 ultra",
+      "limitSnapshot": "350€",
+      "category": "phones",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "samsung_s24_ultra_buy",
+          "query": "samsung s24 ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 350,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "samsung_s24_ultra_auc",
+          "query": "samsung s24 ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 350,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 14,
+      "slug": "4050_oled",
+      "product": "4050 oled",
+      "limitSnapshot": "625€",
+      "category": "laptops",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "4050_oled_buy",
+          "query": "4050 oled",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 625,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "4050_oled_auc",
+          "query": "4050 oled",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 625,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 15,
+      "slug": "4060_oled",
+      "product": "4060 oled",
+      "limitSnapshot": "750€",
+      "category": "laptops",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "4060_oled_buy",
+          "query": "4060 oled",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "4060_oled_auc",
+          "query": "4060 oled",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 16,
+      "slug": "asus_vivobook_14x_oled",
+      "product": "asus vivobook 14x oled",
+      "limitSnapshot": "425€",
+      "category": "laptops",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "asus_vivobook_14x_oled_buy",
+          "query": "asus vivobook 14x oled",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 425,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "asus_vivobook_14x_oled_auc",
+          "query": "asus vivobook 14x oled",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 425,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 17,
+      "slug": "logitech_superstrike",
+      "product": "logitech superstrike",
+      "limitSnapshot": "85€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "logitech_superstrike_buy",
+          "query": "logitech superstrike",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 85,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superstrike_auc",
+          "query": "logitech superstrike",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 85,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 18,
+      "slug": "logitech_superlight_2_std",
+      "product": "logitech superlight 2",
+      "limitSnapshot": "45€ / 65€",
+      "category": "mice",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "logitech_superlight_2_std_buy",
+          "query": "logitech superlight 2",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 45,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_std_auc",
+          "query": "logitech superlight 2",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 45,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_c_buy",
+          "query": "logitech superlight 2",
+          "enabled": false,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_c_auc",
+          "query": "logitech superlight 2",
+          "enabled": false,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 19,
+      "slug": "logitech_superlight_2_dex",
+      "product": "logitech superlight 2 dex",
+      "limitSnapshot": "65€",
+      "category": "mice",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "logitech_superlight_2_dex_buy",
+          "query": "logitech superlight 2 dex",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_dex_auc",
+          "query": "logitech superlight 2 dex",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 20,
+      "slug": "sony_ult_wear",
+      "product": "sony ult wear",
+      "limitSnapshot": "30€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "sony_ult_wear_buy",
+          "query": "sony ult wear",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 30,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "sony_ult_wear_auc",
+          "query": "sony ult wear",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 30,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 21,
+      "slug": "samsung_odyssey_oled_g6_500hz",
+      "product": "samsung odyssey oled g6 500hz",
+      "limitSnapshot": "400€",
+      "category": "monitors",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "samsung_odyssey_oled_g6_500hz_buy",
+          "query": "samsung odyssey oled g6 500hz",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "samsung_odyssey_oled_g6_500hz_auc",
+          "query": "samsung odyssey oled g6 500hz",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 22,
+      "slug": "ps5_pro",
+      "product": "(playstation 5 pro, ps5 pro)",
+      "limitSnapshot": "750€",
+      "category": "consoles",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "ps5_pro_buy",
+          "query": "(playstation 5 pro, ps5 pro)",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "consoles",
+          "location": "worldwide",
+          "minPrice": 300,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "ps5_pro_auc",
+          "query": "(playstation 5 pro, ps5 pro)",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "consoles",
+          "location": "worldwide",
+          "minPrice": 300,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 23,
+      "slug": "iphone_16_pro_max",
+      "product": "iPhone 16 Pro Max",
+      "limitSnapshot": "610€",
+      "category": "phones",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "iphone_16_pro_max_buy",
+          "query": "iPhone 16 Pro Max",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": 50,
+          "maxPrice": 610,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "iphone_16_pro_max_auc",
+          "query": "iPhone 16 Pro Max",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": null,
+          "maxPrice": 610,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    },
+    {
+      "number": 24,
+      "slug": "lg_ultragear_oled_480hz",
+      "product": "lg ultragear oled 480hz",
+      "limitSnapshot": "430€",
+      "category": "monitors",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "lg_ultragear_oled_480hz_buy",
+          "query": "lg ultragear oled 480hz",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 430,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "lg_ultragear_oled_480hz_auc",
+          "query": "lg ultragear oled 480hz",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 430,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Sofort+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        },
+        "Auktion+": {
+          "status": "PENDING",
+          "verifiedUnique": 0,
+          "evidencePath": null,
+          "checkedAtUtc": null
+        }
+      },
+      "progress": "NOT_STARTED"
+    }
+  ]
+}
