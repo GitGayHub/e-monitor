@@ -797,7 +797,9 @@ def _search_intent(search_or_query):
             "category": "laptops",
             "details_can_satisfy": True,
         }
-    if re.search(r"\b4080\b", ident) and _has_term(ident, "pc"):
+    from query_variants import gpu_pc_model
+    pc_gpu = gpu_pc_model(ident)
+    if pc_gpu == "4080":
         return {
             "kind": "gpu_pc",
             # Clean _nkw — parentheses OR-groups scramble eBay (same as monitors).
@@ -805,7 +807,7 @@ def _search_intent(search_or_query):
             "gpu": "4080",
             "category": "computers",
         }
-    if re.search(r"\b5070\s*ti\b|\b5070ti\b", ident) and _has_term(ident, "pc"):
+    if pc_gpu == "5070ti":
         return {
             "kind": "gpu_pc",
             # Live check 2026-08-15: `_nkw=5070+ti+pc&_sacat=0` finds auctions
@@ -827,6 +829,9 @@ def _search_intent(search_or_query):
 def _matches_samsung_odyssey_g6_500hz(text_norm):
     """True for Odyssey OLED G6 500Hz (G60SF / LS27FG602 / LS27FG604), not 360Hz G60SD."""
     t = text_norm or ""
+    # A model code cannot override an explicit non-500Hz refresh claim.
+    if re.search(r"\b(?:144|165|180|240|360)\s*hz\b", t) and not re.search(r"\b500\s*hz\b", t):
+        return False
     if re.search(r"\bg60sf\b", t) or re.search(r"\bls27fg60[24][a-z0-9]*\b", t):
         return True
     # Explicit non-500Hz sibling models without a 500Hz claim
@@ -911,10 +916,13 @@ def _intent_query(search):
 
 
 def _search_query_variants(search):
-    from query_variants import stored_aliases, phone_aliases
+    from query_variants import stored_aliases, phone_aliases, gpu_pc_aliases
     if isinstance(search,dict) and search.get('_variant_child'):
         return [_intent_query(search)]
     raw=search.get('query','') if isinstance(search,dict) else str(search)
+    pc_aliases = gpu_pc_aliases(raw)
+    if pc_aliases:
+        return pc_aliases
     explicit=stored_aliases(raw)
     if explicit:
         intent = _search_intent(search)
@@ -1324,8 +1332,9 @@ def _phone_model_aspect_params(query_norm):
     if not model:
         return None
 
-    # eBay aspect values in search URLs are encoded once inside the parameter,
-    # then encoded again as part of the query string.
+    # eBay aspects require an encoded value inside the URL parameter.
+    # Live DE DOM: double-encoded value shows the selected model chip;
+    # a plain model value silently removes that aspect.
     return {
         "Modell": requests.utils.quote(model),
         "_dcat": EBAY_DEVICE_CATEGORY_IDS.get("phones") or "9355",
@@ -1635,13 +1644,17 @@ _PHONE_MODEL_PATTERNS = (
     r"\b(?:galaxy\s*)?s(\d{2})(?:\s*(ultra|plus|fe|edge))?\b",
     r"\bpixel\s*(\d+[a-z]?)(?:\s*(pro\s*xl|pro|xl|fold))?\b",
     r"\boneplus\s*(\d{1,2}[a-z]?|ace)(?:\s*(pro|ultra))?\b",
-    r"\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro))?(?:\s*(leading))?\b",
+    r"\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro|mini|lite))?(?:\s*(leading))?\b",
     r"\b(?:red\s*magic|redmagic)\s*(\d{1,2})\s*(s)?(?:\s*(pro|air))?\b",
 )
 
 
 def _phone_model_aspect_matches(value, query):
     value, query = _normalize(value), _normalize(query)
+    # Own Model often abbreviates a verified Nubia title as "Z80 Ultra".
+    # Expand only that aspect, retaining generation/S/Leading comparisons.
+    if "nubia" in query and re.match(r"^z\s*\d{2}[a-z]?\b", value):
+        value = "nubia " + value
     if any(re.search(pattern, value) for pattern in _PHONE_MODEL_PATTERNS):
         return _matches_phone_query_model(value, query)
     generation = re.search(r"\biphone\s*(15|16|17)\s*pro\s*max\b", query)
@@ -1678,6 +1691,18 @@ def _phone_model_number_matches(value, query):
             return all(not a or a.replace(' ','') == (b or '').replace(' ','')
                        for a,b in zip(actual.groups(),wanted.groups()))
     return _phone_model_aspect_matches(value,query)
+
+
+def _phone_description_declares_fake(description):
+    """Own positive identity/sale declaration, including 820206597250's F A K E."""
+    text = _normalize(_clean_description(description or ""))
+    text = re.sub(r"\bf[\s.-]*a[\s.-]*k[\s.-]*e\b", "fake", text)
+    pattern = r"\b(?:als|ist|sind|is|are)\s+(?:(?:ein|eine|a|an)\s+)?fake\b|\bfake\s*(?:[-–—]+\s*)?(?:i\s*phones?|iphones?)\b"
+    for match in re.finditer(pattern, text):
+        before = text[max(0, match.start() - 25):match.start()]
+        if not re.search(r"\b(?:kein\w*|nicht|no|not|never)\s+(?:(?:ein|eine|a|an)\s+)?$", before):
+            return True
+    return False
 
 
 def _phone_description_purpose_confirmed(description):
@@ -1953,6 +1978,9 @@ def _has_accessory_term(title_norm, term):
         # describe the device; they are not a phone stand.
         if term_norm == "stand" and re.search(r"(?:zu|tu)stands?$", w):
             continue
+        # Lightweight describes a whole mouse, not a separately sold weight.
+        if term_norm == "weight" and w == "lightweight":
+            continue
         if term_norm == "kabel" and w.startswith("kabellos"):
             continue
         if w == term_norm:
@@ -1966,6 +1994,13 @@ def _has_accessory_term(title_norm, term):
 
 
 def _is_phone_accessory_title(title_norm):
+    # Keep explicit "kein Ersatzteil" / "ohne Ersatzteile" when a complete
+    # model-led handset with storage is being sold. Never remove actual defects
+    # or parts elsewhere in the title; seller details remain mandatory.
+    if _title_leads_with_phone_model(title_norm) and _has_phone_storage(title_norm):
+        title_norm = re.sub(
+            r"\b(?:kein|keine|keinen|ohne|no)\s+ersatzteile?\b", " ", title_norm
+        )
     service_patterns = (
         r"\b(?:unlock|entsperr|freischalt)[a-z]*\b.{0,30}\bservice\b",
         r"\bservice\b.{0,30}\b(?:unlock|entsperr|freischalt)[a-z]*\b",
@@ -2023,26 +2058,18 @@ def _is_phone_accessory_title(title_norm):
         return True
 
     # Soft part/accessory words and hard accessory words
-    has_acc = any(_has_accessory_term(title_norm, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS)
+    # Transparent is also a legitimate phone colourway ("Transparent Edition").
+    # Only neutralize that exact descriptor for a complete, model-led handset.
+    # Explicit accessories (case / cover / skin / screen) remain rejected.
+    acc_hits = [w for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS
+                if _has_accessory_term(title_norm, w)]
+    has_acc = bool(acc_hits)
+    if (has_acc and set(acc_hits) == {"transparent"}
+            and _title_leads_with_phone_model(title_norm)
+            and _has_phone_storage(title_norm)
+            and re.search(r"\b(?:smartphone|phone|5g|gaming)\b", title_norm)):
+        return False
     if has_acc:
-        category = None
-        if category == "phones":
-            protective_acc_words = (
-                "case", "cover", "protector", "hülle", "huelle", "h?lle",
-                "displayschutz", "screen protector", "schutzfolie", "panzerglas",
-                "schutzglas", "displayfolie", "panzerfolie", "hardcover",
-                "sto?fest", "stossfest", "shockproof", "bumper",
-            )
-            strong_phone_hint = (
-                _has_phone_storage(title_norm)
-                or any(_has_term(title_norm, w) for w in (
-                    "smartphone", "handy", "phone", "5g", "gaming phone",
-                    "ohne simlock", "dual sim", "single sim", "global version",
-                    "global rom", "unlocked",
-                ))
-            )
-            if any(_has_accessory_term(title_norm, w) for w in protective_acc_words) and not strong_phone_hint:
-                return True
         if is_bundle and _title_leads_with_phone_model(title_norm):
             sep_pattern = re.compile(r"\b(?:mit|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
             m = sep_pattern.search(title_norm)
@@ -2289,8 +2316,30 @@ def _strip_negated_condition_terms(text_norm):
     return re.sub(rf'\b(?:prevent(?:s|ing)?|verhindert|vermeidet|schutz\s+(?:vor|gegen))\s+{burn}\b', ' ', text)
 
 
+def _headphone_structure_damaged(text, is_title=False):
+    # Own Sony ULT listings disclose snapped units / broken headbands.
+    patterns = [r"\b(?:broken|snapped)\s+(?:headband|hinge|earcup)\b",
+                r"\b(?:headband|hinge|earcup|it|item|headphones?)\s+(?:(?:is|are)\s+)?(?:broken|snapped)\b"]
+    if is_title:
+        patterns.append(r"\bsnapped\W*$")
+    for pattern in patterns:
+        for match in re.finditer(pattern, text):
+            before = text[max(0, match.start()-30):match.start()]
+            if not re.search(r"\b(?:not|no|without|kein\w*|nicht|ohne)\s+(?:\w+\s+){0,2}$", before):
+                return True
+    return False
+
+
 def _is_category_blocked_title(title_norm, category, query_norm=None):
+    # Reuse the phone accessory classifier here, too: this helper is called
+    # outside the main filter pipeline (including previews and diagnostics).
+    # Previously "iPhone 16 Pro Max Display Ersatzteil" could return False
+    # even though _is_phone_accessory_title correctly rejected it.
+    if category == "phones" and _is_phone_accessory_title(title_norm):
+        return True
     if _is_accessory_product(title_norm,category):
+        return True
+    if category == "headphones" and _headphone_structure_damaged(title_norm, is_title=True):
         return True
     condition_title = _strip_negated_condition_terms(title_norm)
     if any(_has_term(condition_title, w) for w in BAD_CONDITION_WORDS):
@@ -2342,6 +2391,9 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         title_norm = re.sub(r"\b(?:akku|battery)(?:\s*(?:zustand|health|kapazitaet))?\s*(?:ca\.?|approx\.?|about|:)?\s*\d{1,3}\s*%", " ", title_norm)
     if category == "headphones" and re.search(r"\b(?:kopfhoerer|headphones|headset)\b.*\bkopfbuegel\b.*\b(?:over[- ]ear|on[- ]ear|bluetooth|faltbar|anc)\b", title_norm):
         title_norm = re.sub(r"\bkopfbuegel\b", " ", title_norm)
+    if category == "mice" and re.search(r"\b(?:mouse|maus)\b", title_norm) and not re.search(r"\b(?:fuer|for|fits|replacement|spare|ersatz\w*|repair|reparatur\w*|set|only|nur)\b", title_norm):
+        # Own complete mouse 318767580494: 5-Button is a feature count.
+        title_norm = re.sub(r"\b[1-9]\d?[-\s]+buttons?\b", " ", title_norm)
     # Components are rejected unless explicitly supplied with the main device.
     hard_parts = CATEGORY_HARD_PART_WORDS.get(category, ())
     if any(_has_accessory_term(title_norm, w) for w in hard_parts) and not _is_device_bundle(title_norm, category):
@@ -2564,51 +2616,16 @@ def _is_console_device_title(title_norm, query_norm):
 
 
 def _build_smart_search_query(search):
-    """Natively appends standard category-specific negative keywords to exclude defects and parts."""
-    query = _intent_query(search)
+    """HTML eBay discovery: fetch candidates; reject wrong items after parsing.
 
-    # Auto-expand Redmagic to match both space and spaceless versions
-    query_lower = query.lower()
-    if "redmagic" in query_lower:
-        import re
-        query = re.sub(r"\bredmagic\b", '(redmagic, "red magic")', query, flags=re.IGNORECASE)
-    elif "red magic" in query_lower:
-        import re
-        query = re.sub(r"\bred\s+magic\b", '(redmagic, "red magic")', query, flags=re.IGNORECASE)
-
-    if query.startswith("-") or " -" in query:
-        return query
-
-    filters = search.get("filters", {}) or {}
-    category = filters.get("category", "all")
-    eff_category = _effective_category(category, _normalize(query))
-
-    # Common defect exclusions useful for all searches (100% safe, no bundles can have these)
-    excludes = [
-        "defekt", "teildefekt", "ersatzteil", "reparatur",
-        "broken", "cracked", "damage", "damaged", "defect", "defective",
-        "repair", "wasserschaden",
-    ]
-    # "-parts" / "-spares" are dangerous for monitors/PCs (part of model names / "parts pack")
-    intent = _search_intent(search)
-    intent_kind = (intent or {}).get("kind")
-    if intent_kind not in (
-        "samsung_odyssey_oled_g6",
-        "lg_ultragear_oled",
-        "gpu_pc",
-        "rtx_oled_laptop",
-    ):
-        excludes.extend(["spares", "parts"])
-
-    # Category-specific safe defect/parts exclusions
-    if eff_category == "phones":
-        excludes.extend(["displayschaden", "icloud", "sperre", "gesperrt"])
-        # Keep accessory words out of the eBay-side negative query. eBay matches
-        # them against descriptions/specifics too, which hides real phones with
-        # included cases or screen protectors. Title filters handle accessories.
-
-    exclude_str = " ".join(f"-{w}" for w in excludes)
-    return f"{query} {exclude_str}"
+    eBay's minus operator suppresses titles containing the negative keyword
+    and can disable search expansion. In particular, -ersatzteil drops titles
+    explicitly saying "kein Ersatzteil". Search terms supplied by the user
+    (including their own operators) are preserved. Parts, faults, repair and
+    excluded sellers remain rejected by the existing title/detail filters.
+    Browse API uses a separate query and is unaffected.
+    """
+    return _intent_query(search)
 
 
 def _build_url_with_host(host, search, sub="www"):
@@ -3640,7 +3657,7 @@ def parse_ebay_results(html):
 
             is_pickup_only = False
             for txt in all_texts:
-                if any(marker in txt for marker in ("nur abholung", "nur selbstabholung", "abholung: nur abholung", "kein versand", "no shipping", "collection in person", "local pickup only", "pickup only")):
+                if any(marker in txt for marker in ("nur abholung", "nur selbstabholung", "abholung: nur abholung", "kostenlose abholung", "free local pickup", "kein versand", "no shipping", "collection in person", "local pickup only", "pickup only")):
                     is_pickup_only = True
                     break
 
@@ -4753,8 +4770,19 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         "title": title_text,
         "localizedAspects": aspects,
     }
-    status = " ".join(el.get_text(" ", strip=True) for el in soup.select(".d-top-panel-message, .d-statusmessage__notice-live-region"))
-    if re.search(r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)", status, re.I):
+    # Only the own listing's status/quantity modules, never recommendations.
+    status = " ".join(el.get_text(" ", strip=True) for el in soup.select(
+        ".d-top-panel-message, .d-statusmessage__notice-live-region, "
+        ".x-quantity__availability, [data-testid=x-quantity__availability]"
+    ))
+    if re.search(
+        r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)|"
+        r"\bitem sold on\b|"
+        r"(?:dieser artikel ist\s+)?nicht mehr vorr[aä]tig|"
+        r"(?:this item is\s+)?out of stock|"
+        r"this item is no longer available",
+        status, re.I,
+    ):
         result["estimatedAvailabilities"] = [{"estimatedAvailabilityStatus":"UNAVAILABLE"}]
     condition = next((a["value"] for a in aspects if a["name"].lower() in ("artikelzustand", "condition")), "")
     if condition:
@@ -4956,6 +4984,10 @@ def _clean_description(html_text):
     html_text = _strip_review_sections(html_text)
     if "<" in html_text:
         soup = BeautifulSoup(html_text, "html.parser")
+        # An iframe's <title>eBay</title> is not seller text. It must not
+        # legitimise a body containing only N/a or prefix a model declaration.
+        if soup.head is not None:
+            soup.head.decompose()
         for el in soup.select("script,style,noscript,.product_crosssell"):
             el.decompose()
         # Actual Office Partner template keeps legal warranty examples in a
@@ -5087,6 +5119,11 @@ def _is_description_blocked(desc_html, category):
     desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+    # 198304841229: clear lines describe the PC case's minimalist design,
+    # not screen artefacts. Remove only this exact positive design clause.
+    desc_norm = re.sub(r"\bminimalistisches\s+design\s*[-–—:]\s*hochwertige\s+materialien,?\s*klare\s+linien\b", " ", desc_norm)
+    if category == "headphones" and _headphone_structure_damaged(desc_norm):
+        return True
     # 318450377900: the merchant restricts customer DATA after fulfillment,
     # not the phone. Remove only this data-subject clause, never a device lock.
     data_subject = r"(?:(?:ihre|die)\s+)?(?:personenbezogenen?\s+)?(?:kunden)?daten"
@@ -5120,6 +5157,8 @@ def _is_description_blocked(desc_html, category):
     if re.search(r"\bsim(?:\s*(?:karten?|cards?))?\b[^.!?]{0,80}\b(?:nicht(?:\s+mehr)?\s+(?:erkannt|gelesen)|(?:not|no longer)\s+(?:recognized|recognised|detected|working))\b", desc_norm) or re.search(r"\b(?:erkennt|erkennen)\s+(?:keine|keinen|nicht)\s+.{0,20}\bsim\b", desc_norm):
         return True
 
+    # Mclean-Surplus return-policy promise is hypothetical, not a device fault.
+    desc_norm = re.sub(r"\bif the item is not working as described,\s*we will work with you on the issue,\s*please contact us to resolve[.!?]?", " ", desc_norm)
     desc_norm = _strip_negated_condition_terms(desc_norm)
     if _has_display_blemish(desc_norm):
         return True
@@ -5599,14 +5638,16 @@ def _details_match_contract(item, search, details, *, require_description=True):
             return False
         if not _phone_description_purpose_confirmed(details.get("description") or ""):
             return False
+        if _phone_description_declares_fake(details.get("description") or ""):
+            return False
         if "iphone" in query and re.search(r"\b(?:nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b|\b(?:nicht|kein)\s+(?:um\s+)?(?:ein\s+)?(?:original(?:es|er|en)?\s+)?(?:apple\s+)?iphone\b", _normalize(_clean_description(details.get("description") or ""))):
             return False
         for aspect in details.get("localizedAspects") or []:
             name = _normalize(aspect.get("name") or "")
             value = _normalize(aspect.get("value") or "")
-            if name in ('modell','model') and value and not _phone_model_aspect_matches(value, query):
+            if name in ('modell','model','modello') and value and not _phone_model_aspect_matches(value, query):
                 return False
-            if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno') and value and not _phone_model_number_matches(value, query):
+            if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno','numeromodello') and value and not _phone_model_number_matches(value, query):
                 return False
             if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query):
                 return False
@@ -6216,6 +6257,26 @@ def _parse_search_body(body, host, query):
     return [], None
 
 
+def split_statistics_buckets(rows):
+    """One bid basket and one BIN basket per hybrid, with their actual prices."""
+    bins, offers, auctions, auction_offers = [], [], [], []
+    for item in rows:
+        def side(prefix, **flags):
+            result = copy.deepcopy(item)
+            result.update(flags)
+            for key in ("price", "total_price", "import_charges"):
+                value = item.get(prefix + "_" + key)
+                if value is not None:
+                    result[key] = value
+            return result
+        if item.get("buy_now"):
+            (offers if item.get("best_offer") else bins).append(side("bin", auction=False))
+        if item.get("auction"):
+            active_offer = bool(not item.get("buy_now") and item.get("best_offer") and item.get("bids_count") in (0, None))
+            (auction_offers if active_offer else auctions).append(side("auc", buy_now=False, best_offer=active_offer))
+    return bins, offers, auctions, auction_offers
+
+
 def _statistics_empty_bucket_label(*, side_ok=False, genuine_empty=False, error=None):
     if side_ok:
         return "❌", "Не найдено подходящих"
@@ -6640,8 +6701,8 @@ def _fetch_quota_html(search, force=False):
     child["_html_fallback"] = True
     # Return the HTML error itself if it fails. No API loop and no fake empty.
     logger.info("Browse quota paused; checking %s through HTML", search.get("query"))
-    from query_variants import api_query_batches
-    batches = api_query_batches(_search_query_variants(search))
+    # HTML does not share Browse API OR semantics: each alias is a real query.
+    batches = _search_query_variants(search)
     collected, errors = [], []
     formats = ["buy_now", "auction"] if (search.get("filters") or {}).get("listing_type","all") == "all" else [None]
     for listing in formats:
@@ -6650,6 +6711,8 @@ def _fetch_quota_html(search, force=False):
             variant.update(_query_override=query, _variant_child=True)
             if listing:
                 variant.setdefault("filters",{})["listing_type"] = listing
+                if listing == "auction":
+                    variant["filters"].pop("min_price", None)
             found, error = fetch_ebay_ex(variant, force=force)
             collected.extend(found)
             if error:
@@ -6717,43 +6780,22 @@ def fetch_ebay_ex(search, force=False):
         merged_items = []
         errors = []
         saw_clean_empty = False
-        # On GH: primary query first; if empty try at most ONE alias.
-        # Full 3–5 variant bursts × many products was the main reason eBay
-        # flipped to soft-empty / rate-limit mid statistics report.
-        if _on_github_actions():
-            order = list(variants)[:2]
-        else:
-            order = list(variants)
-        for qi, query in enumerate(order):
-            # Stop at the first alias that worked — but only when nothing failed
-            # on the way. eBay answers curl with a 403 or a 14 KB shell now and
-            # then (measured 2026-07-27), and stopping on a set collected around
-            # such a failure silently reports a partial market as complete.
-            if qi > 0 and merged_items and not errors:
-                break
-            # Primary already saw a real empty SERP — do not burn a second
-            # alias (PW crashes + API) and then upgrade empty → network/block.
-            if qi > 0 and saw_clean_empty and not errors:
-                break
+        order = list(variants)
+        for query in order:
             variant = copy.deepcopy(search)
             variant["_query_override"] = query
             variant["_variant_child"] = True
             variant_items, variant_err = fetch_ebay_ex(variant, force=force)
-            if variant_items:
-                merged_items.extend(variant_items)
-            elif variant_err is None:
-                saw_clean_empty = True
-            elif variant_err:
+            merged_items.extend(variant_items)
+            if variant_err:
                 errors.append(variant_err)
+                # Stop on protection/transport failures; retain partial results
+                # and the error, never call an incomplete alias union empty.
+                break
+            if not variant_items:
+                saw_clean_empty = True
         merged_items = _merge_items_by_id(merged_items)
-        if merged_items:
-            err = None
-        elif saw_clean_empty:
-            # At least one variant returned a clean empty page — honest empty,
-            # not the last alias's network/PW crash.
-            err = None
-        else:
-            err = errors[-1] if errors else None
+        err = errors[0] if errors else None
         logger.info(
             "  %s -> %d merged items via %d/%d query variants (empty_ok=%s err=%s)",
             search["query"], len(merged_items), len(order), len(variants),
@@ -8344,36 +8386,7 @@ async def process_searches(bot, once=False):
 
                 # Group filtered items into Buy It Now and Auction, handling hybrid listings
                 def _split_buckets(rows):
-                    bin_no_bo = []
-                    bin_bo = []
-                    auc_no_bo = []
-                    auc_bo = []
-                    for item in rows:
-                        if item.get("buy_now"):
-                            bin_item = copy.deepcopy(item)
-                            bin_item["auction"] = False
-                            bin_item["price"] = item.get("bin_price") or item["price"]
-                            bin_item["total_price"] = item.get("bin_total_price") or item["total_price"]
-                            bin_item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
-                            if not item.get("best_offer"):
-                                bin_no_bo.append(bin_item)
-                            else:
-                                bin_bo.append(bin_item)
-                        if item.get("auction"):
-                            auc_item = copy.deepcopy(item)
-                            auc_item["buy_now"] = False
-                            auc_item["price"] = item.get("auc_price") or item["price"]
-                            auc_item["total_price"] = item.get("auc_total_price") or item["total_price"]
-                            auc_item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
-                            if not item.get("best_offer"):
-                                auc_no_bo.append(auc_item)
-                            else:
-                                if item.get("bids_count") in (0, None):
-                                    auc_bo.append(auc_item)
-                                minutes = _parse_time_left_to_minutes(item.get("time_left") or "")
-                                if minutes is not None and minutes <= 1440:
-                                    auc_no_bo.append(auc_item)
-                    return bin_no_bo, bin_bo, auc_no_bo, auc_bo
+                    return split_statistics_buckets(rows)
 
                 bin_no_bo, bin_bo, auc_no_bo, auc_bo = _split_buckets(filtered)
 

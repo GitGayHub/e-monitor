@@ -58,8 +58,37 @@ def phone_aliases(query):
     if m:
         n=m[1];s=m[2] or '';mod=m[3] or '';suffix=(' '+mod) if mod else ''
         return [f'redmagic {n}{s}{suffix}',f'red magic {n}{s}{suffix}',f'nubia redmagic {n}{s}{suffix}',f'redmagic {n} {s}{suffix}'.replace('  ',' ')]
-    m=re.search(r'\b(?:(wh|wf)\s*1000\s*)?xm(\d+)\b',q)
-    if m:
-        family=m[1] or 'wh';generation=m[2]
-        return [f'sony {family}-1000xm{generation}',f'sony {family}1000xm{generation}',f'sony {family} 1000 xm{generation}']
+    m=re.search(r'\b(?:(wh|wf)[\s-]*1000[\s-]*)?xm(\d+)\b',q)
+    # eBay sellers also omit WH entirely: "Sony 1000XM6".
+    unprefixed = re.search(r'\b1000\s*xm(\d+)\b',q) if not m else None
+    if m or unprefixed:
+        family = (m[1] or 'wh') if m else 'wh'
+        generation = m[2] if m else unprefixed[1]
+        aliases = [f'sony {family}-1000xm{generation}',
+                   f'sony {family}1000xm{generation}',
+                   f'sony {family} 1000 xm{generation}']
+        if family == 'wh':
+            aliases += [f'sony 1000xm{generation}', f'1000xm{generation}']
+        return aliases
     return None
+
+
+def gpu_pc_model(query):
+    """GPU plus a whole-PC term; bare graphics-card searches are unchanged."""
+    q = query.lower()
+    if not re.search(r"\b(?:pc|rechner|computer|desktop)\b", q):
+        return None
+    match = re.search(r"(?<![a-z0-9])(?:rtx\s*)?(5070\s*ti|4080)\b", q)
+    return match[1].replace(' ', '') if match else None
+
+
+def gpu_pc_aliases(query):
+    model = gpu_pc_model(query)
+    if not model:
+        return None
+    gpu = '5070 ti' if model == '5070ti' else model
+    aliases = (stored_aliases(query) or []) + [
+        f'{gpu} pc', f'{gpu} rechner', f'{gpu} computer', f'{gpu} desktop',
+        f'gaming pc {gpu}', f'rtx {gpu} gaming pc', f'RTX{model.upper()}',
+    ]
+    return list({alias.lower(): alias for alias in aliases}.values())

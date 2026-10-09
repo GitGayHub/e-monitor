@@ -6,6 +6,13 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_live_italian_model_fields_cannot_hide_incompatible_iphone(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/cloud_live_model_cases_2026-10-08.json').read_text(encoding='utf8'))
+        for case in cases:
+            with self.subTest(item=case['id']):
+                search={'query':case['query'],'filters':{'category':case.get('category','phones')}}
+                self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['title']},search,case))
+
     def test_html_seller_identity_refreshes_blacklists_without_using_reviewers(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/html_seller.json').read_text(encoding='utf8'))
         for case in cases:

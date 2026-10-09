@@ -1,0 +1,3049 @@
+{
+  "schema": 1,
+  "createdAt": "2026-10-08",
+  "purpose": "Independent eBay search relevance and filtering acceptance (NOT completed)",
+  "source": "GitGayHub/e-monitor/main/mobile/app_sync.json (READ ONLY), QA matrix",
+  "basketsPerProduct": 4,
+  "totals": {
+    "productGroups": 24,
+    "storedSearches": 48,
+    "enabled": 46,
+    "disabled": 2,
+    "pendingChecks": 0,
+    "blockedChecks": 96,
+    "acceptanceIncompleteChecks": 96
+  },
+  "statuses": [
+    "PENDING",
+    "IN_PROGRESS",
+    "PASS",
+    "FAIL",
+    "BLOCKED",
+    "UNVERIFIABLE",
+    "NO_RESULTS_CONFIRMED"
+  ],
+  "statusPolicy": "Do not call PASS or NO_RESULTS_CONFIRMED without live evidence; network errors/CAPTCHA must be BLOCKED.",
+  "groups": [
+    {
+      "number": 1,
+      "slug": "samsung_galaxy_s25_edge",
+      "product": "samsung galaxy s25 edge",
+      "limitSnapshot": "325€",
+      "category": "phones",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "samsung_galaxy_s25_edge",
+          "query": "samsung galaxy s25 edge",
+          "enabled": true,
+          "listingType": "all",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": null,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_galaxy_s25_edge.json",
+          "checkedAtUtc": "2026-10-08T08:57:46.587093+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "samsung galaxy s25 edge",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_galaxy_s25_edge.json",
+          "checkedAtUtc": "2026-10-08T08:57:46.587093+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "samsung galaxy s25 edge",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_galaxy_s25_edge.json",
+          "checkedAtUtc": "2026-10-08T08:57:46.587093+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 2,
+            "error": null,
+            "query": "samsung galaxy s25 edge",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_galaxy_s25_edge.json",
+          "checkedAtUtc": "2026-10-08T08:57:46.587093+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 2,
+            "error": null,
+            "query": "samsung galaxy s25 edge",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 2,
+      "slug": "iphone_17_pro_max",
+      "product": "iphone 17 pro max",
+      "limitSnapshot": "910€",
+      "category": "phones",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "iphone_17_pro_max",
+          "query": "iphone 17 pro max",
+          "enabled": true,
+          "listingType": "all",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": null,
+          "maxPrice": 910,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_17_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "iphone 17 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_17_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "iphone 17 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_17_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 52,
+            "error": null,
+            "query": "iphone 17 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_17_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 51,
+            "error": null,
+            "query": "iphone 17 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 2,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 49,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 3,
+      "slug": "redmagic_11_pro",
+      "product": "Redmagic 11 Pro",
+      "limitSnapshot": "400€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "redmagic_11_pro_buy",
+          "query": "Redmagic 11 Pro",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "redmagic_11_pro_auc",
+          "query": "Redmagic 11 Pro",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11_pro.json",
+          "checkedAtUtc": "2026-10-08T08:55:46.979115+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "redmagic 11 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11_pro.json",
+          "checkedAtUtc": "2026-10-08T08:55:46.979115+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "redmagic 11 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11_pro.json",
+          "checkedAtUtc": "2026-10-08T08:55:46.979115+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 3,
+            "error": null,
+            "query": "redmagic 11 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11_pro.json",
+          "checkedAtUtc": "2026-10-08T08:55:46.979115+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 3,
+            "error": null,
+            "query": "redmagic 11 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 50,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 4,
+      "slug": "redmagic_11s_pro",
+      "product": "Redmagic 11S Pro",
+      "limitSnapshot": "450€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "redmagic_11s_pro_buy",
+          "query": "Redmagic 11S Pro",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "redmagic_11s_pro_auc",
+          "query": "Redmagic 11S Pro",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11s_pro.json",
+          "checkedAtUtc": "2026-10-08T08:57:03.821117+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "redmagic 11s pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11s_pro.json",
+          "checkedAtUtc": "2026-10-08T08:57:03.821117+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "redmagic 11s pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11s_pro.json",
+          "checkedAtUtc": "2026-10-08T08:57:03.821117+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "redmagic 11s pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/redmagic_11s_pro.json",
+          "checkedAtUtc": "2026-10-08T08:57:03.821117+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "redmagic 11s pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 50,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 5,
+      "slug": "nubia_z80_ultra",
+      "product": "Nubia Z80 Ultra",
+      "limitSnapshot": "375€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "nubia_z80_ultra_buy",
+          "query": "Nubia Z80 Ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 375,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z80_ultra_auc",
+          "query": "Nubia Z80 Ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 375,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:53:48.774465+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z80 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:53:48.774465+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z80 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:53:48.774465+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "nubia z80 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:53:48.774465+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "nubia z80 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 6,
+      "slug": "nubia_z80_ultra_leading",
+      "product": "Nubia Z80 Ultra Leading",
+      "limitSnapshot": "450€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "nubia_z80_ultra_leading_buy",
+          "query": "Nubia Z80 Ultra Leading",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z80_ultra_leading_auc",
+          "query": "Nubia Z80 Ultra Leading",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 450,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra_leading.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.366514+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z80 ultra leading",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra_leading.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.366514+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z80 ultra leading",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra_leading.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.366514+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z80 ultra leading",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z80_ultra_leading.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.366514+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z80 ultra leading",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 7,
+      "slug": "nubia_z70_ultra",
+      "product": "Nubia Z70 Ultra",
+      "limitSnapshot": "325€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "nubia_z70_ultra_buy",
+          "query": "Nubia Z70 Ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z70_ultra_auc",
+          "query": "Nubia Z70 Ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:57:47.605991+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 61,
+            "error": null,
+            "query": "nubia z70 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:57:47.605991+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 61,
+            "error": null,
+            "query": "nubia z70 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:57:47.605991+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "nubia z70 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:57:47.605991+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "nubia z70 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 8,
+      "slug": "nubia_z70s_ultra",
+      "product": "Nubia Z70S Ultra",
+      "limitSnapshot": "325€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "nubia_z70s_ultra_buy",
+          "query": "Nubia Z70S Ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "nubia_z70s_ultra_auc",
+          "query": "Nubia Z70S Ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 325,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70s_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:59:46.382454+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 63,
+            "error": null,
+            "query": "nubia z70s ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70s_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:59:46.382454+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 62,
+            "error": null,
+            "query": "nubia z70s ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70s_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:59:46.382454+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z70s ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/nubia_z70s_ultra.json",
+          "checkedAtUtc": "2026-10-08T08:59:46.382454+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "nubia z70s ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 49,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 9,
+      "slug": "pixel_5",
+      "product": "Pixel 5",
+      "limitSnapshot": "70€",
+      "category": "phones",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "pixel_5_buy",
+          "query": "Pixel 5",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 70,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "pixel_5_auc",
+          "query": "Pixel 5",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 70,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/pixel_5.json",
+          "checkedAtUtc": "2026-10-08T09:03:03.349442+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 39,
+            "error": null,
+            "query": "google pixel 5",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/pixel_5.json",
+          "checkedAtUtc": "2026-10-08T09:03:03.349442+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 39,
+            "error": null,
+            "query": "google pixel 5",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/pixel_5.json",
+          "checkedAtUtc": "2026-10-08T09:03:03.349442+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "google pixel 5",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/pixel_5.json",
+          "checkedAtUtc": "2026-10-08T09:03:03.349442+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "google pixel 5",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 5,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 50,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 10,
+      "slug": "sony_wh_1000xm6",
+      "product": "Sony WH-1000XM6",
+      "limitSnapshot": "200€",
+      "category": "all",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "sony_wh_1000xm6_buy",
+          "query": "Sony WH-1000XM6",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 200,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "sony_wh_1000xm6_auc",
+          "query": "Sony WH-1000XM6",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 200,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_wh_1000xm6.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.893671+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "sony wh-1000xm6",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_wh_1000xm6.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.893671+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "sony wh-1000xm6",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_wh_1000xm6.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.893671+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 37,
+            "error": null,
+            "query": "sony wh-1000xm6",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_wh_1000xm6.json",
+          "checkedAtUtc": "2026-10-08T08:53:49.893671+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 37,
+            "error": null,
+            "query": "sony wh-1000xm6",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 11,
+      "slug": "5070_ti_pc",
+      "product": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+      "limitSnapshot": "1300€",
+      "category": "computers",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "5070_ti_pc_buy",
+          "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1300,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "5070_ti_pc_auc",
+          "query": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1300,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/5070_ti_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:09.989816+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "5070 ti pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": true,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/5070_ti_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:09.989816+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "5070 ti pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/5070_ti_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:09.989816+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 22,
+            "error": null,
+            "query": "5070 ti pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/5070_ti_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:09.989816+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 22,
+            "error": null,
+            "query": "5070 ti pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 12,
+      "slug": "4080_pc",
+      "product": "4080 (pc, rechner, computer, desktop, gaming pc)",
+      "limitSnapshot": "1200€",
+      "category": "computers",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "4080_pc_buy",
+          "query": "4080 (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1200,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "4080_pc_auc",
+          "query": "4080 (pc, rechner, computer, desktop, gaming pc)",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "computers",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 1200,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4080_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.825197+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "4080 pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4080_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.825197+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "4080 pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4080_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.825197+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "4080 pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4080_pc.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.825197+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 1,
+            "error": null,
+            "query": "4080 pc",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 13,
+      "slug": "samsung_s24_ultra",
+      "product": "samsung s24 ultra",
+      "limitSnapshot": "350€",
+      "category": "phones",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "samsung_s24_ultra_buy",
+          "query": "samsung s24 ultra",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": 50,
+          "maxPrice": 350,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "samsung_s24_ultra_auc",
+          "query": "samsung s24 ultra",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 350,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_s24_ultra.json",
+          "checkedAtUtc": "2026-10-08T09:06:39.017090+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "samsung galaxy s24 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_s24_ultra.json",
+          "checkedAtUtc": "2026-10-08T09:06:39.017090+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 503,
+            "parsedFirstPageCards": null,
+            "error": "http_503",
+            "query": "samsung galaxy s24 ultra",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_s24_ultra.json",
+          "checkedAtUtc": "2026-10-08T09:06:39.017090+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": false,
+            "httpStatus": null,
+            "parsedFirstPageCards": null,
+            "error": "not_requested_after_group_http_error",
+            "query": null,
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_s24_ultra.json",
+          "checkedAtUtc": "2026-10-08T09:06:39.017090+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": false,
+            "httpStatus": null,
+            "parsedFirstPageCards": null,
+            "error": "not_requested_after_group_http_error",
+            "query": null,
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 50,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 14,
+      "slug": "4050_oled",
+      "product": "4050 oled",
+      "limitSnapshot": "625€",
+      "category": "laptops",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "4050_oled_buy",
+          "query": "4050 oled",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 625,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "4050_oled_auc",
+          "query": "4050 oled",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 625,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4050_oled.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.985246+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 61,
+            "error": null,
+            "query": "rtx 4050 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4050_oled.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.985246+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 61,
+            "error": null,
+            "query": "rtx 4050 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4050_oled.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.985246+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 44,
+            "error": null,
+            "query": "rtx 4050 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4050_oled.json",
+          "checkedAtUtc": "2026-10-08T08:55:10.985246+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 42,
+            "error": null,
+            "query": "rtx 4050 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 15,
+      "slug": "4060_oled",
+      "product": "4060 oled",
+      "limitSnapshot": "750€",
+      "category": "laptops",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "4060_oled_buy",
+          "query": "4060 oled",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "4060_oled_auc",
+          "query": "4060 oled",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4060_oled.json",
+          "checkedAtUtc": "2026-10-08T08:56:01.215018+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "rtx 4060 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4060_oled.json",
+          "checkedAtUtc": "2026-10-08T08:56:01.215018+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "rtx 4060 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4060_oled.json",
+          "checkedAtUtc": "2026-10-08T08:56:01.215018+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 4,
+            "error": null,
+            "query": "rtx 4060 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/4060_oled.json",
+          "checkedAtUtc": "2026-10-08T08:56:01.215018+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 4,
+            "error": null,
+            "query": "rtx 4060 oled laptop",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 16,
+      "slug": "asus_vivobook_14x_oled",
+      "product": "asus vivobook 14x oled",
+      "limitSnapshot": "425€",
+      "category": "laptops",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "asus_vivobook_14x_oled_buy",
+          "query": "asus vivobook 14x oled",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 425,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "asus_vivobook_14x_oled_auc",
+          "query": "asus vivobook 14x oled",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "laptops",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 425,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/asus_vivobook_14x_oled.json",
+          "checkedAtUtc": "2026-10-08T09:09:06.563642+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 61,
+            "error": null,
+            "query": "asus vivobook 14x oled",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/asus_vivobook_14x_oled.json",
+          "checkedAtUtc": "2026-10-08T09:09:06.563642+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 61,
+            "error": null,
+            "query": "asus vivobook 14x oled",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/asus_vivobook_14x_oled.json",
+          "checkedAtUtc": "2026-10-08T09:09:06.563642+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 9,
+            "error": null,
+            "query": "asus vivobook 14x oled",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/asus_vivobook_14x_oled.json",
+          "checkedAtUtc": "2026-10-08T09:09:06.563642+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 9,
+            "error": null,
+            "query": "asus vivobook 14x oled",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 5,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 50,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 17,
+      "slug": "logitech_superstrike",
+      "product": "logitech superstrike",
+      "limitSnapshot": "85€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "logitech_superstrike_buy",
+          "query": "logitech superstrike",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 85,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superstrike_auc",
+          "query": "logitech superstrike",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 85,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superstrike.json",
+          "checkedAtUtc": "2026-10-08T09:10:57.468149+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 72,
+            "error": null,
+            "query": "logitech superstrike",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superstrike.json",
+          "checkedAtUtc": "2026-10-08T09:10:57.468149+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 72,
+            "error": null,
+            "query": "logitech superstrike",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superstrike.json",
+          "checkedAtUtc": "2026-10-08T09:10:57.468149+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 10,
+            "error": null,
+            "query": "logitech superstrike",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superstrike.json",
+          "checkedAtUtc": "2026-10-08T09:10:57.468149+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 10,
+            "error": null,
+            "query": "logitech superstrike",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 50,
+        "sellerDescriptionsFetched": 50,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      },
+      "independentReviewNote": "Own full-body/model feature false rejections fixed: Lightweight and5-Button; Germany delivery/minimum still unverified."
+    },
+    {
+      "number": 18,
+      "slug": "logitech_superlight_2_std",
+      "product": "logitech superlight 2",
+      "limitSnapshot": "45€ / 65€",
+      "category": "mice",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "logitech_superlight_2_std_buy",
+          "query": "logitech superlight 2",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 45,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_std_auc",
+          "query": "logitech superlight 2",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 45,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_c_buy",
+          "query": "logitech superlight 2",
+          "enabled": false,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_c_auc",
+          "query": "logitech superlight 2",
+          "enabled": false,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_std.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.045768+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "logitech g pro x superlight 2",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_std.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.045768+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "logitech g pro x superlight 2",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_std.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.045768+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 11,
+            "error": null,
+            "query": "logitech g pro x superlight 2",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_std.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.045768+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 11,
+            "error": null,
+            "query": "logitech g pro x superlight 2",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 19,
+      "slug": "logitech_superlight_2_dex",
+      "product": "logitech superlight 2 dex",
+      "limitSnapshot": "65€",
+      "category": "mice",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "logitech_superlight_2_dex_buy",
+          "query": "logitech superlight 2 dex",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "logitech_superlight_2_dex_auc",
+          "query": "logitech superlight 2 dex",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "mice",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 65,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_dex.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.834989+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 71,
+            "error": null,
+            "query": "logitech superlight 2 dex",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_dex.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.834989+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 71,
+            "error": null,
+            "query": "logitech superlight 2 dex",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_dex.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.834989+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 11,
+            "error": null,
+            "query": "logitech superlight 2 dex",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/logitech_superlight_2_dex.json",
+          "checkedAtUtc": "2026-10-08T09:10:58.834989+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 11,
+            "error": null,
+            "query": "logitech superlight 2 dex",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 20,
+      "slug": "sony_ult_wear",
+      "product": "sony ult wear",
+      "limitSnapshot": "30€",
+      "category": "all",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "sony_ult_wear_buy",
+          "query": "sony ult wear",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 30,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "sony_ult_wear_auc",
+          "query": "sony ult wear",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "all",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 30,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_ult_wear.json",
+          "checkedAtUtc": "2026-10-08T09:12:17.818075+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "sony ult wear WH-ULT900N",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_ult_wear.json",
+          "checkedAtUtc": "2026-10-08T09:12:17.818075+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "sony ult wear WH-ULT900N",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_ult_wear.json",
+          "checkedAtUtc": "2026-10-08T09:12:17.818075+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 5,
+            "error": null,
+            "query": "sony ult wear WH-ULT900N",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/sony_ult_wear.json",
+          "checkedAtUtc": "2026-10-08T09:12:17.818075+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 5,
+            "error": null,
+            "query": "sony ult wear WH-ULT900N",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 43,
+        "sellerDescriptionsFetched": 42,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 21,
+      "slug": "samsung_odyssey_oled_g6_500hz",
+      "product": "samsung odyssey oled g6 500hz",
+      "limitSnapshot": "400€",
+      "category": "monitors",
+      "priority": "P1",
+      "searches": [
+        {
+          "id": "samsung_odyssey_oled_g6_500hz_buy",
+          "query": "samsung odyssey oled g6 500hz",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "samsung_odyssey_oled_g6_500hz_auc",
+          "query": "samsung odyssey oled g6 500hz",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 400,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_odyssey_oled_g6_500hz.json",
+          "checkedAtUtc": "2026-10-08T09:13:27.064176+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 63,
+            "error": null,
+            "query": "samsung odyssey oled g6 500hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_odyssey_oled_g6_500hz.json",
+          "checkedAtUtc": "2026-10-08T09:13:27.064176+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 63,
+            "error": null,
+            "query": "samsung odyssey oled g6 500hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_odyssey_oled_g6_500hz.json",
+          "checkedAtUtc": "2026-10-08T09:13:27.064176+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 11,
+            "error": null,
+            "query": "samsung odyssey oled g6 500hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/samsung_odyssey_oled_g6_500hz.json",
+          "checkedAtUtc": "2026-10-08T09:13:27.064176+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 11,
+            "error": null,
+            "query": "samsung odyssey oled g6 500hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 6,
+        "itemPagesCollected": 40,
+        "sellerDescriptionsFetched": 38,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 22,
+      "slug": "ps5_pro",
+      "product": "(playstation 5 pro, ps5 pro)",
+      "limitSnapshot": "750€",
+      "category": "consoles",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "ps5_pro_buy",
+          "query": "(playstation 5 pro, ps5 pro)",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "consoles",
+          "location": "worldwide",
+          "minPrice": 300,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "ps5_pro_auc",
+          "query": "(playstation 5 pro, ps5 pro)",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "consoles",
+          "location": "worldwide",
+          "minPrice": 300,
+          "maxPrice": 750,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/ps5_pro.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.501859+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "playstation 5 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/ps5_pro.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.501859+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "playstation 5 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/ps5_pro.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.501859+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 51,
+            "error": null,
+            "query": "playstation 5 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/ps5_pro.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.501859+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 75,
+            "error": null,
+            "query": "playstation 5 pro",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 23,
+      "slug": "iphone_16_pro_max",
+      "product": "iPhone 16 Pro Max",
+      "limitSnapshot": "610€",
+      "category": "phones",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "iphone_16_pro_max_buy",
+          "query": "iPhone 16 Pro Max",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": 50,
+          "maxPrice": 610,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "iphone_16_pro_max_auc",
+          "query": "iPhone 16 Pro Max",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "phones",
+          "location": "de",
+          "minPrice": null,
+          "maxPrice": 610,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_16_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.707178+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "iphone 16 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_16_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.707178+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 60,
+            "error": null,
+            "query": "iphone 16 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_16_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.707178+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 54,
+            "error": null,
+            "query": "iphone 16 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/iphone_16_pro_max.json",
+          "checkedAtUtc": "2026-10-08T08:56:02.707178+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 54,
+            "error": null,
+            "query": "iphone 16 pro max",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    },
+    {
+      "number": 24,
+      "slug": "lg_ultragear_oled_480hz",
+      "product": "lg ultragear oled 480hz",
+      "limitSnapshot": "430€",
+      "category": "monitors",
+      "priority": "P0",
+      "searches": [
+        {
+          "id": "lg_ultragear_oled_480hz_buy",
+          "query": "lg ultragear oled 480hz",
+          "enabled": true,
+          "listingType": "buy_now_offer",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 430,
+          "hardMaxPrice": 2500
+        },
+        {
+          "id": "lg_ultragear_oled_480hz_auc",
+          "query": "lg ultragear oled 480hz",
+          "enabled": true,
+          "listingType": "auction",
+          "bestOffer": false,
+          "category": "monitors",
+          "location": "worldwide",
+          "minPrice": null,
+          "maxPrice": 430,
+          "hardMaxPrice": 2500
+        }
+      ],
+      "baskets": {
+        "Sofort": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/lg_ultragear_oled_480hz.json",
+          "checkedAtUtc": "2026-10-08T08:56:03.696699+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 64,
+            "error": null,
+            "query": "lg ultragear oled 480hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Sofort+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/lg_ultragear_oled_480hz.json",
+          "checkedAtUtc": "2026-10-08T08:56:03.696699+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 64,
+            "error": null,
+            "query": "lg ultragear oled 480hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/lg_ultragear_oled_480hz.json",
+          "checkedAtUtc": "2026-10-08T08:56:03.696699+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 6,
+            "error": null,
+            "query": "lg ultragear oled 480hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        },
+        "Auktion+": {
+          "status": "BLOCKED",
+          "verifiedUnique": 0,
+          "evidencePath": "qa/results/cloud-live-20261008/lg_ultragear_oled_480hz.json",
+          "checkedAtUtc": "2026-10-08T08:56:03.696699+00:00",
+          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "directBucketAcceptancePerformed": false,
+          "latestDiscovery20261008": {
+            "httpRequestPerformed": true,
+            "httpStatus": 200,
+            "parsedFirstPageCards": 6,
+            "error": null,
+            "query": "lg ultragear oled 480hz",
+            "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-search-20261008/matrix.json",
+            "independentBrowserVerified": false,
+            "catalogueComplete": false,
+            "germanyDeliveryVerified": false,
+            "minimumVerified": false
+          }
+        }
+      },
+      "progress": "DISCOVERY_BLOCKED",
+      "discoveryProgress": {
+        "source": "ebay.com browser-live + HTTP-live",
+        "requestCount": 1,
+        "itemPagesCollected": 0,
+        "sellerDescriptionsFetched": 0,
+        "catalogueComplete": false,
+        "reviewComplete": false
+      }
+    }
+  ],
+  "updatedAtUtc": "2026-10-08T09:54:35.663385+00:00",
+  "acceptanceStatus": "PARTIAL",
+  "statusCounts": {
+    "BLOCKED": 96,
+    "PASS": 0,
+    "FAIL": 0,
+    "UNVERIFIABLE": 0,
+    "NO_RESULTS_CONFIRMED": 0
+  },
+  "latestDiscoverySummary": {
+    "attemptedDedicatedProfiles": 94,
+    "validHttpDedicatedProfiles": 93,
+    "additionalAliasProfiles": 36,
+    "totalHttpRequests": 130,
+    "groupCount": 24,
+    "uniqueDiscoveredIds": 2702,
+    "independentBrowserValidDedicatedProfiles": 1,
+    "acceptanceCompleteProfiles": 0,
+    "browserProtectionAtUtc": "2026-10-08T12:27:47.941402+00:00"
+  }
+}

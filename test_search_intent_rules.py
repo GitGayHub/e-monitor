@@ -49,6 +49,91 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
+    def test_independently_indexed_ebay_device_titles_and_seller_bans(self):
+        """Public search index cases; only title intent, not live stock."""
+        import json
+        from pathlib import Path
+        fixture = Path(__file__).resolve().parent / "qa/fixtures/web_indexed_listing_cases_2026-10-08.json"
+        cases = json.loads(fixture.read_text(encoding="utf-8"))["cases"]
+        config = DummyConfig(sellers=["talk point gmbh"])
+        for index, case in enumerate(cases):
+            with self.subTest(source=case["source"], title=case["title"]):
+                search = {
+                    "query": case["query"],
+                    "filters": {"category": case["category"], "listing_type": "buy_now_offer",
+                                "location": "worldwide", "condition": "any",
+                                "max_price": 3000, "limit_price": 3000}}
+                candidate = item(case["title"], item_id=str(800000 + index),
+                                 price=500, seller_name=case["seller"])
+                kept = monitor.filter_results([candidate], search, config,
+                                              skip_seen=True, is_statistics=True)
+                self.assertEqual(case["keep"], bool(kept), case)
+
+    def test_sony_xm6_search_aliases_keep_wh_wf_separate(self):
+        from query_variants import phone_aliases
+        headphone = phone_aliases("Sony WH-1000XM6")
+        self.assertIn("sony 1000xm6", headphone)
+        self.assertIn("1000xm6", headphone)
+        self.assertIn("sony wh-1000xm6", headphone)
+        self.assertNotIn("sony wf-1000xm6", headphone)
+        self.assertEqual(headphone, phone_aliases("Sony 1000XM6"))
+        earbud = phone_aliases("Sony WF-1000XM6")
+        self.assertIn("sony wf-1000xm6", earbud)
+        self.assertNotIn("sony 1000xm6", earbud)
+        self.assertNotIn("sony wh-1000xm6", earbud)
+        # Search expansion does not bypass the final device/accessory filter.
+        for title in ("Ersatz Ohrpolster für Sony WH-1000XM6 Kopfhörer",
+                      "SONY WH-1000XM6 Compatible Case"):
+            self.assertTrue(monitor._is_category_blocked_title(monitor._normalize(title), "headphones"))
+
+    def test_html_queries_do_not_pre_exclude_valid_listings_and_redmagic_spelling(self):
+        redmagic = {"query": "Redmagic 11 Pro", "filters": {"category": "phones"}}
+        self.assertEqual(monitor._build_smart_search_query(redmagic), "Redmagic 11 Pro")
+        aliases = monitor._search_query_variants(redmagic)
+        self.assertIn("redmagic 11 pro", aliases)
+        self.assertIn("red magic 11 pro", aliases)
+        phone = {"query": "iPhone 16 Pro Max", "filters": {"category": "phones"}}
+        q = monitor._build_smart_search_query(phone)
+        self.assertNotIn("-defekt", q)
+        self.assertNotIn("-reparatur", q)
+        self.assertNotIn("-icloud", q)
+        self.assertNotIn("-sperre", q)
+        self.assertEqual("iPhone 16 Pro Max", q)
+        self.assertEqual("iPhone 16 Pro Max -hülle", monitor._build_smart_search_query(
+            {"query": "iPhone 16 Pro Max -hülle", "filters": {"category": "phones"}}))
+        # Retrieval must not drop working stock; local rules still reject parts.
+        self.assertFalse(monitor._is_category_blocked_title(
+            monitor._normalize("iPhone 16 Pro Max 256GB ohne Defekt"), "phones"))
+        self.assertTrue(monitor._is_phone_accessory_title(
+            monitor._normalize("iPhone 16 Pro Max Display Ersatzteil")))
+
+    def test_negated_ersatzteil_preserves_full_phones_not_cases_or_defects(self):
+        keep = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, voll funktionsfaehig"
+        case = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, nur Case Cover"
+        fault = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, Display defekt"
+        self.assertFalse(monitor._is_phone_accessory_title(monitor._normalize(keep)))
+        self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(case)))
+        self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(fault)))
+        self.assertTrue(monitor._is_phone_accessory_title(
+            monitor._normalize("Ersatzteil iPhone 16 Pro Max 256GB")))
+
+    def test_html_sold_out_notices_only_from_own_listing(self):
+        """A seller's sold-out quantity is unavailable; related items are irrelevant."""
+        cases = [
+            ('<div class="x-quantity__availability">Dieser Artikel ist nicht mehr vorrätig. 3 verkauft</div>', True),
+            ('<div class="x-quantity__availability">This item is out of stock</div>', True),
+            ('<section class="recommended">Dieser Artikel ist nicht mehr vorrätig</section>', False),
+        ]
+        for html, expected in cases:
+            with self.subTest(html=html):
+                details = monitor._parse_item_details_html(
+                    '<h1 class="x-item-title">REDMAGIC 11 Pro 512GB</h1>' + html,
+                    description="Voll funktionsfähiges Smartphone."
+                )
+                unavailable = any(row.get("estimatedAvailabilityStatus") == "UNAVAILABLE"
+                                  for row in details.get("estimatedAvailabilities", []))
+                self.assertEqual(expected, unavailable)
+
     def test_browser_verified_console_generation_and_cover_bundle(self):
         query = 'playstation 5 pro'
         wrong = [
@@ -85,6 +170,19 @@ class SearchIntentRuleTests(unittest.TestCase):
 
         bad_details = {"title": "ASUS Vivobook Pro 14X OLED", "description": "Ryzen 7 5800H 16 GB RAM OLED"}
         self.assertFalse(monitor._intent_details_match(search, candidate, bad_details))
+
+    def test_sony_wh_wf_hyphenated_aliases_preserve_headphone_family(self):
+        from query_variants import phone_aliases
+        for family in ("wh", "wf"):
+            query = f"Sony {family.upper()}-1000XM6"
+            aliases = phone_aliases(query)
+            self.assertIsNotNone(aliases, query)
+            self.assertIn(f"sony {family}-1000xm6", aliases)
+            self.assertIn(f"sony {family}1000xm6", aliases)
+            self.assertIn(f"sony {family} 1000 xm6", aliases)
+            self.assertEqual(aliases, monitor._search_query_variants({"query": query, "filters": {"category": "headphones"}}))
+            other = "wf" if family == "wh" else "wh"
+            self.assertFalse(any(f"sony {other}" in value for value in aliases))
 
     def test_rtx_oled_search_variants(self):
         search = {"query": "4050 oled", "filters": {"category": "laptops"}}
