@@ -4251,7 +4251,11 @@ def _build_ebay_api_params(search, market=None):
     intent = _search_intent(search)
     pin_category = not (intent and intent.get("kind") == "gpu_pc")
 
-    if pin_category and category and category != "all":
+    if search.get('_api_primary_category'):
+        # Scoped discovery first; broad aliases remain a separate additive
+        # fallback for complete PCs filed in other categories.
+        params["category_ids"] = search['_api_primary_category']
+    elif pin_category and category and category != "all":
         device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
         if device_cat_id:
             params["category_ids"] = device_cat_id
@@ -6765,12 +6769,15 @@ def fetch_ebay_ex(search, force=False):
     # With credentials, auto uses Browse immediately. Empty is a valid result;
     # A quota pause switches to the existing paced HTML transport exactly once.
     if source == "api" or (source == "auto" and _ebay_api_configured()):
-        from query_variants import api_query_batches
-        variants=api_query_batches(_search_query_variants(search))
+        from query_variants import api_discovery_queries
+        variants=api_discovery_queries(_search_query_variants(search))
+        pc_primary=(_search_intent(search) or {}).get('kind')=='gpu_pc'
         if len(variants)>1:
             merged=[];errors=[]
             for index, query in enumerate(variants):
                 child=copy.deepcopy(search);child['_query_override']=query;child['_variant_child']=True;child['_api_query_batch']=True
+                child.pop('_api_primary_category',None)
+                if index==0 and pc_primary:child['_api_primary_category']=EBAY_DEVICE_CATEGORY_IDS['computers']
                 # The scheduler reserves one product. Later aliases belong to
                 # that reservation; acquire() still checks quota and cooldown.
                 rows,error=fetch_ebay_api_ex(child,force=force or index > 0)
@@ -6783,6 +6790,7 @@ def fetch_ebay_ex(search, force=False):
             child=copy.deepcopy(search)
             if variants:
                 child['_query_override']=variants[0];child['_variant_child']=True;child['_api_query_batch']=True
+                if pc_primary:child['_api_primary_category']=EBAY_DEVICE_CATEGORY_IDS['computers']
             items, err = fetch_ebay_api_ex(child, force=force)
         if err == "api_rate_limit":
             return _fetch_quota_html(search, force=force)

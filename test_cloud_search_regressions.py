@@ -5,6 +5,25 @@ import monitor
 from query_variants import gpu_pc_aliases, api_query_batches
 
 class CloudSearchRegressions(unittest.TestCase):
+    def test_real_pc_primary_survives_broad_alias_results_and_a_later_network_failure(self):
+        search={'id':'pc','query':'5070 ti (pc, rechner, computer, desktop, gaming pc)',
+                'filters':{'category':'computers','listing_type':'buy_now','location':'worldwide','max_price':2500}}
+        calls=[]
+        def fetch(child,force=False):
+            params=monitor._build_ebay_api_params(child)
+            calls.append(params)
+            if len(calls)==1:
+                return [{'item_id':'198304841229','title':'Silent High End Gaming PC - AMD Ryzen 5 5600 - RTX 5070 Ti - 32GB- 1TB','price':2109,'buy_now':True}],None
+            return [],'api_network'
+        with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor,'fetch_ebay_api_ex',side_effect=fetch),patch.dict(monitor._ebay_query_cache,{},clear=True):
+            rows,error=monitor.fetch_ebay_ex(search,force=True)
+        self.assertEqual('5070 ti pc',calls[0]['q'])
+        self.assertEqual('179',calls[0]['category_ids'])
+        self.assertNotIn('category_ids',calls[1])
+        self.assertIn('itemLocationRegion:WORLDWIDE',calls[0]['filter'])
+        self.assertEqual('198304841229',rows[0]['item_id'])
+        self.assertEqual('api_network',error)
+
     def test_live_pc_with_single_price_is_pickup_not_variation(self):
         html='''<li class="s-card"><a class="s-card__link" href="https://www.ebay.de/itm/800423940260"></a><div class="s-card__title"><span class="su-styled-text primary default">Gaming PC (Rtx5070TI, Ryzen 7 5800x, 32gb DDR4 Ram)</span></div><span class="s-card__price">EUR 1.450,00</span><span>Sofort-Kaufen</span><span>Kostenlose Abholung</span></li>'''
         row=monitor.parse_ebay_results(html)[0]
