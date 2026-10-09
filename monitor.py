@@ -5264,7 +5264,21 @@ def _is_details_blocked(details, search):
     return False
 
 
+def _seller_rating_number(value, *, percentage=False):
+    """Browse details uses a string feedbackPercentage; missing data is unknown."""
+    import math
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    if not math.isfinite(number) or number < 0 or (percentage and number > 100):
+        return 0.0
+    return number
+
+
 def _seller_trust(rating_count, rating_percent, top_rated=False):
+    rating_count = _seller_rating_number(rating_count)
+    rating_percent = _seller_rating_number(rating_percent, percentage=True)
     if top_rated and rating_count >= 3:
         return "trusted"
     if rating_count >= 3 and rating_percent >= 95:
@@ -5670,10 +5684,10 @@ def _refresh_candidate_details(item, details, settings):
     seller = details.get("seller") or {}
     if seller.get("username"):
         item["seller_name"] = seller["username"]
-    if seller.get("feedbackScore") is not None:
-        item["seller_rating_count"] = seller["feedbackScore"]
-    if seller.get("feedbackPercentage") is not None:
-        item["seller_rating_percent"] = seller["feedbackPercentage"]
+    item["seller_rating_count"] = int(_seller_rating_number(
+        seller.get("feedbackScore", item.get("seller_rating_count", 0))))
+    item["seller_rating_percent"] = _seller_rating_number(
+        seller.get("feedbackPercentage", item.get("seller_rating_percent", 0)), percentage=True)
     account = {"BUSINESS": "commercial", "INDIVIDUAL": "private"}.get(seller.get("sellerAccountType"))
     if account:
         item["seller_type"] = account
@@ -7134,7 +7148,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
             except Exception:
                 pass
 
-    trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
+    trust = _seller_trust(item.get("seller_rating_count", 0), item.get("seller_rating_percent", 0), item.get("top_rated"))
     emoji = _trust_emoji(trust)
 
     if item["buy_now"]:
@@ -7232,7 +7246,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     country_val = _format_country_for_notification(item.get("location", ""))
     country_line = f"🌐 <code>{pad_lbl('Страна')}│  </code>{country_val}"
 
-    rating_count = item.get("seller_rating_count", 0)
+    rating_count = int(_seller_rating_number(item.get("seller_rating_count", 0)))
     rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
     seller_val = f"{emoji} {html.escape(item['seller_name'])}{rating_str}"
     seller_line = f"👤 <code>{pad_lbl('Продавец')}│  </code>{seller_val}"
