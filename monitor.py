@@ -4490,7 +4490,8 @@ def _html_auction_end(soup, now=None):
     """Own visible ending time, corroborated by its countdown, minute precision."""
     from datetime import datetime, timezone, timedelta
     from zoneinfo import ZoneInfo
-    timer = soup.select_one(".ux-timer")
+    own = soup.select_one("#mainContent") or soup
+    timer = own.select_one(".ux-timer")
     if not timer:
         return None
     relative = timer.select_one(".ux-timer__text")
@@ -4501,31 +4502,46 @@ def _html_auction_end(soup, now=None):
     def count(pattern):
         match = re.search(pattern,text)
         return int(match[1]) if match else 0
-    days=count(r"(\d+)\s*(?:tage?|t|days?|d)(?=\s|\d|$)")
-    hours=count(r"(\d+)\s*(?:stunden?|std|hours?|h)(?=\s|\d|$)")
-    minutes=count(r"(\d+)\s*(?:minuten?|min|minutes?|m)(?=\s|\d|$)")
+    days=count(r"(\d+)\s*(?:tage?|t|days?|d)(?=\s|\d|[.,;:]|$)")
+    hours=count(r"(\d+)\s*(?:stunden?|std|hours?|h)(?=\s|\d|[.,;:]|$)")
+    minutes=count(r"(\d+)\s*(?:minuten?|min|minutes?|m)(?=\s|\d|[.,;:]|$)")
     rough=days*1440+hours*60+minutes
     if rough<=0 or rough>366*1440:
         return None
     weekdays=dict(zip(("montag","dienstag","mittwoch","donnerstag","freitag","samstag","sonntag"),range(7)))
     weekdays.update(zip(("monday","tuesday","wednesday","thursday","friday","saturday","sunday"),range(7)))
-    match=re.search(r"("+"|".join(weekdays)+r")\s*,?\s*(\d{1,2}):(\d{2})",exact.get_text(" ",strip=True).lower())
-    if not match:
-        return None
+    label=exact.get_text(" ",strip=True).lower()
+    clock=re.search(r"\b(\d{1,2}):(\d{2})\b",label)
+    if not clock:return None
     now = now or datetime.now(timezone.utc)
     local=now.astimezone(ZoneInfo("Europe/Berlin"))
+    numeric=re.search(r"\b(\d{1,2})[/\.](\d{1,2})(?:[/\.](\d{4}))?",label)
+    relative_day=re.search(r"\b(heute|today|morgen|tomorrow)\b",label)
+    weekday=re.search(r"\b("+"|".join(weekdays)+r")\b",label)
+    weekday_only=False
     try:
-        target=(local+timedelta(days=(weekdays[match[1]]-local.weekday())%7)).replace(hour=int(match[2]),minute=int(match[3]),second=59,microsecond=0)
+        hour,minute=int(clock[1]),int(clock[2])
+        if numeric:
+            year=int(numeric[3]) if numeric[3] else local.year
+            target=local.replace(year=year,month=int(numeric[2]),day=int(numeric[1]),hour=hour,minute=minute,second=59,microsecond=0)
+            if target<=local and not numeric[3]:target=target.replace(year=year+1)
+        elif relative_day:
+            target=(local+timedelta(days=int(relative_day[1] in ('morgen','tomorrow')))).replace(hour=hour,minute=minute,second=59,microsecond=0)
+        elif weekday:
+            target=(local+timedelta(days=(weekdays[weekday[1]]-local.weekday())%7)).replace(hour=hour,minute=minute,second=59,microsecond=0)
+            weekday_only=True
+        else:return None
     except ValueError:
         return None
     if target<=local:
+        if not weekday_only:return None
         target+=timedelta(days=7)
     def delta():
         return (target.astimezone(timezone.utc)-now.astimezone(timezone.utc)).total_seconds()/60
-    while delta()+1440<rough:
+    while weekday_only and delta()+1440<rough:
         target+=timedelta(days=7)
     difference=delta()-rough
-    tolerance=2 if re.search(r"\d+\s*(?:minuten?|min|minutes?|m)(?=\s|\d|$)",text) else 61 if re.search(r"\d+\s*(?:stunden?|std|hours?|h)(?=\s|\d|$)",text) else 1441
+    tolerance=2 if re.search(r"\d+\s*(?:minuten?|min|minutes?|m)(?=\s|\d|[.,;:]|$)",text) else 61 if re.search(r"\d+\s*(?:stunden?|std|hours?|h)(?=\s|\d|[.,;:]|$)",text) else 1441
     if not -3<=difference<=tolerance:
         return None
     return target.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
