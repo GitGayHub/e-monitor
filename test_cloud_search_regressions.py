@@ -5,6 +5,39 @@ import monitor
 from query_variants import gpu_pc_aliases, api_query_batches
 
 class CloudSearchRegressions(unittest.TestCase):
+    def test_own_pickup_map_resolves_masked_postcode_without_following_it(self):
+        import json
+        from pathlib import Path
+        for c in json.loads((Path(__file__).parent/'qa/fixtures/oct10_pickup_details.json').read_text(encoding='utf8')):
+            d=monitor._parse_item_details_html(c['html'],description='Own seller description')
+            self.assertEqual(c['location'],d.get('itemLocationText'))
+            self.assertEqual(c['pickupOnly'],d.get('htmlPickupOnly'))
+            item={'title':'PS5 Pro','price':600,'shipping_cost':0,'location':'13***, DE','is_pickup_only':True}
+            monitor._refresh_candidate_details(item,d,{})
+            self.assertEqual(c['pickupOnly'],item['is_pickup_only'])
+            self.assertEqual(c['location'],item['location'])
+
+    def test_oct10_model_selection_shared_with_android(self):
+        import json
+        from pathlib import Path
+        cases = json.loads((Path(__file__).parent/'qa/fixtures/oct10_listing_rules.json').read_text(encoding='utf8'))
+        for case in cases:
+            with self.subTest(title=case['title']):
+                self.assertEqual(case['expected'], monitor._intent_prelim_matches_title(monitor._normalize(case['title']), {'query':case['query']}))
+
+    def test_pickup_rule_is_80km_or_actual_berlin_not_postal_region(self):
+        import plz_distance
+        for place, expected in [('Berlin, Deutschland',True),('Potsdam',False),('14532 Kleinmachnow',False),('09648 Mittweida',True),('07743 Jena',False),('Abholung möglich',False),('Chemnitz',False)]:
+            self.assertEqual(expected,plz_distance.is_nearby(place)[0],place)
+        for distance, expected in [(80,True),(80.01,False)]:
+            with patch.object(plz_distance,'get_distance_from_location',return_value=(distance,'99999')):
+                self.assertEqual(expected,plz_distance.is_nearby('99999 Ort')[0])
+
+    def test_optional_pickup_does_not_remove_real_shipping_price(self):
+        html='''<li class="s-card"><a class="s-card__link" href="https://www.ebay.de/itm/198304841229"></a><span class="su-styled-text primary default">Gaming PC RTX 5070 Ti</span><span class="s-card__price">EUR 2.109,00</span><span>Kostenlose Abholung</span><span>Versand: EUR 10,99</span></li>'''
+        row=monitor.parse_ebay_results(html)[0]
+        self.assertFalse(row['is_pickup_only'])
+        self.assertEqual(10.99,row['shipping_cost'])
     def test_real_pc_primary_survives_broad_alias_results_and_a_later_network_failure(self):
         search={'id':'pc','query':'5070 ti (pc, rechner, computer, desktop, gaming pc)',
                 'filters':{'category':'computers','listing_type':'buy_now','location':'worldwide','max_price':2500}}
@@ -99,7 +132,14 @@ class CloudSearchRegressions(unittest.TestCase):
                 price=float((details.get('currentBidPrice') if auction else details['price'])['value'])
                 item={'item_id':case['id'],'title':details['title'],'price':price,'auction':auction,'buy_now':not auction}
                 search={'query':case['query'],'filters':{'category':case['category']}}
-                self.assertEqual(case['expected'],monitor._details_match_contract(item,search,details))
+                # This snapshot asserts model/description at its captured time,
+                # rather than becoming a sold-listing test when the clock advances.
+                from datetime import datetime
+                observed=datetime.fromisoformat(case['observedAtUtc'].replace('Z','+00:00'))
+                def remaining(end):
+                    return (datetime.fromisoformat(end.replace('Z','+00:00'))-observed).total_seconds() if end else None
+                with patch.object(monitor,'_parse_end_date_to_seconds',side_effect=remaining):
+                    self.assertEqual(case['expected'],monitor._details_match_contract(item,search,details))
 
     def test_spaced_fake_sale_declaration_preserves_negations_and_warnings(self):
         for body in ['Ich verkaufe diese ausschließlich als F A K E.', 'Das sind F A K E -- I Phones.', 'This is a fake iPhone.']:

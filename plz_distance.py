@@ -61,7 +61,8 @@ def get_distance_km(plz):
     if not plz or plz not in _PLZ_DATA:
         return None
     lat, lon = _PLZ_DATA[plz]
-    return haversine_km(USER_LAT, USER_LON, lat, lon)
+    origin = _PLZ_DATA.get(USER_PLZ, (USER_LAT, USER_LON))
+    return haversine_km(*origin, lat, lon)
 
 
 def distance_between_plz(from_plz, to_plz):
@@ -86,32 +87,16 @@ def get_distance_from_location(location_text):
     return None, None
 
 
-def is_nearby(location_text, max_km=100):
+def is_nearby(location_text, max_km=80):
     """Check if location is within max_km of user. Returns (bool, distance_km).
     Special case: Berlin is always considered 'nearby' (good train connection)."""
     if not location_text:
         return False, None
     
-    # Berlin special case — always show as reachable
+    # Only the actual city of Berlin, not Potsdam or the whole postal region.
     loc_lower = location_text.lower()
-    berlin_markers = ("berlin", "10115", "10117", "10119", "10178", "10179",
-                      "10243", "10245", "10247", "10249", "10315", "10317",
-                      "10318", "10319", "10365", "10367", "10369", "10405",
-                      "10407", "10409", "10435", "10437", "10439", "10551",
-                      "10553", "10555", "10557", "10559", "10585", "10587",
-                      "10589", "10623", "10625", "10627", "10629", "10707",
-                      "10709", "10711", "10713", "10715", "10717", "10719",
-                      "10777", "10779", "10781", "10783", "10785", "10787",
-                      "10789", "10823", "10825", "10827", "10829", "10961",
-                      "10963", "10965", "10967", "10969", "10997", "10999",
-                      "potsdam")
-    if any(m in loc_lower for m in berlin_markers):
+    if is_berlin_location(location_text):
         dist, _ = get_distance_from_location(location_text)
-        return True, dist
-    # Check PLZ range 10xxx-14xxx (Berlin + Umland)
-    plz = extract_plz(location_text)
-    if plz and plz[:2] in ("10", "12", "13", "14"):
-        dist = get_distance_km(plz)
         return True, dist
     
     # Normal distance check
@@ -119,15 +104,10 @@ def is_nearby(location_text, max_km=100):
     if dist is not None:
         return dist <= max_km, dist
     
-    # Fallback: check by known city names
-    nearby_cities = (
-        "chemnitz", "dresden", "leipzig", "zwickau", "plauen", "freiberg",
-        "mittweida", "döbeln", "glauchau", "frankenberg", "hainichen",
-        "rochlitz", "burgstädt", "penig", "altenburg", "gera", "jena",
-        "annaberg", "marienberg", "aue", "schwarzenberg", "schneeberg",
-        "oelsnitz", "reichenbach", "crimmitschau", "werdau", "meerane",
-        "limbach-oberfrohna", "flöha", "brand-erbisdorf",
-    )
-    if any(city in loc_lower for city in nearby_cities):
-        return True, None
+    # A city-name guess cannot supply the required confirmed distance.
     return False, None
+
+
+def is_berlin_location(text):
+    """City field, not 'Bernau bei Berlin' or another city's vicinity."""
+    return bool(re.match(r"^(?:(?:\d{5}|\d{2}\*{3})[\s,]+)?berlin(?:$|[,\s]+(?:de\b|deutschland\b|germany\b|\d{5}\b))", (text or "").strip().lower()))

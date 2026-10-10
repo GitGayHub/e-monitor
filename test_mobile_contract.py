@@ -12,6 +12,19 @@ from unittest.mock import Mock
 
 
 class MobileContractTests(unittest.TestCase):
+    def test_long_notification_keeps_photo_and_never_duplicates_after_partial_delivery(self):
+        bot=Mock(); photo=Mock(message_id=51)
+        bot.send_photo=AsyncMock(return_value=photo)
+        bot.send_message=AsyncMock(side_effect=RuntimeError('text unavailable'))
+        text='<b>Фото и цена 225€</b>\n'+'😀'*1200
+        result=asyncio.run(monitor.safe_send_telegram(bot,1,text,img='https://i.ebayimg.com/images/g/example/s-l800.jpg'))
+        self.assertIs(photo,result)
+        bot.send_photo.assert_awaited_once()
+        args=bot.send_photo.await_args.kwargs
+        self.assertLessEqual(len(args['caption'].encode('utf-16-le'))//2,1024)
+        self.assertIsNone(args['parse_mode'])
+        self.assertEqual(text,bot.send_message.await_args.kwargs['text'])
+
     def test_live_api_string_seller_rating_reaches_real_notification_formatter_once(self):
         item = {"item_id": "800366377085", "title": 'LG UltraGear 27GX790A-B OLED Gaming Monitor 27" 480Hz 0,03ms',
                 "price": 405, "shipping_cost": 18.99, "total_price": 423.99, "seller_name": "tobiahellwi-0",
