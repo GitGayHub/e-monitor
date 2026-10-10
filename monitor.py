@@ -994,8 +994,13 @@ def _search_query_variants(search):
         ]
     if kind == "sony_ult_wear":
         return [
-            "sony ult wear WH-ULT900N",
+            # Real healthy lots use only the product name (307029264069),
+            # or the regulatory model YY2981. A required SKU hides them.
+            "sony ult wear",
+            "sony ultwear",
             "WH-ULT900N",
+            "WHULT900N",
+            "sony YY2981",
         ]
     if kind == "rtx_oled_laptop":
         gpu = intent.get("gpu") or "4050"
