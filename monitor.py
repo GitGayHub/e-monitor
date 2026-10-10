@@ -853,6 +853,10 @@ def _matches_rayban_meta_gen2(text):
     t = _normalize(text)
     if not re.search(r"\bray\s*ban\b", t) or not re.search(r"\bmeta\b", t):
         return False
+    if re.search(r"\b(?:dummy|dummie|mockup)\b|\bohne\s+funktion\b", t):
+        return False
+    if re.match(r"^(?:originalverpackung|leerverpackung|verpackung|karton|empty box|box only)\b", t) or re.search(r"\b(?:nur|only)\s+(?:ovp|verpackung|karton|box)\b", t):
+        return False
     if re.search(r"\b0?rw(?:4006|4008|4010)\b|\bstories\b|\bdisplay\b|\b(?:gen(?:eration)?\s*1|1\s*(?:st|generation))\b", t):
         return False
     accessory = r"(?:case|etui|ladeetui|charging case|ersatzteile?|replacement|huelle|glaeser|lenses|nasenpads|buegel)"
@@ -1128,6 +1132,9 @@ def _intent_details_match(search, item=None, details=None):
     title_only = _normalize((item or {}).get("title") or "")
     if kind == "rayban_meta_gen2":
         models = " ".join(str(a.get("value") or "") for a in (details or {}).get("localizedAspects", []) if _normalize(a.get("name") or "") in ("modell", "model", "modellnummer", "model number"))
+        own = _normalize(_clean_description((details or {}).get("description") or ""))
+        if re.search(r"\b(?:nur|only|lediglich|ausschliesslich)\s+(?:(?:die|das|der)\s+)?(?:etui|ladeetui|case|verpackung|karton|gestell|frame)\b|\bohne\s+(?:brille|glasses)\b|\b(?:brille|glasses)\s+(?:ist\s+|are\s+)?(?:nicht\s+enthalten|not\s+included)\b", own):
+            return False
         return _matches_rayban_meta_gen2(((details or {}).get("title") or title_only) + " " + models)
     if kind == "lg_ultragear_oled":
         return _matches_lg_ultragear_oled_480(text_norm) or _matches_lg_ultragear_oled_480(title_only)
@@ -7365,8 +7372,8 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
             elif dist_km is not None:
                 extra_lines.append(f"📍 <b>Самовывоз:</b> {place} · {dist_km:.1f} км от 09648 (по прямой)")
 
-    if item["total_price"] != item["price"] + item["shipping_cost"]:
-        import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
+    import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
+    if import_extra > 0.005:
         extra_lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.2f}€ пошлина → итого {item['total_price']:.2f}€")
 
     if outlier:
