@@ -48,7 +48,8 @@ class QueryVariantsTests(unittest.TestCase):
         with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor,'fetch_ebay_api_ex',side_effect=fetch),patch.dict(monitor._ebay_query_cache,{},clear=True):
             items,error=monitor.fetch_ebay_ex(search,force=True)
         self.assertIsNone(error)
-        self.assertEqual(api_query_batches(phone_aliases(search['query'])),requests)
+        self.assertEqual('nubia z80 ultra leading',requests[0])
+        self.assertEqual(phone_aliases(search['query']),[alias for q in requests for alias in (stored_aliases(q) or [q])])
         self.assertEqual(3,len(items))
     def test_alias_failure_is_visible_even_after_a_successful_primary(self):
         requests=[]
@@ -68,8 +69,8 @@ class QueryVariantsTests(unittest.TestCase):
             items,error=monitor.fetch_ebay_ex(search)
         self.assertIsNone(error)
         self.assertEqual([],items)
-        self.assertEqual(1,request.call_count)
-        self.assertEqual(1,acquire.call_count)
+        self.assertEqual(2,request.call_count)
+        self.assertEqual(2,acquire.call_count)
         with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor,'_get_ebay_api_token',return_value=('test-token',None)),patch.object(monitor,'_allowed_api_targets_this_run',set()),patch.object(monitor.urllib.request,'urlopen') as request,patch.dict(monitor._ebay_query_cache,{},clear=True):
             items,error=monitor.fetch_ebay_ex(search)
         self.assertEqual('api_deferred',error)

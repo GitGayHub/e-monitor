@@ -23,5 +23,73 @@
     "now": "2026-10-08T00:00:00Z",
     "expected": null,
     "source": "synthetic malformed time must not crash or pass"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 6 Tage, 18 Stunden.</span><span class=\"ux-timer__time-left\">Mittwoch, 20:45</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": "2026-10-14T18:45:59Z",
+    "source": "synthetic German punctuation on eBay countdown"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 6 T 18 Std. 45 Min.</span><span class=\"ux-timer__time-left\">Mittwoch, 20:45</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": "2026-10-14T18:45:59Z",
+    "source": "synthetic dotted abbreviations with minute-precision countdown"
+  },
+  {
+    "id": "298740523558",
+    "html": "<span class=\"ux-timer\" data-testid=\"ux-timer\"><span class=\"ux-timer__text\" data-testid=\"ux-timer_timer\" aria-live=\"off\" aria-atomic=\"true\"><span class=\"ux-timer__label\">Endet in </span>9 T 0 Std</span><span class=\"ux-timer__time-left\">18/10, 19:45</span></span>",
+    "now": "2026-10-09T17:12:00Z",
+    "expected": "2026-10-18T17:45:59Z",
+    "source": "live own timer independently read in browser 9 Oct 2026"
+  },
+  {
+    "id": "860001978110",
+    "html": "<span class=\"ux-timer\" data-testid=\"ux-timer\"><span class=\"ux-timer__text\" data-testid=\"ux-timer_timer\" aria-live=\"off\" aria-atomic=\"true\"><span class=\"ux-timer__label\">Endet in </span>2 Std 11 Min</span><span class=\"ux-timer__time-left\">Heute 21:28</span></span>",
+    "now": "2026-10-09T17:17:00Z",
+    "expected": "2026-10-09T19:28:59Z",
+    "source": "live own timer independently read in browser 9 Oct 2026"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 12 Std 15 Min</span><span class=\"ux-timer__time-left\">Morgen 07:15</span></span>",
+    "now": "2026-10-09T17:00:00Z",
+    "expected": "2026-10-10T05:15:59Z",
+    "source": "synthetic next-day boundary"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 12 Std 15 Min</span><span class=\"ux-timer__time-left\">Heute 07:15</span></span>",
+    "now": "2026-10-09T17:00:00Z",
+    "expected": null,
+    "source": "synthetic explicit today cannot roll into tomorrow"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 9 T 0 Std</span><span class=\"ux-timer__time-left\">31/02, 19:45</span></span>",
+    "now": "2026-10-09T17:12:00Z",
+    "expected": null,
+    "source": "synthetic malformed calendar date"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 2 Std 11 Min</span><span class=\"ux-timer__time-left\">Heute 25:99</span></span>",
+    "now": "2026-10-09T17:17:00Z",
+    "expected": null,
+    "source": "synthetic invalid clock"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 6 T 18 Std. 10 Min.</span><span class=\"ux-timer__time-left\">Mittwoch, 20:45</span></span>",
+    "now": "2026-10-08T00:00:00Z",
+    "expected": null,
+    "source": "synthetic dotted minute contradiction"
+  },
+  {
+    "html": "<div id=\"mainContent\">Fixed-price device</div><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 2 Std 11 Min</span><span class=\"ux-timer__time-left\">Heute 21:28</span></span>",
+    "now": "2026-10-09T17:17:00Z",
+    "expected": null,
+    "source": "synthetic recommendation timer outside own mainContent"
+  },
+  {
+    "html": "<span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 1 T 0 Std</span><span class=\"ux-timer__time-left\">01/01, 21:30</span></span>",
+    "now": "2026-12-31T20:30:00Z",
+    "expected": "2027-01-01T20:30:59Z",
+    "source": "synthetic next-year boundary"
   }
 ]

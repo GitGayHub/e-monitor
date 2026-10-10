@@ -716,6 +716,8 @@ def _search_intent(search_or_query):
     if not ident:
         return None
     requested = _normalize(search_or_query.get("query") or "") if isinstance(search_or_query, dict) else ident
+    if re.search(r"\bray\s*ban\b", requested) and "meta" in requested:
+        return {"kind": "rayban_meta_gen2", "query": "ray ban meta gen 2", "display_name": "Ray-Ban Meta Gen 2", "category": "all"}
     mouse_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", requested)
     if mouse_model:
         compact = bool(mouse_model.group(1))
@@ -827,12 +829,13 @@ def _search_intent(search_or_query):
 
 
 def _matches_samsung_odyssey_g6_500hz(text_norm):
-    """True for Odyssey OLED G6 500Hz (G60SF / LS27FG602 / LS27FG604), not 360Hz G60SD."""
+    """G60SF OLED500, not G60F IPS350: the shared FG602 prefix is ambiguous."""
     t = text_norm or ""
-    # A model code cannot override an explicit non-500Hz refresh claim.
-    if re.search(r"\b(?:144|165|180|240|360)\s*hz\b", t) and not re.search(r"\b500\s*hz\b", t):
+    if re.search(r"\bg60f\b|\bls27fg60[24]e[a-z0-9]*\b|\bips\b", t):
         return False
-    if re.search(r"\bg60sf\b", t) or re.search(r"\bls27fg60[24][a-z0-9]*\b", t):
+    if any(int(m) >= 70 and int(m) != 500 for m in re.findall(r"\b(\d{2,4})\s*hz\b", t)):
+        return False
+    if re.search(r"\bg60sf\b|\bls27fg60[24]s[a-z0-9]*\b", t):
         return True
     # Explicit non-500Hz sibling models without a 500Hz claim
     if re.search(r"\b(?:g60sd|g61sd|ls27dg60[12]|ls27dg61)\b", t) and not re.search(
@@ -844,6 +847,24 @@ def _matches_samsung_odyssey_g6_500hz(text_norm):
     )
     has_500 = re.search(r"\b500\s*hz\b|\b500hz\b", t) is not None
     return bool(has_odyssey_g6 and has_500)
+
+
+def _matches_rayban_meta_gen2(text):
+    t = _normalize(text)
+    if not re.search(r"\bray\s*ban\b", t) or not re.search(r"\bmeta\b", t):
+        return False
+    if re.search(r"\b(?:dummy|dummie|mockup)\b|\bohne\s+funktion\b", t):
+        return False
+    if re.match(r"^(?:originalverpackung|leerverpackung|verpackung|karton|empty box|box only)\b", t) or re.search(r"\b(?:nur|only)\s+(?:ovp|verpackung|karton|box)\b", t):
+        return False
+    if re.search(r"\b0?rw(?:4006|4008|4010)\b|\bstories\b|\bdisplay\b|\b(?:gen(?:eration)?\s*1|1\s*(?:st|generation))\b", t):
+        return False
+    accessory = r"(?:case|etui|ladeetui|charging case|ersatzteile?|replacement|huelle|glaeser|lenses|nasenpads|buegel)"
+    if re.match(r"^" + accessory + r"\b", t):
+        return False
+    if re.search(r"\b(?:case|etui|ladeetui|charging case|ersatzteile?|replacement|hülle|hulle|gläser|glaser|lenses|nasenpads|bügel|bugel)\s+(?:f[uü]r|fuer|for)\b|\b(?:nur|only)\s+(?:case|etui|ladeetui|gestell|frame|gläser|lenses)\b", t):
+        return False
+    return bool(re.search(r"\b(?:gen(?:eration)?[.\s]*2|2\s*(?:nd\s*gen|generation)|zweite\s*generation|0?rw401[234]f?)\b", t))
 
 
 def _matches_lg_ultragear_oled_480(text_norm):
@@ -920,6 +941,8 @@ def _search_query_variants(search):
     if isinstance(search,dict) and search.get('_variant_child'):
         return [_intent_query(search)]
     raw=search.get('query','') if isinstance(search,dict) else str(search)
+    if (_search_intent(search) or {}).get('kind') == 'rayban_meta_gen2':
+        return ['ray ban meta gen 2', 'rayban meta gen2', 'ray ban meta zweite generation', 'ray ban meta RW4012', 'ray ban meta RW4013', 'ray ban meta RW4014']
     pc_aliases = gpu_pc_aliases(raw)
     if pc_aliases:
         return pc_aliases
@@ -1032,6 +1055,8 @@ def _intent_prelim_matches_title(title_norm, search):
     if not intent:
         return _query_matches_title(title_norm, search.get("query", ""))
     kind = intent["kind"]
+    if kind == "rayban_meta_gen2":
+        return _matches_rayban_meta_gen2(title_norm)
     if kind == "lg_ultragear_oled":
         return _matches_lg_ultragear_oled_480(title_norm)
     if kind == "samsung_odyssey_oled_g6":
@@ -1105,10 +1130,16 @@ def _intent_details_match(search, item=None, details=None):
     text_norm = _intent_text_from_item_and_details(item, details)
     kind = intent["kind"]
     title_only = _normalize((item or {}).get("title") or "")
+    if kind == "rayban_meta_gen2":
+        models = " ".join(str(a.get("value") or "") for a in (details or {}).get("localizedAspects", []) if _normalize(a.get("name") or "") in ("modell", "model", "modellnummer", "model number"))
+        own = _normalize(_clean_description((details or {}).get("description") or ""))
+        if re.search(r"\b(?:nur|only|lediglich|ausschliesslich)\s+(?:(?:die|das|der)\s+)?(?:etui|ladeetui|case|verpackung|karton|gestell|frame)\b|\bohne\s+(?:brille|glasses)\b|\b(?:brille|glasses)\s+(?:ist\s+|are\s+)?(?:nicht\s+enthalten|not\s+included)\b", own):
+            return False
+        return _matches_rayban_meta_gen2(((details or {}).get("title") or title_only) + " " + models)
     if kind == "lg_ultragear_oled":
         return _matches_lg_ultragear_oled_480(text_norm) or _matches_lg_ultragear_oled_480(title_only)
     if kind == "samsung_odyssey_oled_g6":
-        return _matches_samsung_odyssey_g6_500hz(text_norm) or _matches_samsung_odyssey_g6_500hz(title_only)
+        return _matches_samsung_odyssey_g6_500hz(text_norm)
     if kind == "superlight_2_dex":
         return _matches_superlight_2_mouse(title_only or text_norm, require_dex=True, require_se=intent.get("se",False), require_compact=intent.get("compact",False))
     if kind == "superlight_2":
@@ -3661,6 +3692,11 @@ def parse_ebay_results(html):
                     is_pickup_only = True
                     break
 
+            explicit_pickup_only = re.search(r"nur abholung|nur selbstabhol|kein versand|no shipping|local pickup only|pickup only|collection only", card_text_lower)
+            delivery_offered = re.search(r"(?:kostenlos\w*|gratis|free)\s+(?:versand|lieferung|shipping)|(?:versand|shipping)\s*:?\s*(?:eur|€|\$)?\s*\d|(?:dhl|hermes|ups|dpd)\s*(?:paket|versand|shipping)", card_text_lower)
+            if delivery_offered and not explicit_pickup_only:
+                is_pickup_only = False
+
             shipping_cost = 0.0
             if not is_pickup_only:
                 for s in all_spans:
@@ -3670,7 +3706,7 @@ def parse_ebay_results(html):
                     if "Lieferung" in txt or "Versand" in txt or "shipping" in txt.lower():
                         shipping_cost = _parse_shipping(txt)
                         break
-                    if "kostenlos" in txt.lower() or "gratis" in txt.lower():
+                    if ("kostenlos" in txt.lower() or "gratis" in txt.lower()) and "abholung" not in txt.lower():
                         shipping_cost = 0.0
                         break
 
@@ -4251,7 +4287,11 @@ def _build_ebay_api_params(search, market=None):
     intent = _search_intent(search)
     pin_category = not (intent and intent.get("kind") == "gpu_pc")
 
-    if pin_category and category and category != "all":
+    if search.get('_api_primary_category'):
+        # Scoped discovery first; broad aliases remain a separate additive
+        # fallback for complete PCs filed in other categories.
+        params["category_ids"] = search['_api_primary_category']
+    elif pin_category and category and category != "all":
         device_cat_id = EBAY_DEVICE_CATEGORY_IDS.get(eff_category)
         if device_cat_id:
             params["category_ids"] = device_cat_id
@@ -4486,7 +4526,8 @@ def _html_auction_end(soup, now=None):
     """Own visible ending time, corroborated by its countdown, minute precision."""
     from datetime import datetime, timezone, timedelta
     from zoneinfo import ZoneInfo
-    timer = soup.select_one(".ux-timer")
+    own = soup.select_one("#mainContent") or soup
+    timer = own.select_one(".ux-timer")
     if not timer:
         return None
     relative = timer.select_one(".ux-timer__text")
@@ -4497,31 +4538,46 @@ def _html_auction_end(soup, now=None):
     def count(pattern):
         match = re.search(pattern,text)
         return int(match[1]) if match else 0
-    days=count(r"(\d+)\s*(?:tage?|t|days?|d)(?=\s|\d|$)")
-    hours=count(r"(\d+)\s*(?:stunden?|std|hours?|h)(?=\s|\d|$)")
-    minutes=count(r"(\d+)\s*(?:minuten?|min|minutes?|m)(?=\s|\d|$)")
+    days=count(r"(\d+)\s*(?:tage?|t|days?|d)(?=\s|\d|[.,;:]|$)")
+    hours=count(r"(\d+)\s*(?:stunden?|std|hours?|h)(?=\s|\d|[.,;:]|$)")
+    minutes=count(r"(\d+)\s*(?:minuten?|min|minutes?|m)(?=\s|\d|[.,;:]|$)")
     rough=days*1440+hours*60+minutes
     if rough<=0 or rough>366*1440:
         return None
     weekdays=dict(zip(("montag","dienstag","mittwoch","donnerstag","freitag","samstag","sonntag"),range(7)))
     weekdays.update(zip(("monday","tuesday","wednesday","thursday","friday","saturday","sunday"),range(7)))
-    match=re.search(r"("+"|".join(weekdays)+r")\s*,?\s*(\d{1,2}):(\d{2})",exact.get_text(" ",strip=True).lower())
-    if not match:
-        return None
+    label=exact.get_text(" ",strip=True).lower()
+    clock=re.search(r"\b(\d{1,2}):(\d{2})\b",label)
+    if not clock:return None
     now = now or datetime.now(timezone.utc)
     local=now.astimezone(ZoneInfo("Europe/Berlin"))
+    numeric=re.search(r"\b(\d{1,2})[/\.](\d{1,2})(?:[/\.](\d{4}))?",label)
+    relative_day=re.search(r"\b(heute|today|morgen|tomorrow)\b",label)
+    weekday=re.search(r"\b("+"|".join(weekdays)+r")\b",label)
+    weekday_only=False
     try:
-        target=(local+timedelta(days=(weekdays[match[1]]-local.weekday())%7)).replace(hour=int(match[2]),minute=int(match[3]),second=59,microsecond=0)
+        hour,minute=int(clock[1]),int(clock[2])
+        if numeric:
+            year=int(numeric[3]) if numeric[3] else local.year
+            target=local.replace(year=year,month=int(numeric[2]),day=int(numeric[1]),hour=hour,minute=minute,second=59,microsecond=0)
+            if target<=local and not numeric[3]:target=target.replace(year=year+1)
+        elif relative_day:
+            target=(local+timedelta(days=int(relative_day[1] in ('morgen','tomorrow')))).replace(hour=hour,minute=minute,second=59,microsecond=0)
+        elif weekday:
+            target=(local+timedelta(days=(weekdays[weekday[1]]-local.weekday())%7)).replace(hour=hour,minute=minute,second=59,microsecond=0)
+            weekday_only=True
+        else:return None
     except ValueError:
         return None
     if target<=local:
+        if not weekday_only:return None
         target+=timedelta(days=7)
     def delta():
         return (target.astimezone(timezone.utc)-now.astimezone(timezone.utc)).total_seconds()/60
-    while delta()+1440<rough:
+    while weekday_only and delta()+1440<rough:
         target+=timedelta(days=7)
     difference=delta()-rough
-    tolerance=2 if re.search(r"\d+\s*(?:minuten?|min|minutes?|m)(?=\s|\d|$)",text) else 61 if re.search(r"\d+\s*(?:stunden?|std|hours?|h)(?=\s|\d|$)",text) else 1441
+    tolerance=2 if re.search(r"\d+\s*(?:minuten?|min|minutes?|m)(?=\s|\d|[.,;:]|$)",text) else 61 if re.search(r"\d+\s*(?:stunden?|std|hours?|h)(?=\s|\d|[.,;:]|$)",text) else 1441
     if not -3<=difference<=tolerance:
         return None
     return target.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -4770,6 +4826,19 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         "title": title_text,
         "localizedAspects": aspects,
     }
+    own_image = soup.select_one(".ux-image-carousel-item img[src], .ux-image-magnify img[src], meta[property='og:image'][content]")
+    if own_image:
+        image_url = own_image.get("src") or own_image.get("content") or ""
+        if image_url.startswith("https://") and "ebayimg.com/" in image_url:
+            result["image"] = {"imageUrl": image_url}
+    shipping_module = soup.select_one(".ux-labels-values--shipping, [data-testid='ux-labels-values--shipping']")
+    if shipping_module:
+        shipping_text = shipping_module.get_text(" ", strip=True)
+        explicit_only = re.search(r"nur abholung|nur selbstabhol|kein versand|no shipping|pickup only|collection only", shipping_text, re.I)
+        if explicit_only:
+            result["htmlPickupOnly"] = True
+        elif shipping_cost is not None:
+            result["htmlPickupOnly"] = False
     # Only the own listing's status/quantity modules, never recommendations.
     status = " ".join(el.get_text(" ", strip=True) for el in soup.select(
         ".d-top-panel-message, .d-statusmessage__notice-live-region, "
@@ -4797,6 +4866,16 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         result["categoryIdPath"] = "|".join(categories)
     if location_text:
         result["itemLocationText"] = location_text
+    pickup_module = soup.select_one("#mainContent .ux-labels-values--localPickup")
+    if pickup_module:
+        map_link = pickup_module.select_one("a[href*='google.com/maps']")
+        if map_link:
+            from urllib.parse import urlparse, parse_qs
+            place = parse_qs(urlparse(map_link.get("href", "")).query).get("query", [""])[0]
+            if place:
+                result["itemLocationText"] = place
+        if not shipping_module:
+            result["htmlPickupOnly"] = True
     if item_group_type:
         result["itemGroupType"] = item_group_type
     if shipping_cost is not None:
@@ -5264,7 +5343,21 @@ def _is_details_blocked(details, search):
     return False
 
 
+def _seller_rating_number(value, *, percentage=False):
+    """Browse details uses a string feedbackPercentage; missing data is unknown."""
+    import math
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    if not math.isfinite(number) or number < 0 or (percentage and number > 100):
+        return 0.0
+    return number
+
+
 def _seller_trust(rating_count, rating_percent, top_rated=False):
+    rating_count = _seller_rating_number(rating_count)
+    rating_percent = _seller_rating_number(rating_percent, percentage=True)
     if top_rated and rating_count >= 3:
         return "trusted"
     if rating_count >= 3 and rating_percent >= 95:
@@ -5667,13 +5760,23 @@ def _details_match_contract(item, search, details, *, require_description=True):
 
 def _refresh_candidate_details(item, details, settings):
     _calculate_total(item, settings, details)
+    item["_details_loaded"] = True
+    image = (details.get("image") or {}).get("imageUrl")
+    if image:
+        item["image_url"] = image
+    if "htmlPickupOnly" in details:
+        item["is_pickup_only"] = bool(details["htmlPickupOnly"])
+    elif "shippingOptions" in details:
+        shipping_options = details.get("shippingOptions") or []
+        delivery = any(opt.get("shippingType", "").upper() != "LOCAL_PICKUP" and "pickup" not in opt.get("shippingServiceCode", "").lower() for opt in shipping_options)
+        item["is_pickup_only"] = bool(details.get("pickupOptions") or details.get("localPickup")) and not delivery
     seller = details.get("seller") or {}
     if seller.get("username"):
         item["seller_name"] = seller["username"]
-    if seller.get("feedbackScore") is not None:
-        item["seller_rating_count"] = seller["feedbackScore"]
-    if seller.get("feedbackPercentage") is not None:
-        item["seller_rating_percent"] = seller["feedbackPercentage"]
+    item["seller_rating_count"] = int(_seller_rating_number(
+        seller.get("feedbackScore", item.get("seller_rating_count", 0))))
+    item["seller_rating_percent"] = _seller_rating_number(
+        seller.get("feedbackPercentage", item.get("seller_rating_percent", 0)), percentage=True)
     account = {"BUSINESS": "commercial", "INDIVIDUAL": "private"}.get(seller.get("sellerAccountType"))
     if account:
         item["seller_type"] = account
@@ -5702,7 +5805,7 @@ def _include_word_in_title(title_norm, word_norm):
     return False
 
 
-def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False):
+def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False, defer_pickup_location=False):
     global_banned = config_obj.get_global_banned_sellers()
     global_banned_norm = {_normalize(s) for s in global_banned}
     banned_ids = config_obj.get_banned_item_ids() | KNOWN_BAD_ITEM_IDS
@@ -5791,10 +5894,12 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
 
         if item.get("is_pickup_only"):
             nearby = False
+            pickup_distance = None
             if item.get("location"):
                 from plz_distance import is_nearby
-                nearby, _ = is_nearby(item["location"], max_km=100)
-            if not nearby:
+                nearby, pickup_distance = is_nearby(item["location"], max_km=80)
+            # Own pickup map can resolve a masked SERP postal code.
+            if not nearby and (not defer_pickup_location or item.get("_details_loaded") or pickup_distance is not None):
                 continue
 
         if is_statistics and filters.get("_stats_bucket_filter"):
@@ -6751,12 +6856,15 @@ def fetch_ebay_ex(search, force=False):
     # With credentials, auto uses Browse immediately. Empty is a valid result;
     # A quota pause switches to the existing paced HTML transport exactly once.
     if source == "api" or (source == "auto" and _ebay_api_configured()):
-        from query_variants import api_query_batches
-        variants=api_query_batches(_search_query_variants(search))
+        from query_variants import api_discovery_queries
+        variants=api_discovery_queries(_search_query_variants(search))
+        pc_primary=(_search_intent(search) or {}).get('kind')=='gpu_pc'
         if len(variants)>1:
             merged=[];errors=[]
             for index, query in enumerate(variants):
                 child=copy.deepcopy(search);child['_query_override']=query;child['_variant_child']=True;child['_api_query_batch']=True
+                child.pop('_api_primary_category',None)
+                if index==0 and pc_primary:child['_api_primary_category']=EBAY_DEVICE_CATEGORY_IDS['computers']
                 # The scheduler reserves one product. Later aliases belong to
                 # that reservation; acquire() still checks quota and cooldown.
                 rows,error=fetch_ebay_api_ex(child,force=force or index > 0)
@@ -6769,6 +6877,7 @@ def fetch_ebay_ex(search, force=False):
             child=copy.deepcopy(search)
             if variants:
                 child['_query_override']=variants[0];child['_variant_child']=True;child['_api_query_batch']=True
+                if pc_primary:child['_api_primary_category']=EBAY_DEVICE_CATEGORY_IDS['computers']
             items, err = fetch_ebay_api_ex(child, force=force)
         if err == "api_rate_limit":
             return _fetch_quota_html(search, force=force)
@@ -7134,7 +7243,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
             except Exception:
                 pass
 
-    trust = _seller_trust(item["seller_rating_count"], item["seller_rating_percent"], item.get("top_rated"))
+    trust = _seller_trust(item.get("seller_rating_count", 0), item.get("seller_rating_percent", 0), item.get("top_rated"))
     emoji = _trust_emoji(trust)
 
     if item["buy_now"]:
@@ -7226,13 +7335,16 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     desc_line = f"📌 Описание: {html.escape(item['title'])}"
 
     # 5. Details Table: Condition, Country, Seller, Limit
-    cond_str = html.escape(item["condition"]) if item.get("condition") else "Не указано"
+    condition = item.get("condition") or "Не указано"
+    # eBay's condition definition is boilerplate, not the seller's description.
+    condition = re.split(r"\b(?:Artikel wurde bereits|Ein Artikel mit|See the seller|An item that|Weitere Einzelheiten)\b", condition, maxsplit=1, flags=re.I)[0].strip(" .:|") or "Не указано"
+    cond_str = html.escape(condition)
     cond_line = f"📦 <code>{pad_lbl('Состояние')}│  </code>{cond_str}"
 
     country_val = _format_country_for_notification(item.get("location", ""))
     country_line = f"🌐 <code>{pad_lbl('Страна')}│  </code>{country_val}"
 
-    rating_count = item.get("seller_rating_count", 0)
+    rating_count = int(_seller_rating_number(item.get("seller_rating_count", 0)))
     rating_str = f" ({rating_count} отзывов)" if rating_count > 0 else " (0 отзывов)"
     seller_val = f"{emoji} {html.escape(item['seller_name'])}{rating_str}"
     seller_line = f"👤 <code>{pad_lbl('Продавец')}│  </code>{seller_val}"
@@ -7251,19 +7363,17 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     # 6. Extra details
     extra_lines = []
     if item["location"]:
-        from plz_distance import is_nearby, get_distance_from_location
-        nearby, dist_km = is_nearby(item["location"], max_km=100)
-        if nearby:
-            if dist_km is not None:
-                if dist_km > 120:
-                    extra_lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km (Berlin)")
-                else:
-                    extra_lines.append(f"📍 <b>Дистанция:</b> Abholung ~{dist_km:.0f}km")
-            else:
-                extra_lines.append(f"📍 <b>Дистанция:</b> Abholung möglich")
+        from plz_distance import is_nearby, get_distance_from_location, is_berlin_location
+        nearby, dist_km = is_nearby(item["location"], max_km=80)
+        if item.get("is_pickup_only") and nearby:
+            place = html.escape(item["location"])
+            if is_berlin_location(item["location"]):
+                extra_lines.append("📍 <b>Самовывоз:</b> Berlin")
+            elif dist_km is not None:
+                extra_lines.append(f"📍 <b>Самовывоз:</b> {place} · {dist_km:.1f} км от 09648 (по прямой)")
 
-    if item["total_price"] != item["price"] + item["shipping_cost"]:
-        import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
+    import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
+    if import_extra > 0.005:
         extra_lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.2f}€ пошлина → итого {item['total_price']:.2f}€")
 
     if outlier:
@@ -7311,9 +7421,6 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         caption = "🧪 <b>ТЕСТ APK ↔ Telegram</b>\n" + caption
 
     img = item.get("image_url") or ""
-    # Long HTML is sent as text; cutting HTML can break a link or formatting tag.
-    if len(caption) > 1024:
-        img = ""
     if img and not img.startswith("data:"):
         import re as _re
         img = _re.sub(r"/s-l\d+\.(jpg|jpeg|png|webp)", r"/s-l800.\1", img, flags=_re.IGNORECASE)
@@ -7407,13 +7514,23 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
     for active_bot in bots_to_try:
         try:
             if img and not img.startswith("data:"):
+                plain = BeautifulSoup(text, "html.parser").get_text()
+                long_caption = len(plain.encode("utf-16-le")) // 2 > 1024
                 message = await active_bot.send_photo(
                     chat_id=chat_id,
                     photo=img,
-                    caption=text,
+                    caption=(plain.encode("utf-16-le")[:1800].decode("utf-16-le", errors="ignore") + "\n… Полный текст ниже") if long_caption else text,
                     reply_markup=keyboard,
-                    parse_mode=parse_mode,
+                    parse_mode=None if long_caption else parse_mode,
                 )
+                if long_caption:
+                    try:
+                        await active_bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode,
+                                                      reply_to_message_id=message.message_id,
+                                                      disable_web_page_preview=True)
+                    except Exception as detail_error:
+                        # Photo was confirmed; returning failure would duplicate it.
+                        logger.error("Photo delivered but expanded notification failed: %s", detail_error)
             else:
                 message = await active_bot.send_message(
                     chat_id=chat_id,
@@ -8382,7 +8499,7 @@ async def process_searches(bot, once=False):
                 # Filter results with skip_seen=True (to show already notified items).
                 # BIN/Auction/BO split happens after this merge (see bin_no_bo / auc_bo).
                 stats_filter_search = _statistics_filter_search(search)
-                filtered = filter_results(results, stats_filter_search, config, skip_seen=True, is_statistics=True)
+                filtered = filter_results(results, stats_filter_search, config, skip_seen=True, is_statistics=True, defer_pickup_location=True)
 
                 # Group filtered items into Buy It Now and Auction, handling hybrid listings
                 def _split_buckets(rows):
@@ -8425,7 +8542,7 @@ async def process_searches(bot, once=False):
                             _mark_sides_from_items(results)
                             filtered = filter_results(
                                 results, stats_filter_search, config,
-                                skip_seen=True, is_statistics=True,
+                                skip_seen=True, is_statistics=True, defer_pickup_location=True,
                             )
                             bin_no_bo, bin_bo, auc_no_bo, auc_bo = _split_buckets(filtered)
                             logger.info(
@@ -8868,7 +8985,7 @@ async def process_searches(bot, once=False):
                 logger.info("  %s: 0 results", search["query"])
                 continue
 
-            filtered = filter_results(results, search, config)
+            filtered = filter_results(results, search, config, defer_pickup_location=True)
 
             sofort = [r for r in filtered if r["buy_now"]]
             preisvorschlag = [r for r in filtered if r["best_offer"]]
@@ -8922,7 +9039,7 @@ async def process_searches(bot, once=False):
                     logger.info("  %s: API retry 0 results", search["query"])
                     continue
 
-                filtered = filter_results(api_items, search, config)
+                filtered = filter_results(api_items, search, config, defer_pickup_location=True)
                 stats_7d = get_stats_7d(search["id"])
                 candidates = _notify_candidates_from_filtered(filtered)
                 logger.info(

@@ -25,6 +25,13 @@ def api_query_batches(aliases, max_length=100):
     flush()
     return result
 
+def api_discovery_queries(aliases):
+    """Keep a precise primary request; OR expansion must not drown it in parts."""
+    aliases=list(dict.fromkeys(q.strip() for q in aliases if q.strip()))
+    if not aliases:return []
+    return list(dict.fromkeys([aliases[0], *api_query_batches(aliases[1:])]))
+
+
 def stored_aliases(query):
     query=query.strip()
     whole=re.fullmatch(r'\((.*)\)',query)

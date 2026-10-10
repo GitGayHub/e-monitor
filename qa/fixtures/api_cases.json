@@ -34585,9 +34585,15 @@
       },
       "expected": {
         "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 850.0
+      },
+      "expectedBeforePickupPolicyOct10": {
+        "accepted": false,
         "reason": "over_limit",
         "totalPrice": 850.0
-      }
+      },
+      "pickupPolicyEvidence": "2026-10-10 user: <=80km from09648 or Berlin; masked postal code without confirmed distance is not eligible."
     },
     {
       "name": "Browse API 2026-10-02 iphone_16_pro_max_buy::168688739868",
@@ -166541,9 +166547,15 @@
       },
       "expected": {
         "accepted": false,
+        "reason": "filtered",
+        "totalPrice": 500.0
+      },
+      "expectedBeforePickupPolicyOct10": {
+        "accepted": false,
         "reason": "over_limit",
         "totalPrice": 500.0
-      }
+      },
+      "pickupPolicyEvidence": "2026-10-10 user: <=80km from09648 or Berlin; masked postal code without confirmed distance is not eligible."
     },
     {
       "name": "Browse API 2026-10-02 samsung_s24_ultra_buy::188264367899",

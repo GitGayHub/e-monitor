@@ -12,6 +12,47 @@ from unittest.mock import Mock
 
 
 class MobileContractTests(unittest.TestCase):
+    def test_long_notification_keeps_photo_and_never_duplicates_after_partial_delivery(self):
+        bot=Mock(); photo=Mock(message_id=51)
+        bot.send_photo=AsyncMock(return_value=photo)
+        bot.send_message=AsyncMock(side_effect=RuntimeError('text unavailable'))
+        text='<b>Фото и цена 225€</b>\n'+'😀'*1200
+        result=asyncio.run(monitor.safe_send_telegram(bot,1,text,img='https://i.ebayimg.com/images/g/example/s-l800.jpg'))
+        self.assertIs(photo,result)
+        bot.send_photo.assert_awaited_once()
+        args=bot.send_photo.await_args.kwargs
+        self.assertLessEqual(len(args['caption'].encode('utf-16-le'))//2,1024)
+        self.assertIsNone(args['parse_mode'])
+        self.assertEqual(text,bot.send_message.await_args.kwargs['text'])
+
+    def test_live_api_string_seller_rating_reaches_real_notification_formatter_once(self):
+        item = {"item_id": "800366377085", "title": 'LG UltraGear 27GX790A-B OLED Gaming Monitor 27" 480Hz 0,03ms',
+                "price": 405, "shipping_cost": 18.99, "total_price": 423.99, "seller_name": "tobiahellwi-0",
+                "seller_rating_count": 16, "seller_rating_percent": 100.0, "buy_now": True, "auction": False,
+                "best_offer": True, "location": "DE", "condition": "Gebraucht", "source": "api",
+                "url": "https://www.ebay.de/itm/800366377085"}
+        search = {"id": "isolated-lg", "query": "lg ultragear oled 480hz", "filters": {"category": "monitors", "limit_price": 430}}
+        details = {"title": item["title"], "description": 'LG UltraGear 27GX790A-B OLED Gaming Monitor 27" 480Hz 0,03ms. Montior ist 10 Monate alt.',
+                   "price": {"value": "405", "currency": "EUR"}, "seller": {"username": "tobiahellwi-0", "feedbackScore": "16", "feedbackPercentage": "100.0"}}
+        cfg = Mock(); cfg.get_settings.return_value = {}
+        cfg.get_global_banned_sellers.return_value = []; cfg.get_banned_item_ids.return_value = set(); cfg.get_item_hashes.return_value = set()
+        bot = Mock(); bot.get_me = AsyncMock(return_value=Mock(username="isolated_test_bot"))
+        with patch.object(monitor, "config", cfg), patch.object(monitor, "seen_state", {}), \
+             patch.object(monitor, "save_seen_ids"), patch.object(monitor, "is_outlier", return_value=False), \
+             patch.object(monitor, "_fetch_item_details", return_value=details), patch.object(feed, "enqueue"), \
+             patch.object(monitor, "safe_send_telegram", new=AsyncMock(return_value=Mock(message_id=4048))) as sender:
+            self.assertTrue(asyncio.run(monitor._process_notify_candidate(bot, item, search, None, "initial")))
+            self.assertFalse(asyncio.run(monitor._process_notify_candidate(bot, item, search, None, "initial")))
+            sender.assert_awaited_once()
+            caption = sender.await_args.args[2]
+            self.assertIn("423.99€", caption)
+            self.assertIn("16 отзывов", caption)
+            self.assertEqual(item["_telegram_message_id"], 4048)
+            self.assertEqual(monitor._seller_trust(item["seller_rating_count"], item["seller_rating_percent"]), "trusted")
+
+    def test_missing_or_malformed_seller_rating_is_unknown_not_a_send_exception(self):
+        for score, percent in [(None, None), ("unknown", "---"), ("NaN", "inf"), (-1, 105)]:
+            self.assertEqual("risky", monitor._seller_trust(score, percent))
     def test_price_and_metadata_without_seller_description_cannot_send(self):
         item = {"item_id": "unverified", "title": "Sony DualSense Wireless Controller", "price": 30,
                 "shipping_cost": 0, "seller_name": "seller", "buy_now": True, "auction": False}
