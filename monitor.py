@@ -3243,7 +3243,10 @@ def _price_within_limit(item, search):
 def _search_limit_price(search):
     filters = (search.get("filters") if isinstance(search, dict) else {}) or {}
     try:
-        return float(filters.get("limit_price") or 0)
+        # Legacy configs use max_price as the alert limit when limit_price is
+        # absent. An explicit null/zero retains its existing meaning.
+        value = filters.get("limit_price") if "limit_price" in filters else filters.get("max_price")
+        return float(value or 0)
     except (TypeError, ValueError):
         return 0.0
 
@@ -7623,7 +7626,11 @@ async def _validate_candidate(item, search):
         # Price limits are represented by the statistics verdict; all structural
         # filters still apply to the actual country, condition and radius.
         structural = copy.deepcopy(search)
-        structural.setdefault("filters", {}).update(min_price=None, limit_price=None, max_price=None)
+        # Statistics keeps expensive devices, but the owner's limit also caps
+        # the bait floor. Clearing it here silently restores the category floor
+        # and drops real ULT Wear at 78/79.90 despite the requested 30 EUR limit.
+        structural.setdefault("filters", {}).update(
+            min_price=None, limit_price=_search_limit_price(search), max_price=None)
         if not filter_results([item], structural, config, skip_seen=True, is_statistics=True):
             return False, details
     else:
