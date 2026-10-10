@@ -5,6 +5,40 @@ import monitor
 from query_variants import phone_aliases,stored_aliases,api_query_batches
 
 class QueryVariantsTests(unittest.TestCase):
+    def test_live_validation_keeps_owner_capped_floor_after_description_refresh(self):
+        import asyncio,json
+        from pathlib import Path
+        evidence=json.loads((Path(__file__).parent/'qa/fixtures/sony_ult_manual_oct10.json').read_text(encoding='utf8'))
+        for threshold in ({'limit_price':30,'max_price':2500},{'max_price':30}):
+            search={'query':evidence['query'],'filters':dict(threshold,category='headphones',listing_type='all')}
+            for case in evidence['cases']:
+                candidate={'item_id':case['id'],'title':case['title'],'price':case['price'],'shipping_cost':case['shipping'],'total_price':case['price']+case['shipping'],'seller_name':'seller','location':'DE','condition':'Gebraucht','buy_now':True,'auction':False,'best_offer':True}
+                details=dict(case,price={'value':str(case['price']),'currency':'EUR'},buyingOptions=['FIXED_PRICE','BEST_OFFER'])
+                with patch.object(monitor,'_fetch_item_details',return_value=details):
+                    valid,_=asyncio.run(monitor._validate_candidate(candidate,search))
+                self.assertEqual(case['keep'],valid,(threshold,case['id']))
+
+    def test_real_sony_product_name_is_discovered_without_requiring_sku(self):
+        import json
+        from pathlib import Path
+        evidence=json.loads((Path(__file__).parent/'qa/fixtures/sony_ult_manual_oct10.json').read_text(encoding='utf8'))
+        search={'query':evidence['query'],'filters':{'category':'headphones'}}
+        aliases=monitor._search_query_variants(search)
+        self.assertTrue(set(evidence['requiredAliases']).issubset(aliases))
+        requests=[]
+        def fetch(child,force=False):
+            query=child['_query_override'];requests.append(query)
+            if query==evidence['primaryQuery']:
+                return [{'item_id':'307029264069','title':evidence['cases'][0]['title'],'price':79.9,'buy_now':True,'best_offer':True}],None
+            return [],None
+        with patch.object(monitor,'EBAY_SOURCE','api'),patch.object(monitor.browse_access,'is_paused',return_value=False),patch.object(monitor,'fetch_ebay_api_ex',side_effect=fetch),patch.dict(monitor._ebay_query_cache,{},clear=True):
+            rows,error=monitor.fetch_ebay_ex(search,force=True)
+        self.assertIsNone(error)
+        self.assertEqual(evidence['primaryQuery'],requests[0])
+        self.assertEqual(['307029264069'],[x['item_id'] for x in rows])
+        for case in evidence['cases']:
+            self.assertEqual(case['keep'],monitor._details_match_contract({'title':case['title']},search,case),case['id'])
+
     def test_long_individual_alias_never_reaches_provider_truncation(self):
         search={'query':'x'*101,'_query_override':'x'*101,'_api_query_batch':True}
         with patch.object(monitor,'_get_ebay_api_token') as token,patch.object(monitor.urllib.request,'urlopen') as network:
