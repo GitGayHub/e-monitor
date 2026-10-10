@@ -6201,7 +6201,11 @@ def _statistics_search_variant(search, listing_type, min_price=None, best_offer=
             search_floor = max(float(min_price), float(search_floor or 0))
         except (TypeError, ValueError):
             pass
-    filters["min_price"] = search_floor if search_floor and search_floor > 0 else min_price
+    # The same purchase floor must not constrain low opening bids, including
+    # mixed statistics where a nonempty auction basket prevented a refill.
+    filters["min_price"] = (
+        search_floor if search_floor and search_floor > 0 else min_price
+    ) if listing_type != "auction" else None
     # Keep a wide eBay ceiling so sort=price_asc surfaces real floor prices;
     # soft limit_price is applied in filter / green verdict, not as _udhi.
     filters["max_price"] = None
@@ -6220,6 +6224,12 @@ def _statistics_filter_search(search):
     filters.pop("best_offer", None)
     filters.pop("_stats_bucket_filter", None)
     return stats_filter
+
+
+def _statistics_needs_auction_fetch(primary_minimum, has_auction):
+    # 960017889636 was hidden below a mixed BIN floor despite both auction
+    # baskets already containing more expensive devices.
+    return not has_auction or (primary_minimum is not None and primary_minimum > 0)
 
 
 def _on_github_actions():
@@ -8486,7 +8496,7 @@ async def process_searches(bot, once=False):
                         if bin_items:
                             result_groups.append(bin_items)
                         _note_side_outcome("bin", bin_items, bin_err)
-                    if not has_auc:
+                    if _statistics_needs_auction_fetch(mixed_search.get("filters", {}).get("min_price"), has_auc):
                         if _on_github_actions():
                             await asyncio.sleep(1.5)
                         auc_items, auc_err = await _auction_fill_hard()
