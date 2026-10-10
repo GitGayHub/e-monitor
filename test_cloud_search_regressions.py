@@ -5,6 +5,45 @@ import monitor
 from query_variants import gpu_pc_aliases, api_query_batches
 
 class CloudSearchRegressions(unittest.TestCase):
+    def test_all_hybrid_prices_and_statistics_keep_both_original_formats(self):
+        import json,copy
+        from pathlib import Path
+        from test_search_intent_rules import DummyConfig
+        for c in json.loads((Path(__file__).parent/'qa/fixtures/all_hybrid_prices.json').read_text(encoding='utf8')):
+            search={'id':'isolated-all','query':'DualSense','filters':{'listing_type':'all','category':'all','limit_price':c['limit'],'min_price':c['minimum'],'max_price':c['hardMaximum']}}
+            raw={'item_id':'hybrid','title':'Sony DualSense Controller','seller_name':'seller','price':c['bin'],'bin_price':c['bin'],'auc_price':c['bid'],'shipping_cost':c['shipping'],'buy_now':True,'auction':True,'best_offer':False,'time_left':str(c['auctionHours'])+' Std','condition':'Gebraucht','location':'DE'}
+            before=copy.deepcopy(raw)
+            with patch.object(monitor,'seen_state',{}):
+                notified=monitor.filter_results([raw],search,DummyConfig())
+                self.assertEqual(c['eligible'],bool(notified),c['name'])
+                if notified:
+                    self.assertEqual(c['selected']=='buy_now',notified[0]['buy_now'])
+                    self.assertEqual(c['total'],notified[0]['total_price'])
+                statistics=monitor.filter_results([raw],search,DummyConfig(),skip_seen=True,is_statistics=True)
+                self.assertTrue(statistics[0]['buy_now'] and statistics[0]['auction'])
+                self.assertEqual(c['bin']+c['shipping'],statistics[0]['bin_total_price'])
+                self.assertEqual(c['bid']+c['shipping'],statistics[0]['auc_total_price'])
+            self.assertEqual(before,raw)
+
+    def test_all_hybrid_reselects_purchase_after_live_price_changes(self):
+        from test_search_intent_rules import DummyConfig
+        search={'id':'isolated-all','query':'DualSense','filters':{'listing_type':'all','category':'all','limit_price':40}}
+        raw={'item_id':'hybrid','title':'Sony DualSense Controller','seller_name':'seller','price':350,'bin_price':350,'auc_price':30,'shipping_cost':5,'buy_now':True,'auction':True,'best_offer':False,'time_left':'18 Std','condition':'Gebraucht','location':'DE'}
+        with patch.object(monitor,'seen_state',{}):
+            item=monitor.filter_results([raw],search,DummyConfig())[0]
+            self.assertFalse(item['buy_now'])
+            monitor._refresh_candidate_details(item,{'buyingOptions':['FIXED_PRICE','AUCTION'],'price':{'value':'25'},'currentBidPrice':{'value':'30'}},{},search)
+            selected=monitor.filter_results([item],search,DummyConfig())[0]
+            self.assertTrue(selected['buy_now'] and not selected['auction'])
+            self.assertEqual(30,selected['total_price'])
+
+    def test_german_sold_status_from_actual_ps5_page(self):
+        import json
+        from pathlib import Path
+        for c in json.loads((Path(__file__).parent/'qa/fixtures/oct10_sold_status.json').read_text(encoding='utf8')):
+            d=monitor._parse_item_details_html(c['html'],description='PS5 Pro, funktioniert einwandfrei')
+            self.assertEqual(c['unavailable'],bool(d.get('estimatedAvailabilities')))
+
     def test_own_pickup_map_resolves_masked_postcode_without_following_it(self):
         import json
         from pathlib import Path
