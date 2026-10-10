@@ -37,6 +37,16 @@ def _bin(item_id, price=100.0):
 
 
 class NotifyStageSelectionTest(unittest.TestCase):
+    def test_shared_live_clock_never_rounds_future_auction_across_notification_gate(self):
+        import json
+        from pathlib import Path
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/auction_clock_boundaries.json').read_text(encoding='utf8'))
+        for case in cases:
+            clock=monitor._format_time_left_from_seconds(case['seconds'])
+            self.assertEqual(case['minutes'],monitor._parse_time_left_to_minutes(clock),case['name'])
+            item=_auction('boundary',clock,price=40)
+            self.assertEqual(case['seconds']<=86400,monitor._notify_eligibility(item,{'query':'Logitech Superlight 2','filters':{'limit_price':45}})[0],case['name'])
+
     def setUp(self):
         self._saved = monitor.seen_state
         monitor.seen_state = {}

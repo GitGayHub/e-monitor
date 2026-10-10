@@ -12,6 +12,21 @@ from unittest.mock import Mock
 
 
 class MobileContractTests(unittest.TestCase):
+    def test_exact_live_auction_clock_controls_all_three_real_delivery_stages(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/auction_clock_boundaries.json').read_text(encoding='utf8'))
+        cfg=Mock();cfg.get_settings.return_value={};cfg.get_global_banned_sellers.return_value=[];cfg.get_banned_item_ids.return_value=set();cfg.get_item_hashes.return_value=set()
+        search={'id':'isolated-clock','query':'Logitech Superlight 2','filters':{'category':'mice','listing_type':'auction','limit_price':45}}
+        bot=Mock();bot.get_me=AsyncMock(return_value=Mock(username='isolated_test_bot'))
+        for case in cases:
+            for stage,threshold in [('initial',86400),('final_hour',3600),('final_15m',900)]:
+                item={'item_id':'clock','title':'Logitech G PRO X SUPERLIGHT 2 Wireless Gaming Maus Schwarz + Empfänger','price':6.5,'shipping_cost':6.19,'buy_now':False,'auction':True,'best_offer':False,'seller_name':'seller','condition':'Gebraucht','location':'DE','time_left':'1д'}
+                details={'title':item['title'],'description':'Die Maus ist gebraucht und technisch einwandfrei. Alle Tasten, Scrollrad, Sensor und Funkverbindung funktionieren. Originaler PRO X 2 LIGHTSPEED USB-Empfänger inklusive.','buyingOptions':['AUCTION'],'currentBidPrice':{'value':'6.5'},'itemEndDate':'2026-10-11T18:01:00Z'}
+                seen={} if stage=='initial' else {'clock':{'initial':True}}
+                with patch.object(monitor,'config',cfg),patch.object(monitor,'seen_state',seen),patch.object(monitor,'save_seen_ids'),patch.object(monitor,'is_outlier',return_value=False),patch.object(monitor,'_fetch_item_details',return_value=details),patch.object(monitor,'_parse_end_date_to_seconds',return_value=case['seconds']),patch.object(feed,'enqueue'),patch.object(monitor,'safe_send_telegram',new=AsyncMock(return_value=Mock(message_id=54))) as sender:
+                    expected=case['seconds']<=threshold
+                    self.assertEqual(expected,asyncio.run(monitor._process_notify_candidate(bot,item,search,None,stage)),(case['name'],stage))
+                    self.assertEqual(int(expected),sender.await_count)
+
     def test_all_hybrid_reaches_real_formatter_as_auction_and_cannot_repeat(self):
         from datetime import datetime,timedelta,timezone
         item={'item_id':'hybrid-all','title':'Sony DualSense Controller','price':350,'bin_price':350,'auc_price':30,'shipping_cost':5,'total_price':355,'buy_now':True,'auction':True,'best_offer':False,'seller_name':'seller','location':'DE','condition':'Gebraucht','time_left':'18 Std'}

@@ -3051,16 +3051,20 @@ def _format_time_left_from_seconds(total_seconds):
     # eBay auctions can last at most 30 days; anything beyond is bogus
     if total_seconds > 30 * 86400:
         return ""
-    days = int(total_seconds // 86400)
-    hours = int((total_seconds % 86400) // 3600)
-    minutes = int((total_seconds % 3600) // 60)
+    # Notification gates consume this clock. Never round a future auction down
+    # across the 24h / 1h / 15m boundary or discard minutes when days are present.
+    from math import ceil
+    total_minutes = ceil(total_seconds / 60)
+    days = total_minutes // 1440
+    hours = (total_minutes % 1440) // 60
+    minutes = total_minutes % 60
 
     parts = []
     if days > 0:
         parts.append(f"{days}д")
     if hours > 0:
         parts.append(f"{hours}ч")
-    if (minutes > 0 and days == 0) or not parts:
+    if minutes > 0 or not parts:
         parts.append(f"{minutes}мин")
     return " ".join(parts)
 
