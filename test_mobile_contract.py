@@ -12,6 +12,20 @@ from unittest.mock import Mock
 
 
 class MobileContractTests(unittest.TestCase):
+    def test_all_hybrid_reaches_real_formatter_as_auction_and_cannot_repeat(self):
+        from datetime import datetime,timedelta,timezone
+        item={'item_id':'hybrid-all','title':'Sony DualSense Controller','price':350,'bin_price':350,'auc_price':30,'shipping_cost':5,'total_price':355,'buy_now':True,'auction':True,'best_offer':False,'seller_name':'seller','location':'DE','condition':'Gebraucht','time_left':'18 Std'}
+        search={'id':'isolated-all','query':'DualSense','filters':{'category':'all','listing_type':'all','limit_price':40}}
+        details={'title':item['title'],'description':'Sony DualSense Controller, voll funktionsfähig.','buyingOptions':['FIXED_PRICE','AUCTION'],'price':{'value':'350'},'currentBidPrice':{'value':'30'},'itemEndDate':(datetime.now(timezone.utc)+timedelta(hours=18)).isoformat(),'seller':{'username':'seller','feedbackScore':100,'feedbackPercentage':'100.0'}}
+        cfg=Mock();cfg.get_settings.return_value={};cfg.get_global_banned_sellers.return_value=[];cfg.get_banned_item_ids.return_value=set();cfg.get_item_hashes.return_value=set()
+        bot=Mock();bot.get_me=AsyncMock(return_value=Mock(username='isolated_test_bot'))
+        with patch.object(monitor,'config',cfg),patch.object(monitor,'seen_state',{}),patch.object(monitor,'save_seen_ids'),patch.object(monitor,'is_outlier',return_value=False),patch.object(monitor,'_fetch_item_details',return_value=details),patch.object(feed,'enqueue'),patch.object(monitor,'safe_send_telegram',new=AsyncMock(return_value=Mock(message_id=53))) as sender:
+            self.assertTrue(asyncio.run(monitor._process_notify_candidate(bot,item,search,None,'initial')))
+            self.assertFalse(asyncio.run(monitor._process_notify_candidate(bot,item,search,None,'initial')))
+            sender.assert_awaited_once()
+            self.assertIn('35.00€',sender.await_args.args[2])
+            self.assertIn('Тип: Auktion',sender.await_args.args[2])
+
     def test_long_notification_keeps_photo_and_never_duplicates_after_partial_delivery(self):
         bot=Mock(); photo=Mock(message_id=51)
         bot.send_photo=AsyncMock(return_value=photo)

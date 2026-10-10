@@ -4845,7 +4845,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         ".x-quantity__availability, [data-testid=x-quantity__availability]"
     ))
     if re.search(
-        r"dieses angebot.{0,160}beendet|this listing.{0,160}(?:ended|sold)|"
+        r"dieses angebot.{0,160}(?:beendet|verkauft)|this listing.{0,160}(?:ended|sold)|"
         r"\bitem sold on\b|"
         r"(?:dieser artikel ist\s+)?nicht mehr vorr[aä]tig|"
         r"(?:this item is\s+)?out of stock|"
@@ -5758,7 +5758,13 @@ def _details_match_contract(item, search, details, *, require_description=True):
     )
 
 
-def _refresh_candidate_details(item, details, settings):
+def _refresh_candidate_details(item, details, settings, search=None):
+    # An All search must reconsider both live prices after a detail refresh.
+    if (search or {}).get("filters", {}).get("listing_type", "all") in ("all", "offer") and search is not None:
+        options = details.get("buyingOptions") or []
+        if options:
+            item["buy_now"] = "FIXED_PRICE" in options
+            item["auction"] = "AUCTION" in options
     _calculate_total(item, settings, details)
     item["_details_loaded"] = True
     image = (details.get("image") or {}).get("imageUrl")
@@ -5837,6 +5843,18 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         item = _calculate_total(item, settings)
         # Select correct price for hybrid listings based on the search/bucket type
         if item.get("buy_now") and item.get("auction"):
+            if listing_type in ("all", "offer") and not is_statistics:
+                buy_side = copy.deepcopy(item)
+                buy_side["auction"] = False
+                buy_side["price"] = item.get("bin_price") or item["price"]
+                buy_side["total_price"] = item.get("bin_total_price") or item["total_price"]
+                minimum = filters.get("min_price")
+                hard_max = filters.get("max_price")
+                buy_qualifies = (_price_within_limit(buy_side, search)
+                    and (minimum is None or buy_side["total_price"] >= minimum)
+                    and (hard_max is None or buy_side["price"] <= hard_max)
+                    and not _is_implausibly_cheap_device(buy_side, search))
+                listing_type = "buy_now" if buy_qualifies else "auction"
             if listing_type == "auction":
                 item["_was_hybrid"] = True
                 item["price"] = item.get("auc_price") or item["price"]
@@ -7592,7 +7610,7 @@ async def _validate_candidate(item, search):
         item["_details_status"] = "rejected"
         if not _details_match_contract(item, search, details):
             return False, details
-        _refresh_candidate_details(item, details, config.get_settings())
+        _refresh_candidate_details(item, details, config.get_settings(), search)
         # Price limits are represented by the statistics verdict; all structural
         # filters still apply to the actual country, condition and radius.
         structural = copy.deepcopy(search)
@@ -7825,10 +7843,14 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         logger.info("Skipping notification for item %s: details do not pass common rules", item["item_id"])
         return False
     if details:
-        _refresh_candidate_details(item, details, config.get_settings())
-        if not filter_results([item], search, config, skip_seen=True):
+        _refresh_candidate_details(item, details, config.get_settings(), search)
+        refreshed = filter_results([item], search, config, skip_seen=True)
+        if not refreshed:
             logger.info("Skipping notification for item %s: refreshed details no longer pass search", item["item_id"])
             return False
+        # Filtering returns a copy with the selected hybrid format and price.
+        # The formatter and final notification gate must use that same copy.
+        item.update(refreshed[0])
         h = _item_hash(item["seller_name"], item["title"], item["price"])
 
     if stage in ("final_hour", "final_15m"):
