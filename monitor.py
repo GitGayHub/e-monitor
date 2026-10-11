@@ -2290,6 +2290,18 @@ def _is_accessory_product(title_norm, category):
     return bool(noun_and_part and re.search(rf"\b{noun_and_part}\b", title_norm))
 
 
+def _console_storage_feature_title(title_norm):
+    # Own descriptions/specifications of 205229533704, 198578372009 and
+    # 278436639468 confirm whole PS5 Pro consoles with built-in 2TB SSDs.
+    # Only strip that storage feature from a model-led, explicit console;
+    # accessory compatibility, leading SSDs and all other parts stay intact.
+    if (re.match(r"^(?:sony\s+)?(?:ps5|playstation\s*5)\s+pro\b", title_norm)
+            and re.search(r"\b(?:konsole|console|spielkonsole|digital edition)\b", title_norm)
+            and not re.search(r"\b(?:fuer|for|voor|para|pour|per|kompatibel|compatible|fits|nur|only|ersatz\w*|replacement|spare)\b|\bf\s*\.\s*", title_norm)):
+        return re.sub(r"\b(?:2\s*tb\s+ssd(?:[- ]speicher)?|ssd(?:[- ]speicher)?\s+2\s*tb)\b", " ", title_norm)
+    return title_norm
+
+
 def _is_device_bundle(title_norm, category):
     if _is_accessory_product(title_norm,category):
         return False
@@ -2441,6 +2453,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     if category == "mice" and re.search(r"\b(?:mouse|maus)\b", title_norm) and not re.search(r"\b(?:fuer|for|fits|replacement|spare|ersatz\w*|repair|reparatur\w*|set|only|nur)\b", title_norm):
         # Own complete mouse 318767580494: 5-Button is a feature count.
         title_norm = re.sub(r"\b[1-9]\d?[-\s]+buttons?\b", " ", title_norm)
+    if category == "consoles":
+        title_norm = _console_storage_feature_title(title_norm)
     # Components are rejected unless explicitly supplied with the main device.
     hard_parts = CATEGORY_HARD_PART_WORDS.get(category, ())
     if any(_has_accessory_term(title_norm, w) for w in hard_parts) and not _is_device_bundle(title_norm, category):
