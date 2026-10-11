@@ -322,14 +322,21 @@ class ManualDeviceEvidenceTests(unittest.TestCase):
                 self.assertFalse(monitor._details_match_contract(item, search, {**base, **unavailable}))
 
     def test_s24_full_descriptions_and_explicit_ram_conflicts(self):
+        from datetime import datetime, timezone
         document = json.loads((Path(__file__).parent / 'qa/fixtures/s24_manual_details.json').read_text(encoding='utf-8'))
         search = {'query': 'samsung s24 ultra', 'filters': {'category': 'phones'}}
+        # Archive checks evaluate model/condition before these captured auctions
+        # expired. Real delivery keeps the current clock and rejects ended lots.
+        captured_clock = datetime(2026, 10, 6, tzinfo=timezone.utc)
         for item_id, details in document.items():
             with self.subTest(item=item_id):
                 # Official Samsung specification: every S24 Ultra has 12GB RAM.
                 # 407261189770 additionally supplies its own notebook specs.
                 consistent = item_id not in {'407266105568', '407261189770'}
-                self.assertEqual(consistent, monitor._details_match_contract({'title': details['title']}, search, details))
+                self.assertEqual(consistent, monitor._details_match_contract({'title': details['title']}, search, details, now=captured_clock))
+        details = document['168761406827']
+        end = datetime.fromisoformat(details['itemEndDate'].replace('Z', '+00:00'))
+        self.assertFalse(monitor._details_match_contract({'title': details['title']}, search, details, now=end))
 
 
 if __name__ == '__main__':
