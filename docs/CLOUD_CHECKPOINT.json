@@ -1,26 +1,47 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-11-pc-058",
+  "checkpointId": "2026-10-11-pc-059",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "be53d46b849e0e995902d6added0b513ccf5c177",
+    "sourceCommit": "dc5db5701289ac45c5b7ab885ac27ed6d710110a",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "c89556251a8a579d2f75224e89f9c90258f0139f",
-    "cloudBranch": "codex/cloud-work"
+    "sourceCommit": "980e3cf8ff071ec55d8b52e08f7b389ae4acfe14",
+    "cloudBranch": "codex/cloud-work",
+    "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.058",
-  "logicVersion": 1791727334,
+  "apkVersion": "0.059",
+  "logicVersion": 1791733273,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "cleanLinuxCi": {
-    "run": 38145533123,
+    "run": 38152336143,
     "status": "in_progress",
-    "conclusion": null
+    "conclusion": null,
+    "apkVersion": "0.059"
   },
-  "localCloudMergeTests": 7
+  "localCloudMergeTests": 7,
+  "physicalReport": {
+    "apkVersion": "0.058",
+    "products": 25,
+    "baskets": 100,
+    "elapsedMs": 807677,
+    "independentAcceptanceComplete": false
+  },
+  "apkSha256": "520D027BA29F7CFD29C803B7A7F9E49ADC93DECD58852E18AD8F048D6A800899",
+  "pending059": [
+    "physicalInstall",
+    "physicalReport",
+    "runtimeAck",
+    "clientTelegram"
+  ],
+  "previousCleanLinuxCi058": {
+    "run": 38145533123,
+    "status": "completed",
+    "conclusion": "success"
+  }
 }
