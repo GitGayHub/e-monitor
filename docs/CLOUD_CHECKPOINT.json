@@ -4,13 +4,13 @@
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "b7b0aec3af3e5a536cb588be521670621b53effc",
+    "sourceCommit": "46065bdbaf55fed5f208abf695708dbc1a0662dc",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "c4abc3c15bfed2cd400819d5f22bdd01d7e954b0",
+    "sourceCommit": "7c98ed11d43c0bffbd238a504e0eaa2d5c6c852e",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
@@ -18,7 +18,12 @@
   "logicVersion": 1791753044,
   "acceptanceComplete": false,
   "environmentPublished": false,
-  "cleanLinuxCi": null,
+  "cleanLinuxCi": {
+    "id": 38175380347,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "7c98ed11d43c0bffbd238a504e0eaa2d5c6c852e"
+  },
   "localCloudMergeTests": 7,
   "physicalReport": {
     "apkVersion": "0.060",
@@ -104,10 +109,34 @@
     "conclusion": "success"
   },
   "pending061": [
-    "runtimeAck",
-    "physicalPs5Check",
-    "newSourceCi",
-    "fullIndependentAcceptance"
+    "fullIndependentAcceptance",
+    "newPickupTelegram",
+    "realQuotaAndNetworkRecovery",
+    "deliveryFailuresAndDedupe"
   ],
-  "telegramTest058ClientConfirmed": true
+  "telegramTest058ClientConfirmed": true,
+  "runtime061": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791753044,
+    "lastSuccessfulRun": "2026-10-11T21:15:55+00:00",
+    "updatedAt": "2026-10-11T21:15:55+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalPs5Report061": {
+    "elapsedMs": 25364,
+    "sameFourPricesAndIdsAsPython": true,
+    "detailsVersion": 1791753044
+  },
+  "telegramClient061": {
+    "messageId": 119988,
+    "confirmed": true,
+    "photoVisualInspection": false
+  }
 }
