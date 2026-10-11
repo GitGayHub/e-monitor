@@ -35,6 +35,19 @@ def _udlo(search):
 
 
 class FloorStaysOutOfTheDealBandTest(unittest.TestCase):
+    def test_actual_statistics_request_does_not_hide_s24_low_opening_bid(self):
+        # 960017889636: seller claims working S24, 51 + 6.99, 7 days left.
+        # It must reach checks (its actual 8GB aspect then rejects it).
+        s = _search("samsung s24 ultra",350,category="phones")
+        variant=monitor._statistics_search_variant(s,"auction",min_price=50)
+        self.assertIsNone(variant['filters']['min_price'])
+        mixed=monitor._statistics_search_variant(s,"all",min_price=50)
+        self.assertTrue(monitor._statistics_needs_auction_fetch(mixed['filters']['min_price'],True))
+        self.assertTrue(monitor._statistics_needs_auction_fetch(None,False))
+        self.assertFalse(monitor._statistics_needs_auction_fetch(None,True))
+        purchase=monitor._statistics_search_variant(s,'buy_now',min_price=50)
+        self.assertGreaterEqual(purchase['filters']['min_price'],50)
+
     def test_mouse_lot_just_under_the_limit_is_fetchable(self):
         s = _search("logitech superlight 2", 45, category="mice", listing_type="buy_now")
         self.assertLess(float(_udlo(s)), 36.69,
