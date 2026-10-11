@@ -2276,6 +2276,8 @@ def _has_damage_word(text_norm):
 
 
 def _is_accessory_product(title_norm, category):
+    if category == "consoles" and re.search(r"\b(?:nur|only)\s+(?:kabel|cables?|controller|gamepad|laufwerk|disc drive)\b", title_norm):
+        return True
     noun_and_part = {
         "consoles": r"(?:konsole|console|spielkonsole)\s+(?:covers?|case|skin|faceplates?|abdeckung)",
         "laptops": r"(?:laptop|notebook)\s+(?:tastatur|keyboard|akku|battery|ladegeraet|charger|netzteil)",
@@ -2322,7 +2324,16 @@ def _is_device_bundle(title_norm, category):
     # then verify in the own description that the device is included.
     if category == 'headphones' and not implicit_headphone:
         headphone_case = headphone_case or re.search(r"\b(?:anc|wireless|bluetooth|ldac|noise\s*cancell?ing)\b.*\b(?:kopfhoerer|headphones|headset)\b.*\bcase\b",title_norm)
-    return bool(re.search(connector, title_norm[device.end():]) or receiver_feature or headphone_case)
+    # 940001176756 lists a complete CFI-7021 / 2TB console, DualSense,
+    # cable and box without a connector such as "mit". The component after
+    # the console is part of its contents, not the product being sold.
+    console_contents = category == "consoles" and bool(
+        re.search(r"\b(?:ps5|playstation\s*5)\s+pro\b", title_norm)
+        and re.search(r"\b(?:2\s*tb|cfi\s*[- ]?\s*7[01]\d{2})\b", title_norm)
+        and re.search(r"\b(?:dualsense|controller|kabel|cable|netzkabel|stromkabel|power cable)\b", title_norm[device.end():])
+        and not re.search(rf"\b(?:nur|only)\s+{component}\b", title_norm)
+    )
+    return bool(re.search(connector, title_norm[device.end():]) or receiver_feature or headphone_case or console_contents)
 
 
 @functools.lru_cache(maxsize=1)
@@ -6226,10 +6237,26 @@ def _statistics_filter_search(search):
     return stats_filter
 
 
+def _statistics_bucket_search(search, listing_type, best_offer):
+    """Validate a report basket rather than the first saved search variant."""
+    bucket = copy.deepcopy(search)
+    filters = bucket.setdefault("filters", {})
+    filters.update(listing_type=listing_type, best_offer=best_offer, _stats_bucket_filter=True)
+    if listing_type == "auction":
+        filters["min_price"] = None
+    return bucket
+
+
 def _statistics_needs_auction_fetch(primary_minimum, has_auction):
     # 960017889636 was hidden below a mixed BIN floor despite both auction
     # baskets already containing more expensive devices.
     return not has_auction or (primary_minimum is not None and primary_minimum > 0)
+
+
+def _statistics_needs_purchase_fetch(received_count, has_bin, has_offer):
+    # A full mixed page can contain auctions/parts and omit cheaper purchases.
+    # 60 is the smallest page used by this report (HTML on GitHub).
+    return not (has_bin and has_offer) or received_count >= 60
 
 
 def _on_github_actions():
@@ -8486,7 +8513,8 @@ async def process_searches(bot, once=False):
                         search["query"], len(mixed_items), has_bin, has_auc,
                     )
                     # Fill missing side with one targeted fetch only.
-                    if not has_bin:
+                    has_offer = any(it.get("buy_now") and it.get("best_offer") for it in mixed_items)
+                    if _statistics_needs_purchase_fetch(len(mixed_items), has_bin, has_offer):
                         if _on_github_actions():
                             await asyncio.sleep(1.5)
                         bin_search = _statistics_search_variant(
@@ -8644,16 +8672,16 @@ async def process_searches(bot, once=False):
                 # passed filter_results (title/intent/price floor). Full details
                 # rules remain for normal notifications.
                 cheapest_bin_no_bo = await _select_cheapest_valid_candidate(
-                    sorted(bin_no_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                    sorted(bin_no_bo, key=total_price_key), _statistics_bucket_search(search, "buy_now", False), stats_soft_fallback=True
                 )
                 cheapest_bin_bo = await _select_cheapest_valid_candidate(
-                    sorted(bin_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                    sorted(bin_bo, key=total_price_key), _statistics_bucket_search(search, "buy_now", True), stats_soft_fallback=True
                 )
                 cheapest_auc_no_bo = await _select_cheapest_valid_candidate(
-                    sorted(auc_no_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                    sorted(auc_no_bo, key=total_price_key), _statistics_bucket_search(search, "auction", False), stats_soft_fallback=True
                 )
                 cheapest_auc_bo = await _select_cheapest_valid_candidate(
-                    sorted(auc_bo, key=total_price_key), stats_search_cfg, stats_soft_fallback=True
+                    sorted(auc_bo, key=total_price_key), _statistics_bucket_search(search, "auction", True), stats_soft_fallback=True
                 )
 
                 def get_verdict_for_item(item, bucket=None):
@@ -8664,7 +8692,8 @@ async def process_searches(bot, once=False):
                         return "🟡 описание недоступно (eBay API)"
                     if _is_implausibly_cheap_device(item, search):
                         return "❌ дешевле пола"
-                    eligible, reason = _notify_eligibility(item, search)
+                    bucket_search = _statistics_bucket_search(search, "auction" if (bucket or "").startswith("Auktion") else "buy_now", (bucket or "").endswith('+'))
+                    eligible, reason = _notify_eligibility(item, bucket_search)
                     clock = _auction_meta(item)
                     tail = f" · {clock}" if clock else ""
                     bucket_s = (bucket or "").strip()

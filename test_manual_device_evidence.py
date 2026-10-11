@@ -6,6 +6,14 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_console_contents_list_does_not_require_bundle_connector(self):
+        cases = json.loads((Path(__file__).parent/'qa/fixtures/ps5_contents_manual_oct11.json').read_text(encoding='utf8'))
+        for case in cases:
+            title = monitor._normalize(case['title'])
+            with self.subTest(item=case['id']):
+                query = monitor._normalize('(playstation 5 pro, ps5 pro)')
+                self.assertEqual(case['expectedModel'], monitor._matches_category_query(title, 'consoles', query) and not monitor._is_category_blocked_title(title, 'consoles', query))
+
     def test_live_italian_model_fields_cannot_hide_incompatible_iphone(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/cloud_live_model_cases_2026-10-08.json').read_text(encoding='utf8'))
         for case in cases:

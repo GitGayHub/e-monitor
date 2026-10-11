@@ -5,6 +5,51 @@ import monitor
 from query_variants import gpu_pc_aliases, api_query_batches
 
 class CloudSearchRegressions(unittest.TestCase):
+    def test_statistics_validates_four_baskets_instead_of_first_saved_variant(self):
+        import asyncio, copy
+        from datetime import datetime, timedelta, timezone
+        import mobile.feed_writer as feed
+        search={'id':'ps5_pro_buy','query':'(playstation 5 pro, ps5 pro)','enabled':True,
+                'filters':{'listing_type':'buy_now_offer','category':'consoles','limit_price':750,'min_price':300,'location':'worldwide'}}
+        searches=[search,dict(copy.deepcopy(search),id='ps5_pro_auc')]
+        searches[1]['filters']['listing_type']='auction'
+        def item(item_id, price, auction=False, offer=False):
+            return {'item_id':item_id,'title':'Sony PlayStation 5 Pro Konsole 2TB CFI-7021 DualSense Kabel OVP',
+                    'price':price,'shipping_cost':0,'seller_name':'seller','location':'DE','condition':'Gebraucht',
+                    'buy_now':not auction,'auction':auction,'best_offer':offer,'time_left':'5 T 2 Std','bids_count':0 if offer else 1}
+        rows={x['item_id']:x for x in [item('old',1150),item('buy',1024),item('offer',1010.49,offer=True),item('bid',211.49,auction=True),item('bid-offer',909.49,auction=True,offer=True)]}
+        requested=[]
+        def fetch(s, force=False):
+            listing=s['filters']['listing_type'];requested.append(listing)
+            ids=['old']*60 if listing=='all' else ['buy','offer'] if listing.startswith('buy_now') else ['bid','bid-offer']
+            return [copy.deepcopy(rows[i]) for i in ids],None
+        end=(datetime.now(timezone.utc)+timedelta(days=5)).isoformat()
+        def details(item_id):
+            row=rows[item_id]
+            return {'title':row['title'],'description':'PS5 Pro Konsole und Controller funktionieren einwandfrei. CFI-7021, 2TB.',
+                    'buyingOptions':(['AUCTION'] if row['auction'] else ['FIXED_PRICE'])+(['BEST_OFFER'] if row['best_offer'] else []),
+                    'currentBidPrice':{'value':str(row['price'])},'price':{'value':str(row['price'])},'itemEndDate':end,
+                    'localizedAspects':[{'name':'Modell','value':'Sony PlayStation 5 Pro'}]}
+        messages=[]
+        async def capture(bot,chat_id,text,**kwargs):
+            messages.append(text);return True
+        with patch.dict(monitor.config.raw,{'mobile_managed':True}), patch.object(monitor.config,'get_searches',return_value=searches), \
+             patch.object(monitor,'initialize_api_budget_and_queue'), patch.object(monitor,'fetch_ebay_ex',side_effect=fetch), \
+             patch.object(monitor,'_fetch_item_details',side_effect=details), patch.object(monitor,'safe_send_telegram',side_effect=capture), \
+             patch.object(monitor,'_is_statistics_mode',return_value=True), patch.object(monitor,'clear_monitoring_state'), patch.object(feed,'flush_pending'):
+            asyncio.run(monitor.process_searches(None,once=True))
+        self.assertEqual(['all','buy_now_offer','auction'],requested)
+        report='\n'.join(messages)
+        for item_id in ('buy','offer','bid','bid-offer'):
+            self.assertIn('/itm/'+item_id,report)
+        self.assertNotIn('Не найдено',report)
+
+    def test_purchase_refill_when_mixed_page_is_full_or_one_format_missing(self):
+        self.assertFalse(monitor._statistics_needs_purchase_fetch(59,True,True))
+        self.assertTrue(monitor._statistics_needs_purchase_fetch(60,True,True))
+        self.assertTrue(monitor._statistics_needs_purchase_fetch(1,True,False))
+        self.assertTrue(monitor._statistics_needs_purchase_fetch(1,False,True))
+
     def test_all_hybrid_prices_and_statistics_keep_both_original_formats(self):
         import json,copy
         from pathlib import Path
