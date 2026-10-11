@@ -1,27 +1,24 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-11-pc-058",
+  "checkpointId": "2026-10-11-pc-060",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "be53d46b849e0e995902d6added0b513ccf5c177",
+    "sourceCommit": "dc5db5701289ac45c5b7ab885ac27ed6d710110a",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "c89556251a8a579d2f75224e89f9c90258f0139f",
-    "cloudBranch": "codex/cloud-work"
+    "sourceCommit": "980e3cf8ff071ec55d8b52e08f7b389ae4acfe14",
+    "cloudBranch": "codex/cloud-work",
+    "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.059",
-  "logicVersion": 1791733273,
+  "apkVersion": "0.060",
+  "logicVersion": 1791749533,
   "acceptanceComplete": false,
   "environmentPublished": false,
-  "cleanLinuxCi": {
-    "run": 38145533123,
-    "status": "completed",
-    "conclusion": "success"
-  },
+  "cleanLinuxCi": null,
   "localCloudMergeTests": 7,
   "physicalReport": {
     "apkVersion": "0.058",
@@ -30,12 +27,52 @@
     "elapsedMs": 807677,
     "independentAcceptanceComplete": false
   },
-  "checkpoint": "2026-10-11-pc-059",
-  "apkSha256": "520D027BA29F7CFD29C803B7A7F9E49ADC93DECD58852E18AD8F048D6A800899",
+  "apkSha256": "287125D85BDED2D9CC95CFB07BBE550E84CFE9DD2B1093B374454554470A6587",
   "pending059": [
+    "physicalPs5ReportRead",
+    "clientTelegram",
+    "fullIndependentAcceptance"
+  ],
+  "previousCleanLinuxCi058": {
+    "run": 38145533123,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "physicalInstall": {
+    "apkVersion": "0.059",
+    "result": "Success",
+    "businessRowsChanged": 0,
+    "dirty": false
+  },
+  "runtime059": {
+    "state": "ok",
+    "logicVersion": 1791733273,
+    "activeSearches": 47,
+    "lastSuccessfulRun": "2026-10-11T15:41:55+00:00"
+  },
+  "cloudHandoff": "docs/CLOUD_CONTINUE_NOW.md",
+  "previousCleanLinuxCi059": {
+    "run": 38152336143,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "physicalPs5Report059": {
+    "elapsedMs": 43040,
+    "sameFourPricesAndIdsAsPython": true
+  },
+  "telegramClient059": {
+    "confirmed": true,
+    "messageIds": [
+      119985,
+      119984,
+      119980
+    ],
+    "photoVisualInspection": false
+  },
+  "pending060": [
     "physicalInstall",
-    "physicalReport",
+    "physicalPixelReport",
     "runtimeAck",
-    "clientTelegram"
+    "fullIndependentAcceptance"
   ]
 }

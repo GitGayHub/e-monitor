@@ -2290,6 +2290,22 @@ def _is_accessory_product(title_norm, category):
     return bool(noun_and_part and re.search(rf"\b{noun_and_part}\b", title_norm))
 
 
+def _has_battery_swelling(text):
+    battery = r"\b(?:akkus?|batter(?:y|ies|ie|ien))\b"
+    swelling = r"\b(?:auf(?:ge|zu)?blaeh(?:t\w*|en)|schwell(?:ung|en|t)|swollen|swell(?:ing|s|ed)?|bulg(?:ing|es|ed)?)\b|\bblaeht\b.{0,30}\bauf\b"
+    text = re.sub(r"\b(?:alte\w*|vorherige\w*|old|previous)\s+(?:akku|battery|batterie)\b[^.!?\n]{0,100}?\b(?:wurde\s+(?:ersetzt|ausgetauscht)|was\s+replaced)\b", " ", text)
+    for clause in re.split(r"[.!?\n;,]", text):
+        if not re.search(battery, clause) or re.search(r"\b(?:wenn|falls|sollte|if|in case)\b", clause):
+            continue
+        for match in re.finditer(swelling, clause):
+            if re.search(r"\bblaeht\b.*\bnicht\b.*\bauf\b", match.group()):
+                continue
+            before = clause[max(0, match.start()-45):match.start()]
+            if re.search(r"\b(?:nicht|not)\s+(?:ohne|without)\s*$", before) or not re.search(r"\b(?:nicht|kein\w*|ohne|no|not|without|never)\s+(?:\w+\s+){0,2}$", before):
+                return True
+    return False
+
+
 def _console_storage_feature_title(title_norm):
     # Own descriptions/specifications of 205229533704, 198578372009 and
     # 278436639468 confirm whole PS5 Pro consoles with built-in 2TB SSDs.
@@ -2397,6 +2413,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     if category == "phones" and _is_phone_accessory_title(title_norm):
         return True
     if _is_accessory_product(title_norm,category):
+        return True
+    if _has_battery_swelling(title_norm):
         return True
     if category == "headphones" and _headphone_structure_damaged(title_norm, is_title=True):
         return True
@@ -3099,7 +3117,7 @@ def _format_time_left_from_seconds(total_seconds):
     return " ".join(parts)
 
 
-def _parse_end_date_to_seconds(end_date_str):
+def _parse_end_date_to_seconds(end_date_str, now_dt=None):
     if not end_date_str:
         return None
     try:
@@ -3108,10 +3126,11 @@ def _parse_end_date_to_seconds(end_date_str):
             clean_date = clean_date[:-1] + "+00:00"
         from datetime import datetime, timezone
         end_dt = datetime.fromisoformat(clean_date)
-        if end_dt.tzinfo is not None:
-            now_dt = datetime.now(timezone.utc)
-        else:
-            now_dt = datetime.utcnow()
+        if now_dt is None:
+            if end_dt.tzinfo is not None:
+                now_dt = datetime.now(timezone.utc)
+            else:
+                now_dt = datetime.utcnow()
         diff = end_dt - now_dt
         return diff.total_seconds()
     except Exception as e:
@@ -5259,7 +5278,7 @@ def _is_description_blocked(desc_html, category):
     # spare-part noun. Remove only that noun; preserve every later defect.
     desc_norm = re.sub(r"\b(?:rueckglas|hinterglas|backglass)\b(?=\s+(?:(?:wurde|was)\s+)?(?:nie|nicht|never|not)\s+(?:(?:aus)?getauscht|ersetzt|repariert|replaced)\b)", " ", desc_norm)
 
-    if _has_charging_failure(desc_norm):
+    if _has_battery_swelling(desc_norm) or _has_charging_failure(desc_norm):
         return True
     # 227554664933: recurring SIM-Fehler persists with a newly supplied SIM.
     sim_error = r"\bsim[\s-]*(?:fehler|errors?)\b"
@@ -5688,14 +5707,15 @@ def _headphone_details_match(query, title, description, aspects):
     return True
 
 
-def _details_match_contract(item, search, details, *, require_description=True):
+def _details_match_contract(item, search, details, *, require_description=True, now=None):
     """Common checks; only isolated legacy metadata fixtures may omit description."""
     if require_description and (not details or not _clean_description(details.get("description") or "").strip()):
         return False
     if not details:
         return _intent_details_match(search, item, details)
     if require_description:
-        seconds_left = _parse_end_date_to_seconds(details.get("itemEndDate"))
+        seconds_left = (_parse_end_date_to_seconds(details.get("itemEndDate")) if now is None
+                        else _parse_end_date_to_seconds(details.get("itemEndDate"), now_dt=now))
         if seconds_left is not None and seconds_left <= 0:
             return False
         availability = details.get("estimatedAvailabilities") or []
