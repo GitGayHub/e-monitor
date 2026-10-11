@@ -7,6 +7,18 @@ import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_actual_auction_count_refresh_and_html_scope(self):
+        fixture = json.loads((Path(__file__).parent/'qa/fixtures/auction_count_refresh_oct11.json').read_text(encoding='utf8'))
+        for case in fixture['cases']:
+            with self.subTest(case=case['name']):
+                row={'price':810,'shipping_cost':10.49,'auction':True,'buy_now':False,'bids_count':case['before']}
+                actual=monitor._calculate_total(row,{'warn_non_eu':False},case['details'])
+                self.assertEqual(case['expected'],actual.get('bids_count'))
+        for case in fixture['htmlCases']:
+            with self.subTest(case=case['name']):
+                details=monitor._parse_item_details_html(case['html'],description='Whole PS5 Pro console.')
+                self.assertEqual(case['expected'],details.get('bidCount'))
+
     def test_phone_chip_declaration_belongs_to_the_requested_generation(self):
         for generation, correct in (('15','17'),('16','18'),('17','19')):
             query = f'iPhone {generation} Pro Max'

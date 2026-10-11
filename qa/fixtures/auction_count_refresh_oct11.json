@@ -1,0 +1,17 @@
+{
+  "source": "Real PS5 900006171612: SERP zero bids; fresh getItem bidCount1 and own x-price-section/x-bid-count link 1 Gebot.",
+  "cases": [
+    {"name":"first bid replaces stale zero","before":0,"details":{"bidCount":1},"expected":1},
+    {"name":"explicit zero replaces stale positive count","before":5,"details":{"bidCount":0},"expected":0},
+    {"name":"missing count does not use unique bidders","before":5,"details":{"uniqueBidderCount":1},"expected":5},
+    {"name":"negative count is invalid","before":5,"details":{"bidCount":-1},"expected":5},
+    {"name":"boolean is invalid","before":5,"details":{"bidCount":true},"expected":5},
+    {"name":"unknown count stays unknown","before":null,"details":{},"expected":null}
+  ],
+  "htmlCases": [
+    {"name":"own first bid with misleading recommendations","html":"<div class='recommended'><div class='x-bid-count'>99 Gebote</div></div><div class='x-price-section'><div class='x-bid-info'><div class='x-bid-count'><a>1 Gebot</a></div></div></div>","expected":1},
+    {"name":"own zero","html":"<div class='x-price-section'><div class='x-bid-count'>0 Gebote</div></div>","expected":0},
+    {"name":"recommendations alone cannot set own bids","html":"<div class='recommended'><div class='x-bid-count'>99 Gebote</div></div>","expected":null},
+    {"name":"seller description alone cannot set bids","html":"<div id='desc_div'>5 Gebote</div>","expected":null}
+  ]
+}

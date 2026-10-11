@@ -4945,6 +4945,11 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     # Purchase actions belong to this listing. Words in seller descriptions,
     # scripts or recommended listings cannot restore a removed purchase side.
     buying_options = _html_buying_options(soup)
+    own_bids = soup.select_one(".x-price-section .x-bid-count")
+    if own_bids:
+        count = re.fullmatch(r"\s*([\d.,\s]+)\s*(?:gebote?|bids?)\s*", own_bids.get_text(" ", strip=True), re.I)
+        if count:
+            result["bidCount"] = int(re.sub(r"\D", "", count.group(1)))
     if "AUCTION" in buying_options:
         visible_end = _html_auction_end(soup)
         if visible_end:
@@ -5542,6 +5547,11 @@ def _calculate_total(item, settings, details=None):
     Supports separate calculation for bin_price and auc_price in hybrid listings.
     """
     if details:
+        # Refresh the own auction count, including an explicit zero. Missing or
+        # malformed metadata must not invent a zero from unrelated bidders.
+        bid_count = details.get("bidCount")
+        if not isinstance(bid_count, bool) and re.fullmatch(r"\d+", str(bid_count)):
+            item["bids_count"] = int(bid_count)
         buying_options = details.get("buyingOptions") or []
         if buying_options:
             # Preserve a selected hybrid side only while it is still offered.

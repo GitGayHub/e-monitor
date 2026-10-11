@@ -1,36 +1,34 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-11-pc-060",
+  "checkpointId": "2026-10-11-pc-061",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "dc5db5701289ac45c5b7ab885ac27ed6d710110a",
+    "sourceCommit": "b7b0aec3af3e5a536cb588be521670621b53effc",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "980e3cf8ff071ec55d8b52e08f7b389ae4acfe14",
+    "sourceCommit": "c4abc3c15bfed2cd400819d5f22bdd01d7e954b0",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.060",
-  "logicVersion": 1791749533,
+  "apkVersion": "0.061",
+  "logicVersion": 1791753044,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "cleanLinuxCi": null,
   "localCloudMergeTests": 7,
   "physicalReport": {
-    "apkVersion": "0.058",
+    "apkVersion": "0.060",
     "products": 25,
     "baskets": 100,
-    "elapsedMs": 807677,
+    "elapsedMs": 719008,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "287125D85BDED2D9CC95CFB07BBE550E84CFE9DD2B1093B374454554470A6587",
+  "apkSha256": "13DA8008D1A7B21CEF486C25C903BDED0D38F8987D19EEE79F2E14268D7F6846",
   "pending059": [
-    "physicalPs5ReportRead",
-    "clientTelegram",
     "fullIndependentAcceptance"
   ],
   "previousCleanLinuxCi058": {
@@ -39,10 +37,11 @@
     "conclusion": "success"
   },
   "physicalInstall": {
-    "apkVersion": "0.059",
+    "apkVersion": "0.061",
     "result": "Success",
     "businessRowsChanged": 0,
-    "dirty": false
+    "dirty": false,
+    "remoteApkSha256Verified": true
   },
   "runtime059": {
     "state": "ok",
@@ -70,9 +69,45 @@
     "photoVisualInspection": false
   },
   "pending060": [
-    "physicalInstall",
-    "physicalPixelReport",
+    "fullIndependentAcceptance",
+    "newPickupTelegram",
+    "realQuotaAndNetworkRecovery",
+    "deliveryFailuresAndDedupe"
+  ],
+  "physicalPixel060": {
+    "elapsedMs": 24321,
+    "sameFourPricesAndIdsAsPython": true,
+    "faultyBatteryRejectedInUi": true
+  },
+  "runtime060": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791749533,
+    "lastSuccessfulRun": "2026-10-11T20:57:48+00:00",
+    "updatedAt": "2026-10-11T20:57:48+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "telegramClient060": {
+    "messageId": 119987,
+    "confirmed": true,
+    "photoVisualInspection": false
+  },
+  "previousCleanLinuxCi060": {
+    "run": 38171368971,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "pending061": [
     "runtimeAck",
+    "physicalPs5Check",
+    "newSourceCi",
     "fullIndependentAcceptance"
-  ]
+  ],
+  "telegramTest058ClientConfirmed": true
 }
