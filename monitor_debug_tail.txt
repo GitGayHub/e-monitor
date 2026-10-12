@@ -1,63 +1,3 @@
-===== E MONITOR ITERATION 1 (budget 1800s) =====
-iteration_start=2026-10-12 06:41:22 UTC
-pass_seconds=199
-2026-10-12 06:41:24,790 - ╔══════════════════════════════════════════════╗
-2026-10-12 06:41:24,790 - ║              eBay Monitor Bot               ║
-2026-10-12 06:41:24,790 - ╠══════════════════════════════════════════════╣
-2026-10-12 06:41:24,790 -   Mode:       ONE-SHOT
-2026-10-12 06:41:24,790 -   Repo:       GitGayHub/e-monitor
-2026-10-12 06:41:24,790 -   GH Token:   ✅ GitGayHub
-2026-10-12 06:41:24,790 -   GH Actions: 🔄 in_progress 10m ago (E Monitor)
-2026-10-12 06:41:24,790 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-10-12 06:41:24,790 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-10-12 06:41:24,790 -   Chat ID:    5326338543
-2026-10-12 06:41:24,790 - ╠══════════════════════════════════════════════╣
-2026-10-12 06:41:24,790 -   Searches:   49 (746 excl, 8 incl words)
-2026-10-12 06:41:24,790 -   Bans:       1 sellers, 16 items
-2026-10-12 06:41:24,791 -   Seen:       1144 ids
-2026-10-12 06:41:24,791 - ╚══════════════════════════════════════════════╝
-2026-10-12 06:41:30,120 - Browse quota exhausted until 2026-10-12T07:00:00+00:00; using paced HTML checks
-2026-10-12 06:41:30,156 - eBay Browse: 8/47 searches due; interval 900s; real quota remaining=0, reset=1791788400.0
-2026-10-12 06:41:30,424 - Browse quota paused; checking samsung galaxy s25 edge through HTML
-2026-10-12 06:41:30,427 - Fetching: samsung galaxy s25 edge
-2026-10-12 06:41:30,428 - eBay session ready (impersonate=chrome124)
-2026-10-12 06:41:37,086 - eBay session ready (impersonate=chrome120)
-2026-10-12 06:41:40,154 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-12 06:42:13,648 - eBay fetch fail #1 (network) for 'samsung galaxy s25 edge' on GH — no cooldown, next product retries
-2026-10-12 06:42:13,648 - Fetching: samsung galaxy s25 edge
-2026-10-12 06:42:13,648 - eBay session ready (impersonate=safari17_0)
-2026-10-12 06:42:16,956 - eBay session ready (impersonate=chrome131)
-2026-10-12 06:42:20,196 - eBay session ready (impersonate=chrome124)
-2026-10-12 06:42:23,629 - eBay challenge on ebay.de for 'samsung galaxy s25 edge' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-12 06:42:54,333 - eBay fetch fail #2 (network) for 'samsung galaxy s25 edge' on GH — no cooldown, next product retries
-2026-10-12 06:42:54,333 -   samsung galaxy s25 edge: fetch error network
-2026-10-12 06:42:54,361 - Browse quota paused; checking Nubia Z70 Ultra through HTML
-2026-10-12 06:42:54,362 - Fetching: Nubia Z70 Ultra
-2026-10-12 06:42:54,362 - eBay session ready (impersonate=chrome120)
-2026-10-12 06:42:57,607 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-12 06:43:00,683 - eBay challenge on ebay.de for 'Nubia Z70 Ultra' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-12 06:43:02,900 -   Nubia Z70 Ultra -> 7 items via www.ebay.de body_len=536206
-2026-10-12 06:43:02,900 -   Nubia Z70 Ultra -> 7 items via ebay.de
-2026-10-12 06:43:02,901 - Fetching: Nubia Z70 Ultra
-2026-10-12 06:43:04,434 -   Nubia Z70 Ultra -> 11 items via m.ebay.de body_len=585781
-2026-10-12 06:43:04,434 -   Nubia Z70 Ultra -> 11 items via ebay.de
-2026-10-12 06:43:04,577 -   Nubia Z70 Ultra: 0 results, 0 candidates (none)
-2026-10-12 06:43:04,579 - Browse quota paused; checking Nubia Z70S Ultra through HTML
-2026-10-12 06:43:04,580 - Fetching: Nubia Z70S Ultra
-2026-10-12 06:43:05,940 -   Nubia Z70S Ultra -> 52 items via m.ebay.de body_len=1044090
-2026-10-12 06:43:05,940 -   Nubia Z70S Ultra -> 52 items via ebay.de
-2026-10-12 06:43:05,940 - Fetching: Nubia Z70S Ultra
-2026-10-12 06:43:07,393 -   Nubia Z70S Ultra -> 54 items via www.ebay.de body_len=1036402
-2026-10-12 06:43:07,393 -   Nubia Z70S Ultra -> 54 items via ebay.de
-2026-10-12 06:43:07,393 - Fetching: Nubia Z70S Ultra
-2026-10-12 06:43:08,940 -   Nubia Z70S Ultra -> 52 items via m.ebay.de body_len=1045146
-2026-10-12 06:43:08,941 -   Nubia Z70S Ultra -> 52 items via ebay.de
-2026-10-12 06:43:08,956 -   Nubia Z70S Ultra: newly listed sweep error api_deferred
-2026-10-12 06:43:09,142 -   Nubia Z70S Ultra: 0 results, 0 candidates (none)
-2026-10-12 06:43:09,147 - Browse quota paused; checking Sony WH-1000XM6 through HTML
-2026-10-12 06:43:09,147 - Fetching: Sony WH-1000XM6
-2026-10-12 06:43:10,167 -   Sony WH-1000XM6 -> 50 items via m.ebay.de body_len=1045711
-2026-10-12 06:43:10,167 -   Sony WH-1000XM6 -> 50 items via ebay.de
 2026-10-12 06:43:10,167 - Fetching: Sony WH-1000XM6
 2026-10-12 06:43:11,320 -   Sony WH-1000XM6 -> 50 items via m.ebay.de body_len=1043313
 2026-10-12 06:43:11,320 -   Sony WH-1000XM6 -> 50 items via ebay.de
@@ -136,3 +76,165 @@ pass_seconds=199
 2026-10-12 06:44:41,629 - === API retry for 1 blocked search(es) ===
 2026-10-12 06:44:41,629 -   Sony WH-1000XM6: API retry failed: api_deferred
 2026-10-12 06:44:41,640 - === Done ===
+===== E MONITOR ITERATION 2 (budget 1800s) =====
+iteration_start=2026-10-12 06:45:44 UTC
+pass_seconds=203
+2026-10-12 06:45:45,588 - ╔══════════════════════════════════════════════╗
+2026-10-12 06:45:45,588 - ║              eBay Monitor Bot               ║
+2026-10-12 06:45:45,588 - ╠══════════════════════════════════════════════╣
+2026-10-12 06:45:45,588 -   Mode:       ONE-SHOT
+2026-10-12 06:45:45,588 -   Repo:       GitGayHub/e-monitor
+2026-10-12 06:45:45,588 -   GH Token:   ✅ GitGayHub
+2026-10-12 06:45:45,588 -   GH Actions: ⚠️ pending 27s ago (E Monitor)
+2026-10-12 06:45:45,588 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
+2026-10-12 06:45:45,588 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
+2026-10-12 06:45:45,588 -   Chat ID:    5326338543
+2026-10-12 06:45:45,588 - ╠══════════════════════════════════════════════╣
+2026-10-12 06:45:45,588 -   Searches:   49 (746 excl, 8 incl words)
+2026-10-12 06:45:45,588 -   Bans:       1 sellers, 16 items
+2026-10-12 06:45:45,589 -   Seen:       1144 ids
+2026-10-12 06:45:45,589 - ╚══════════════════════════════════════════════╝
+2026-10-12 06:45:50,918 - Browse quota exhausted until 2026-10-12T07:00:00+00:00; using paced HTML checks
+2026-10-12 06:45:50,955 - eBay Browse: 8/47 searches due; interval 900s; real quota remaining=0, reset=1791788400.0
+2026-10-12 06:45:50,960 - Browse quota paused; checking iphone 17 pro max through HTML
+2026-10-12 06:45:50,961 - Fetching: iphone 17 pro max
+2026-10-12 06:45:50,962 - eBay session ready (impersonate=chrome124)
+2026-10-12 06:45:54,982 - eBay challenge on ebay.de for 'iphone 17 pro max' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:45:55,055 - eBay session ready (impersonate=chrome120)
+2026-10-12 06:45:59,823 -   iphone 17 pro max -> 60 items via m.ebay.de body_len=1770552
+2026-10-12 06:45:59,824 -   iphone 17 pro max -> 60 items via ebay.de
+2026-10-12 06:45:59,824 - Fetching: iphone 17 pro max
+2026-10-12 06:46:01,521 -   iphone 17 pro max -> 60 items via www.ebay.de body_len=1764899
+2026-10-12 06:46:01,521 -   iphone 17 pro max -> 60 items via ebay.de
+2026-10-12 06:46:01,521 - Fetching: iphone 17 pro max
+2026-10-12 06:46:02,913 -   iphone 17 pro max -> 60 items via m.ebay.de body_len=1811732
+2026-10-12 06:46:02,913 -   iphone 17 pro max -> 60 items via ebay.de
+2026-10-12 06:46:02,914 - Fetching: iphone 17 pro max
+2026-10-12 06:46:05,006 -   iphone 17 pro max -> 116 items via m.ebay.de body_len=2314353
+2026-10-12 06:46:05,006 -   iphone 17 pro max -> 116 items via ebay.de
+2026-10-12 06:46:05,006 - Fetching: iphone 17 pro max
+2026-10-12 06:46:06,325 -   iphone 17 pro max -> 55 items via m.ebay.de body_len=1610477
+2026-10-12 06:46:06,325 -   iphone 17 pro max -> 55 items via ebay.de
+2026-10-12 06:46:06,326 - Fetching: iphone 17 pro max
+2026-10-12 06:46:06,639 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-12 06:46:10,992 - eBay session ready (impersonate=safari17_0)
+2026-10-12 06:46:14,980 -   iphone 17 pro max -> 56 items via m.ebay.de body_len=1620169
+2026-10-12 06:46:14,981 -   iphone 17 pro max -> 56 items via ebay.de
+2026-10-12 06:46:14,981 - Fetching: iphone 17 pro max
+2026-10-12 06:46:16,598 -   iphone 17 pro max -> 79 items via m.ebay.de body_len=2012404
+2026-10-12 06:46:16,599 -   iphone 17 pro max -> 79 items via ebay.de
+2026-10-12 06:46:16,599 - Fetching: iphone 17 pro max
+2026-10-12 06:46:17,002 - eBay session ready (impersonate=chrome131)
+2026-10-12 06:46:22,403 -   iphone 17 pro max -> 92 items via m.ebay.de body_len=1880574
+2026-10-12 06:46:22,403 -   iphone 17 pro max -> 92 items via ebay.de
+2026-10-12 06:46:22,412 -   iphone 17 pro max: auction sweep error api_deferred
+2026-10-12 06:46:22,413 -   iphone 17 pro max: newly listed sweep error api_deferred
+2026-10-12 06:46:22,414 -   iphone 17 pro max: ending soon sweep error api_deferred
+2026-10-12 06:46:22,634 -   iphone 17 pro max: 2 results, 2 candidates (initial=2)
+2026-10-12 06:46:22,635 - Scraping item page details for item 117458994846 via HTML
+2026-10-12 06:46:23,643 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/117458994846?t=1789532687000&category=9355&seller=chamurin&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-12 06:46:24,237 - Skipping notification for item 117458994846: details do not pass common rules
+2026-10-12 06:46:24,739 - Scraping item page details for item 227558821909 via HTML
+2026-10-12 06:46:25,670 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/227558821909?t=0&category=9355&seller=kiosk_6&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-12 06:46:26,143 - Skipping notification for item 227558821909: refreshed details no longer pass search
+2026-10-12 06:46:26,658 - Browse quota paused; checking 5070 ti (pc, rechner, computer, desktop, gaming pc) through HTML
+2026-10-12 06:46:26,659 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-10-12 06:46:28,012 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via www.ebay.de body_len=1564010
+2026-10-12 06:46:28,012 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
+2026-10-12 06:46:28,012 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-10-12 06:46:29,244 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via www.ebay.de body_len=1220638
+2026-10-12 06:46:29,244 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
+2026-10-12 06:46:29,244 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-10-12 06:46:30,395 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via m.ebay.de body_len=1273366
+2026-10-12 06:46:30,396 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
+2026-10-12 06:46:30,396 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-10-12 06:46:32,139 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via m.ebay.de body_len=1556776
+2026-10-12 06:46:32,139 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
+2026-10-12 06:46:32,139 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-10-12 06:46:33,400 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via m.ebay.de body_len=1571570
+2026-10-12 06:46:33,400 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 60 items via ebay.de
+2026-10-12 06:46:33,400 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
+2026-10-12 06:46:33,839 - eBay session ready (impersonate=chrome124)
+2026-10-12 06:46:38,059 - eBay session ready (impersonate=chrome120)
+2026-10-12 06:46:41,157 - eBay challenge on ebay.de for '5070 ti (pc, rechner, computer, desktop, gaming pc)' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:46:56,824 - Playwright still got challenge for '5070 ti (pc, rechner, computer, desktop, gaming pc)'
+2026-10-12 06:47:12,730 - Playwright still got challenge for '5070 ti (pc, rechner, computer, desktop, gaming pc)'
+2026-10-12 06:47:12,730 - eBay fetch fail #1 (blocked) for '5070 ti (pc, rechner, computer, desktop, gaming pc)' on GH — no cooldown, next product retries
+2026-10-12 06:47:12,734 -   5070 ti (pc, rechner, computer, desktop, gaming pc): fetch error blocked
+2026-10-12 06:47:12,747 - Browse quota paused; checking logitech superlight 2 dex through HTML
+2026-10-12 06:47:12,748 - Fetching: logitech superlight 2 dex
+2026-10-12 06:47:12,748 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-12 06:47:15,865 - eBay session ready (impersonate=safari17_0)
+2026-10-12 06:47:19,140 - eBay challenge on ebay.de for 'logitech superlight 2 dex' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:47:20,096 -   logitech superlight 2 dex -> 13 items via www.ebay.de body_len=582144
+2026-10-12 06:47:20,096 -   logitech superlight 2 dex -> 13 items via ebay.de
+2026-10-12 06:47:20,096 - Fetching: logitech superlight 2 dex
+2026-10-12 06:47:21,307 -   logitech superlight 2 dex -> 10 items via m.ebay.de body_len=536237
+2026-10-12 06:47:21,307 -   logitech superlight 2 dex -> 10 items via ebay.de
+2026-10-12 06:47:21,440 -   logitech superlight 2 dex: 0 results, 0 candidates (none)
+2026-10-12 06:47:21,447 - Browse quota paused; checking sony ult wear through HTML
+2026-10-12 06:47:21,447 - Fetching: sony ult wear
+2026-10-12 06:47:22,499 -   sony ult wear -> 2 items via www.ebay.de body_len=653538
+2026-10-12 06:47:24,466 -   sony ult wear -> 2 items via ebay.de
+2026-10-12 06:47:24,466 - Fetching: sony ult wear
+2026-10-12 06:47:25,718 -   sony ult wear -> 15 items via www.ebay.de body_len=630296
+2026-10-12 06:47:25,718 -   sony ult wear -> 15 items via ebay.de
+2026-10-12 06:47:25,718 - Fetching: sony ult wear
+2026-10-12 06:47:26,876 -   sony ult wear -> 3 items via www.ebay.de body_len=650660
+2026-10-12 06:47:28,005 -   sony ult wear -> 3 items via ebay.de
+2026-10-12 06:47:28,005 - Fetching: sony ult wear
+2026-10-12 06:47:29,720 -   sony ult wear -> 60 items via www.ebay.de body_len=1313534
+2026-10-12 06:47:29,720 -   sony ult wear -> 60 items via ebay.de
+2026-10-12 06:47:29,721 - Fetching: sony ult wear
+2026-10-12 06:47:30,732 -   sony ult wear -> 9 items via www.ebay.de body_len=524465
+2026-10-12 06:47:30,732 -   sony ult wear -> 9 items via ebay.de
+2026-10-12 06:47:30,826 -   sony ult wear: newly listed sweep error api_deferred
+2026-10-12 06:47:30,827 -   sony ult wear: ending soon sweep error api_deferred
+2026-10-12 06:47:30,965 -   sony ult wear: 0 results, 0 candidates (none)
+2026-10-12 06:47:30,968 - Browse quota paused; checking samsung odyssey oled g6 500hz through HTML
+2026-10-12 06:47:30,968 - Fetching: samsung odyssey oled g6 500hz
+2026-10-12 06:47:33,202 -   samsung odyssey oled g6 500hz -> 63 items via www.ebay.de body_len=1585155
+2026-10-12 06:47:33,202 -   samsung odyssey oled g6 500hz -> 63 items via ebay.de
+2026-10-12 06:47:33,202 - Fetching: samsung odyssey oled g6 500hz
+2026-10-12 06:47:34,885 -   samsung odyssey oled g6 500hz -> 66 items via m.ebay.de body_len=1693060
+2026-10-12 06:47:34,885 -   samsung odyssey oled g6 500hz -> 66 items via ebay.de
+2026-10-12 06:47:34,885 - Fetching: samsung odyssey oled g6 500hz
+2026-10-12 06:47:36,527 -   samsung odyssey oled g6 500hz -> 53 items via m.ebay.de body_len=1198414
+2026-10-12 06:47:36,528 -   samsung odyssey oled g6 500hz -> 53 items via ebay.de
+2026-10-12 06:47:36,532 -   samsung odyssey oled g6 500hz: newly listed sweep error api_deferred
+2026-10-12 06:47:36,668 -   samsung odyssey oled g6 500hz: 0 results, 0 candidates (none)
+2026-10-12 06:47:36,671 - Browse quota paused; checking samsung odyssey oled g6 500hz through HTML
+2026-10-12 06:47:36,671 - Fetching: samsung odyssey oled g6 500hz
+2026-10-12 06:47:37,794 -   samsung odyssey oled g6 500hz -> 10 items via m.ebay.de body_len=556551
+2026-10-12 06:47:37,794 -   samsung odyssey oled g6 500hz -> 10 items via ebay.de
+2026-10-12 06:47:37,794 - Fetching: samsung odyssey oled g6 500hz
+2026-10-12 06:47:38,192 - eBay session ready (impersonate=chrome131)
+2026-10-12 06:47:43,265 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:47:43,267 - eBay session ready (impersonate=chrome124)
+2026-10-12 06:47:47,529 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:48:19,048 - Playwright still got challenge for 'samsung odyssey oled g6 500hz'
+2026-10-12 06:48:19,048 - eBay fetch fail #1 (blocked) for 'samsung odyssey oled g6 500hz' on GH — no cooldown, next product retries
+2026-10-12 06:48:19,048 -   samsung odyssey oled g6 500hz: fetch error blocked
+2026-10-12 06:48:19,051 - Browse quota paused; checking (playstation 5 pro, ps5 pro) through HTML
+2026-10-12 06:48:19,051 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-12 06:48:19,052 - eBay session ready (impersonate=chrome120)
+2026-10-12 06:48:22,446 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:48:22,534 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-12 06:48:26,893 -   (playstation 5 pro, ps5 pro) -> 50 items via www.ebay.de body_len=1019639
+2026-10-12 06:48:26,893 -   (playstation 5 pro, ps5 pro) -> 50 items via ebay.de
+2026-10-12 06:48:26,893 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-12 06:48:27,952 -   (playstation 5 pro, ps5 pro) -> 50 items via m.ebay.de body_len=1013864
+2026-10-12 06:48:27,952 -   (playstation 5 pro, ps5 pro) -> 50 items via ebay.de
+2026-10-12 06:48:28,083 -   (playstation 5 pro, ps5 pro): 0 results, 0 candidates (none)
+2026-10-12 06:48:28,088 - Browse quota paused; checking lg ultragear oled 480hz through HTML
+2026-10-12 06:48:28,089 - Fetching: lg ultragear oled 480hz
+2026-10-12 06:48:28,724 - eBay session ready (impersonate=safari17_0)
+2026-10-12 06:48:31,769 - eBay session ready (impersonate=chrome131)
+2026-10-12 06:48:36,269 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-12 06:48:51,937 - Playwright still got challenge for 'lg ultragear oled 480hz'
+2026-10-12 06:49:07,376 - eBay fetch fail #1 (network) for 'lg ultragear oled 480hz' on GH — no cooldown, next product retries
+2026-10-12 06:49:07,376 -   lg ultragear oled 480hz: fetch error network
+2026-10-12 06:49:07,376 - === API retry for 2 blocked search(es) ===
+2026-10-12 06:49:07,377 -   5070 ti (pc, rechner, computer, desktop, gaming pc): API retry failed: api_deferred
+2026-10-12 06:49:07,377 -   samsung odyssey oled g6 500hz: API retry failed: api_deferred
+2026-10-12 06:49:07,388 - === Done ===
