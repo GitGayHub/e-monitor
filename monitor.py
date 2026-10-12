@@ -718,12 +718,12 @@ def _search_intent(search_or_query):
     requested = _normalize(search_or_query.get("query") or "") if isinstance(search_or_query, dict) else ident
     if re.search(r"\bray\s*ban\b", requested) and "meta" in requested:
         return {"kind": "rayban_meta_gen2", "query": "ray ban meta gen 2", "display_name": "Ray-Ban Meta Gen 2", "category": "all"}
-    mouse_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", requested)
+    mouse_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", requested)
     if mouse_model:
         compact = bool(mouse_model.group(1))
         dex = mouse_model.group(2) == "dex"
-        se = mouse_model.group(2) == "se"
-        model = "superlight 2" + ("c" if compact else "") + (" dex" if dex else " se" if se else "")
+        se = mouse_model.group(3) == "se"
+        model = "superlight 2" + ("c" if compact else "") + (" dex" if dex else "") + (" se" if se else "")
         return {"kind": "superlight_2_dex" if dex else "superlight_2", "query": "logitech " + model,
                 "display_name": "logitech " + model, "category": "mice", "compact": compact, "se": se}
     if "32gs95" in ident or "27gx790a" in ident or "lg ultragear oled" in ident:
@@ -887,8 +887,8 @@ def _matches_lg_ultragear_oled_480(text_norm):
 def _matches_superlight_2_mouse(title_norm, require_dex=False, require_se=False, require_compact=False):
     """Logitech G Pro X Superlight 2 (+ optional DEX). Not parts/dongle-only."""
     t = title_norm or ""
-    model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", t)
-    if not model or bool(model.group(1)) != require_compact or (model.group(2) == "se") != require_se:
+    model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", t)
+    if not model or bool(model.group(1)) != require_compact or (model.group(3) == "se") != require_se:
         return False
     has_dex = model.group(2) == "dex"
     if require_dex and not has_dex:
@@ -5792,10 +5792,10 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         if not _matches_superlight_2_mouse(title, mouse_intent["kind"] == "superlight_2_dex", mouse_intent.get("se",False), mouse_intent.get("compact",False)):
             return False
         own_description = _normalize(_clean_description(details.get("description") or ""))
-        described_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", own_description)
+        described_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", own_description)
         if described_model and (bool(described_model.group(1)) != mouse_intent.get("compact",False) or
                                 (described_model.group(2) == "dex") != (mouse_intent["kind"] == "superlight_2_dex") or
-                                (described_model.group(2) == "se") != mouse_intent.get("se",False)):
+                                (described_model.group(3) == "se") != mouse_intent.get("se",False)):
             return False
         if re.search(r"^(?:logitech\s+)?(?:g\s+)?pro\s*2\s+lightspeed\b", own_description):
             return False
