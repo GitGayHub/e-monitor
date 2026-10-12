@@ -7,6 +7,13 @@ import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_merchant_grade_legend_is_not_actual_fault_but_selected_fault_remains(self):
+        import json
+        from pathlib import Path
+        fixture=json.loads((Path(__file__).parent/'qa/fixtures/merchant_condition_scale_oct12.json').read_text(encoding='utf8'))
+        for case in fixture['cases']:
+            for category in ('phones','mice','laptops','headphones','all'):
+                self.assertEqual(case['blocked'],monitor._is_description_blocked(case['html'],category),(case['name'],category))
     def test_independent_denied_cosmetic_damage_list_keeps_following_real_faults(self):
         import json
         from pathlib import Path

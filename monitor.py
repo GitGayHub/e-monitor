@@ -5132,6 +5132,27 @@ def _clean_description(html_text):
             soup.head.decompose()
         for el in soup.select("script,style,noscript,.product_crosssell"):
             el.decompose()
+        # 406218242948: merchant's decorative scale lists ALL grades, including
+        # Defekt, while the actual product is graded Sehr gut. It is not a fault.
+        scales = {
+            ('defekt','akzeptabel','gut','sehr gut'),
+            ('faulty','acceptable','good','very good'),
+            ('défectueux','acceptable','bon','très bon'),
+            ('difettoso','accettabile','buono','molto buono'),
+            ('defect','acceptabel','goed','zeer goed'),
+            ('uszkodzony','akceptowalny','dobry','bardzo dobry'),
+            ('defectuoso','aceptable','bueno','muy bueno'),
+        }
+        for scale in soup.select('ol.rsx-scale'):
+            cells = scale.find_all('li', recursive=False)
+            labels = [re.sub(r'\s+',' ',cell.get_text(' ',strip=True)).casefold() for cell in cells]
+            if len(labels) not in (4,5) or tuple(labels[:4]) not in scales or len(labels)==5 and labels[4]:
+                continue
+            selected = [cell for cell in cells if cell.get('aria-current')=='true' or cell.get('aria-selected')=='true' or set(cell.get('class') or []) & {'active','selected','current'}]
+            if selected:
+                scale.replace_with(' '.join(cell.get_text(' ',strip=True) for cell in selected))
+            else:
+                scale.decompose()
         # Actual Office Partner template keeps legal warranty examples in a
         # separate tab. A hypothetical broken device there is not this item.
         for label in soup.select('.tabs label'):
