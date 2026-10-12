@@ -2383,6 +2383,15 @@ def _negated_condition_pattern():
 
 
 def _strip_negated_condition_terms(text_norm):
+    # 236643373203 offers a working laptop for sale OR an optional swap.
+    # Remove just the optional trade word, never faults or trade-only clauses.
+    optional = r"\b(?:verkaufen|verkaufe|verkauf)\b[^.!?\n]{0,100}?\b(?:oder|alternativ)\b[^.!?\n]{0,180}?\b(?:tauschen|tausche|tausch)\b|\b(?:tauschen|tausche|tausch)\b[^.!?\n]{0,180}?\b(?:oder|alternativ)\b[^.!?\n]{0,100}?\b(?:verkaufen|verkaufe|verkauf)\b"
+    def optional_trade(match):
+        before = text_norm[max(0,match.start()-30):match.start()]
+        if re.search(r"\b(?:nicht|kein\w*|no|not)\s*$",before) or re.search(r"\b(?:nur|ausschliesslich|only|nicht|kein\w*)\b",match.group()):
+            return match.group()
+        return re.sub(r"\b(?:tauschen|tausche|tausch)\b"," ",match.group())
+    text_norm = re.sub(optional,optional_trade,text_norm)
     denied = r"(?:scratches|dents|marks|cracks|(?:cosmetic\s+)?damage)"
     text_norm = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", text_norm)
     text = _negated_condition_pattern().sub(' ',text_norm)
