@@ -1,0 +1,13 @@
+{
+  "source": "Independent seller description of eBay 206617260836; short evidence clause plus synthetic boundary controls",
+  "cases": [
+    {"name":"actual-seller-list", "description":"<li>No noticeable scratches, dents or cosmetic damage</li><li>Screen, keyboard, trackpad and body are extremely clean</li>", "blocked":false},
+    {"name":"denial-before-screen", "description":"No visible scratches, dents or damage. Screen is clean.", "blocked":false},
+    {"name":"denial-with-oxford-comma", "description":"Without scratches, dents, or cosmetic damage. Screen works.", "blocked":false},
+    {"name":"real-screen-fault-after-denial", "description":"No noticeable scratches, dents or cosmetic damage. Screen is broken.", "blocked":true},
+    {"name":"real-fault-not-part-of-list", "description":"No scratches, screen damaged.", "blocked":true},
+    {"name":"real-fault-before-denial", "description":"Screen damaged. No scratches on lid.", "blocked":true},
+    {"name":"positive-cosmetic-damage", "description":"Cosmetic damage on screen. Keyboard clean.", "blocked":true},
+    {"name":"denial-does-not-clear-hinge", "description":"No scratches or cosmetic damage. Hinge broken.", "blocked":true}
+  ]
+}

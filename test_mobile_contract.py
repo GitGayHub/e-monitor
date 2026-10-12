@@ -42,11 +42,16 @@ class MobileContractTests(unittest.TestCase):
             self.assertIn('Тип: Auktion',sender.await_args.args[2])
 
     def test_long_notification_keeps_photo_and_never_duplicates_after_partial_delivery(self):
+        from mobile import telegram_text_outbox as outbox
         bot=Mock(); photo=Mock(message_id=51)
+        bot.token='isolated-test-sender'
         bot.send_photo=AsyncMock(return_value=photo)
         bot.send_message=AsyncMock(side_effect=RuntimeError('text unavailable'))
         text='<b>Фото и цена 225€</b>\n'+'😀'*1200
-        result=asyncio.run(monitor.safe_send_telegram(bot,1,text,img='https://i.ebayimg.com/images/g/example/s-l800.jpg'))
+        with tempfile.TemporaryDirectory() as folder, patch.object(outbox, 'PATH', Path(folder)/'outbox.enc'), patch.dict('os.environ', {'CONFIG_PASSPHRASE':'isolated-test-key'}, clear=False):
+            result=asyncio.run(monitor.safe_send_telegram(bot,1,text,img='https://i.ebayimg.com/images/g/example/s-l800.jpg'))
+            self.assertIn('требуют проверки доставки',outbox.warning())
+            self.assertEqual(0,asyncio.run(outbox.flush(bot,1)))
         self.assertIs(photo,result)
         bot.send_photo.assert_awaited_once()
         args=bot.send_photo.await_args.kwargs

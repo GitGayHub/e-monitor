@@ -228,6 +228,7 @@ jobs:
             git add seen_ids.json price_history.db run_log.json config.json.enc || true
             [ -f mobile/feed.json ] && git add mobile/feed.json
             [ -f mobile/feed_pending.json ] && git add mobile/feed_pending.json
+            [ -f mobile/telegram_text_outbox.json.enc ] && git add mobile/telegram_text_outbox.json.enc
             [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
             [ -f mobile/runtime_status.json ] && git add mobile/runtime_status.json
             [ -f details_test_output.json ] && git add details_test_output.json
@@ -282,6 +283,7 @@ jobs:
           git add seen_ids.json price_history.db run_log.json || true
           [ -f mobile/feed.json ] && git add mobile/feed.json
           [ -f mobile/feed_pending.json ] && git add mobile/feed_pending.json
+          [ -f mobile/telegram_text_outbox.json.enc ] && git add mobile/telegram_text_outbox.json.enc
           [ -f mobile/app_sync.json ] && git add mobile/app_sync.json
           [ -f mobile/runtime_status.json ] && git add mobile/runtime_status.json
           [ -f details_test_output.json ] && git add details_test_output.json
