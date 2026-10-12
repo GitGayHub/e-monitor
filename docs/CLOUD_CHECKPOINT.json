@@ -1,40 +1,40 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-12-pc-062",
+  "checkpointId": "2026-10-12-pc-065",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "c53beaf698c9bd221bacf3ac9a4cf297eab9fb3c",
+    "sourceCommit": "d55ec982ae77a94c6fc845e0fdc65fa0ddfc9c50",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "7450d8c0abe728f77fffceccd035310381855956",
+    "sourceCommit": "e78faf7a78d14bcd2b091c255373c766b7af1cd6",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.062",
-  "logicVersion": 1791817854,
+  "apkVersion": "0.065",
+  "logicVersion": 1791821873,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "cleanLinuxCi": {
-    "id": 38268720002,
+    "id": 38276350013,
     "name": "Cloud readiness - both repositories",
-    "status": "completed",
-    "conclusion": "success",
-    "head_sha": "7450d8c0abe728f77fffceccd035310381855956",
-    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38268720002"
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "e78faf7a78d14bcd2b091c255373c766b7af1cd6",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38276350013"
   },
   "localCloudMergeTests": 7,
   "physicalReport": {
-    "apkVersion": "0.060",
+    "apkVersion": "0.063",
     "products": 25,
     "baskets": 100,
-    "elapsedMs": 719008,
+    "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "13B99B2E76980B1CC9589A947AC7D23013A3866D8102FE44D478378D6624FA33",
+  "apkSha256": "5E8BFE30ADCE882BC0D2DB982CF784BF010BDF811CBBB1F17B7C85E9F122E3DA",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -44,7 +44,7 @@
     "conclusion": "success"
   },
   "physicalInstall": {
-    "apkVersion": "0.062",
+    "apkVersion": "0.065",
     "result": "Success",
     "businessRowsChanged": 0,
     "dirty": false,
@@ -203,5 +203,38 @@
     "androidTestBuild": "up-to-date success",
     "conflicts": 0,
     "appliedSourceFiles": 0
-  }
+  },
+  "pythonTests": 288,
+  "androidTests": 273,
+  "previousCleanLinuxCi062": {
+    "id": 38268720002,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "7450d8c0abe728f77fffceccd035310381855956",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38268720002"
+  },
+  "runtime065": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791821873,
+    "lastSuccessfulRun": "2026-10-12T16:18:17+00:00",
+    "updatedAt": "2026-10-12T16:18:17+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "phoneUsb": {
+    "adbVersion": "37.0.1-15733141",
+    "backend": "NATIVE",
+    "ADB_USB_LEGACY": "1",
+    "cableReplugged": false,
+    "driverChanged": false,
+    "globalRunCompleted": true
+  },
+  "usbDebugServerRestartVerified": true
 }
