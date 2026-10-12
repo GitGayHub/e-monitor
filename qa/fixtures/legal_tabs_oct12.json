@@ -1,0 +1,13 @@
+{
+ "source":"Actual MediaMarkt DEX SE listing 257777134045 independently read 12 October2026; API also includes hidden recycling/return policy tabs",
+ "cases":[
+  {"name":"separate_recycling","html":"<div id='tabcontainer'><div class='tabmenu'><input id='tab3' type='radio' name='tabs'><label for='tab3'>Altgeräteentsorgung</label></div><section id='content1'>Mouse fully functional.</section><section id='content3'>Defekte Akkus und zerbrochene Bildschirme dürfen nicht per Post entsorgt werden.</section></div>","blocked":false},
+  {"name":"separate_return_terms","html":"<div id='tabcontainer'><div class='tabmenu'><input id='tab4' type='radio' name='tabs'><label for='tab4'>Allgemeine Hinweise</label></div><section id='content1'>Mouse fully functional.</section><section id='content4'>Die Rücknahme beschädigter Geräte ist ausgeschlossen. Defekte Akkus separat zurückgeben.</section></div>","blocked":false},
+  {"name":"actual_fault_kept","html":"<div id='tabcontainer'><div class='tabmenu'><input id='tab3' type='radio' name='tabs'><label for='tab3'>Altgeräteentsorgung</label></div><section id='content1'>Display broken. Battery swollen.</section><section id='content3'>Defekte Geräte separat entsorgen.</section></div>","blocked":true},
+  {"name":"technical_tab_kept","html":"<div id='tabcontainer'><div class='tabmenu'><input id='tab2' type='radio' name='tabs'><label for='tab2'>Technische Daten</label></div><section id='content2'>Display broken.</section></div>","blocked":true},
+  {"name":"product_tab_kept","html":"<div id='tabcontainer'><div class='tabmenu'><input id='tab1' type='radio' name='tabs'><label for='tab1'>Produktbeschreibung</label></div><section id='content1'>Display broken.</section></div>","blocked":true},
+  {"name":"no_radio_structure_no_removal","html":"<div id='tabcontainer'><div class='tabmenu'><label for='tab3'>Altgeräteentsorgung</label></div><section id='content3'>Display broken.</section></div>","blocked":true},
+  {"name":"outside_structure_kept","html":"<label for='tab3'>Altgeräteentsorgung</label><input id='tab3' type='radio' name='tabs'><section id='content3'>Display broken.</section>","blocked":true},
+  {"name":"outside_fault_after_terms_kept","html":"<div id='tabcontainer'><div class='tabmenu'><input id='tab3' type='radio' name='tabs'><label for='tab3'>Altgeräteentsorgung</label></div><section id='content3'>Defekte Geräte separat entsorgen.</section></div><p>Display broken.</p>","blocked":true}
+ ]
+}

@@ -7,6 +7,11 @@ import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_separate_merchant_legal_tabs_not_device_fault(self):
+        fixture=json.loads((Path(__file__).parent/'qa/fixtures/legal_tabs_oct12.json').read_text(encoding='utf8'))
+        for case in fixture['cases']:
+            for category in ('phones','mice','laptops','headphones','all'):
+                self.assertEqual(case['blocked'],monitor._is_description_blocked(case['html'],category),(case['name'],category))
     def test_dex_se_is_a_distinct_edition_in_query_title_and_description(self):
         fixture=json.loads((Path(__file__).parent/'qa/fixtures/dex_se_oct12.json').read_text(encoding='utf8'))
         for case in fixture['cases']:

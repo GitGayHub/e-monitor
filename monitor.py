@@ -5160,6 +5160,18 @@ def _clean_description(html_text):
                 panel = label.find_next_sibling()
                 if panel is not None and 'panel' in (panel.get('class') or []):
                     panel.decompose()
+        # MediaMarkt's radio tabs contain separate recycling/returns terms.
+        # The defect examples in those terms are not this device's condition.
+        for label in soup.select('#tabcontainer .tabmenu label[for]'):
+            tab = re.fullmatch(r'tab(\d+)', label.get('for') or '')
+            name = label.get_text(' ',strip=True).casefold()
+            if not tab or name not in ('altgeräteentsorgung','allgemeine hinweise','rechtliche hinweise'):
+                continue
+            switch = soup.find('input',id=label['for'],attrs={'type':'radio','name':'tabs'})
+            container = label.find_parent(id='tabcontainer')
+            panel = container.find('section',id='content'+tab.group(1)) if container else None
+            if switch is not None and panel is not None:
+                panel.decompose()
         html_text = str(soup)
     else:
         crosssell = re.search(r"(?im)^[ \t]*das k[oö]nnte ihnen auch gefallen\b", html_text)
