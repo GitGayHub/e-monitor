@@ -1,28 +1,30 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-11-pc-061",
+  "checkpointId": "2026-10-12-pc-062",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "46065bdbaf55fed5f208abf695708dbc1a0662dc",
+    "sourceCommit": "c53beaf698c9bd221bacf3ac9a4cf297eab9fb3c",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "7c98ed11d43c0bffbd238a504e0eaa2d5c6c852e",
+    "sourceCommit": "7450d8c0abe728f77fffceccd035310381855956",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.061",
-  "logicVersion": 1791753044,
+  "apkVersion": "0.062",
+  "logicVersion": 1791817854,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "cleanLinuxCi": {
-    "id": 38175380347,
-    "status": "completed",
-    "conclusion": "success",
-    "head_sha": "7c98ed11d43c0bffbd238a504e0eaa2d5c6c852e"
+    "id": 38268720002,
+    "name": "Cloud readiness - both repositories",
+    "status": "in_progress",
+    "conclusion": null,
+    "head_sha": "7450d8c0abe728f77fffceccd035310381855956",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38268720002"
   },
   "localCloudMergeTests": 7,
   "physicalReport": {
@@ -32,7 +34,7 @@
     "elapsedMs": 719008,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "13DA8008D1A7B21CEF486C25C903BDED0D38F8987D19EEE79F2E14268D7F6846",
+  "apkSha256": "13B99B2E76980B1CC9589A947AC7D23013A3866D8102FE44D478378D6624FA33",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -42,7 +44,7 @@
     "conclusion": "success"
   },
   "physicalInstall": {
-    "apkVersion": "0.061",
+    "apkVersion": "0.062",
     "result": "Success",
     "businessRowsChanged": 0,
     "dirty": false,
@@ -138,5 +140,52 @@
     "messageId": 119988,
     "confirmed": true,
     "photoVisualInspection": false
-  }
+  },
+  "runtime062": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791817854,
+    "lastSuccessfulRun": "2026-10-12T15:17:00+00:00",
+    "updatedAt": "2026-10-12T15:17:00+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physical4050Report062": {
+    "elapsedMs": 9270,
+    "sameFourPricesAndIdsAsPython": true,
+    "logicVersion": 1791817854,
+    "rejectedYogaRemoved": true
+  },
+  "telegramOutbox062": {
+    "attemptedAt": "2026-10-12T15:18:48.414783+00:00",
+    "apkVersion": "0.062",
+    "logicVersion": 1791817854,
+    "simulatedInitialTextFailure": "RetryAfter",
+    "productionStateChanged": false,
+    "delivered": true,
+    "clientConfirmed": false,
+    "photoMessageId": 119991,
+    "photoConfirmed": true,
+    "pendingBeforeRetry": 1,
+    "replyMessageIds": [
+      119992
+    ],
+    "photoSends": 1,
+    "repeatedTextSends": 0,
+    "queueEmpty": true,
+    "completedAt": "2026-10-12T15:18:50.481723+00:00"
+  },
+  "pending062": [
+    "fullIndependentAcceptance",
+    "newPickupTelegram",
+    "realQuotaAndNetworkRecovery",
+    "ambiguousPhotoDelivery",
+    "newTelegramClientReceipt",
+    "workflowOutboxCheckpoint"
+  ]
 }
