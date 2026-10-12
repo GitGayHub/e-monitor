@@ -18,6 +18,8 @@ def main():
         price_history.DB_PATH = str(Path(folder) / "price_history.db")
         config_manager.CONFIG_PATH = str(Path(folder) / "config.json")
         import monitor
+        from mobile import telegram_text_outbox
+        telegram_text_outbox.PATH = Path(folder) / "telegram_text_outbox.json.enc"
         monitor.SEEN_IDS_FILE = str(Path(folder) / "seen_ids.json")
         logging.disable(logging.CRITICAL)
         modules = ["test_details_filter", "test_search_intent_rules", "test_search_price_floor",
@@ -25,6 +27,7 @@ def main():
                    "test_auction_serp_recovery", "test_serp_empty_marker", "test_mobile_contract", "test_parity", "test_checkpoint_integration", "test_ebay_access", "test_runtime_status", "test_browse_request_contract", "test_seller_description_scope", "test_manual_device_evidence", "test_query_variants", "test_cloud_search_regressions"]
         original_connect = socket.socket.connect
         modules.append("test_battery_swelling_manual")
+        modules.append("test_telegram_text_outbox")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)

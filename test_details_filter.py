@@ -7,6 +7,13 @@ import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_independent_denied_cosmetic_damage_list_keeps_following_real_faults(self):
+        import json
+        from pathlib import Path
+        fixture=json.loads((Path(__file__).parent/'qa/fixtures/denied_damage_oct12.json').read_text(encoding='utf8'))
+        for case in fixture['cases']:
+            for category in ('phones','laptops','monitors','headphones','all'):
+                self.assertEqual(case['blocked'],monitor._is_description_blocked(case['description'],category),(case['name'],category))
     def test_actual_auction_count_refresh_and_html_scope(self):
         fixture = json.loads((Path(__file__).parent/'qa/fixtures/auction_count_refresh_oct11.json').read_text(encoding='utf8'))
         for case in fixture['cases']:

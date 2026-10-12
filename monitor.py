@@ -2383,6 +2383,8 @@ def _negated_condition_pattern():
 
 
 def _strip_negated_condition_terms(text_norm):
+    denied = r"(?:scratches|dents|marks|cracks|(?:cosmetic\s+)?damage)"
+    text_norm = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", text_norm)
     text = _negated_condition_pattern().sub(' ',text_norm)
     # Samsung's cooling feature prevents burn-in; it does not admit an existing
     # fault. Remove only that exact prevention statement, keeping later defects.
@@ -5187,9 +5189,14 @@ def _has_damage_in_description(desc_norm):
         cleaned,
         flags=re.IGNORECASE,
     )
+    # 206617260836: a denied list of cosmetic damage precedes "Screen ...
+    # extremely clean". The old 18-character lookbehind lost the leading "No".
+    # Remove only the enumerated denial, never a following asserted fault.
+    denied = r"(?:scratches|dents|marks|cracks|(?:cosmetic\s+)?damage)"
+    cleaned = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", cleaned)
     # Require part + defect proximity only (not bare 'damaged'/'defekt').
     part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|halterung|scharnier|gelenk|kopfbuegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
-    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE})\b", re.IGNORECASE)
+    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|broken|snapped)\b", re.IGNORECASE)
     neg_tokens = (
         "nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei", "not",
         "unbeschaedig", "undamaged",
@@ -7627,6 +7634,9 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
             if img and not img.startswith("data:"):
                 plain = BeautifulSoup(text, "html.parser").get_text()
                 long_caption = len(plain.encode("utf-16-le")) // 2 > 1024
+                if long_caption:
+                    from mobile import telegram_text_outbox
+                    telegram_text_outbox.prepare()
                 message = await active_bot.send_photo(
                     chat_id=chat_id,
                     photo=img,
@@ -7636,12 +7646,13 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
                 )
                 if long_caption:
                     try:
-                        await active_bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode,
-                                                      reply_to_message_id=message.message_id,
-                                                      disable_web_page_preview=True)
+                        from mobile import telegram_text_outbox
+                        identifier = telegram_text_outbox.enqueue(active_bot, chat_id, message.message_id, text, parse_mode)
+                        await telegram_text_outbox.flush(active_bot, chat_id, only=identifier)
                     except Exception as detail_error:
                         # Photo was confirmed; returning failure would duplicate it.
-                        logger.error("Photo delivered but expanded notification failed: %s", detail_error)
+                        logger.error("Photo delivered but expanded notification checkpoint failed: %s", type(detail_error).__name__)
+                        _runtime_errors.append("Telegram: фото доставлено, полный текст не сохранён; требуется проверка")
             else:
                 message = await active_bot.send_message(
                     chat_id=chat_id,
@@ -8006,6 +8017,16 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
 
 async def process_searches(bot, once=False):
     async with process_lock:
+        if bot is not None and not _is_statistics_mode(config):
+            try:
+                from mobile import telegram_text_outbox
+                await telegram_text_outbox.flush(bot, TELEGRAM_CHAT_ID)
+                backup_token = os.environ.get("TELEGRAM_BOT_TOKEN_BACKUP")
+                if backup_token:
+                    await telegram_text_outbox.flush(Bot(token=backup_token), TELEGRAM_CHAT_ID)
+            except Exception as error:
+                logger.error("Telegram expanded text retry checkpoint failed: %s", type(error).__name__)
+                _runtime_errors.append("Telegram: не удалось прочитать очередь полного текста")
         try:
             from mobile.feed_writer import flush_pending
             flush_pending()
@@ -9427,11 +9448,23 @@ _runtime_html_fallback = False
 
 def _publish_runtime(state, error=None):
     from mobile.runtime_status import publish
+    from mobile import telegram_text_outbox
     quota_paused = browse_access.is_paused() is True
     html_only = quota_paused or EBAY_SOURCE == "html" or not _ebay_api_configured()
+    warnings = []
+    try:
+        delivery_warning = telegram_text_outbox.warning()
+        if delivery_warning:
+            warnings.append(delivery_warning)
+    except Exception:
+        warnings.append("Telegram: очередь полного текста недоступна; требуется проверка")
+    if quota_paused:
+        warnings.append("Квота API закончилась: проверяю сайт eBay через HTML")
+    elif _runtime_html_fallback and not html_only:
+        warnings.append("Описание проверяется через сайт eBay")
     publish(config.raw, _read_logic_version_timestamp(), state, error,
             data_source="html" if html_only else "api+html" if _runtime_html_fallback else "api",
-            warning="Квота API закончилась: проверяю сайт eBay через HTML" if quota_paused else "Описание проверяется через сайт eBay" if _runtime_html_fallback and not html_only else None)
+            warning="; ".join(warnings) or None)
 
 
 async def run_once():
