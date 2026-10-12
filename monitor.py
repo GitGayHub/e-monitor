@@ -718,12 +718,12 @@ def _search_intent(search_or_query):
     requested = _normalize(search_or_query.get("query") or "") if isinstance(search_or_query, dict) else ident
     if re.search(r"\bray\s*ban\b", requested) and "meta" in requested:
         return {"kind": "rayban_meta_gen2", "query": "ray ban meta gen 2", "display_name": "Ray-Ban Meta Gen 2", "category": "all"}
-    mouse_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", requested)
+    mouse_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", requested)
     if mouse_model:
         compact = bool(mouse_model.group(1))
         dex = mouse_model.group(2) == "dex"
-        se = mouse_model.group(2) == "se"
-        model = "superlight 2" + ("c" if compact else "") + (" dex" if dex else " se" if se else "")
+        se = mouse_model.group(3) == "se"
+        model = "superlight 2" + ("c" if compact else "") + (" dex" if dex else "") + (" se" if se else "")
         return {"kind": "superlight_2_dex" if dex else "superlight_2", "query": "logitech " + model,
                 "display_name": "logitech " + model, "category": "mice", "compact": compact, "se": se}
     if "32gs95" in ident or "27gx790a" in ident or "lg ultragear oled" in ident:
@@ -887,8 +887,8 @@ def _matches_lg_ultragear_oled_480(text_norm):
 def _matches_superlight_2_mouse(title_norm, require_dex=False, require_se=False, require_compact=False):
     """Logitech G Pro X Superlight 2 (+ optional DEX). Not parts/dongle-only."""
     t = title_norm or ""
-    model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", t)
-    if not model or bool(model.group(1)) != require_compact or (model.group(2) == "se") != require_se:
+    model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", t)
+    if not model or bool(model.group(1)) != require_compact or (model.group(3) == "se") != require_se:
         return False
     has_dex = model.group(2) == "dex"
     if require_dex and not has_dex:
@@ -5132,6 +5132,27 @@ def _clean_description(html_text):
             soup.head.decompose()
         for el in soup.select("script,style,noscript,.product_crosssell"):
             el.decompose()
+        # 406218242948: merchant's decorative scale lists ALL grades, including
+        # Defekt, while the actual product is graded Sehr gut. It is not a fault.
+        scales = {
+            ('defekt','akzeptabel','gut','sehr gut'),
+            ('faulty','acceptable','good','very good'),
+            ('défectueux','acceptable','bon','très bon'),
+            ('difettoso','accettabile','buono','molto buono'),
+            ('defect','acceptabel','goed','zeer goed'),
+            ('uszkodzony','akceptowalny','dobry','bardzo dobry'),
+            ('defectuoso','aceptable','bueno','muy bueno'),
+        }
+        for scale in soup.select('ol.rsx-scale'):
+            cells = scale.find_all('li', recursive=False)
+            labels = [re.sub(r'\s+',' ',cell.get_text(' ',strip=True)).casefold() for cell in cells]
+            if len(labels) not in (4,5) or tuple(labels[:4]) not in scales or len(labels)==5 and labels[4]:
+                continue
+            selected = [cell for cell in cells if cell.get('aria-current')=='true' or cell.get('aria-selected')=='true' or set(cell.get('class') or []) & {'active','selected','current'}]
+            if selected:
+                scale.replace_with(' '.join(cell.get_text(' ',strip=True) for cell in selected))
+            else:
+                scale.decompose()
         # Actual Office Partner template keeps legal warranty examples in a
         # separate tab. A hypothetical broken device there is not this item.
         for label in soup.select('.tabs label'):
@@ -5139,6 +5160,18 @@ def _clean_description(html_text):
                 panel = label.find_next_sibling()
                 if panel is not None and 'panel' in (panel.get('class') or []):
                     panel.decompose()
+        # MediaMarkt's radio tabs contain separate recycling/returns terms.
+        # The defect examples in those terms are not this device's condition.
+        for label in soup.select('#tabcontainer .tabmenu label[for]'):
+            tab = re.fullmatch(r'tab(\d+)', label.get('for') or '')
+            name = label.get_text(' ',strip=True).casefold()
+            if not tab or name not in ('altgeräteentsorgung','allgemeine hinweise','rechtliche hinweise'):
+                continue
+            switch = soup.find('input',id=label['for'],attrs={'type':'radio','name':'tabs'})
+            container = label.find_parent(id='tabcontainer')
+            panel = container.find('section',id='content'+tab.group(1)) if container else None
+            if switch is not None and panel is not None:
+                panel.decompose()
         html_text = str(soup)
     else:
         crosssell = re.search(r"(?im)^[ \t]*das k[oö]nnte ihnen auch gefallen\b", html_text)
@@ -5771,10 +5804,10 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         if not _matches_superlight_2_mouse(title, mouse_intent["kind"] == "superlight_2_dex", mouse_intent.get("se",False), mouse_intent.get("compact",False)):
             return False
         own_description = _normalize(_clean_description(details.get("description") or ""))
-        described_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex|se)\b)?", own_description)
+        described_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", own_description)
         if described_model and (bool(described_model.group(1)) != mouse_intent.get("compact",False) or
                                 (described_model.group(2) == "dex") != (mouse_intent["kind"] == "superlight_2_dex") or
-                                (described_model.group(2) == "se") != mouse_intent.get("se",False)):
+                                (described_model.group(3) == "se") != mouse_intent.get("se",False)):
             return False
         if re.search(r"^(?:logitech\s+)?(?:g\s+)?pro\s*2\s+lightspeed\b", own_description):
             return False

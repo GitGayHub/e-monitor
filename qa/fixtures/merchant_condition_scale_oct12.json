@@ -1,0 +1,13 @@
+{
+ "source":"Independently read eBay 406218242948; its four-grade legend is separate from actual condition. Synthetic fault/scope controls.",
+ "cases":[
+  {"name":"real-legend-healthy-item","html":"<p>Zustand: Sehr gut. Die Maus funktioniert.</p><ol class='rsx-scale'><li>Defekt</li><li>Akzeptabel</li><li>Gut</li><li>Sehr gut</li><li><span class='rsx-l5'></span></li></ol>","blocked":false},
+  {"name":"actual-fault-below-legend","html":"<ol class='rsx-scale'><li>Defekt</li><li>Akzeptabel</li><li>Gut</li><li>Sehr gut</li></ol><p>Die Maus ist defekt.</p>","blocked":true},
+  {"name":"selected-faulty-grade","html":"<ol class='rsx-scale'><li aria-selected='true'>Defekt</li><li>Akzeptabel</li><li>Gut</li><li>Sehr gut</li></ol>","blocked":true},
+  {"name":"selected-good-grade","html":"<ol class='rsx-scale'><li>Defekt</li><li>Akzeptabel</li><li>Gut</li><li class='active'>Sehr gut</li></ol><p>Complete working mouse.</p>","blocked":false},
+  {"name":"unrelated-list-must-not-disappear","html":"<ol><li>Defekt</li><li>Akzeptabel</li><li>Gut</li><li>Sehr gut</li></ol>","blocked":true},
+  {"name":"fault-statement-in-scale","html":"<ol class='rsx-scale'><li>Defekt: Maus funktioniert nicht</li><li>Akzeptabel</li><li>Gut</li><li>Sehr gut</li></ol>","blocked":true},
+  {"name":"nonempty-fifth-fault","html":"<ol class='rsx-scale'><li>Defekt</li><li>Akzeptabel</li><li>Gut</li><li>Sehr gut</li><li>Screen broken</li></ol>","blocked":true},
+  {"name":"dutch-decorative-legend","html":"<p>Working mouse.</p><ol class='rsx-scale'><li>Defect</li><li>Acceptabel</li><li>Goed</li><li>Zeer goed</li></ol>","blocked":false}
+ ]
+}
