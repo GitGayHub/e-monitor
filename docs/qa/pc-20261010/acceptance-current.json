@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-13T20:34:16.604147+00:00",
+  "updatedAt": "2026-10-13T22:14:37.391346+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
-  "apkVersion": "0.071",
-  "logicVersion": 1791904237,
-  "inventorySource": "Physical APK0.066 backup12October; server runtime13October matching revision/fingerprint",
+  "apkVersion": "0.074",
+  "logicVersion": 1791929185,
+  "inventorySource": "Physical APK0.074 backup14October; current runtime same revision/fingerprint",
   "savedSearches": 49,
   "activeSearches": 47,
   "activeProducts": 25,
@@ -97,7 +97,8 @@
       "evidence": [
         "OLED4050_MANUAL061.md",
         "PS5_MANUAL.md",
-        "AUCTION_REFRESH061.md"
+        "AUCTION_REFRESH061.md",
+        "REPORT_074.md"
       ],
       "remaining": "Все используемые категории и четыре корзины; цена изменившегося лота отдельно."
     },
@@ -117,7 +118,8 @@
       "status": "PARTIAL",
       "evidence": [
         "GLOBAL_PHONE063.md",
-        "REPORT.md"
+        "REPORT.md",
+        "REPORT_074.md"
       ],
       "remaining": "Все25товаров с независимым вердиктом; ошибки запроса не становятся успехом с0результатов."
     },
@@ -185,7 +187,8 @@
       "status": "PARTIAL",
       "evidence": [
         "telegram-client061.json",
-        "telegram-outbox062.json"
+        "telegram-outbox062.json",
+        "REPORT_074.md"
       ],
       "remaining": "Текущая версия/фото/полный текст непосредственно в ПК-клиенте;119991/119992не повторять."
     },
@@ -213,7 +216,8 @@
       "status": "PARTIAL",
       "evidence": [
         "runtime066.json",
-        "ASUS_CORRECTION066.md"
+        "ASUS_CORRECTION066.md",
+        "REPORT_074.md"
       ],
       "remaining": "0.066 установлен/серверприменил/CIуспешен; повторный полный аудит остаётся открытым."
     },
@@ -811,15 +815,15 @@
           "observedExecutionVerdict": "🟣 Дорого",
           "total": 61.19,
           "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
-          "executionEvidence": "mouse-phone071.json",
+          "executionEvidence": "mouse-phone074.json",
           "independentAcceptance": "PENDING_CATALOGUE"
         },
         {
           "label": "Sofort+",
           "observedExecutionVerdict": "🟣 Дорого",
-          "total": 72.99,
-          "url": "https://www.ebay.de/itm/820221654834?_skw=logitech+g+pro+x+superlight+2&hash=itembef9053732:g:mYEAAeSwiCJqld1U",
-          "executionEvidence": "mouse-phone071.json",
+          "total": 74.0,
+          "url": "https://www.ebay.de/itm/840018806110?_skw=logitech+g+pro+x+superlight+2&hash=itemc39505c55e:g:7sYAAeSwF3dqzpfb",
+          "executionEvidence": "mouse-phone074.json",
           "independentAcceptance": "OPEN_MODEL_CONTRADICTION"
         },
         {
@@ -827,7 +831,7 @@
           "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 4д 17ч · 6 ставок",
           "total": 12.69,
           "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
-          "executionEvidence": "mouse-phone071.json",
+          "executionEvidence": "mouse-phone074.json",
           "independentAcceptance": "PENDING_CATALOGUE"
         },
         {
@@ -835,7 +839,7 @@
           "observedExecutionVerdict": "🟢 Auktion+ · 5д 23ч · 0 ставок",
           "total": 41.19,
           "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
-          "executionEvidence": "mouse-phone071.json",
+          "executionEvidence": "mouse-phone074.json",
           "independentAcceptance": "PENDING_CATALOGUE"
         }
       ],
@@ -1917,9 +1921,9 @@
   ],
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
-    "date": "2026-10-13",
-    "phone": "Physical073,49/47/25,dirtyfalse,unchanged revision/business rows. Four fresh prices/IDs match Python; actual5Tasten102.94 is Expensive and originalKufen29.56 rejected. Server1791922765ok/47. Telegram120017 new073 native full caption confirmed without extra phrase or median discount;120009 old070 also read without resend.",
-    "telegram": "Previous068/069 full client receipts confirmed. New070120009 API confirmed, background native history currently ends16:17, new client receipt not yet available; no re-send."
+    "date": "2026-10-14",
+    "phone": "Physical074,49/47/25,dirtyfalse; schema6→7 preserves3902snapshots/6625sellerprices/49searches. Four fresh Superlight2 prices/IDs match Python. Runtime1791929185ok/47.",
+    "telegram": "120018074 API and native AyuGram full caption confirmed in background; no resend120017/120009. Photo not tested."
   },
   "newOpenFindings": [
     {
@@ -1972,15 +1976,21 @@
     },
     {
       "id": "server_history_before_details_validation",
-      "status": "OPEN",
-      "evidence": "monitor.py:record_snapshot before _process_notify_candidate",
-      "next": "Only verified refreshed lots should enter price history. Preserve old aggregates and mark their confidence; do not clear production DB."
+      "status": "FIXED_PARTIALLY_RECHECKED",
+      "evidence": "REPORT_074.md;live-history074.json;phone-history074-migration.json",
+      "next": "Real Python normal path checked; physical Android normal-history network and all25catalogue remain pending."
     },
     {
       "id": "CI_artifact_storage_quota072",
-      "status": "READINESS_FIXED_RECHECKED_EMULATOR_CONFIG_PENDING",
+      "status": "FIXED_RECHECKED",
       "evidence": "workflow38430771783/readiness and38433983088/emulator logs; both code/test builds passed, Artifact storage quota failure",
-      "next": "073readiness38461883211success with visible artifact quota warning;0artifacts. Emulator upload changed identically, future actual emulator artifact handling still pending. No data purged."
+      "next": "074readiness38475301043success; inspect ci074.json exact counts and artifact outcome. No original artifacts deleted."
+    },
+    {
+      "id": "hybrid_missing_purchase_notification_fallback",
+      "status": "OPEN",
+      "evidence": "filter_results hybrid or item[price]; MonitorFilters.selectPrice fallback; history074 protects missing side only",
+      "next": "Never present known auction bid as unknown BIN. Keep known side usable; report unavailable price distinctly; test preview/stats/monitor/notifications."
     }
   ],
   "additionalUserRequirements070": [

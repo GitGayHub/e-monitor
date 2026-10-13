@@ -30,6 +30,7 @@ def main():
         modules.append("test_telegram_text_outbox")
         modules.append("test_import_estimates")
         modules.append("test_live_bid_history")
+        modules.append("test_verified_history")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)

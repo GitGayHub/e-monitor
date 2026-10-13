@@ -7491,7 +7491,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
 
     live_bid = bool(item.get("auction") and not item.get("buy_now"))
     # An opening/current bid is not a fixed purchase price or a negotiated offer.
-    outlier = not live_bid and is_outlier(base_p, search["id"])
+    outlier = not live_bid and is_outlier(base_p, search["id"], _history_filter_signature(search))
 
     # 1. Header: cat_emoji query_name with location & category symbols
     category_name = search.get("filters", {}).get("category")
@@ -7605,7 +7605,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         extra_lines.append(f"⚠️ {import_note}")
 
     if outlier:
-        median = get_median_7d(search["id"])
+        median = get_median_7d(search["id"], _history_filter_signature(search))
         if median:
             extra_lines.append(f"⚠️ <b>Подозрительно низкая цена</b> (медиана: {median:.0f}€)\nНе учтено в статистике")
     elif not live_bid and stats_7d and stats_7d.get("median"):
@@ -7850,14 +7850,15 @@ async def _validate_candidate(item, search):
     return True, details
 
 
-def _market_history_prices(items, search_id):
+def _market_history_prices(items, search_id, filter_signature=None):
     purchases, offers, bids = [], [], []
     for row in items:
         total = float(row.get("total_price") or 0)
         if row.get("buy_now"):
             fixed = row.get("bin_total_price")
             fixed = total if fixed is None else float(fixed)
-            if not is_outlier(fixed, search_id):
+            outlier = is_outlier(fixed, search_id) if filter_signature is None else is_outlier(fixed, search_id, filter_signature)
+            if not outlier:
                 purchases.append(fixed)
                 if row.get("best_offer"):
                     offers.append(fixed)
@@ -7869,6 +7870,85 @@ def _market_history_prices(items, search_id):
             elif not row.get("buy_now"):
                 bids.append(total)
     return purchases, offers, bids
+
+
+def _history_filter_signature(search, config_obj=None):
+    """An edit to model/region/blacklists must not reuse another population."""
+    filters = search.get("filters", {}) or {}
+    structural = {k: v for k, v in filters.items() if k not in
+                  {"limit_price", "sort", "_ipg", "_stats_bucket_filter"} and not k.startswith("_")}
+    history_config = config if config_obj is None else config_obj
+    settings = history_config.get_settings()
+    document = {"query": _normalize(_intent_query(search)), "filters": structural,
+                "words": {k: sorted(_normalize(x) for x in search.get(k, []))
+                          for k in ("include_words", "exclude_words", "exclude_sellers")},
+                "bannedSellers": sorted(_normalize(x) for x in history_config.get_global_banned_sellers()),
+                "bannedItems": sorted(str(x) for x in history_config.get_banned_item_ids()),
+                "pricingLocation": {k: settings.get(k) for k in ("user_zip", "warn_non_eu", "non_eu_tax_rate")}}
+    return hashlib.sha256(json.dumps(document, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
+
+
+def _history_candidates(items, search):
+    rows = filter_results(items, search, config, skip_seen=True, is_statistics=True, defer_pickup_location=True)
+    maximum = search.get("filters", {}).get("max_price")
+    def below_ceiling(row):
+        if maximum is None:
+            return True
+        if row.get("buy_now") and row.get("auction"):
+            sides = [row.get("bin_price"), row.get("auc_price")]
+            return any(p is None or p <= maximum for p in sides)
+        return row["price"] <= maximum
+    return [r for r in rows if below_ceiling(r)]
+
+
+def _history_price_sides(candidate, search):
+    if not (candidate.get("buy_now") and candidate.get("auction")):
+        return _history_candidates([candidate], search)
+    sides = []
+    listing = search.get("filters", {}).get("listing_type", "all")
+    for kind, field in (("buy_now", "bin_price"), ("auction", "auc_price")):
+        if listing not in ("all", "offer", kind, "buy_now_offer" if kind == "buy_now" else "auction"):
+            continue
+        if candidate.get(field) is None:
+            continue  # Unknown buy price must never masquerade as the bid.
+        side_search = copy.deepcopy(search)
+        side_search.setdefault("filters", {})["listing_type"] = kind
+        sides.extend(_history_candidates([candidate], side_search))
+    return sides
+
+
+async def _verified_history(items, search):
+    """Validate the whole fetched population; never fill a median with SERP shells."""
+    signature = _history_filter_signature(search)
+    verified, unavailable = [], 0
+    for candidate in _history_candidates(items, search):
+        valid, details = await _validate_candidate(candidate, search)
+        if details is None:
+            unavailable += 1
+        if valid:
+            # Enforce refreshed user minimum, hard ceiling and pickup location.
+            verified.extend(_history_candidates([candidate], search))
+    context_unchanged = signature == _history_filter_signature(search)
+    listing = search.get("filters", {}).get("listing_type", "all")
+    missing_prices = sum(1 for r in verified if r.get("buy_now") and r.get("auction") and
+        (listing in ("all","offer","buy_now","buy_now_offer") and r.get("bin_price") is None or
+         listing in ("all","offer","auction") and r.get("auc_price") is None))
+    if verified:
+        with_signature = lambda price, search_id: is_outlier(price, search_id, signature)
+        # The projection checks each hybrid side independently; legacy medians
+        # cannot influence outlier exclusion in this new cohort.
+        observations = [side for row in verified for side in _history_price_sides(row, search)]
+        purchases, offers, bids = _market_history_prices(observations, search["id"], signature)
+        record_snapshot(search["id"], purchases, offers, bids, len(verified),
+                        verified=True, validation_complete=unavailable == 0 and missing_prices == 0 and context_unchanged, filter_signature=signature)
+        for row in observations:
+            if row.get("buy_now"):
+                fixed = row.get("bin_total_price", row["total_price"])
+                if not with_signature(fixed, search["id"]):
+                    record_seller_price(search["id"], row["seller_name"], fixed, row["item_id"])
+    if unavailable:
+        _runtime_errors.append(f"{search['id']}: описания недоступны ({unavailable}); история неполная")
+    return verified
 
 
 def _live_validation_price_window(search_cfg):
@@ -9265,16 +9345,9 @@ async def process_searches(bot, once=False):
                 logger.info("  %s: 0 results", search["query"])
                 continue
 
-            filtered = filter_results(results, search, config, defer_pickup_location=True)
-
-            sofort_prices, pv_prices, auction_prices = _market_history_prices(filtered, search["id"])
-            record_snapshot(search["id"], sofort_prices, pv_prices, auction_prices, len(filtered))
-
-            for r in filtered:
-                if r.get("buy_now") and not is_outlier(r["total_price"], search["id"]):
-                    record_seller_price(search["id"], r["seller_name"], r["total_price"], r["item_id"])
-
-            stats_7d = get_stats_7d(search["id"])
+            verified = await _verified_history(results, search)
+            filtered = filter_results(verified, search, config)
+            stats_7d = get_stats_7d(search["id"], _history_filter_signature(search))
 
             candidates = _notify_candidates_from_filtered(filtered)
             by_stage = {s: sum(1 for _, st in candidates if st == s) for s in NOTIFY_STAGES}
@@ -9313,8 +9386,9 @@ async def process_searches(bot, once=False):
                     logger.info("  %s: API retry 0 results", search["query"])
                     continue
 
-                filtered = filter_results(api_items, search, config, defer_pickup_location=True)
-                stats_7d = get_stats_7d(search["id"])
+                verified = await _verified_history(api_items, search)
+                filtered = filter_results(verified, search, config)
+                stats_7d = get_stats_7d(search["id"], _history_filter_signature(search))
                 candidates = _notify_candidates_from_filtered(filtered)
                 logger.info(
                     "  %s: API retry %d results, %d candidates",

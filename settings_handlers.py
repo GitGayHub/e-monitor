@@ -15,6 +15,13 @@ from price_history import get_stats_7d, get_trend, get_median_7d
 logger = logging.getLogger(__name__)
 
 
+def _history_scope(search, config):
+    # The running Telegram menu can have a different config instance from the
+    # monitor import; use the menu's actual settings and blacklists.
+    from monitor import _history_filter_signature
+    return _history_filter_signature(search, config)
+
+
 def _reply_keyboard():
     return ReplyKeyboardMarkup(
         [
@@ -1244,8 +1251,9 @@ def register_settings_handlers(app: Application, config):
                 (s for s in group["items"] if "buy" in s.get("filters", {}).get("listing_type", "")),
                 group["items"][0]
             )
-            trend = get_trend(buy_variant["id"])
-            stats = get_stats_7d(buy_variant["id"])
+            scope = _history_scope(buy_variant, config)
+            trend = get_trend(buy_variant["id"], scope)
+            stats = get_stats_7d(buy_variant["id"], scope)
             if not stats and not trend:
                 continue
             
@@ -1279,10 +1287,10 @@ def register_settings_handlers(app: Application, config):
             )
             if not auc_variant:
                 continue
-            stats = get_stats_7d(auc_variant["id"])
+            stats = get_stats_7d(auc_variant["id"], _history_scope(auc_variant, config))
             if not stats:
                 continue
-            median = stats.get("median")
+            median = stats.get("median_auction")
             if not median:
                 continue
             lines.append(f"{group['query']}: <b>~{median:.0f}€</b>")
@@ -1315,7 +1323,7 @@ def register_settings_handlers(app: Application, config):
                 (s for s in group["items"] if "buy" in s.get("filters", {}).get("listing_type", "")),
                 group["items"][0]
             )
-            stats = get_stats_7d(buy_variant["id"])
+            stats = get_stats_7d(buy_variant["id"], _history_scope(buy_variant, config))
             if not stats:
                 continue
             
@@ -1566,7 +1574,7 @@ def register_settings_handlers(app: Application, config):
             send_rows.append(row)
             lines.append("")
 
-        trend = get_trend(sid)
+        trend = get_trend(sid, _history_scope(search, config))
         if trend and trend.get("price_30d_ago") and trend.get("price_now"):
             d = trend["price_now"] - trend["price_30d_ago"]
             pct = (d / trend["price_30d_ago"]) * 100 if trend["price_30d_ago"] else 0
