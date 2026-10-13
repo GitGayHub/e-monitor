@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-13-pc-071",
+  "checkpointId": "2026-10-13-pc-072",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
@@ -15,8 +15,8 @@
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.071",
-  "logicVersion": 1791904237,
+  "apkVersion": "0.072",
+  "logicVersion": 1791908684,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "localCloudMergeTests": 7,
@@ -27,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "F71835B17E077DC6B352B237902C98F834E172CC2037F05D2AFD19A6C652FE42",
+  "apkSha256": "240F312E5144B901590960E86C00AD33BE32F8410F1C4CBB0B6EFFA37FA64077",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -589,14 +589,6 @@
     "independentAcceptanceComplete": false,
     "minimumAcceptanceBlockedBy": "820221654834 own MPN contradicts requested model; comparison of two implementations is not acceptance."
   },
-  "cleanLinuxCi071": {
-    "id": 38419920296,
-    "name": "Cloud readiness - both repositories",
-    "status": "completed",
-    "conclusion": "success",
-    "head_sha": "6c4c297feff7803557077471795b775a4d7f30fa",
-    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38419920296"
-  },
   "roadCi071": {
     "id": 38421697165,
     "name": "Cloud readiness - both repositories",
@@ -613,5 +605,28 @@
     "postApplyPython": 301,
     "postApplyAndroid": 284,
     "backup": "20261013T153702753007Z"
+  },
+  "tests072": {
+    "python": 302,
+    "android": 286,
+    "build": "success"
+  },
+  "pending072": [
+    "source_publication",
+    "physical_install",
+    "runtime_ACK",
+    "manual40",
+    "MPN_live_recheck",
+    "waiting_counter_UI",
+    "newTelegramClientReceipt",
+    "remaining25products"
+  ],
+  "previousCleanLinuxCi071": {
+    "id": 38419920296,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "6c4c297feff7803557077471795b775a4d7f30fa",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38419920296"
   }
 }
