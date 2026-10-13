@@ -38,7 +38,8 @@ class LiveBidHistoryTests(unittest.TestCase):
             self.assertNotIn('Скидка',text)
             self.assertNotIn('ниже медианы',text)
             self.assertNotIn('Подозрительно низкая',text)
-            self.assertEqual(offer,'Цена предложения продавцу неизвестна' in text)
+            self.assertNotIn('Цена предложения продавцу неизвестна',text)
+            self.assertNotIn('текущая ставка не является ценой покупки',text)
 
     def test_fixed_price_compares_total_with_purchase_median(self):
         item={'item_id':'fixed-qa','title':'Sony DualSense','price':80,'shipping_cost':20,'total_price':100,'buy_now':True,'auction':False,'best_offer':True,'seller_name':'qa','condition':'Gebraucht','location':'DE'}
