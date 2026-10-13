@@ -4,14 +4,14 @@
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "82f358c0fb8871979eaa23dd9343bae9be4a78ce",
+    "sourceCommit": "7068e84294171cdc45d02a812dc21e1770873eac",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "6c4c297feff7803557077471795b775a4d7f30fa",
+    "sourceCommit": "eca4e9ee3031a60a91b30403b118be09a1447edd",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
@@ -27,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "240F312E5144B901590960E86C00AD33BE32F8410F1C4CBB0B6EFFA37FA64077",
+  "apkSha256": "31FECA30D4F5928A1E1306B0AA8EE5B455712C086D34EFAFBE3E39B71597C561",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -37,7 +37,7 @@
     "conclusion": "success"
   },
   "physicalInstall": {
-    "apkVersion": "0.071",
+    "apkVersion": "0.072",
     "result": "Success",
     "businessRowsChanged": 0,
     "dirty": false,
@@ -612,14 +612,13 @@
     "build": "success"
   },
   "pending072": [
-    "source_publication",
-    "physical_install",
-    "runtime_ACK",
-    "manual40",
-    "MPN_live_recheck",
-    "waiting_counter_UI",
+    "road_checkpoint",
+    "german_button_count_false_accessory",
+    "verified_history_recording",
+    "sold_authentication",
     "newTelegramClientReceipt",
-    "remaining25products"
+    "selected_variants",
+    "full_acceptance"
   ],
   "previousCleanLinuxCi071": {
     "id": 38419920296,
@@ -628,5 +627,72 @@
     "conclusion": "success",
     "head_sha": "6c4c297feff7803557077471795b775a4d7f30fa",
     "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38419920296"
+  },
+  "runtime072": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791908684,
+    "lastSuccessfulRun": "2026-10-13T16:48:14+00:00",
+    "updatedAt": "2026-10-13T16:48:14+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalMouse072": {
+    "appVersion": "0.072",
+    "elapsedMs": 21048,
+    "finishedAtMs": 1791909203642,
+    "logicVersionTs": 1791908684,
+    "buckets": [
+      {
+        "label": "Sofort",
+        "price": 61.19,
+        "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Sofort+",
+        "price": 76.51,
+        "url": "https://www.ebay.de/itm/366640211196?_skw=logitech+superlight+2&hash=item555d75a4fc:g:awUAAeSwEphqlcMT",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Auktion",
+        "price": 12.69,
+        "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
+        "verdict": "🟡 Ожидает времени аукциона · 4д 15ч · 6 ставок"
+      },
+      {
+        "label": "Auktion+",
+        "price": 41.19,
+        "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
+        "verdict": "🟢 Auktion+ · 5д 22ч · 0 ставок"
+      }
+    ],
+    "sameFourPricesAndIdsAsPython": true,
+    "independentAcceptanceComplete": false,
+    "inspectorAuktion": {
+      "total": 2,
+      "pass": 0,
+      "waiting": 1,
+      "expensive": 1,
+      "rejected": 0
+    }
+  },
+  "cleanLinuxCi072": {
+    "id": 38430771783,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "eca4e9ee3031a60a91b30403b118be09a1447edd",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38430771783",
+    "isolatedPythonTests": 302,
+    "androidChecksAndBuild": "success",
+    "artifactUpload": "failure: GitHub Artifact storage quota exceeded",
+    "wholeWorkflowAccepted": false
   }
 }
