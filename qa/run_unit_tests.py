@@ -28,6 +28,7 @@ def main():
         original_connect = socket.socket.connect
         modules.append("test_battery_swelling_manual")
         modules.append("test_telegram_text_outbox")
+        modules.append("test_import_estimates")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)

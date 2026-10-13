@@ -5669,17 +5669,22 @@ def _calculate_total(item, settings, details=None):
             item["shipping_cost"] = api_shipping
 
     shipping = item.get("shipping_cost") or 0.0
+    # This is a pricing estimate, not a fee quoted by eBay. Recompute after
+    # every details refresh so a newly quoted amount (including zero) clears it.
+    item["import_estimated"] = False
 
     def get_import_charges(price_val):
         if settings.get("warn_non_eu") and item.get("location") and not _is_eu(item["location"]):
             actual_import = item.get("actual_import_charges")
             if details:
-                _, actual_import = _get_api_shipping_and_import(details)
-                if actual_import is not None:
-                    item["actual_import_charges"] = actual_import
+                _, refreshed_import = _get_api_shipping_and_import(details)
+                if refreshed_import is not None:
+                    actual_import = refreshed_import
+                    item["actual_import_charges"] = refreshed_import
             if actual_import is not None:
                 return round(actual_import, 2)
             else:
+                item["import_estimated"] = True
                 base = price_val + shipping
                 vat = base * float(settings.get("non_eu_tax_rate", 0.19))
                 customs = base * 0.04
@@ -5708,6 +5713,15 @@ def _calculate_total(item, settings, details=None):
     item["total_price"] = round(default_price + shipping + imp, 2)
 
     return item
+
+
+def _import_price_note(item):
+    charges = float(item.get("import_charges") or 0)
+    if item.get("import_estimated"):
+        return f"Оценка импортных сборов: ≈{charges:.2f}€; фактическая сумма не подтверждена"
+    if charges > 0.005:
+        return f"Импортные сборы по данным eBay: {charges:.2f}€"
+    return ""
 
 
 def _details_relevant_price_for_item(item, details):
@@ -7417,6 +7431,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         type_str = "Sofortkauf+" if item["best_offer"] else "Sofortkauf"
 
     base_p = item.get("total_price", item["price"] + item["shipping_cost"])
+    price_approx = "≈" if item.get("import_estimated") else ""
 
     if item.get("is_pickup_only"):
         shipping_suffix = " (Nur Abholung)"
@@ -7472,16 +7487,16 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         circle = "🟠" if (minutes is not None and minutes > 1440) else "🟢"
 
         if item["best_offer"]:
-            price_val_str = f"🤝{base_p:.2f}€"
+            price_val_str = f"🤝{price_approx}{base_p:.2f}€"
         else:
-            price_val_str = f"{base_p:.2f}€"
+            price_val_str = f"{price_approx}{base_p:.2f}€"
 
         price_line = f"<a href=\"{esc_url}\">🎲</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a> 🔨 {bids_count} Bids ⏳{time_left} {circle}"
     else:
         if item["best_offer"]:
-            price_val_str = f"🤝 {base_p:.2f}€"
+            price_val_str = f"🤝 {price_approx}{base_p:.2f}€"
         else:
-            price_val_str = f"{base_p:.2f}€"
+            price_val_str = f"{price_approx}{base_p:.2f}€"
 
         price_line = f"<a href=\"{esc_url}\">🛍</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a>"
 
@@ -7535,9 +7550,9 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
             elif dist_km is not None:
                 extra_lines.append(f"📍 <b>Самовывоз:</b> {place} · {dist_km:.1f} км от 09648 (по прямой)")
 
-    import_extra = item["total_price"] - item["price"] - item["shipping_cost"]
-    if import_extra > 0.005:
-        extra_lines.append(f"⚠️ <b>Пошлина:</b> +{import_extra:.2f}€ пошлина → итого {item['total_price']:.2f}€")
+    import_note = _import_price_note(item)
+    if import_note:
+        extra_lines.append(f"⚠️ {import_note}")
 
     if outlier:
         median = get_median_7d(search["id"])
@@ -8942,6 +8957,8 @@ async def process_searches(bot, once=False):
                             v_emoji, v_text = "🟣", "Дорого"
 
                         verdict_info = f"{v_emoji} {v_text}"
+                        if item.get("import_estimated"):
+                            total_price_str = "≈" + total_price_str
 
                         num_digits = len(str(int(total_price_val))) if total_price_val else 0
                         if num_digits >= 3:
@@ -8959,6 +8976,9 @@ async def process_searches(bot, once=False):
                                 time_line = f"{time_emoji} {_shorten_time_left(t_left)}"
 
                         row_lines.append(f"{emoji} <code>{label}{padded_price}{after_price_spaces}│ </code>{verdict_info}")
+                        import_note = _import_price_note(item)
+                        if import_note:
+                            row_lines.append(f"⚠️ {import_note}")
                         if time_line:
                             row_lines.append(f"<code>{time_line}</code>")
 

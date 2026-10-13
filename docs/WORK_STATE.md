@@ -1,3 +1,17 @@
+## Текущий этап — APK 0.069, 13 октября 2026
+
+Общая приёмка остаётся PARTIAL. Полный список исходных требований, 25 товаров и 100 корзин — `docs/qa/pc-20261010/ACCEPTANCE_CURRENT.md` и `acceptance-current.json`. Следовать следующему незавершённому пункту, не считать unit-тесты независимой проверкой eBay.
+
+0.069 явно отмечает оценку импортных сборов в Telegram, статистике, превью и инспекторе. Сохранение отчёта переносит эту отметку. Для Z70 306294088377 сумма 1450,57 € включает расчётные 275,31 €: это не подтверждённый платёж. Сбор eBay, включая нулевой, сохраняется при обновлении цены без новой суммы сбора. Существующие ставки, настройки и лимиты не изменены. Подробности — `docs/qa/pc-20261010/RELEASE069.md`.
+
+295 изолированных Python-тестов, 281 Android-тест и сборка прошли. Физическая APK 0.069 установлена с сохранением данных и прежней подписью; SHA256 `C5CF0F37DAF646CEB0FEC123B69088984F4108471B4C23D25FA094CB50C4E3AB`. 49 сохранённых /47 активных /25 товаров, dirty=false, ревизия b03139a4-6df4-4869-9e23-a8ca749bd709 и прежние бизнес-строки сохранены. Канал USB device, официальный adb37.0.1/NATIVE, без перезапуска. Правила новой версии 1791857266; публикация, свежий runtime ACK и физическая проверка новой маркировки пока выполняются. Не выдавать ожидаемые результаты за завершённые.
+
+Предыдущая 0.068: CI 38331991489 success; после переноса 292 Python, 278 Android и 7 sync-тестов прошли. Баннер правил 03:14 13 октября проверен визуально на физической 0.068: `version068.png`. Telegram 120001 API подтверждён, новое чтение в клиенте пока открыто; не пересылать. 119991/119992 0.062 прочитаны в фоне, без повторной отправки.
+
+Дальше: физический Z70 0.069 и независимый оставшийся каталог Z70 (пока 6 из24 собственных описаний), остальные Nubia/Redmagic/мыши и незавершённые варианты всех товаров. Отдельно изучить обозначение цены Auktion+ (ставка не равна предложению продавца), свежий самовывоз Berlin/≤80км09648, реальные сетевые сбои, quota fallback и outbox между рабочими GitHub jobs. Телефон только eMonitor; Telegram только в фоне на ПК, окна не активировать. Не менять normal/recipient/searches/seen.
+
+## Предыдущие этапы
+
 ## Текущий этап — APK0.068, 13 октября 2026
 
 Общая приёмка НЕ завершена. Сначала читать `docs/qa/pc-20261010/ACCEPTANCE_CURRENT.md` и `acceptance-current.json`: все22 исходных требования,25 товаров,100 корзин и доказательства. Исторические выборки6–7 октября не выдаются за свежую проверку.
@@ -336,16 +350,13 @@ Cloud APK собирается для проверки кода. Для обно
 - Следом: проверить последние CI и APK SHA, реальные сведения seller/time из HTTP на Android, ручную сверку eBay (сайт был недоступен через текущую среду), все 24 товара, настоящую доставку Telegram 047 и установку с прежней подписью **только** после доступности устройства. Обновление поверх установленной APK не тестировалось; ключ подписи телефона отсутствует в Cloud.
 
 
-## Независимый веб-индекс + исправления поисковых фильтров (8 октября 2026)
+## Независимый аудит eBay-поиска (8 октября 2026, Cloud)
 
-- Среда: GitHub-connector + публичная поисковая индексация eBay. Прямой интерактивный браузер eBay/Playwright не был доступен, и это **не считается живой приёмкой**.
-- Проверены фактические read-only настройки production mobile manifest (main): **48 поисков / 46 активных**, глобальный заблокированный продавец `talk point gmbh`, **16 скрытых ID**. Не меняли настройки, mode, адресата, seen или ключи.
-- В обоих `codex/cloud-work` сохранены 31 контрольный случай: 18 источников с индексированными eBay-страницами, остальные явно помечены как синтетические / старые материалы. JSON: `qa/fixtures/web_indexed_listing_cases_2026-10-08.json` в боте, `app/src/test/resources/web_indexed_listing_cases_2026-10-08.json` в Android. Результат — только `title-intent + seller blacklist`, не цена, не live-availability.
-- Python: `_is_category_blocked_title` вызывает единый `_is_phone_accessory_title`; устранён ложный отказ для настоящего RedMagic 11 Pro Transparent Edition при наличии подтверждения модели/памяти/устройства, **но не для чехлов Transparent Case**. Kotlin `PhoneRules.accessory` применяет аналогичный ограниченный критерий.
-- Ссылки и внешний аудит в `qa/results/WEB_INDEX_AUDIT_2026-10-08.md` бота / `docs/qa/WEB_INDEX_AUDIT_2026-10-08.md` Android. Исторический `HONEST_AUDIT` не является доказательством пропуска, когда найден Pixel 4a 5G вместо Pixel 5.
-- CI ранних прогонов обнаружил полезные ошибки, поэтому существовали красные запуски `37747518085` и `37747639068`. Исправления вносятся по результатам. Новые CI `37748158919`, `37748234092`, `37748483788` **были в процессе на момент этой записи**; не считать их прошедшими до явного `success`. Последний подтверждённый успешный полный CI до этих QA-изменений: `37744707396`.
-- Cloud commits на начало записи: Python `b3005f2c82e7152fb5be11876922efab138c9d78`, Android `a5688b93b940398f56d5e70835579f350bed825d`. Только cloud-work, без переноса в main.
-- НЕ закрыто: независимая полная проверка каждой из 24 групп (40–50 актуальных лотов либо всё доступное), все 4 корзины, описания и продавцы, цены/доставка, действительная API/HTML выдача, Telegram 047 и APK на физическом устройстве.
+- В `codex/cloud-work` выполнена read-only проверка актуального манифеста 48/46 поисков, одного глобально запрещённого продавца (`talk point gmbh`) и 16 скрытых ID; production `main` и настройки не менялись.
+- Сохранены 31 контрольный случай (18 индексируемых URL объявлений) в `app/src/test/resources/web_indexed_listing_cases_2026-10-08.json` и идентичном `qa/fixtures` Python-бота. Подробный отчёт: `docs/qa/WEB_INDEX_AUDIT_2026-10-08.md`. Никакие URL из индекса не подтверждают актуальное наличие или цену.
+- Исправлены ложные отказы в Python для iPhone-запчастей в общем guard и REDMAGIC Transparent Edition с жёстким отделением Transparent Case; добавлены проверки контраста моделей, аксессуаров и глобального seller ban в обоих проектах.
+- Старые CI `37747639068` и `37747771613` падали и выявили именно настоящие проблемы. Новые тестовые запуски `37748158919` и `37748483788` выполнялись на момент этой записи. Не считать их прошедшими без явного `success`.
+- Интерактивного браузера eBay и доступа к телефону в этой сессии нет. Полный аудит 24 групп по 40–50 живым лотам, фактические seller/time/4 корзины, Telegram доставка 047 и подписанное обновление APK **не подтверждены**.
 
 ## Отдельные подтверждённые исправления после веб-аудита (8 октября 2026)
 
@@ -389,6 +400,8 @@ Baseline237 Python +5 sync OK; после первого фикса238 Python OK
 
 Часть24×4 очереди обновлена с явными dependency BLOCKED и verifiedUnique0; directBucketAcceptancePerformed=false означает, что отдельная корзина не пройдена. Сбор оставшихся групп продолжается. Количества fetched descriptions не выдавать за независимые40–50 подходящих товаров. Production main/mode/searches/limits/seen/blacklist/Telegram/телефон не менялись. Общий статус PARTIAL. Следом — завершить доступный сбор, latest tests/build, GitHub CI актуального HEAD и парный checkpoint.
 
+Парный Python checkpoint опубликован: `5e50dc60af8b125476ebe659e9ddef6c2b30e62f`; Android сохраняет те же правки/fixtures и machine queue.
+
 
 ## Cloud acceptance checkpoint 2026-10-08T09:31:47.972475+00:00
 
@@ -396,7 +409,7 @@ PARTIAL. All24 groups recorded;96 baskets BLOCKED by original DE-profile catalog
 
 Paired fixes: Italian model labels and own Item sold on status (earlier checkpoint), exact Lightweight adjective vs weights, explicit snapped/broken headphone structure, non500Hz G6 contradiction despite model code, one complete hypothetical return-policy promise vs actual failure. Actual parts/damage and negative/benign controls retained.13 identical private full seller-body/aspect relevance inputs agree in Python and local JVM Kotlin;25 public paired cases. Full-body snapshots remain private.
 
-Final local cloud-check:238 Python +5 sync +233 Android tests passed;APK built. Local debug APK SHA256 e0796d146f54b760680fc5aa66cddc0b59f8dee49875814ad1495236cb6a0b86. Logic version 1791451374 (Cloud only). Prior Android CI37754559306/e700deae succeeded; it does not cover new final code. Final current-HEAD CI check remains pending publication at this commit timestamp. Companion: Android e700deae10f6a70cd5a08de62b0bfeb38c5ac052 (prior published checkpoint; final counterpart will be linked after publication). Shared report: https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/REPORT.md
+Final local cloud-check:238 Python +5 sync +233 Android tests passed;APK built. Local debug APK SHA256 e0796d146f54b760680fc5aa66cddc0b59f8dee49875814ad1495236cb6a0b86. Logic version 1791451374 (Cloud only). Prior Android CI37754559306/e700deae succeeded; it does not cover new final code. Final current-HEAD CI check remains pending publication at this commit timestamp. Companion: Python 66a033562014a2f2d951ec31ab5c44b2e6c6bd5b, codex/cloud-work; tested tree 3c1452b8302d7ab4153d6b44a4c8ab1f845249c8. Shared report: https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/REPORT.md
 
 Cloud inherited network proxy began returning HTTP503 on GitHub and eBay during final recheck; use available GitHub Connector for safe non-force branch publication and CI reads. No protection bypass. Production main/mode/Telegram/searches/limits/enabled/seen/ban lists/raw manifest and physical phone preserved. All16 hidden IDs and seller-ban controls verified in isolated state; not live-owner retrieval proof.
 
@@ -409,35 +422,38 @@ Full seller body + own Type/Model/MPN/5-button aspects prove318767580494 is a wh
 
 Latest local cloud-check238 Python +5 sync +233 Android tests and APK passed;31 paired public cases,14 identical complete seller-body/aspect inputs. Owner16 hidden IDs + global/search-specific seller bans also passed isolated Kotlin replay, with allowed control kept; no state/list changes. Local APK SHA256 d6beeb65bb86245b073514c5e1690315701b2f72cd64a0cfbe68aa9711039c2f; Cloud logic_version 1791453018. Coverage now26 reviewed/23 full bodies read;500 records/498 IDs,483 own pages,478 fetched bodies;96 baskets still BLOCKED.
 
-Previous exact Android ff85bd030d324bcdc5f90865b1090786a68ae612 CI37758006402 passed with Python66a033562014a2f2d951ec31ab5c44b2e6c6bd5b, artifact11541087919, APK9dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7. It does not cover this last fix; monitor new current-HEAD CI after publishing. Companion Cloud branch retains paired source; exact new counterpart recorded on publication. Production settings/Telegram/seen/searches/bans/main and physical phone untouched.
+Previous exact Android ff85bd030d324bcdc5f90865b1090786a68ae612 CI37758006402 passed with Python66a033562014a2f2d951ec31ab5c44b2e6c6bd5b, artifact11541087919, APK9dc3a34af56772e91c15bc2e04e41908dd6672f763ae75592edb886b06c361c7. It does not cover this last fix; monitor new current-HEAD CI after publishing. Companion Python fe77982b9d7027a376e93061735402701b005fa2, codex/cloud-work; tested tree c84b50099d2d81afea2114ab9f373abf3c3f4b1e. Production settings/Telegram/seen/searches/bans/main and physical phone untouched.
 
 Continue only available DE profile/basket/delivery/minimum live acceptance, unresolved scroll-wheel accessory ambiguity, and authorized PC/device checks. Report remains PARTIAL: https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/REPORT.md
 
+## Статистика: инспектор отсева и ручной eBay-поиск — 8 октября 2026
 
-## Verified final Cloud CI 2026-10-08T10:09:04.573149+00:00
+По новому заданию владельца на **текущем** `codex/cloud-work` Android добавлены: сохранение до **15 реальных отклонённых лотов** в каждой корзине с ценой, продавцом и причиной; тап по «Отсев кандидатов» раскрывает список, даже из нового сохранённого отчёта. Старый отчёт без данных предлагает «Проверить». Зажатие **любой** корзины (включая пустую) показывает «Открыть eBay» с теми же HTML параметрами discovery из `prepareFetchSearch` + `EbayHtmlClient.buildUrl`, но не подменяет локальные фильтры и запреты — их eBay в URL не выражает. Данные пользователя, поиски/цены/bans/seen, production main и телефон не менялись.
 
-Android current HEAD7aa32121e0ff6fb78c138eb71da66508003cede8 is green in https://github.com/GitGayHub/e-monitor-android/actions/runs/37760420537 (push, completed/success). Job verifies paired Pythonfe77982b9d7027a376e93061735402701b005fa2.238 Python +5 sync passed in runner;Android tests/APK build succeeded. Local complete suite233 Android tests;31 shared cases and14 identical own full-description/aspect replays passed.
+Полная спецификация следующему Codex/ПК: [docs/STATS_INSPECTOR_HANDOFF_2026-10-08.md](STATS_INSPECTOR_HANDOFF_2026-10-08.md). Изменения: `d9cf8eb4102820f815b666b62378d9099035c175`, `f16ae70bdc567a4996ff73355a0d8177f90bfa44`, тесты `7232481e32dcb54a871004f2aa19a05fa20e39fb`. На момент записи CI новых ревизий выполнялась: `37765685472`, `37765767206`, `37765879860`; статус **не подтверждён** до проверки. Обязательно проверить эмулятор / повторное открытие отчёта и подпись APK на устройстве отдельно.
 
-Actions debug APK SHA256 09aa6f1d2fd86c446f4b44f0495c97e7b6075f2aca930ab86f46b9fde57000b0;artifact11541838680, expires2026-10-22T10:07:18Z. Local debug signing produces a different hash, recorded separately. No signed production update, installation or Telegram test. ci-current-head.json/validation.json/REPORT.md store proof, counterpart commit and source blob hashes. This final Python commit only updates evidence/docs; tested source unchanged. Android branch remains exactly the green HEAD.
+## CI: stats inspector (8 октября 2026, после коммитов)
 
-Final acceptance PARTIAL:24 groups recorded;96 baskets BLOCKED with directBucketAcceptancePerformed=false,0 suitable Germany/minimum proofs.68 .com requests,500 records/498 IDs,483 own pages,478 fetched bodies;26 independently reviewed,23 full bodies read. Six rule classes repaired including both mouse-feature false rejections; actual parts/damage preserved. All16 owner hidden IDs and global/search-specific seller controls passed isolated Python/Kotlin checks. Production main/mode/config/Telegram/searches/limits/enabled/seen/lists and phone untouched.
+Android Actions `37765685472` и `37765767206` — **SUCCESS** (движок/хранение и первая версия UI); Actions `37765879860` — **SUCCESS** с 238 Python-тестами, 5 Cloud sync тестами, Android unit/build. APK SHA-256 `ca856f7e3ecfb1ba9a4cc0b548062afb7484b1e3a01f4f5be8926bde360eefb8`; artifact `11545620307`, https://github.com/GitGayHub/e-monitor-android/actions/runs/37765879860. Окончательный UX-патч long-press на самой строке причины `1de5d63fce0cb03980d088fbac6babad8316892b` ещё ожидал своего отдельного CI `37766227849`. Реальный Android/UI не тестировался.
 
-Next available task is fresh original DE-profile4-basket catalogue/delivery/import/minimum acceptance once access works, then authorized PC/device-specific Android HTTP/installation/Telegram checks. Remaining scroll-wheel purpose and insured/chipped devices require own-photo evidence; do not invent new owner policies. Companion instructions: read Android WORK_STATE, run cloud_sync --check before integration; no blind reset/clean/pull.
+## Конечная проверка нового интерфейса статистики — 8 октября 2026, 11:00 UTC
+
+**SUCCESS**: Android Actions [#37766227849](https://github.com/GitGayHub/e-monitor-android/actions/runs/37766227849) на последнем коммите UI `1de5d63fce0cb03980d088fbac6babad8316892b`: 238 Python-тестов, 5 Cloud sync тестов, Android unit tests и debug APK собрана. Artifact `e-monitor-cloud-debug-apk` id `11545770834`; SHA-256 самого APK `e7d01f4e0da3506839ef2d23ecb36ae9f21993adab066b3266ade1a2d983ce1a`. Источник и этапы для следующего Codex: [STATS_INSPECTOR_HANDOFF_2026-10-08.md](STATS_INSPECTOR_HANDOFF_2026-10-08.md). Состояние физического телефона, существующая подпись APK, реальные долгие нажатия UI и доставка Telegram **не проверены**. Рабочий бот и настройки не затронуты.
 
 
 ## Cloud search correction 2026-10-08T12:13:50.606445+00:00
 
-Fresh source Python8a84533 / Androidebd216e, both codex/cloud-work. Confirmed live DE HTML OR collapse (60→1 card) and missed Kostenlose Abholung marker; repaired both engines with isolated regressions. Python243 unit +baseline5 sync passed. Android current Gradle/tests pending at this checkpoint. User manifest/main/mode/Telegram/seen/limits/bans/phone unchanged. Evidence: qa/results/cloud-search-20261008/REPORT.md. Independent24×4 collection ongoing; no full acceptance or UI claim.
+Fresh source Python8a84533 / Androidebd216e, both codex/cloud-work. Confirmed live DE HTML OR collapse (60→1 card) and missed Kostenlose Abholung marker; repaired both engines with isolated regressions. Python243 unit +baseline5 sync passed. Android current Gradle/tests pending at this checkpoint. User manifest/main/mode/Telegram/seen/limits/bans/phone unchanged. Evidence: docs/qa/cloud-search-20261008/REPORT.md. Independent24×4 collection ongoing; no full acceptance or UI claim.
 
 
 ## Cloud statistics checkpoint 2026-10-08T12:36:59.132119+00:00
 
-Both codex/cloud-work: exclusive offer/bid buckets and format prices; Android refill rejection preservation and alias chooser; no production/main/state/phone changes.246 Python +5 sync +248 Android units and both APKs pass locally. GitHub fixture UI pending; local emulator no KVM/no boot. Browser DE challenge at12:27:47 stopped all eBay access.24×4 bounded HTTP snapshots are discovery only, acceptance PARTIAL. See qa/results/cloud-search-20261008/REPORT.md.
+Both codex/cloud-work: exclusive offer/bid buckets and format prices; Android refill rejection preservation and alias chooser; no production/main/state/phone changes.246 Python +5 sync +248 Android units and both APKs pass locally. GitHub fixture UI pending; local emulator no KVM/no boot. Browser DE challenge at12:27:47 stopped all eBay access.24×4 bounded HTTP snapshots are discovery only, acceptance PARTIAL. See docs/qa/cloud-search-20261008/REPORT.md.
 
 
-## DE discovery/parity checkpoint 2026-10-08T12:54:13.136490+00:00
+## DE discovery/parity checkpoint 2026-10-08T12:54:13.136616+00:00
 
-PARTIAL/BLOCKED.130 requests,94 dedicated profiles(93 valid),36 extra aliases,2702 IDs;35 complete bodies read,321 private paired relevance replays passed. Python shortNubia aspect/headTitle bugs and both spacedFake declarations repaired;17 public paired fixtures. No live DE delivered bargain/minimum/all96 acceptance, no Android liveHTTP. Local250 Python +5 sync +251 Android/APKs; latest emulatorUI/currentHEAD CI pending. Stage2 pair Python5e681fd/Androidc7552c8, CI37778181423 green. Production/phone/main/state/owner bans remain unchanged. See qa/results/cloud-search-20261008/REPORT.md and MATRIX.md for exactcoverage/items.
+PARTIAL/BLOCKED.130 requests,94 dedicated profiles(93 valid),36 extra aliases,2702 IDs;35 complete bodies read,321 private paired relevance replays passed. Python shortNubia aspect/headTitle bugs and both spacedFake declarations repaired;17 public paired fixtures. No live DE delivered bargain/minimum/all96 acceptance, no Android liveHTTP. Local250 Python +5 sync +251 Android/APKs; latest emulatorUI/currentHEAD CI pending. Stage2 pair Python5e681fd/Androidc7552c8, CI37778181423 green. Production/phone/main/state/owner bans remain unchanged. See docs/qa/cloud-search-20261008/REPORT.md and MATRIX.md for exactcoverage/items.
 
 Owner read-only16hidden/1seller replay passed both. InitialGitHubUI boot blocked by disk, unused hosted-runner packages cleanup fixes environment for next run; no successful gestures yet.
 
