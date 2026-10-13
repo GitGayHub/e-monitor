@@ -16,7 +16,7 @@ class LiveBidHistoryTests(unittest.TestCase):
         self.assertEqual([900,1200],offers)
         self.assertEqual([568.28,1.01,80],bids)
         self.assertEqual(3,outlier.call_count)
-        price_history.record_snapshot('isolated-live-bid',fixed,offers,bids)
+        price_history.record_snapshot('isolated-live-bid',fixed,offers,bids,verified=True,validation_complete=True)
         self.assertEqual(1000,price_history.get_median_7d('isolated-live-bid'))
         stats=price_history.get_stats_7d('isolated-live-bid')
         self.assertEqual(80,stats['median_auction'])
@@ -46,7 +46,9 @@ class LiveBidHistoryTests(unittest.TestCase):
         bot=Mock();bot.get_me=AsyncMock(return_value=Mock(username='isolated'))
         with patch.object(monitor,'is_outlier',return_value=False) as outlier,patch.object(monitor,'safe_send_telegram',new=AsyncMock(return_value=Mock(message_id=1))) as sender:
             asyncio.run(monitor.send_notification(bot,item,{'id':'qa','query':'dualsense','filters':{}},{'median':120,'first_date':'a','last_date':'b'}))
-        outlier.assert_called_once_with(100,'qa')
+        outlier.assert_called_once()
+        self.assertEqual((100,'qa'),outlier.call_args.args[:2])
+        self.assertEqual(64,len(outlier.call_args.args[2]))
         text=sender.await_args.args[2]
         self.assertIn('100.00€ — на 17%',text)
         self.assertNotIn('на 33%',text)

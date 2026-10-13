@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
+HISTORY_VERSION = 1  # Full model/description validation, independent of notification gates.
 _DB_LOCK = threading.Lock()
 
 
@@ -68,10 +69,18 @@ def init_db():
             conn.execute(
                 "CREATE INDEX IF NOT EXISTS idx_api_calls_log_time ON api_calls_log(called_at)"
             )
+            columns = {r[1] for r in conn.execute("PRAGMA table_info(price_snapshots)")}
+            for name, definition in (("median_auction", "REAL"),
+                                     ("history_version", "INTEGER NOT NULL DEFAULT 0"),
+                                     ("validation_complete", "INTEGER NOT NULL DEFAULT 0"),
+                                     ("filter_signature", "TEXT NOT NULL DEFAULT ''")):
+                if name not in columns:
+                    conn.execute(f"ALTER TABLE price_snapshots ADD COLUMN {name} {definition}")
 
 
 
-def record_snapshot(search_id, sofort_prices, pv_prices, auction_prices, total_results=0):
+def record_snapshot(search_id, sofort_prices, pv_prices, auction_prices, total_results=0,
+                    *, verified=False, validation_complete=False, filter_signature=""):
     init_db()
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     min_s = min(sofort_prices) if sofort_prices else None
@@ -82,16 +91,13 @@ def record_snapshot(search_id, sofort_prices, pv_prices, auction_prices, total_r
 
     with _DB_LOCK:
         with _connect() as conn:
-            # Add median_auction column if not exists
-            try:
-                conn.execute("ALTER TABLE price_snapshots ADD COLUMN median_auction REAL")
-            except Exception:
-                pass
             conn.execute(
                 """INSERT INTO price_snapshots
-                   (search_id, recorded_at, min_sofort, min_pv, min_auction, median_sofort, median_auction, total_results)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-                (search_id, now, min_s, min_p, min_a, med_s, med_a, total_results),
+                   (search_id, recorded_at, min_sofort, min_pv, min_auction, median_sofort, median_auction, total_results,
+                    history_version, validation_complete, filter_signature)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (search_id, now, min_s, min_p, min_a, med_s, med_a, total_results,
+                 HISTORY_VERSION if verified else 0, bool(validation_complete and verified), filter_signature),
             )
     cleanup_old_data()
 
@@ -102,7 +108,7 @@ def cleanup_old_data():
     with _DB_LOCK:
         try:
             conn = sqlite3.connect(DB_PATH)
-            conn.execute("DELETE FROM price_snapshots WHERE recorded_at < ?", (cutoff_snapshots,))
+            conn.execute("DELETE FROM price_snapshots WHERE recorded_at < ? AND history_version > 0", (cutoff_snapshots,))
             conn.execute("DELETE FROM seller_prices WHERE recorded_at < ?", (cutoff_sellers,))
             conn.commit()
             
@@ -131,22 +137,12 @@ def delete_seller_data(seller_name):
             conn.execute("DELETE FROM seller_prices WHERE seller_name = ?", (seller_name,))
 
 
-def get_median_7d(search_id):
-    init_db()
-    cutoff = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d %H:%M")
-    with _DB_LOCK:
-        with _connect() as conn:
-            rows = conn.execute(
-                "SELECT median_sofort FROM price_snapshots WHERE search_id = ? AND recorded_at >= ? AND median_sofort IS NOT NULL",
-                (search_id, cutoff),
-            ).fetchall()
-    if not rows:
-        return None
-    values = [r["median_sofort"] for r in rows]
-    return statistics.median(values)
+def get_median_7d(search_id, filter_signature=None):
+    stats = get_stats_7d(search_id, filter_signature)
+    return stats["median"] if stats else None
 
 
-def get_stats_7d(search_id):
+def get_stats_7d(search_id, filter_signature=None):
     init_db()
     now = datetime.now()
     cutoff = (now - timedelta(days=7)).strftime("%Y-%m-%d %H:%M")
@@ -155,16 +151,18 @@ def get_stats_7d(search_id):
             rows = conn.execute(
                 """SELECT recorded_at, min_sofort, min_pv, min_auction, median_sofort
                    FROM price_snapshots
-                   WHERE search_id = ? AND recorded_at >= ?
+                   WHERE search_id = ? AND recorded_at >= ? AND history_version = ?
+                     AND validation_complete = 1 AND (? IS NULL OR filter_signature = ?)
                    ORDER BY recorded_at ASC""",
-                (search_id, cutoff),
+                (search_id, cutoff, HISTORY_VERSION, filter_signature, filter_signature),
             ).fetchall()
             # Try to get auction medians (column may not exist in old DBs)
             try:
                 auc_rows = conn.execute(
                     """SELECT median_auction FROM price_snapshots
-                       WHERE search_id = ? AND recorded_at >= ? AND median_auction IS NOT NULL""",
-                    (search_id, cutoff),
+                       WHERE search_id = ? AND recorded_at >= ? AND median_auction IS NOT NULL
+                         AND history_version = ? AND validation_complete = 1 AND (? IS NULL OR filter_signature = ?)""",
+                    (search_id, cutoff, HISTORY_VERSION, filter_signature, filter_signature),
                 ).fetchall()
             except Exception:
                 auc_rows = []
@@ -190,41 +188,42 @@ def get_stats_7d(search_id):
         "last_date": last_date,
         "days": min(days, 7),
         "snapshots": len(rows),
+        "purchase_snapshots": len(medians),
     }
 
 
-def get_trend(search_id):
+def get_trend(search_id, filter_signature=None):
     init_db()
     now = datetime.now()
     cutoff_30d = (now - timedelta(days=30)).strftime("%Y-%m-%d %H:%M")
     with _DB_LOCK:
         with _connect() as conn:
             first = conn.execute(
-                "SELECT min_sofort FROM price_snapshots WHERE search_id = ? AND recorded_at >= ? AND min_sofort IS NOT NULL ORDER BY recorded_at ASC LIMIT 1",
-                (search_id, cutoff_30d),
+                "SELECT min_sofort FROM price_snapshots WHERE search_id = ? AND recorded_at >= ? AND min_sofort IS NOT NULL AND history_version = ? AND validation_complete = 1 AND (? IS NULL OR filter_signature = ?) ORDER BY recorded_at ASC LIMIT 1",
+                (search_id, cutoff_30d, HISTORY_VERSION, filter_signature, filter_signature),
             ).fetchone()
             last = conn.execute(
-                "SELECT min_sofort FROM price_snapshots WHERE search_id = ? AND min_sofort IS NOT NULL ORDER BY recorded_at DESC LIMIT 1",
-                (search_id,),
+                "SELECT min_sofort FROM price_snapshots WHERE search_id = ? AND min_sofort IS NOT NULL AND history_version = ? AND validation_complete = 1 AND (? IS NULL OR filter_signature = ?) ORDER BY recorded_at DESC LIMIT 1",
+                (search_id, HISTORY_VERSION, filter_signature, filter_signature),
             ).fetchone()
     if not first or not last:
         return None
     return {"price_30d_ago": first["min_sofort"], "price_now": last["min_sofort"]}
 
 
-def is_outlier(price, search_id):
+def is_outlier(price, search_id, filter_signature=None):
     """Detect suspiciously low prices that are likely errors or scams.
     
     Uses a dynamic threshold based on the 7-day median:
     - If price < 40% of median → outlier (likely scam/error/wrong item)
     - Requires at least 3 snapshots to have confidence in the median
     """
-    median = get_median_7d(search_id)
+    median = get_median_7d(search_id, filter_signature)
     if median is None or median == 0:
         return False
     # Need enough data points for a reliable median
-    stats = get_stats_7d(search_id)
-    if not stats or stats.get("snapshots", 0) < 3:
+    stats = get_stats_7d(search_id, filter_signature)
+    if not stats or stats.get("purchase_snapshots", 0) < 3:
         return False
     return price < median * 0.4
 
