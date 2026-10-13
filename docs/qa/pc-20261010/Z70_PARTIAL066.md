@@ -1,14 +1,37 @@
-# Nubia Z70 Ultra: текущая частичная сверка
+# Nubia Z70 Ultra: независимая сверка, 13 октября
 
-13октября2026.24основных карточки в настоящем браузере; пока прочитаны6полныхсобственныхописаний. Worldwide/EUR/DE09648,сортировкацена+доставка. Это не40–50и не всяприёмка.
+Прочитаны **25 уникальных страниц и25 полных собственных описаний**:24 точных результата основного запроса + один дополнительный Z70S из корзины Preisvorschlag. Это частичная приёмка: дополнительные названия/аукционные профили и точная обработка вариантов ещё открыты. Worldwide, DE09648, EUR выдача, цена+доставка.
 
-| Лот | Товар / доставка€ | Собственное описание | Независимый результат |
+Повторяющиеся длинные условия продавца проверялись вместе с каждым отличающимся фрагментом. Два пустых iframe восстановлены второй загрузкой. Отзывы покупателей и соседние рекомендации не использовались как описание лота.
+
+| Лот | Товар/доставка€ | Текст, символов | Независимый вывод |
 |---|---:|---:|---|
-|[167704519553](https://www.ebay.de/itm/167704519553)|424.55 / 0|4126символов|Own condition Als Ersatzteil/defekt contradicts healthy description; reject parts condition.|
-|[198669347531](https://www.ebay.de/itm/198669347531)|460.83 / 35.13|356символов|Whole Z70S, not Z70. 12/256, box/cable/cases, no charger. Own import GBP93.83 and shipping GBP29.73; not a Z70 minimum.|
-|[366530815294](https://www.ebay.de/itm/366530815294)|500 / None|607символов|Title/body NX733J/Z70 conflict with own Z17mini/64GB/single-core/A1203 aspects. Pickup more than100km from09648, city still to inspect.|
-|[128040520757](https://www.ebay.de/itm/128040520757)|579 / 20|653символов|Whole Z70Ultra StarryNight512/16, no disclosed blocked fault, used one year. Own model and body agree; Sofort+599, expensive at325.|
-|[127849510926](https://www.ebay.de/itm/127849510926)|692.7 / 0|6968символов|Title/body advertise whole Z70; own AppleA13/1.4inch/Aliyun/single-core aspects contradict it. Variant selector and import fee unknown. Before API returnedNone;067 now reads complete HTML and keeps contract=false.|
-|[306294088377](https://www.ebay.de/itm/306294088377)|1175.26 / 0|2262символов|Whole Z70/NX733J/12+256/new retail bundle, original firmware. Page1175.26/free shipping says possible import fees.1450.57 is existing calculated import estimate, not a confirmed charge.|
+|[167704519553](https://www.ebay.de/itm/167704519553)|424.55 / 0|4126|Own condition Als Ersatzteil/defekt contradicts healthy description; reject parts condition.|
+|[198669347531](https://www.ebay.de/itm/198669347531)|460.83 / 35.13|356|Whole Z70S, not Z70. 12/256, box/cable/cases, no charger. Own import GBP93.83 and shipping GBP29.73; not a Z70 minimum.|
+|[366530815294](https://www.ebay.de/itm/366530815294)|500 / None|607|Title/body NX733J/Z70 conflict with own Z17mini/64GB/single-core/A1203 aspects. Pickup more than100km from09648, city still to inspect.|
+|[128040520757](https://www.ebay.de/itm/128040520757)|579 / 20|653|Whole Z70Ultra StarryNight512/16, no disclosed blocked fault, used one year. Own model and body agree; Sofort+599, expensive at325.|
+|[127849510926](https://www.ebay.de/itm/127849510926)|692.7 / 0|6968|Title/body advertise whole Z70; own AppleA13/1.4inch/Aliyun/single-core aspects contradict it. Variant selector and import fee unknown. Before API returnedNone;067 now reads complete HTML and keeps contract=false.|
+|[306294088377](https://www.ebay.de/itm/306294088377)|1175.26 / 0|2262|Whole Z70/NX733J/12+256/new retail bundle, original firmware. Page1175.26/free shipping says possible import fees.1450.57 is existing calculated import estimate, not a confirmed charge.|
+|[357378637832](https://www.ebay.de/itm/357378637832)|608 / 25|2916|Полное устройство Z70; цвет/память не выбраны, диапазон608–738.15€, импорт неизвестен.|
+|[318242879264](https://www.ebay.de/itm/318242879264)|692.7 / 0|6968|Название/описание Z70 противоречит собственным AppleA13/1.4inch/singlecore. Отказ.|
+|[127849510977](https://www.ebay.de/itm/127849510977)|760.05 / 0|6968|Z70 512/16 в тексте, AppleA13/1.4inch в собственных характеристиках. Отказ.|
+|[318197595720](https://www.ebay.de/itm/318197595720)|760.05 / 0|6968|Z70 512/16 в тексте, AppleA13/1.4inch в собственных характеристиках. Отказ.|
+|[137147255523](https://www.ebay.de/itm/137147255523)|736.25 / 25|2882|Полное устройство Z70; Storage/Bundle не выбраны, диапазон цены; импорт неизвестен.|
+|[127853945915](https://www.ebay.de/itm/127853945915)|761.85 / 0|6773|Z70S соседняя модель; AppleA13 в собственных характеристиках. Отказ.|
+|[318148102248](https://www.ebay.de/itm/318148102248)|761.85 / 0|6826|Z70S соседняя модель; AppleA13 в собственных характеристиках. Отказ.|
+|[388796710010](https://www.ebay.de/itm/388796710010)|775 / 25|2882|Полный Z70 в тексте; варианты775–967€, импорт неизвестен. Требует подтверждения конкретного варианта.|
+|[267736285233](https://www.ebay.de/itm/267736285233)|777 / 25|2916|Полный Z70, выбран Black512/16, доступна покупка777€+25€. Обе реализации отвергают как multi-variation; воспроизведённое расхождение, точная цена/наличие варианта требуют исправления.|
+|[127849510947](https://www.ebay.de/itm/127849510947)|937.57 / 0|6929|Полный текст восстановлен повторно; Z70 1TB/24, собственные AppleA13 противоречат. Отказ.|
+|[318197595974](https://www.ebay.de/itm/318197595974)|937.57 / 0|6929|Z70 1TB/24, AppleA13 в собственных характеристиках. Отказ.|
+|[318192981401](https://www.ebay.de/itm/318192981401)|1068.89 / 0|8355|Услуга защитного покрытия рекламная, не подтверждение дефекта; AppleA13 противоречит модели. Отказ.|
+|[127853967417](https://www.ebay.de/itm/127853967417)|1068.89 / 0|8355|Услуга покрытия не дефект; AppleA13 противоречит модели. Отказ.|
+|[127044536654](https://www.ebay.de/itm/127044536654)|1142.48 / 0|8184|Полный текст устройства и юридические условия; AppleA13 противоречит модели. Отказ.|
+|[316628916271](https://www.ebay.de/itm/316628916271)|1142.48 / 0|8184|Полный текст устройства и юридические условия; AppleA13 противоречит модели. Отказ.|
+|[297290440945](https://www.ebay.de/itm/297290440945)|1175.26 / 0|2195|Полный Z70 Gold256/12 с зарядкой/коробкой, выше325. SERP EUR1175.26; собственная страница показывает AU$1885, не новый подтверждённый EUR курс.|
+|[316384803469](https://www.ebay.de/itm/316384803469)|1234.83 / 0|6735|Z70 1TB/24 в тексте, собственные AppleA13/1.4inch противоречат. Отказ.|
+|[306791558492](https://www.ebay.de/itm/306791558492)|1369.48 / 0|2189|Полный Z70 Black1TB/24 с зарядкой/коробкой, выше325. Собственная страница£1159; EUR1369.48 — конверсия SERP.|
+|[316863344414](https://www.ebay.de/itm/316863344414)|899 / 0|6931|Третий результат Preisvorschlag: Z70S, не Z70; AppleA13 противоречит собственной модели. Отказ.|
 
-Физический066за11249мс иPython067совпали:1450.57/306294088377;599/128040520757;две пустые аукционные корзины. Оба дороже325, уведомления о покупке не положены. [Телефон](z70-phone066-oct13.json)/[Python](z70-python067.json)/[снимок](z70-four066-oct13.png). **1450.57включаетрасчётнуюоценкуимпорта.** Её маркировка вUI/Telegram пока недостаточно явная; этот воспроизведённый дефект открыт отдельно. Не выдавать совпадениедвухчисел за подтверждённые сборы. Остальные18страниц, дополнительныеназвания и каждый более дешёвый отказ ещё требуют проверки.
+Физический069 за11968мс и полный Python069 совпали по4 ценам/ID:≈1450.57/306294088377;599/128040520757;две пустые аукционные корзины. **Это совпадение не доказывает правильность всего отбора:** выбранный вариант267736285233777+25€ пропущен по общему запрету multi-variation. HTML/details получены, accessory=false, intent=true, descriptionBlocked=false, contract=false. Следующий фикс должен подтверждать именно доступный вариант и его цену, сохраняя отказ непроверенных «цена от». Импорт для этого предложения также неизвестен.
+
+[Телефон](z70-phone069.json),[Python](z70-python069.json),[снимок после перезапуска](saved-import069.png),[контракт пропущенного лота](z70-selected-variant069.json). Надбавка UK275.31€ теперь явно помечена как оценка; eBay её не подтверждал.

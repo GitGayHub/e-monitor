@@ -1,32 +1,24 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-13-pc-068",
+  "checkpointId": "2026-10-13-pc-070",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "f7f1bdcb71813098acc7b85ed101ee4e29c4d7ae",
+    "sourceCommit": "fac6924d11c7e1c74307895452b9cfb0266314c9",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "37adfd106aab822794132171592571b4cc4853fc",
+    "sourceCommit": "ad140e797a4c3ef86a9dbe56c64d6a1e3a06298c",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.068",
-  "logicVersion": 1791854060,
+  "apkVersion": "0.070",
+  "logicVersion": 1791902318,
   "acceptanceComplete": false,
   "environmentPublished": false,
-  "cleanLinuxCi": {
-    "id": 38331991489,
-    "name": "Cloud readiness - both repositories",
-    "status": "in_progress",
-    "conclusion": null,
-    "head_sha": "37adfd106aab822794132171592571b4cc4853fc",
-    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38331991489"
-  },
   "localCloudMergeTests": 7,
   "physicalReport": {
     "apkVersion": "0.063",
@@ -35,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "D1D1FD2E55C5099A2F3CCC9DF81AB8B18C7FE77F696A262BDAD52669B52DF320",
+  "apkSha256": "D591A0078D43E546C1E0E066FFB6AD8EE117E211FEBB7008D21CAC16AD868AF9",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -45,7 +37,7 @@
     "conclusion": "success"
   },
   "physicalInstall": {
-    "apkVersion": "0.068",
+    "apkVersion": "0.070",
     "result": "Success",
     "businessRowsChanged": 0,
     "dirty": false,
@@ -244,8 +236,8 @@
   "postSyncPythonTests": 288,
   "postSyncAndroid": "test/build successful;273 tests up-to-date",
   "cloudCodeHeads": {
-    "bot": "5acd85f3f9df8abdf147935e166523f1904d7154",
-    "android": "8e14789c77051617e952bb8abdfa339942f520d3"
+    "bot": "d8aefe3251f01f6307ac557d4d501b77a5e28f9c",
+    "android": "e12558590f7efbc032ad2dd99323626c052ed77e"
   },
   "cloudSyncBackup": "20261012T163017585195Z",
   "previousCleanLinuxCi065": {
@@ -316,10 +308,12 @@
     "test": "Leading empty report",
     "productionStateChanged": false,
     "sent": true,
-    "clientConfirmed": false,
+    "clientConfirmed": true,
     "status": "api_confirmed",
     "messageId": 120001,
-    "completedAt": "2026-10-13T01:33:11.112651+00:00"
+    "completedAt": "2026-10-13T01:33:11.112651+00:00",
+    "clientObservedAt": "2026-10-13",
+    "clientProof": "Read-only native AyuGram correct bot window: full test caption including final paragraph, versions and prices. Correlates with previously returned API receipt; native UI does not expose IDs. No resend."
   },
   "versionCdn068": {
     "observedAt": "2026-10-13",
@@ -334,8 +328,194 @@
       "phoneVersion": 1791854060,
       "installedApk": "0.068",
       "source": "GitHub Contents API",
-      "directBannerVisualInspection": false
+      "directBannerVisualInspection": true,
+      "screenshot": "version068.png",
+      "displayedVersion": "03:14 13 октября"
     },
     "productionSettingsChanged": false
+  },
+  "postSync068": {
+    "pythonTests": 292,
+    "androidTests": 278,
+    "testBuild": "success",
+    "syncTests": 7
+  },
+  "tests069": {
+    "python": 295,
+    "android": 281,
+    "build": "success"
+  },
+  "pending069": [
+    "confirmed_device_variant_rejection",
+    "full_independent_acceptance",
+    "newTelegramClientReceipt",
+    "road_checkpoint"
+  ],
+  "previousCleanLinuxCi068": {
+    "id": 38331991489,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "37adfd106aab822794132171592571b4cc4853fc",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38331991489"
+  },
+  "runtime069": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791857266,
+    "lastSuccessfulRun": "2026-10-13T02:17:11+00:00",
+    "updatedAt": "2026-10-13T02:17:11+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalZ70069": {
+    "appVersion": "0.069",
+    "elapsedMs": 11968,
+    "finishedAtMs": 1791857305564,
+    "logicVersionTs": 1791854060,
+    "sourceBannerAfterRefresh": 1791857266,
+    "acceptanceComplete": false,
+    "reportStampExplanation": "Report ran during publication; saved source stamp03:14 remains shown honestly. Installed compiled implementation is069; source banner later04:07.",
+    "buckets": [
+      {
+        "label": "Sofort",
+        "price": 1450.57,
+        "url": "https://www.ebay.de/itm/306294088377?_skw=nubia+z70+ultra&hash=item47508ce2b9:g:5ywAAOSwwgJoHcUl",
+        "verdict": "🟣 Дорого",
+        "estimatedImportCharges": 275.30999999999995
+      },
+      {
+        "label": "Sofort+",
+        "price": 599.0,
+        "url": "https://www.ebay.de/itm/128040520757?_skw=nubia+z70+ultra&hash=item1dcfcf4c35:g:CE4AAeSwFLNqixdM",
+        "verdict": "🟣 Дорого",
+        "estimatedImportCharges": null
+      },
+      {
+        "label": "Auktion",
+        "price": null,
+        "url": null,
+        "verdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+        "estimatedImportCharges": null
+      },
+      {
+        "label": "Auktion+",
+        "price": null,
+        "url": null,
+        "verdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+        "estimatedImportCharges": null
+      }
+    ]
+  },
+  "telegramImport069": {
+    "preparedAt": "2026-10-13T02:17:22.391799+00:00",
+    "apkVersion": "0.069",
+    "logicVersion": 1791857266,
+    "test": "import estimate report",
+    "productionStateChanged": false,
+    "sent": true,
+    "clientConfirmed": true,
+    "status": "api_confirmed",
+    "messageId": 120002,
+    "completedAt": "2026-10-13T02:17:23.300748+00:00",
+    "clientObservedAt": "2026-10-13",
+    "clientProof": "Read-only native AyuGram correct bot window: full test caption including final paragraph, versions and prices. Correlates with previously returned API receipt; native UI does not expose IDs. No resend."
+  },
+  "tests070": {
+    "python": 300,
+    "android": 283,
+    "build": "success"
+  },
+  "pending070": [
+    "mouse_scrollrad_false_accessory",
+    "newTelegramClientReceipt",
+    "sold_authentication",
+    "selected_variants",
+    "full_acceptance",
+    "road_checkpoint"
+  ],
+  "previousCleanLinuxCi069": {
+    "id": 38335435715,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "d025f6d04c88f4ac7cb065d333625dfd27a9cf1c",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38335435715"
+  },
+  "cleanLinuxCi": {
+    "id": 38415433416,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "ad140e797a4c3ef86a9dbe56c64d6a1e3a06298c",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38415433416"
+  },
+  "runtime070": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791902318,
+    "lastSuccessfulRun": "2026-10-13T14:55:21+00:00",
+    "updatedAt": "2026-10-13T14:55:21+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalMouse070": {
+    "appVersion": "0.070",
+    "elapsedMs": 16193,
+    "finishedAtMs": 1791902802658,
+    "logicVersionTs": 1791902318,
+    "buckets": [
+      {
+        "label": "Sofort",
+        "price": 61.19,
+        "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Sofort+",
+        "price": 72.99,
+        "url": "https://www.ebay.de/itm/820221654834?_skw=logitech+g+pro+x+superlight+2&hash=itembef9053732:g:mYEAAeSwiCJqld1U",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Auktion",
+        "price": 12.69,
+        "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
+        "verdict": "🟡 Ожидает времени аукциона · 4д 17ч · 6 ставок"
+      },
+      {
+        "label": "Auktion+",
+        "price": 41.19,
+        "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
+        "verdict": "🟢 Auktion+ · 6д · 0 ставок"
+      }
+    ],
+    "sameFourPricesAndIdsAsPython": true,
+    "independentAcceptanceComplete": false
+  },
+  "telegramBid070": {
+    "preparedAt": "2026-10-13T14:56:27.449354+00:00",
+    "apkVersion": "0.070",
+    "logicVersion": 1791902318,
+    "itemId": "168787849340",
+    "total": 41.19,
+    "test": "live bid formatter",
+    "productionStateChanged": false,
+    "sent": true,
+    "clientConfirmed": false,
+    "photoTested": false,
+    "status": "api_confirmed",
+    "messageId": 120009,
+    "completedAt": "2026-10-13T14:56:28.502950+00:00"
   }
 }
