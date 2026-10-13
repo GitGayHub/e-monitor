@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-13-pc-070",
+  "checkpointId": "2026-10-13-pc-071",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "7d810fc64ce22479f5edaab88edecc074cddfb1d",
+    "sourceCommit": "fac6924d11c7e1c74307895452b9cfb0266314c9",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "d025f6d04c88f4ac7cb065d333625dfd27a9cf1c",
+    "sourceCommit": "ad140e797a4c3ef86a9dbe56c64d6a1e3a06298c",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.070",
-  "logicVersion": 1791902318,
+  "apkVersion": "0.071",
+  "logicVersion": 1791904237,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "localCloudMergeTests": 7,
@@ -27,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "D591A0078D43E546C1E0E066FFB6AD8EE117E211FEBB7008D21CAC16AD868AF9",
+  "apkSha256": "F71835B17E077DC6B352B237902C98F834E172CC2037F05D2AFD19A6C652FE42",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -432,13 +432,12 @@
     "build": "success"
   },
   "pending070": [
-    "source_publication",
-    "runtime_ACK",
-    "physical_UI",
-    "real_Telegram",
-    "independent_auctions_sold",
+    "mouse_scrollrad_false_accessory",
+    "newTelegramClientReceipt",
+    "sold_authentication",
     "selected_variants",
-    "full_acceptance"
+    "full_acceptance",
+    "road_checkpoint"
   ],
   "previousCleanLinuxCi069": {
     "id": 38335435715,
@@ -447,5 +446,97 @@
     "conclusion": "success",
     "head_sha": "d025f6d04c88f4ac7cb065d333625dfd27a9cf1c",
     "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38335435715"
+  },
+  "runtime070": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791902318,
+    "lastSuccessfulRun": "2026-10-13T14:55:21+00:00",
+    "updatedAt": "2026-10-13T14:55:21+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalMouse070": {
+    "appVersion": "0.070",
+    "elapsedMs": 16193,
+    "finishedAtMs": 1791902802658,
+    "logicVersionTs": 1791902318,
+    "buckets": [
+      {
+        "label": "Sofort",
+        "price": 61.19,
+        "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Sofort+",
+        "price": 72.99,
+        "url": "https://www.ebay.de/itm/820221654834?_skw=logitech+g+pro+x+superlight+2&hash=itembef9053732:g:mYEAAeSwiCJqld1U",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Auktion",
+        "price": 12.69,
+        "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
+        "verdict": "🟡 Ожидает времени аукциона · 4д 17ч · 6 ставок"
+      },
+      {
+        "label": "Auktion+",
+        "price": 41.19,
+        "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
+        "verdict": "🟢 Auktion+ · 6д · 0 ставок"
+      }
+    ],
+    "sameFourPricesAndIdsAsPython": true,
+    "independentAcceptanceComplete": false
+  },
+  "telegramBid070": {
+    "preparedAt": "2026-10-13T14:56:27.449354+00:00",
+    "apkVersion": "0.070",
+    "logicVersion": 1791902318,
+    "itemId": "168787849340",
+    "total": 41.19,
+    "test": "live bid formatter",
+    "productionStateChanged": false,
+    "sent": true,
+    "clientConfirmed": false,
+    "photoTested": false,
+    "status": "api_confirmed",
+    "messageId": 120009,
+    "completedAt": "2026-10-13T14:56:28.502950+00:00"
+  },
+  "tests071": {
+    "python": 301,
+    "android": 284,
+    "build": "success"
+  },
+  "pending071": [
+    "physical_install",
+    "source_publication",
+    "runtime_ACK",
+    "real_scrollrad_and_four_baskets",
+    "full_acceptance"
+  ],
+  "cloudHeads070": {
+    "bot": "f7b42e11c5b218b6bba4c43c89a908f412ea9e2b",
+    "android": "b177c8a11b7a68f225829ac958f928ffc089fd4d",
+    "filesChanged": 0,
+    "conflicts": 0,
+    "postApplyPython": 300,
+    "postApplyAndroid": 283,
+    "backup": "20261013T150308966220Z"
+  },
+  "previousCleanLinuxCi070": {
+    "id": 38415433416,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "ad140e797a4c3ef86a9dbe56c64d6a1e3a06298c",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38415433416"
   }
 }

@@ -49,6 +49,20 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
+    def test_full_mouse_scroll_feature_and_separate_wheel_are_distinct(self):
+        import json
+        from pathlib import Path
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/mouse_features_oct13.json').read_text(encoding='utf8'))
+        for case in cases:
+            title=monitor._normalize(case['title'])
+            query='logitech superlight 2 dex' if 'dex' in title else 'logitech superlight 2'
+            with self.subTest(title=case['title']):
+                self.assertEqual(not case['keep'],monitor._is_category_blocked_title(title,'mice',query))
+                for category in ('mice','all'):
+                    search={'query':query,'filters':{'category':category,'listing_type':'all'}}
+                    kept=monitor.filter_results([item(case['title'])],search,DummyConfig(),skip_seen=True,is_statistics=True)
+                    self.assertEqual(case['keep'],bool(kept),(case['title'],category))
+
     def test_mouse_kufen_are_parts_and_full_mouse_bundles_remain_devices(self):
         import json
         from pathlib import Path
