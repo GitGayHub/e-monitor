@@ -1,3 +1,15 @@
+## Текущий этап —0.066,13октября2026
+
+ОбщаяприёмкаНЕзавершена. Авторитетный текущий список всех исходныхтребований и25товаров/100корзин: docs/qa/pc-20261010/ACCEPTANCE_CURRENT.md иacceptance-current.json. КаждыйстатусPARTIAL/PENDING;общийphone063прогон не независимаясертификация. Продолжать оставшиесяbrowseraliases/меньшиевыдачи/минимумы/всеотказы и реальныеdelivery/recovery/CRUDграницы.
+
+0.066 исправилаошибочныйAsusотказиз-за optional«продатьилиобменять». Реальный236643373203540+7.69,RTX3050/AMD/OLED. Python065все4пусто;Python066/физический0666010мс:пусто/547.69/пусто/пусто,notificationfalseпри425.12общихпримеров;289Python/274Android/APKpassed. SHA256CD02B1DD6705D31FF0026C2D5ED1561FBCB8A84AE1194A0D1F1736B781AC4E7E;rules1791824745. ИсточникиPython649671eae7f341bae4065365132fce3269bbe95b/Android5237fc7d81c2e792c172618b8253cdac3a2c2ffa;CI38282128507completed/success. Runtime13Oct00:46:05UTCok/47active/тажеrevision/fingerprint. 49поисков,dirtyfalse,0бизнесизменений.
+
+Asusmanual12Oct23страницы17текстов,4целыхноутбукавосновнойвыдаче. ОстальныетриIntelпротивусловий.6iframesнедочитаны;новыеaliases/аукционныепрофилинеприняты. Прямойcategory177URLдавалSORRY,нечестный0каталог. Новые066Telegramтестынеотправлялись;119991/119992062неповторять. Амбивалентныйtimeoutсамогоphoto,cross-joboutbox,реальныйpickupBerlin≤80км/429ещёоткрыты.
+
+13Oct02:47BerlinUSBserialотсутствуетвWindowsPnPиADB;boundedrecover20секtimeout,драйверы/ключи/данныенеизменены.Необъявлятькабельфизическиотключённым,неповторятьстаруюпросьбупереткнуть. AyuGraminstalledinventoryбезокон;ПКнеактивировать/непереключать. ТелефонтолькоeMonitor. Облачнаянастройкаотменена;roadветкилишьcontinuity. Прибраузерномreset23/17сохраненывэтойсводке,полныетекстыREPLнеперенесены;невыдумыватьrawsnapshots.
+
+## История до0.066
+
 CI06538276350013 завершён completed/success: чистые оба репозитория,288Python/273Android/APK. Road-код сохранён5acd85f3f9df8abdf147935e166523f1904d7154 /8e14789c77051617e952bb8abdfa339942f520d3. Check/apply0файлов/0конфликтов,backup .cloud-sync-backups/20261012T163017585195Z;послепереноса288Python сноваpassed,Android test/build up-to-date и7syncpassed. Последние docs commits могут быть новее этих roadcode hashes. RoadCI/emulator38277390596/38277390606 смотреть фактический статус, не объявлять завершёнными по sourceCI.
 
 Сводка общего физического063прогона:56дорогих,27честнопустых,7полностьюотсеянных,7ожидающихаукцион,3подходящих. Это статусы приложения, а не подтверждение отправки Telegram каждого лота. Новыйserver065lastSuccess16:29:18UTC/stateok/errornull/warningnull;скринOverview065 показываетправила18:17. Послеdebugserverrestart телефонсноваdevice,ключи/данные сохранены. Точное совпадениеDEX065сPython подтверждено. ОбщаянезависимаяприёмкаещёНЕзавершена.

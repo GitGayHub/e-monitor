@@ -1,0 +1,1861 @@
+{
+  "schema": 1,
+  "updatedAt": "2026-10-13T00:51:32.143961+00:00",
+  "overall": "PARTIAL",
+  "acceptanceComplete": false,
+  "apkVersion": "0.066",
+  "logicVersion": 1791824745,
+  "inventorySource": "Physical APK0.066 backup12October; server runtime13October matching revision/fingerprint",
+  "savedSearches": 49,
+  "activeSearches": 47,
+  "activeProducts": 25,
+  "baskets": 100,
+  "scopeWarning": "Phone execution and unit parity do not certify independent catalogue/filters or actual Telegram delivery.",
+  "requirements": [
+    {
+      "id": "settings_roundtrip",
+      "request": "Все поля schema1, bestOffer, пустые/нули/false; APK→БД→GitHub→действующая конфигурация",
+      "status": "PARTIAL",
+      "evidence": [
+        "runtime066.json",
+        "REPORT.md"
+      ],
+      "remaining": "Повторить полный набор полей и точное применение изменённой цены на текущей версии."
+    },
+    {
+      "id": "settings_concurrency",
+      "request": "Фоновая синхронизация, удаление/восстановление, конфликт и offline-правки",
+      "status": "PARTIAL",
+      "evidence": [
+        "REPORT.md"
+      ],
+      "remaining": "Свежие UI сценарии гонок, сохранение после перезапуска и отсутствие воскрешения удалённых поисков."
+    },
+    {
+      "id": "group_price",
+      "request": "Один лимит обновляет все варианты товара, включая отключённые, без потери ID/флагов",
+      "status": "PARTIAL",
+      "evidence": [
+        "REPORT.md"
+      ],
+      "remaining": "Повторить одну транзакцию, серверный ACK именно новой ревизии и помеченный Telegram тест; восстановить условия."
+    },
+    {
+      "id": "owner_changes",
+      "request": "Удалить15PM;16PM610;17PM910;S25Edge325;RayGen2 225; дополнительные названия",
+      "status": "PARTIAL",
+      "evidence": [
+        "REPORT.md"
+      ],
+      "remaining": "Настройки сохранены; независимое покрытие всех добавленных названий ещё неполное."
+    },
+    {
+      "id": "model_identity",
+      "request": "Бренд/семейство/поколение/Pro/Max/Ultra/Ti/DEX/SE, собственные характеристики",
+      "status": "PARTIAL",
+      "evidence": [
+        "DEX_MANUAL064.md",
+        "SAMSUNG_MANUAL.md",
+        "PS5_SSD_CORRECTION.md"
+      ],
+      "remaining": "Все25товаров и новые запросы; соседние модели/iOS17/17cm/части."
+    },
+    {
+      "id": "device_purpose",
+      "request": "Устройство/запчасть/совместимость/комплект; Sony swivel spindle buckle Drehgelenk f.Sony",
+      "status": "PARTIAL",
+      "evidence": [
+        "SONY_MANUAL.md",
+        "ASUS_MANUAL066.md"
+      ],
+      "remaining": "Независимые случаи всех категорий и сравнение по каждому ID."
+    },
+    {
+      "id": "seller_description",
+      "request": "Полное собственное описание, дефекты/ремонт/блокировки/комплект; без отзывов и рекомендаций",
+      "status": "PARTIAL",
+      "evidence": [
+        "DEX_MANUAL064.md",
+        "PIXEL_BATTERY_FIX.md",
+        "ASUS_MANUAL066.md"
+      ],
+      "remaining": "Недоступные тела остаются непроверенными; повторное применение всех фильтров после detail refresh."
+    },
+    {
+      "id": "owner_filters",
+      "request": "Обязательные/запрещённые слова, seller bans, hidden IDs, состояние/регион/радиус",
+      "status": "PARTIAL",
+      "evidence": [
+        "REPORT.md"
+      ],
+      "remaining": "Полная таблица границ и свежая UI/server сверка, а не только3970compatibility."
+    },
+    {
+      "id": "price_contract",
+      "request": "Товар+доставка+импорт, min/notify/hardMax, hybrid BIN и bid",
+      "status": "PARTIAL",
+      "evidence": [
+        "OLED4050_MANUAL061.md",
+        "PS5_MANUAL.md",
+        "AUCTION_REFRESH061.md"
+      ],
+      "remaining": "Все используемые категории и четыре корзины; цена изменившегося лота отдельно."
+    },
+    {
+      "id": "auction_notifications",
+      "request": "Точное время24ч/1ч/15м, waiting/sent/failed и повторные стадии",
+      "status": "PARTIAL",
+      "evidence": [
+        "AUCTION_REFRESH061.md",
+        "SAMSUNG_MANUAL.md"
+      ],
+      "remaining": "Сверить свежие живые аукционы/предыдущие доставки/ошибки, не считать savedreport отправкой."
+    },
+    {
+      "id": "shared_paths",
+      "request": "Общие решения превью/ручной проверки/мониторинга/статистики",
+      "status": "PARTIAL",
+      "evidence": [
+        "GLOBAL_PHONE063.md",
+        "REPORT.md"
+      ],
+      "remaining": "Все25товаров с независимым вердиктом; ошибки запроса не становятся успехом с0результатов."
+    },
+    {
+      "id": "manual_catalogue",
+      "request": "40–50уникальных browser лотов/товар либо весь действительно меньший каталог, все4корзины/названия",
+      "status": "PARTIAL",
+      "evidence": [
+        "GLOBAL_PHONE063.md"
+      ],
+      "remaining": "Продолжить недостающие группы, aliases, minima, пустые корзины; свести прежние private доказательства."
+    },
+    {
+      "id": "progress_and_races",
+      "request": "Этап/%/объём описаний, квота/ошибка/отмена, старый запрос не перезаписывает новый",
+      "status": "PARTIAL",
+      "evidence": [
+        "progress.png",
+        "dex-grade065.png"
+      ],
+      "remaining": "Свежие UI сценарии смены/отмены запросов и фоновой ошибки."
+    },
+    {
+      "id": "single_product",
+      "request": "Карточка проверяет один товар/4корзины, отдельное редактирование и одна корзина",
+      "status": "PARTIAL",
+      "evidence": [
+        "dex-four065.png",
+        "REPORT.md"
+      ],
+      "remaining": "Полный проход актуальной UI на0.066+ и сохранённого отчёта после перезапуска."
+    },
+    {
+      "id": "overview_and_staleness",
+      "request": "Обзор/версии/server state/lastSuccess/revision; старый отчёт помечен после правок",
+      "status": "PARTIAL",
+      "evidence": [
+        "overview065.png",
+        "runtime066.json"
+      ],
+      "remaining": "Свежий вид Overview0.066 и invalidation после изменения условий."
+    },
+    {
+      "id": "api_html_failover",
+      "request": "При исчерпанной квоте последовательный HTML fallback, backoff; ошибки отдельно от пустого каталога",
+      "status": "PARTIAL",
+      "evidence": [
+        "html-four054.png",
+        "leading-negative-control054.json"
+      ],
+      "remaining": "Настоящее исчерпание API квоты/429 и физический fallback; HTML тоже не гарантирует доступность всегда."
+    },
+    {
+      "id": "pickup",
+      "request": "Только Berlin либо≤80км от09648; город и расстояние в Telegram",
+      "status": "PARTIAL",
+      "evidence": [
+        "REPORT.md"
+      ],
+      "remaining": "Свежий действующий NurAbholung лот, отрицательные дальние/неизвестные места и прямое чтение нового Telegram."
+    },
+    {
+      "id": "telegram_media",
+      "request": "Фото из собственного объявления, точный лот/цены/этап/APK/правила",
+      "status": "PARTIAL",
+      "evidence": [
+        "telegram-client061.json",
+        "telegram-outbox062.json"
+      ],
+      "remaining": "Текущая версия/фото/полный текст непосредственно в ПК-клиенте;119991/119992не повторять."
+    },
+    {
+      "id": "delivery_feed",
+      "request": "Лента только после подтверждённой Telegram отправки, сбой публикации повторяет лишь feed",
+      "status": "PARTIAL",
+      "evidence": [
+        "REPORT.md"
+      ],
+      "remaining": "Реальное восстановление публикации без повторной отправки и cross-job checkpoint."
+    },
+    {
+      "id": "delivery_recovery",
+      "request": "СетьTelegram/GitHub/eBay, dedup/restart/429/ambiguous timeout/outbox междуjobs",
+      "status": "PARTIAL",
+      "evidence": [
+        "telegram-outbox062.json"
+      ],
+      "remaining": "Неоднозначная доставка самой фотографии и реальная переносимая очередь остаются открыты."
+    },
+    {
+      "id": "deploy_invariants",
+      "request": "Опубликовать проверенные APK/правила, сохранить подпись/данные/normal/recipient/searches",
+      "status": "PARTIAL",
+      "evidence": [
+        "runtime066.json",
+        "ASUS_CORRECTION066.md"
+      ],
+      "remaining": "0.066 установлен/серверприменил/CIуспешен; повторный полный аудит остаётся открытым."
+    },
+    {
+      "id": "final_report",
+      "request": "Все запросы/фильтры/ссылки/время/скрины/версии/реальные доставки/непроверенные сценарии",
+      "status": "PARTIAL",
+      "evidence": [
+        "ACCEPTANCE_CURRENT.md"
+      ],
+      "remaining": "Итоговый вердикт только после всех ворот; сейчас PARTIAL."
+    }
+  ],
+  "products": [
+    {
+      "key": "4050_oled",
+      "name": "4050 OLED",
+      "savedIds": [
+        "4050_oled_buy",
+        "4050_oled_auc"
+      ],
+      "limits": [
+        625.0,
+        625.0
+      ],
+      "configuredQuery": "4050 oled",
+      "basicAliasGenerator": [
+        "4050 oled"
+      ],
+      "aliasesComplete": false,
+      "category": "laptops",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 40,
+        "nonemptyFullBodies": 40,
+        "evidence": "OLED4050_MANUAL061.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1478.2,
+          "url": "https://www.ebay.de/itm/267808972389?_skw=rtx+4050+oled+laptop&hash=item3e5aa89e65:g:IcAAAeSwufhqyQov",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 849.0,
+          "url": "https://www.ebay.de/itm/257781542239?_skw=rtx+4050+oled+laptop&hash=item3c04fa2d5f:g:yFcAAeSw8z5qwkv9",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено подходящих · Отсев кандидатов (1): модель / характеристики не соответствуют поиску ×1",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "4060_oled",
+      "name": "4060 OLED",
+      "savedIds": [
+        "4060_oled_buy",
+        "4060_oled_auc"
+      ],
+      "limits": [
+        750.0,
+        750.0
+      ],
+      "configuredQuery": "4060 oled",
+      "basicAliasGenerator": [
+        "4060 oled"
+      ],
+      "aliasesComplete": false,
+      "category": "laptops",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 41,
+        "nonemptyFullBodies": 41,
+        "evidence": "OLED4060_MANUAL062.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1399.0,
+          "url": "https://www.ebay.de/itm/407108230772?_skw=rtx+4060+%28aero%2Cvivobook%2Cspectre%2Cyoga%2Cxps%2Clegion%2Cproart%29&hash=item5ec98a9e74:g:lqEAAeSwwnxqaz92",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1304.49,
+          "url": "https://www.ebay.de/itm/357207267549?_skw=rtx+4060+oled+laptop&hash=item532b3658dd:g:pGYAAeSwmdhoY93m",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено подходящих · Отсев кандидатов (1): модель / характеристики не соответствуют поиску ×1",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "4080_pc",
+      "name": "4080",
+      "savedIds": [
+        "4080_pc_buy",
+        "4080_pc_auc"
+      ],
+      "limits": [
+        1200.0,
+        1200.0
+      ],
+      "configuredQuery": "4080 (pc, rechner, computer, desktop, gaming pc)",
+      "basicAliasGenerator": [
+        "4080 pc",
+        "4080 rechner",
+        "4080 computer",
+        "4080 desktop",
+        "4080 gaming pc",
+        "gaming pc 4080",
+        "rtx 4080 gaming pc",
+        "RTX4080"
+      ],
+      "aliasesComplete": false,
+      "category": "computers",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1709.0,
+          "url": "https://www.ebay.de/itm/287221987446?_skw=4080+pc&hash=item42dfc3b876:g:GlIAAeSwVhJpvqux",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1823.99,
+          "url": "https://www.ebay.de/itm/117422395011?_skw=4080+pc&hash=item1b56eb8e83:g:MW8AAeSwguFqsAsv",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 2023.99,
+          "url": "https://www.ebay.de/itm/137827997569?_skw=4080+pc&hash=item2017305781:g:~d4AAeSwRdtqvU6S",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1210.49,
+          "url": "https://www.ebay.de/itm/900005952964?_skw=4080+pc&hash=itemd18c88fdc4:g:VoAAAeSw5d9qy52k",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "5070_ti_pc",
+      "name": "5070 Ti",
+      "savedIds": [
+        "5070_ti_pc_buy",
+        "5070_ti_pc_auc"
+      ],
+      "limits": [
+        1300.0,
+        1300.0
+      ],
+      "configuredQuery": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+      "basicAliasGenerator": [
+        "5070 ti pc",
+        "5070 ti rechner",
+        "5070 ti computer",
+        "5070 ti desktop",
+        "5070 ti gaming pc",
+        "gaming pc 5070 ti",
+        "rtx 5070 ti gaming pc",
+        "RTX5070TI"
+      ],
+      "aliasesComplete": false,
+      "category": "computers",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1820.66,
+          "url": "https://www.ebay.de/itm/314313513318?_skw=5070+ti+pc&hash=item492e8b9966:g:pb4AAOSwpwBjlK7u",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 2206.19,
+          "url": "https://www.ebay.de/itm/800754089913?_skw=5070+ti+pc&hash=itemba70a9bfb9:g:Oi8AAeSwrRRqwWSV",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 2000.0,
+          "url": "https://www.ebay.de/itm/168785489368?_skw=5070+ti+pc&hash=item274c662dd8:g:Y8IAAeSwiiZqy5Hy",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "asus_vivobook_14x_oled",
+      "name": "Asus Vivobook 14x OLED",
+      "savedIds": [
+        "asus_vivobook_14x_oled_buy",
+        "asus_vivobook_14x_oled_auc"
+      ],
+      "limits": [
+        425.0,
+        425.0
+      ],
+      "configuredQuery": "asus vivobook 14x oled",
+      "basicAliasGenerator": [
+        "asus vivobook 14x oled",
+        "asus vivobook14x oled",
+        "vivobook 14 x oled"
+      ],
+      "aliasesComplete": false,
+      "category": "laptops",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 23,
+        "nonemptyFullBodies": 17,
+        "evidence": "ASUS_MANUAL066.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "asus-phone066.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 547.69,
+          "url": "https://www.ebay.de/itm/236643373203?_skw=asus+vivobook+14x+oled&hash=item37190b5093:g:x-0AAeSwl~tpgJ9J",
+          "executionEvidence": "asus-phone066.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "asus-phone066.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "asus-phone066.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "iphone_16_pro_max",
+      "name": "iPhone 16 Pro Max",
+      "savedIds": [
+        "iphone_16_pro_max_buy",
+        "iphone_16_pro_max_auc"
+      ],
+      "limits": [
+        610.0,
+        610.0
+      ],
+      "configuredQuery": "iPhone 16 Pro Max",
+      "basicAliasGenerator": [
+        "iphone 16 pro max",
+        "apple iphone 16 pro max",
+        "iphone16 pro max",
+        "iphone16promax"
+      ],
+      "aliasesComplete": false,
+      "category": "phones",
+      "region": "de",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 644.99,
+          "url": "https://www.ebay.de/itm/820170817255?_skw=iphone+16+pro+max&hash=itembef5fd7ee7:g:oKsAAeSwG9FqkF1L",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 705.19,
+          "url": "https://www.ebay.de/itm/117460155927?_skw=iphone+16+pro+max&hash=item1b592bbe17:g:P1kAAeSwfe5qyzHs",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 1д 21ч · 0 ставок",
+          "total": 1.0,
+          "url": "https://www.ebay.de/itm/407278414311?_skw=iphone+16+pro+max&hash=item5ed3af69e7:g:jvoAAeSw2fxqyOxt",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 706.19,
+          "url": "https://www.ebay.de/itm/407268365668?_skw=iphone+16+pro+max&hash=item5ed3161564:g:71wAAeSwRWxqw11c",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "iphone_17_pro_max",
+      "name": "iPhone 17 Pro Max",
+      "savedIds": [
+        "iphone_17_pro_max"
+      ],
+      "limits": [
+        910.0
+      ],
+      "configuredQuery": "iphone 17 pro max",
+      "basicAliasGenerator": [
+        "iphone 17 pro max",
+        "apple iphone 17 pro max",
+        "iphone17 pro max",
+        "iphone17promax"
+      ],
+      "aliasesComplete": false,
+      "category": "phones",
+      "region": "de",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1013.99,
+          "url": "https://www.ebay.de/itm/800760589970?_skw=iphone+17+pro+max&hash=itemba710cee92:g:HAMAAeSwWyBqwTXY",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 926.19,
+          "url": "https://www.ebay.de/itm/227563988660?_skw=iphone+17+pro+max&hash=item34fbdee6b4:g:XyIAAeSwdH5qzOfK",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 5д 16ч · 3 ставки",
+          "total": 420.0,
+          "url": "https://www.ebay.de/itm/168785061740?_skw=iphone+17+pro+max&hash=item274c5fa76c:g:sJ4AAeSwuVdqy1BT",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1112.99,
+          "url": "https://www.ebay.de/itm/900001225244?_skw=iphone+17+pro+max&hash=itemd18c40da1c:g:zboAAeSwwzdqvMbY",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "lg_ultragear_oled_480hz",
+      "name": "Lg Ultragear OLED 480hz",
+      "savedIds": [
+        "lg_ultragear_oled_480hz_buy",
+        "lg_ultragear_oled_480hz_auc"
+      ],
+      "limits": [
+        430.0,
+        430.0
+      ],
+      "configuredQuery": "lg ultragear oled 480hz",
+      "basicAliasGenerator": [
+        "lg ultragear oled 480hz"
+      ],
+      "aliasesComplete": false,
+      "category": "monitors",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 885.0,
+          "url": "https://www.ebay.de/itm/405736889294?_skw=lg+ultragear+oled+480hz&hash=item5e77cd9bce:g:AykAAOSwlsJn9F5v",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟢 Подходит по фильтрам",
+          "total": 423.99,
+          "url": "https://www.ebay.de/itm/800366377085?_skw=lg+ultragear+oled+480hz&hash=itemba598db87d:g:PowAAeSwrsFqW8PT",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "logitech_superlight_2_std",
+      "name": "Logitech Superlight 2",
+      "savedIds": [
+        "logitech_superlight_2_std_buy",
+        "logitech_superlight_2_std_auc"
+      ],
+      "limits": [
+        45.0,
+        45.0
+      ],
+      "configuredQuery": "logitech superlight 2",
+      "basicAliasGenerator": [
+        "logitech superlight 2"
+      ],
+      "aliasesComplete": false,
+      "category": "mice",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 61.19,
+          "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 72.99,
+          "url": "https://www.ebay.de/itm/820221654834?_skw=logitech+g+pro+x+superlight+2&hash=itembef9053732:g:mYEAAeSwiCJqld1U",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 5д 16ч · 5 ставок",
+          "total": 11.69,
+          "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 56.19,
+          "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "logitech_superlight_2_dex",
+      "name": "Logitech Superlight 2 Dex",
+      "savedIds": [
+        "logitech_superlight_2_dex_buy",
+        "logitech_superlight_2_dex_auc"
+      ],
+      "limits": [
+        65.0,
+        65.0
+      ],
+      "configuredQuery": "logitech superlight 2 dex",
+      "basicAliasGenerator": [
+        "logitech superlight 2 dex"
+      ],
+      "aliasesComplete": false,
+      "category": "mice",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 40,
+        "nonemptyFullBodies": 39,
+        "evidence": "DEX_MANUAL064.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 84.95,
+          "url": "https://www.ebay.de/itm/800501582214?_skw=logitech+superlight+2+dex&hash=itemba619cc986:g:ql4AAeSweEtqfaWx",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 82.18,
+          "url": "https://www.ebay.de/itm/287501902036?_skw=logitech+superlight+2+dex&hash=item42f072e0d4:g:HAoAAeSwl85qcT60",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "logitech_superstrike",
+      "name": "Logitech Superstrike",
+      "savedIds": [
+        "logitech_superstrike_buy",
+        "logitech_superstrike_auc"
+      ],
+      "limits": [
+        85.0,
+        85.0
+      ],
+      "configuredQuery": "logitech superstrike",
+      "basicAliasGenerator": [
+        "logitech superstrike"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 146.18,
+          "url": "https://www.ebay.de/itm/377520132383?_skw=logitech+superstrike&hash=item57e5f4111f:g:XnAAAeSwTy1qtTsp",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 128.51,
+          "url": "https://www.ebay.de/itm/137810920648?_skw=logitech+superstrike&hash=item20162bc4c8:g:ZpQAAeSwO9VqwhWz",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 131.19,
+          "url": "https://www.ebay.de/itm/920029872506?_skw=logitech+superstrike&hash=itemd6360dc17a:g:970AAeSwFp1qyk4g",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "nubia_z70_ultra",
+      "name": "Nubia Z70 Ultra",
+      "savedIds": [
+        "nubia_z70_ultra_buy",
+        "nubia_z70_ultra_auc"
+      ],
+      "limits": [
+        325.0,
+        325.0
+      ],
+      "configuredQuery": "Nubia Z70 Ultra",
+      "basicAliasGenerator": [
+        "nubia z70 ultra",
+        "zte nubia z70 ultra",
+        "nubia z70 ultra"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1450.57,
+          "url": "https://www.ebay.de/itm/306294088377?_skw=nubia+z70+ultra&hash=item47508ce2b9:g:5ywAAOSwwgJoHcUl",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 599.0,
+          "url": "https://www.ebay.de/itm/128040520757?_skw=nubia+z70+ultra&hash=item1dcfcf4c35:g:CE4AAeSwFLNqixdM",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "nubia_z70s_ultra",
+      "name": "Nubia Z70S Ultra",
+      "savedIds": [
+        "nubia_z70s_ultra_buy",
+        "nubia_z70s_ultra_auc"
+      ],
+      "limits": [
+        325.0,
+        325.0
+      ],
+      "configuredQuery": "Nubia Z70S Ultra",
+      "basicAliasGenerator": [
+        "nubia z70s ultra",
+        "zte nubia z70s ultra",
+        "nubia z70 s ultra"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 606.83,
+          "url": "https://www.ebay.de/itm/198669347531?_skw=nubia+z70s+ultra&hash=item2e419daacb:g:oNwAAeSwQutquDQC",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "❌ Не найдено подходящих · Отсев кандидатов (30): аксессуар: чехол ×19; аксессуар: аксессуар / запчасть ×6; аксессуар: дисплей ×4; дефект / ремонт в описании ×1",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "nubia_z80_ultra",
+      "name": "Nubia Z80 Ultra",
+      "savedIds": [
+        "nubia_z80_ultra_buy",
+        "nubia_z80_ultra_auc"
+      ],
+      "limits": [
+        375.0,
+        375.0
+      ],
+      "configuredQuery": "Nubia Z80 Ultra",
+      "basicAliasGenerator": [
+        "nubia z80 ultra",
+        "zte nubia z80 ultra",
+        "nubia z80 ultra"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 699.0,
+          "url": "https://www.ebay.de/itm/336804110663?_skw=nubia+z80+ultra&hash=item4e6b16e147:g:6egAAeSwZkVqsDE-",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 599.0,
+          "url": "https://www.ebay.de/itm/407285231773?_skw=nubia+z80+ultra&hash=item5ed417709d:g:PDcAAeSwJiJqzPrz",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "nubia_z80_ultra_leading",
+      "name": "Nubia Z80 Ultra Leading",
+      "savedIds": [
+        "nubia_z80_ultra_leading_buy",
+        "nubia_z80_ultra_leading_auc"
+      ],
+      "limits": [
+        450.0,
+        450.0
+      ],
+      "configuredQuery": "Nubia Z80 Ultra Leading",
+      "basicAliasGenerator": [
+        "nubia z80 ultra leading",
+        "zte nubia z80 ultra leading",
+        "nubia z80 ultra leading version",
+        "nubia z80 ultra lv leading version"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "pixel_5",
+      "name": "Pixel 5",
+      "savedIds": [
+        "pixel_5_buy",
+        "pixel_5_auc"
+      ],
+      "limits": [
+        70.0,
+        70.0
+      ],
+      "configuredQuery": "Pixel 5",
+      "basicAliasGenerator": [
+        "google pixel 5",
+        "pixel 5",
+        "pixel5"
+      ],
+      "aliasesComplete": false,
+      "category": "phones",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 40,
+        "nonemptyFullBodies": 40,
+        "evidence": "PIXEL_MANUAL060.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 244.81,
+          "url": "https://www.ebay.de/itm/178004100809?_skw=%28pixel+5%2Cpixel5%29&hash=item2971df06c9:g:0PEAAeSwsl9pyVXW",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 213.42,
+          "url": "https://www.ebay.de/itm/178338190650?_skw=google+pixel+5&hash=item2985c8d53a:g:4CMAAeSwuZlqYl9o",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 1д 22ч · 1 ставка",
+          "total": 56.19,
+          "url": "https://www.ebay.de/itm/800783335722?_skw=google+pixel+5&hash=itemba7268012a:g:UAMAAeSwvfFqy6U~",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟢 Auktion+ · 3д 15ч · 0 ставок",
+          "total": 56.19,
+          "url": "https://www.ebay.de/itm/940005341619?_skw=google+pixel+5&hash=itemdadcaf39b3:g:HuYAAeSwYx1qy0CX",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "ps5_pro",
+      "name": "PlayStation 5 Pro",
+      "savedIds": [
+        "ps5_pro_buy",
+        "ps5_pro_auc"
+      ],
+      "limits": [
+        750.0,
+        750.0
+      ],
+      "configuredQuery": "(playstation 5 pro, ps5 pro)",
+      "basicAliasGenerator": [
+        "playstation 5 pro",
+        "ps5 pro"
+      ],
+      "aliasesComplete": false,
+      "category": "consoles",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 47,
+        "nonemptyFullBodies": 47,
+        "evidence": "PS5_MANUAL.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1017.38,
+          "url": "https://www.ebay.de/itm/366729042591?_skw=playstation+5+pro&hash=item5562c11a9f:g:0xAAAeSw1OxqzN2N",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 1000.49,
+          "url": "https://www.ebay.de/itm/168783023451?_skw=playstation+5+pro&hash=item274c408d5b:g:3mwAAeSw6GVqyhTp",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 4д 5ч · 69 ставок",
+          "total": 565.49,
+          "url": "https://www.ebay.de/itm/820221826283?_skw=playstation+5+pro&hash=itembef907d4eb:g:cSkAAeSwgfZqyVy6",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 909.49,
+          "url": "https://www.ebay.de/itm/940001176756?_skw=playstation+5+pro&hash=itemdadc6facb4:g:tLAAAeSwu1dqyQ3a",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "ray_ban_meta_gen_2",
+      "name": "Ray-Ban Meta Gen 2",
+      "savedIds": [
+        "ray_ban_meta_gen_2"
+      ],
+      "limits": [
+        225.0
+      ],
+      "configuredQuery": "Ray-Ban Meta Gen 2",
+      "basicAliasGenerator": [
+        "Ray-Ban Meta Gen 2"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "de",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 40,
+        "nonemptyFullBodies": 39,
+        "evidence": "RAYBAN_MANUAL.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 285.25,
+          "url": "https://www.ebay.de/itm/168567790055?_skw=ray+ban+meta+gen+2&hash=item273f6c59e7:g:tXgAAeSw9JNqLTm9",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 306.19,
+          "url": "https://www.ebay.de/itm/287608281919?_skw=ray+ban+meta+gen+2&hash=item42f6ca1b3f:g:UGYAAeSwCh9qtp-t",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 4д 14ч · 7 ставок",
+          "total": 114.9,
+          "url": "https://www.ebay.de/itm/920025916687?_skw=ray+ban+meta+gen+2&hash=itemd635d1650f:g:c94AAeSwi2pqyeEg",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 236.19,
+          "url": "https://www.ebay.de/itm/820228513937?_skw=ray+ban+meta+gen+2&hash=itembef96de091:g:yMMAAeSwO9VqvlG3",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "redmagic_11_pro",
+      "name": "Redmagic 11 Pro",
+      "savedIds": [
+        "redmagic_11_pro_buy",
+        "redmagic_11_pro_auc"
+      ],
+      "limits": [
+        400.0,
+        400.0
+      ],
+      "configuredQuery": "Redmagic 11 Pro",
+      "basicAliasGenerator": [
+        "redmagic 11 pro",
+        "red magic 11 pro",
+        "nubia redmagic 11 pro",
+        "redmagic 11 pro"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "❌ Не найдено подходящих · Отсев кандидатов (327): варианты товара / цена от: цена нужной конфигурации не подтверждена ×152; аксессуар: аксессуар / запчасть ×100; аксессуар: чехол ×26; аксессуар: дисплей ×8; стоп-слово: 11s ×41",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 806.19,
+          "url": "https://www.ebay.de/itm/168787858083?_skw=redmagic+11+pro&hash=item274c8a52a3:g:ZW8AAeSwArhqzPX1",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "redmagic_11s_pro",
+      "name": "Redmagic 11S Pro",
+      "savedIds": [
+        "redmagic_11s_pro_buy",
+        "redmagic_11s_pro_auc"
+      ],
+      "limits": [
+        450.0,
+        450.0
+      ],
+      "configuredQuery": "Redmagic 11S Pro",
+      "basicAliasGenerator": [
+        "redmagic 11s pro",
+        "red magic 11s pro",
+        "nubia redmagic 11s pro",
+        "redmagic 11 s pro"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 2459.75,
+          "url": "https://www.ebay.de/itm/128050237207?_skw=redmagic+11s+pro&hash=item1dd0638f17:g:DKQAAeSwSUlqkn8J",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "❌ Не найдено подходящих · Отсев кандидатов (19): аксессуар: аксессуар / запчасть ×15; аксессуар: дисплей ×1; аксессуар: чехол ×2; дешевле минимума ×1",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "samsung_galaxy_s25_edge",
+      "name": "Samsung Galaxy S25 Edge",
+      "savedIds": [
+        "samsung_galaxy_s25_edge"
+      ],
+      "limits": [
+        325.0
+      ],
+      "configuredQuery": "samsung galaxy s25 edge",
+      "basicAliasGenerator": [
+        "samsung galaxy s25 edge",
+        "samsung s25 edge",
+        "galaxy s25 edge",
+        "s25edge"
+      ],
+      "aliasesComplete": false,
+      "category": "phones",
+      "region": "de",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 499.9,
+          "url": "https://www.ebay.de/itm/257690496426?_skw=samsung+galaxy+s25+edge&hash=item3bff8cedaa:g:zx0AAeSwbz9qzLZB",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 499.99,
+          "url": "https://www.ebay.de/itm/188989652905?_skw=samsung+galaxy+s25+edge&hash=item2c00a93fa9:g:Dk8AAeSwUuBqrS8D",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 506.19,
+          "url": "https://www.ebay.de/itm/237109680529?_skw=samsung+galaxy+s25+edge&hash=item3734d69991:g:XwEAAeSwWOBqhCfa",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 556.19,
+          "url": "https://www.ebay.de/itm/278437005349?_skw=samsung+galaxy+s25+edge&hash=item40d4238825:g:CJUAAeSwUrNqtCWP",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "samsung_odyssey_oled_g6_500hz",
+      "name": "Samsung Odyssey OLED G6 500hz",
+      "savedIds": [
+        "samsung_odyssey_oled_g6_500hz_buy",
+        "samsung_odyssey_oled_g6_500hz_auc"
+      ],
+      "limits": [
+        400.0,
+        400.0
+      ],
+      "configuredQuery": "samsung odyssey oled g6 500hz",
+      "basicAliasGenerator": [
+        "samsung odyssey oled g6 500hz"
+      ],
+      "aliasesComplete": false,
+      "category": "monitors",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 12,
+        "nonemptyFullBodies": 11,
+        "evidence": "SAMSUNG_MANUAL.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 448.99,
+          "url": "https://www.ebay.de/itm/137797112911?_skw=%28G60SF+LS27FG602%2CLS27FG604+500Hz%29&hash=item201559144f:g:~F8AAeSw7bpqvRYN",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 523.99,
+          "url": "https://www.ebay.de/itm/398162444700?_skw=samsung+odyssey+oled+g6+500hz&hash=item5cb454c19c:g:7AsAAeSwnAFqUVLe",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "samsung_s24_ultra",
+      "name": "Samsung S24 Ultra",
+      "savedIds": [
+        "samsung_s24_ultra_buy",
+        "samsung_s24_ultra_auc"
+      ],
+      "limits": [
+        350.0,
+        350.0
+      ],
+      "configuredQuery": "samsung s24 ultra",
+      "basicAliasGenerator": [
+        "samsung galaxy s24 ultra",
+        "samsung s24 ultra",
+        "galaxy s24 ultra",
+        "s24ultra"
+      ],
+      "aliasesComplete": false,
+      "category": "phones",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 40,
+        "nonemptyFullBodies": 40,
+        "evidence": "S24_MANUAL.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 499.9,
+          "url": "https://www.ebay.de/itm/198611296847?_skw=samsung+galaxy+s24+ultra&hash=item2e3e27e24f:g:FeQAAeSwxZRqlztJ",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 466.19,
+          "url": "https://www.ebay.de/itm/298435287203?_skw=samsung+galaxy+s24+ultra&hash=item457c2118a3:g:wYQAAeSw8ShqLdn7",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 6д 16ч · 3 ставки",
+          "total": 121.08,
+          "url": "https://www.ebay.de/itm/287642663040?_skw=samsung+galaxy+s24+ultra&hash=item42f8d6b880:g:uUoAAeSwa3RqzFpF",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟢 Auktion+ · 2д 23ч · 0 ставок",
+          "total": 5.5,
+          "url": "https://www.ebay.de/itm/920033013392?_skw=samsung+galaxy+s24+ultra&hash=itemd6363dae90:g:ak8AAeSwE3tqzQKE",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "sony_ult_wear",
+      "name": "Sony Ult Wear",
+      "savedIds": [
+        "sony_ult_wear_buy",
+        "sony_ult_wear_auc"
+      ],
+      "limits": [
+        30.0,
+        30.0
+      ],
+      "configuredQuery": "sony ult wear",
+      "basicAliasGenerator": [
+        "sony ult wear"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": {
+        "uniquePages": 40,
+        "nonemptyFullBodies": 40,
+        "evidence": "SONY_MANUAL.md",
+        "catalogueAndAliasesComplete": false
+      },
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 78.0,
+          "url": "https://www.ebay.de/itm/168626274515?_skw=sony+ult+wear&hash=item2742e8c0d3:g:67AAAeSw~CZqrx9z",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 79.9,
+          "url": "https://www.ebay.de/itm/307029264069?_skw=sony+ult+wear&hash=item477c5ec6c5:g:sOYAAeSwXSNqE9JW",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "❌ Не найдено подходящих · Отсев кандидатов (1): аксессуар ×1",
+          "total": null,
+          "url": null,
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 106.19,
+          "url": "https://www.ebay.de/itm/168775660282?_skw=sony+ult+wear&hash=item274bd032fa:g:yVIAAeSwpAxpU8iC",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    },
+    {
+      "key": "sony_wh_1000xm6",
+      "name": "Sony WH-1000XM6",
+      "savedIds": [
+        "sony_wh_1000xm6_buy",
+        "sony_wh_1000xm6_auc"
+      ],
+      "limits": [
+        200.0,
+        200.0
+      ],
+      "configuredQuery": "Sony WH-1000XM6",
+      "basicAliasGenerator": [
+        "sony wh-1000xm6",
+        "sony wh1000xm6",
+        "sony wh 1000 xm6",
+        "sony 1000xm6",
+        "1000xm6"
+      ],
+      "aliasesComplete": false,
+      "category": "all",
+      "region": "worldwide",
+      "independentStatus": "PARTIAL",
+      "manualSample": null,
+      "baskets": [
+        {
+          "label": "Sofort",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 256.99,
+          "url": "https://www.ebay.de/itm/128124433607?_skw=sony+wh-1000xm6&hash=item1dd4cfb4c7:g:YWIAAeSw8KxqyNBJ",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Sofort+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 285.79,
+          "url": "https://www.ebay.de/itm/860013955834?_skw=sony+wh-1000xm6&hash=itemc83cd38afa:g:pE8AAeSwQYpqxJlM",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 211.19,
+          "url": "https://www.ebay.de/itm/307217017060?_skw=sony+wh-1000xm6&hash=item47878fa8e4:g:YYwAAeSwupxqxMgQ",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        },
+        {
+          "label": "Auktion+",
+          "observedExecutionVerdict": "🟣 Дорого",
+          "total": 285.19,
+          "url": "https://www.ebay.de/itm/336837160321?_skw=sony+wh-1000xm6&hash=item4e6d0f2d81:g:07oAAeSwWSVqvWJH",
+          "executionEvidence": "global-phone063.json",
+          "independentAcceptance": "PENDING"
+        }
+      ],
+      "remaining": [
+        "Независимые актуальные aliases/форматы/пустые корзины",
+        "Сопоставление всех ручных ID и причин с APK/сервером",
+        "Более дешёвые пропуски, price/shipping/import refresh",
+        "Подтверждение права уведомления и действующих этапов"
+      ]
+    }
+  ],
+  "disabledSearchIds": [
+    "logitech_superlight_2_c_buy",
+    "logitech_superlight_2_c_auc"
+  ],
+  "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
+  "currentAccess": {
+    "date": "2026-10-13",
+    "phone": "Windows PnP and adb did not expose physical serial; bounded recovery timed out. No cable request/no driver or key changes.",
+    "telegram": "AyuGram inventory exposes no open window; no window activation or re-send performed."
+  }
+}
