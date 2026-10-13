@@ -9140,7 +9140,7 @@ async def process_searches(bot, once=False):
 
                         verdict_info = f"{v_emoji} {v_text}"
                         total_price_str = total_price_str or dashes
-                        if item.get("import_estimated"):
+                        if item.get("import_estimated") and not _hybrid_selected_price_missing(item):
                             total_price_str = "≈" + total_price_str
 
                         num_digits = len(str(int(total_price_val))) if total_price_val else 0
