@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-13T14:59:28.447039+00:00",
+  "updatedAt": "2026-10-13T15:23:40.594059+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
   "apkVersion": "0.071",
@@ -799,46 +799,51 @@
       "category": "mice",
       "region": "worldwide",
       "independentStatus": "PARTIAL",
-      "manualSample": null,
+      "manualSample": {
+        "uniquePages": 7,
+        "nonemptyFullBodies": 7,
+        "evidence": "MOUSE_PARTIAL071.md",
+        "catalogueAndAliasesComplete": false
+      },
       "baskets": [
         {
           "label": "Sofort",
           "observedExecutionVerdict": "🟣 Дорого",
           "total": 61.19,
           "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
-          "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "mouse-phone071.json",
+          "independentAcceptance": "PENDING_CATALOGUE"
         },
         {
           "label": "Sofort+",
           "observedExecutionVerdict": "🟣 Дорого",
           "total": 72.99,
           "url": "https://www.ebay.de/itm/820221654834?_skw=logitech+g+pro+x+superlight+2&hash=itembef9053732:g:mYEAAeSwiCJqld1U",
-          "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "mouse-phone071.json",
+          "independentAcceptance": "OPEN_MODEL_CONTRADICTION"
         },
         {
           "label": "Auktion",
-          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 5д 16ч · 5 ставок",
-          "total": 11.69,
+          "observedExecutionVerdict": "🟡 Ожидает времени аукциона · 4д 17ч · 6 ставок",
+          "total": 12.69,
           "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
-          "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "mouse-phone071.json",
+          "independentAcceptance": "PENDING_CATALOGUE"
         },
         {
           "label": "Auktion+",
-          "observedExecutionVerdict": "🟣 Дорого",
-          "total": 56.19,
+          "observedExecutionVerdict": "🟢 Auktion+ · 5д 23ч · 0 ставок",
+          "total": 41.19,
           "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
-          "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "mouse-phone071.json",
+          "independentAcceptance": "PENDING_CATALOGUE"
         }
       ],
       "remaining": [
-        "Независимые актуальные aliases/форматы/пустые корзины",
-        "Сопоставление всех ручных ID и причин с APK/сервером",
-        "Более дешёвые пропуски, price/shipping/import refresh",
-        "Подтверждение права уведомления и действующих этапов"
+        "Fix title/own MPN contradiction820221654834 before accepting Sofort+ minimum",
+        "Complete40–50 independent pages, aliases and four sale profiles",
+        "Separate waiting from expensive inspector count",
+        "Sold selection requires eBay sign-in in current session"
       ]
     },
     {
@@ -1913,7 +1918,7 @@
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
     "date": "2026-10-13",
-    "phone": "Physical070 stable device;49/47/25 preserved. Superlight2 four buckets match isolated Python070, current bid labels visually inspected.",
+    "phone": "Physical071 installed with49/47/25 and unchanged revision/business rows. Four mouse baskets match Python; Scrollrad whole mouse now accepted at45.69, over45. New own MPN contradiction and waiting counter prevent full acceptance.",
     "telegram": "Previous068/069 full client receipts confirmed. New070120009 API confirmed, background native history currently ends16:17, new client receipt not yet available; no re-send."
   },
   "newOpenFindings": [
@@ -1943,9 +1948,21 @@
     },
     {
       "id": "mouse_scrollrad_feature_false_accessory",
-      "status": "FIX_IMPLEMENTED_TESTED",
-      "evidence": "RELEASE071.md;mouse-manual-partial070.json",
-      "next": "Install071, recheck own full description/contract and phone inspector."
+      "status": "FIXED_RECHECKED",
+      "evidence": "scrollrad-python071.json;scrollrad-kept071.png",
+      "next": "Current bid45.69 exceeds45, correct Expensive card. Separate model/counter findings remain OPEN."
+    },
+    {
+      "id": "mouse_own_MPN_model_contradiction",
+      "status": "OPEN",
+      "evidence": "mouse-manual-partial071.json",
+      "next": "Verify authoritative part-number/model families; detect title/aspect/MPN contradictions in Python/Kotlin. Current Sofort+ minimum not accepted."
+    },
+    {
+      "id": "inspector_waiting_counted_expensive",
+      "status": "OPEN",
+      "evidence": "scrollrad-kept071.png;LocalStatsEngine.verifyBucket",
+      "next": "Separate waiting from over-limit and rejection. Actual12.69 bid waits but header counts both candidates expensive; preserve auction timing."
     }
   ],
   "additionalUserRequirements070": [
