@@ -7,6 +7,43 @@ import monitor
 
 
 class DetailsFilterTest(unittest.TestCase):
+    def test_browse_detail_failures_try_full_html_and_keep_contract_filters(self):
+        from unittest.mock import patch
+        import urllib.error
+        fixtures=json.loads((Path(__file__).parent/'qa/fixtures/html_item_details.json').read_text(encoding='utf8'))
+        failures=[urllib.error.HTTPError('https://api.ebay.com/item',code,'qa',{},None) for code in (401,403,404,503)] + [TimeoutError('qa timeout')]
+        for failure in failures:
+            for case in fixtures:
+                details=monitor._parse_item_details_html(case['html'],description=case['description'])
+                with self.subTest(failure=type(failure).__name__,id=case['id']), \
+                     patch.object(monitor,'_item_details_cache',{}),patch.object(monitor,'_ebay_api_configured',return_value=True), \
+                     patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor.browse_access,'is_paused',return_value=False), \
+                     patch.object(monitor.browse_access,'acquire',return_value=True),patch.object(monitor,'_get_ebay_api_token',return_value=('qa',None)), \
+                     patch.object(monitor.urllib.request,'urlopen',side_effect=failure),patch.object(monitor,'_fetch_item_details_html',return_value=details) as html:
+                    fetched=monitor._fetch_item_details(case['id'])
+                    html.assert_called_once_with(case['id'])
+                    self.assertIsNotNone(fetched)
+                    search={'query':case['query'],'filters':{'category':'phones'}}
+                    self.assertEqual(case['expected'],monitor._details_match_contract({'title':case['query']},search,fetched))
+
+    def test_token_failure_can_use_html_but_empty_description_stays_unverified(self):
+        from unittest.mock import patch
+        with patch.object(monitor,'_item_details_cache',{}),patch.object(monitor,'_ebay_api_configured',return_value=True), \
+             patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor.browse_access,'is_paused',return_value=False), \
+             patch.object(monitor,'_get_ebay_api_token',return_value=(None,'auth unavailable')), \
+             patch.object(monitor.urllib.request,'urlopen') as api,patch.object(monitor,'_fetch_item_details_html',return_value={'title':'Nubia Z70 Ultra','description':'  '}) as html:
+            self.assertIsNone(monitor._fetch_item_details('127849510926'))
+            api.assert_not_called();html.assert_called_once()
+
+    def test_failed_browse_and_html_transport_stay_unavailable(self):
+        from unittest.mock import patch
+        with patch.object(monitor,'_item_details_cache',{}),patch.object(monitor,'_ebay_api_configured',return_value=True), \
+             patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor.browse_access,'is_paused',return_value=False), \
+             patch.object(monitor.browse_access,'acquire',return_value=True),patch.object(monitor,'_get_ebay_api_token',return_value=('qa',None)), \
+             patch.object(monitor.urllib.request,'urlopen',side_effect=TimeoutError('qa')),patch.object(monitor,'_fetch_item_details_html',return_value=None) as html:
+            self.assertIsNone(monitor._fetch_item_details('999999999999'))
+            html.assert_called_once()
+
     def test_optional_trade_is_not_a_fault_and_trade_only_stays_blocked(self):
         fixture=json.loads((Path(__file__).parent/'qa/fixtures/optional_trade_oct12.json').read_text(encoding='utf8'))
         for case in fixture['cases']:
