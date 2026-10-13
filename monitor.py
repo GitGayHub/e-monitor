@@ -2322,6 +2322,18 @@ def _console_storage_feature_title(title_norm):
     return title_norm
 
 
+def _mouse_feature_title(title_norm):
+    # 900005491322: the own type/body sell a whole new mouse. Scrollrad is
+    # in a comma-separated feature list after Gaming-Maus, not a spare wheel.
+    # Keep leading components, compatibility, replacement/repair and defects.
+    device = re.search(r"\b(?:gaming[- ]?(?:maus|mouse)|maus|mouse)\s*,", title_norm)
+    if not device or re.search(r"\b(?:fuer|for|voor|para|pour|per|kompatibel|compatible|fits|nur|only|ersatz\w*|replacement|spare|repair|reparatur\w*)\b|\bf\s*\.\s*", title_norm):
+        return title_norm
+    prefix, features = title_norm[:device.end()], title_norm[device.end():]
+    features = re.sub(r"\b(?:scroll[- ]?rad|mausrad|scroll wheel|mouse wheel)\b", " ", features)
+    return prefix + features
+
+
 def _is_device_bundle(title_norm, category):
     if _is_accessory_product(title_norm,category):
         return False
@@ -2340,7 +2352,7 @@ def _is_device_bundle(title_norm, category):
     device = re.search(rf"\b(?:{nouns})\b", title_norm)
     if not device:
         return False
-    component = r"(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge|earpads?|ohrpolster|cover|case|tasche|kabel|cable|charger|netzteil|dock|controller|ssd|tastatur|keyboard|receiver|empfaenger|dongle|pcb|kufen?|mauskufen?|gleitkufen?|gleitsohlen?|patins?|piedini|pattini|semelles)"
+    component = r"(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge|earpads?|ohrpolster|cover|case|tasche|kabel|cable|charger|netzteil|dock|controller|ssd|tastatur|keyboard|receiver|empfaenger|dongle|pcb|scroll[- ]?rad|mausrad|scroll wheel|mouse wheel|kufen?|mauskufen?|gleitkufen?|gleitsohlen?|patins?|piedini|pattini|semelles)"
     if re.search(rf"\b{component}\b", title_norm[:device.start()]):
         return False
     if category == "headphones" and re.search(r"\b(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge)\b", title_norm):
@@ -2486,6 +2498,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     if category == "mice" and re.search(r"\b(?:mouse|maus)\b", title_norm) and not re.search(r"\b(?:fuer|for|fits|replacement|spare|ersatz\w*|repair|reparatur\w*|set|only|nur)\b", title_norm):
         # Own complete mouse 318767580494: 5-Button is a feature count.
         title_norm = re.sub(r"\b[1-9]\d?[-\s]+buttons?\b", " ", title_norm)
+    if category == "mice":
+        title_norm = _mouse_feature_title(title_norm)
     if category == "consoles":
         title_norm = _console_storage_feature_title(title_norm)
     # Components are rejected unless explicitly supplied with the main device.
