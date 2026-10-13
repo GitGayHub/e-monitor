@@ -2374,6 +2374,8 @@ def _is_device_bundle(title_norm, category):
     device = re.search(rf"\b(?:{nouns})\b", title_norm)
     if not device:
         return False
+    if category == "mice" and re.search(r"\b(?:tasten|buttons?)\b", title_norm[:device.start()]):
+        return False
     component = r"(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge|earpads?|ohrpolster|cover|case|tasche|kabel|cable|charger|netzteil|dock|controller|ssd|tastatur|keyboard|receiver|empfaenger|dongle|pcb|scroll[- ]?rad|mausrad|scroll wheel|mouse wheel|kufen?|mauskufen?|gleitkufen?|gleitsohlen?|patins?|piedini|pattini|semelles)"
     if re.search(rf"\b{component}\b", title_norm[:device.start()]):
         return False
@@ -2520,6 +2522,12 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     if category == "mice" and re.search(r"\b(?:mouse|maus)\b", title_norm) and not re.search(r"\b(?:fuer|for|fits|replacement|spare|ersatz\w*|repair|reparatur\w*|set|only|nur)\b", title_norm):
         # Own complete mouse 318767580494: 5-Button is a feature count.
         title_norm = re.sub(r"\b[1-9]\d?[-\s]+buttons?\b", " ", title_norm)
+        # 307150632164: the button count after an explicit mouse is a feature.
+        # Leading buttons and replacement/compatibility titles remain parts.
+        device = re.search(r"\b(?:mouse|maus)\b", title_norm)
+        if device:
+            split = device.end()
+            title_norm = title_norm[:split] + re.sub(r"\b[1-9]\d?[-\s]*(?:programmierbare\s+)?tasten\b", " ", title_norm[split:])
     if category == "mice":
         title_norm = _mouse_feature_title(title_norm)
     if category == "consoles":
@@ -7534,8 +7542,6 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         price_val_str = f"{price_approx}{base_p:.2f}€"
 
         price_line = f"<a href=\"{esc_url}\">🎲</a> Текущая ставка + доставка: <a href=\"{esc_url}\">{price_val_str}</a> 🔨 {bids_count} Bids ⏳{time_left} {circle}"
-        if item["best_offer"]:
-            price_line += "\nЦена предложения продавцу неизвестна; текущая ставка не является ценой покупки."
     else:
         if item["best_offer"]:
             price_val_str = f"🤝 {price_approx}{base_p:.2f}€"
@@ -9045,7 +9051,7 @@ async def process_searches(bot, once=False):
                         if import_note:
                             row_lines.append(f"⚠️ {import_note}")
                         if is_auction:
-                            row_lines.append("Текущая ставка; не цена покупки" + (" · цена предложения неизвестна" if item.get("best_offer") else ""))
+                            row_lines.append("Ставка")
                         if time_line:
                             row_lines.append(f"<code>{time_line}</code>")
 
