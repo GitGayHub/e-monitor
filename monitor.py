@@ -574,6 +574,8 @@ CATEGORY_ACCESSORY_WORDS = {
         "ladekabel", "cover", "hülle", "huelle", "tastenfeld", "tastenkappe", "tastenkappen",
         "taste", "panel", "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten",
         "skatez", "skate", "glide", "foot", "mausgleiter", "gleitpad", "gleitpads", "gleiter",
+        "kufe", "kufen", "gleitsohle", "gleitsohlen",
+        "patin", "patins", "pieds de souris", "pied de souris", "piedini", "pattini", "semelles",
         "mausersatzfüße", "mausersatzfuesse", "ersatzfüße", "ersatzfuesse", "ersatzfuss", "ersatzfuß",
         "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck",
         # Merch / toys that mention the mouse name (e.g. Superstrike plushie)
@@ -637,6 +639,8 @@ CATEGORY_HARD_PART_WORDS = {
         "cover", "tastenfeld", "tastenkappe", "tastenkappen", "taste", "panel",
         "tastenset", "maustaste", "maustasten", "maus-taste", "maus-tasten",
         "skatez", "skate", "glide", "foot", "mausgleiter", "gleitpad", "gleitpads", "gleiter",
+        "kufe", "kufen", "gleitsohle", "gleitsohlen",
+        "patin", "patins", "pieds de souris", "pied de souris", "piedini", "pattini", "semelles",
         "mausersatzfüße", "mausersatzfuesse", "ersatzfüße", "ersatzfuesse", "ersatzfuss", "ersatzfuß",
         "mauspad", "mauspads", "mousepad", "mousepads", "puck", "ladepuck", "lade-puck",
         "plush", "plushie", "plusch", "pluschtier", "pluesch", "plueschtier",
@@ -899,7 +903,7 @@ def _matches_superlight_2_mouse(title_norm, require_dex=False, require_se=False,
     # Block obvious parts already in category hard words; extra dongle/pcb noise
     if re.search(
         r"\b(?:dongle|receiver|empfaenger|empfänger|pcb|ersatzteil|skate|mausfuss|"
-        r"mausfuß|shell|hot-swap|hot swap)\b",
+        r"mausfuß|(?:ersatz|maus|gleit)?kufen?|gleitsohlen?|patins?|piedini|pattini|semelles|shell|hot-swap|hot swap)\b",
         t,
     ) and not _is_device_bundle(t, "mice"):
         return False
@@ -2282,7 +2286,7 @@ def _is_accessory_product(title_norm, category):
         "consoles": r"(?:konsole|console|spielkonsole)\s+(?:covers?|case|skin|faceplates?|abdeckung)",
         "laptops": r"(?:laptop|notebook)\s+(?:tastatur|keyboard|akku|battery|ladegeraet|charger|netzteil)",
         "monitors": r"(?:monitor|bildschirm)\s+(?:[a-z0-9]*\d[a-z0-9]*(?:[ -][a-z])?\s+)?(?:netzteil|halterung|standfuss|staender|stand(?:\s*base)?|adapter)",
-        "mice": r"(?:maus|mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|superstrike)\s+(?:receiver|empfaenger|dongle|pcb|shell|switch|taster|skates?|feet|glides?|mausfuesse|mausgleiter|ersatzteil)",
+        "mice": r"(?:maus|mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|superstrike)\s+(?:receiver|empfaenger|dongle|pcb|shell|switch|taster|skates?|feet|glides?|mausfuesse|mausgleiter|ersatzteil|(?:ersatz|maus|gleit)?kufen?|gleitsohlen?)",
         "headphones": r"(?:kopfhoerer|headphones|headset)\s+(?:ohrpolster|earpads?|ersatzbuegel|scharnier|hinge)",
         "vr": r"(?:vr\s+headset|vr\s+brille)\s+(?:headstrap|strap|kopfband|linsenschutz)",
         "vr_headsets": r"(?:vr\s+headset|vr\s+brille)\s+(?:headstrap|strap|kopfband|linsenschutz)",
@@ -2336,7 +2340,7 @@ def _is_device_bundle(title_norm, category):
     device = re.search(rf"\b(?:{nouns})\b", title_norm)
     if not device:
         return False
-    component = r"(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge|earpads?|ohrpolster|cover|case|tasche|kabel|cable|charger|netzteil|dock|controller|ssd|tastatur|keyboard|receiver|empfaenger|dongle|pcb)"
+    component = r"(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge|earpads?|ohrpolster|cover|case|tasche|kabel|cable|charger|netzteil|dock|controller|ssd|tastatur|keyboard|receiver|empfaenger|dongle|pcb|kufen?|mauskufen?|gleitkufen?|gleitsohlen?|patins?|piedini|pattini|semelles)"
     if re.search(rf"\b{component}\b", title_norm[:device.start()]):
         return False
     if category == "headphones" and re.search(r"\b(?:ersatz\w*|spare|replacement|swivel|spindle|buckle|drehgelenk|scharnier|hinge)\b", title_norm):
@@ -7438,7 +7442,9 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     else:
         shipping_suffix = ""
 
-    outlier = is_outlier(item["price"], search["id"])
+    live_bid = bool(item.get("auction") and not item.get("buy_now"))
+    # An opening/current bid is not a fixed purchase price or a negotiated offer.
+    outlier = not live_bid and is_outlier(base_p, search["id"])
 
     # 1. Header: cat_emoji query_name with location & category symbols
     category_name = search.get("filters", {}).get("category")
@@ -7486,12 +7492,11 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         minutes = _parse_time_left_to_minutes(time_left)
         circle = "🟠" if (minutes is not None and minutes > 1440) else "🟢"
 
-        if item["best_offer"]:
-            price_val_str = f"🤝{price_approx}{base_p:.2f}€"
-        else:
-            price_val_str = f"{price_approx}{base_p:.2f}€"
+        price_val_str = f"{price_approx}{base_p:.2f}€"
 
-        price_line = f"<a href=\"{esc_url}\">🎲</a> Цена: <a href=\"{esc_url}\">{price_val_str}</a> 🔨 {bids_count} Bids ⏳{time_left} {circle}"
+        price_line = f"<a href=\"{esc_url}\">🎲</a> Текущая ставка + доставка: <a href=\"{esc_url}\">{price_val_str}</a> 🔨 {bids_count} Bids ⏳{time_left} {circle}"
+        if item["best_offer"]:
+            price_line += "\nЦена предложения продавцу неизвестна; текущая ставка не является ценой покупки."
     else:
         if item["best_offer"]:
             price_val_str = f"🤝 {price_approx}{base_p:.2f}€"
@@ -7558,11 +7563,11 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         median = get_median_7d(search["id"])
         if median:
             extra_lines.append(f"⚠️ <b>Подозрительно низкая цена</b> (медиана: {median:.0f}€)\nНе учтено в статистике")
-    elif stats_7d and stats_7d.get("median"):
+    elif not live_bid and stats_7d and stats_7d.get("median"):
         median = stats_7d["median"]
-        diff_pct = ((median - item["price"]) / median) * 100
+        diff_pct = ((median - base_p) / median) * 100
         if diff_pct > 5:
-            extra_lines.append(f"🔥 <b>Скидка:</b> {item['price']:.0f}€ — на {diff_pct:.0f}% ниже медианы! ({stats_7d['first_date']}–{stats_7d['last_date']})")
+            extra_lines.append(f"🔥 <b>Цена покупки:</b> {price_approx}{base_p:.2f}€ — на {diff_pct:.0f}% ниже медианы цен покупки ({stats_7d['first_date']}–{stats_7d['last_date']})")
 
     # 7. Assemble deep links
     try:
@@ -7798,6 +7803,27 @@ async def _validate_candidate(item, search):
 
     item["_details_status"] = "verified"
     return True, details
+
+
+def _market_history_prices(items, search_id):
+    purchases, offers, bids = [], [], []
+    for row in items:
+        total = float(row.get("total_price") or 0)
+        if row.get("buy_now"):
+            fixed = row.get("bin_total_price")
+            fixed = total if fixed is None else float(fixed)
+            if not is_outlier(fixed, search_id):
+                purchases.append(fixed)
+                if row.get("best_offer"):
+                    offers.append(fixed)
+        if row.get("auction"):
+            bid = row.get("auc_total_price")
+            # Never insert a hybrid's fixed price as a bid without its bid price.
+            if bid is not None:
+                bids.append(float(bid))
+            elif not row.get("buy_now"):
+                bids.append(total)
+    return purchases, offers, bids
 
 
 def _live_validation_price_window(search_cfg):
@@ -8979,6 +9005,8 @@ async def process_searches(bot, once=False):
                         import_note = _import_price_note(item)
                         if import_note:
                             row_lines.append(f"⚠️ {import_note}")
+                        if is_auction:
+                            row_lines.append("Текущая ставка; не цена покупки" + (" · цена предложения неизвестна" if item.get("best_offer") else ""))
                         if time_line:
                             row_lines.append(f"<code>{time_line}</code>")
 
@@ -9194,17 +9222,11 @@ async def process_searches(bot, once=False):
 
             filtered = filter_results(results, search, config, defer_pickup_location=True)
 
-            sofort = [r for r in filtered if r["buy_now"]]
-            preisvorschlag = [r for r in filtered if r["best_offer"]]
-            auctions = [r for r in filtered if r["auction"]]
-
-            sofort_prices = [r["total_price"] for r in sofort if not is_outlier(r["total_price"], search["id"])]
-            pv_prices = [r["total_price"] for r in preisvorschlag if not is_outlier(r["total_price"], search["id"])]
-            auction_prices = [r["total_price"] for r in auctions if not is_outlier(r["total_price"], search["id"])]
+            sofort_prices, pv_prices, auction_prices = _market_history_prices(filtered, search["id"])
             record_snapshot(search["id"], sofort_prices, pv_prices, auction_prices, len(filtered))
 
             for r in filtered:
-                if not is_outlier(r["total_price"], search["id"]):
+                if r.get("buy_now") and not is_outlier(r["total_price"], search["id"]):
                     record_seller_price(search["id"], r["seller_name"], r["total_price"], r["item_id"])
 
             stats_7d = get_stats_7d(search["id"])

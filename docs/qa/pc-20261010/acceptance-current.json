@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-13T01:41:11.334228+00:00",
+  "updatedAt": "2026-10-13T02:25:02.556548+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
-  "apkVersion": "0.069",
-  "logicVersion": 1791857266,
+  "apkVersion": "0.070",
+  "logicVersion": 1791902318,
   "inventorySource": "Physical APK0.066 backup12October; server runtime13October matching revision/fingerprint",
   "savedSearches": 49,
   "activeSearches": 47,
@@ -990,8 +990,8 @@
       "region": "worldwide",
       "independentStatus": "PARTIAL",
       "manualSample": {
-        "uniquePages": 6,
-        "nonemptyFullBodies": 6,
+        "uniquePages": 25,
+        "nonemptyFullBodies": 25,
         "evidence": "Z70_PARTIAL066.md",
         "catalogueAndAliasesComplete": false
       },
@@ -1001,40 +1001,42 @@
           "observedExecutionVerdict": "🟣 Дорого",
           "total": 1450.57,
           "url": "https://www.ebay.de/itm/306294088377?_skw=nubia+z70+ultra&hash=item47508ce2b9:g:5ywAAOSwwgJoHcUl",
-          "executionEvidence": "z70-phone066-oct13.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "z70-phone069.json",
+          "independentAcceptance": "PENDING",
+          "estimatedImportCharges": 275.30999999999995
         },
         {
           "label": "Sofort+",
           "observedExecutionVerdict": "🟣 Дорого",
           "total": 599.0,
           "url": "https://www.ebay.de/itm/128040520757?_skw=nubia+z70+ultra&hash=item1dcfcf4c35:g:CE4AAeSwFLNqixdM",
-          "executionEvidence": "z70-phone066-oct13.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "z70-phone069.json",
+          "independentAcceptance": "PENDING",
+          "estimatedImportCharges": null
         },
         {
           "label": "Auktion",
           "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
           "total": null,
           "url": null,
-          "executionEvidence": "z70-phone066-oct13.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "z70-phone069.json",
+          "independentAcceptance": "PENDING",
+          "estimatedImportCharges": null
         },
         {
           "label": "Auktion+",
           "observedExecutionVerdict": "❌ Не найдено · в полученной выдаче нет объявлений этой корзины",
           "total": null,
           "url": null,
-          "executionEvidence": "z70-phone066-oct13.json",
-          "independentAcceptance": "PENDING"
+          "executionEvidence": "z70-phone069.json",
+          "independentAcceptance": "PENDING",
+          "estimatedImportCharges": null
         }
       ],
       "remaining": [
-        "Fix presentation of estimated import versus confirmed fee; do not call1450.57fullyconfirmed",
-        "Независимые актуальные aliases/форматы/пустые корзины",
-        "Сопоставление всех ручных ID и причин с APK/сервером",
-        "Более дешёвые пропуски, price/shipping/import refresh",
-        "Подтверждение права уведомления и действующих этапов"
+        "Fix confirmed whole-device variant false rejection267736285233 before accepting minima",
+        "Complete aliases/all sale profiles and per-candidate comparison",
+        "Actual import quote remains unknown"
       ]
     },
     {
@@ -1911,21 +1913,37 @@
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
     "date": "2026-10-13",
-    "phone": "13October: official37.0.1/NATIVE device;069 installed with49/47 preserved. New import estimate UI check in progress. Previous068sourcebanner visually confirmed.",
-    "telegram": "Open correct AyuGram bot window in background;062photo/full reply found. New120001APIconfirmed, currently outside accessible message view; no re-send."
+    "phone": "069device,49/47/25 preserved,11968msZ70 report and saved estimate after restart visually confirmed; source/server04:07. Old report source stamp03:14 retained correctly.",
+    "telegram": "068120001 and069120002 full native client captions confirmed. Original errors120003skates and liveiPhoneAuction+ observed; corrections070verification pending."
   },
   "newOpenFindings": [
     {
       "id": "import_estimate_presentation",
-      "evidence": "RELEASE069.md",
-      "status": "FIX_IMPLEMENTED_TESTED",
-      "next": "Verify new physical069 screen and actual server output; preserve rate/limit policy."
+      "evidence": "RELEASE069.md; saved-import069.png;z70-python069.json",
+      "status": "FIXED_RECHECKED",
+      "next": "Actual import amounts remain unknown when eBay does not quote them; no tariff certainty claimed."
     },
     {
       "id": "auction_offer_price_label",
-      "status": "REVIEW",
-      "evidence": "Background nativeTelegram066 captions showAuction+ low openingbid and manydaysleft.",
-      "next": "Independently inspect sale controls and previous agreedoffer timing; distinguish bid from unpriced offer, do not infer buy-now price or silently change timing policy."
+      "status": "FIX_IMPLEMENTED_TESTED",
+      "evidence": "RELEASE070.md; user screenshot iPhone17PM568.28 and nativebot read",
+      "next": "Confirm new actualcaption and independent live/sold auction profiles."
+    },
+    {
+      "id": "confirmed_device_variant_rejected",
+      "status": "OPEN",
+      "evidence": "Z70_PARTIAL066.md;z70-selected-variant069.json",
+      "next": "Resolve exact available variant price/model through API children or explicit own-page selection; keep unconfirmed from-price rejected. Do not declare Z70minimum accepted yet."
+    },
+    {
+      "id": "mouse_kufen_false_device",
+      "status": "FIX_IMPLEMENTED_TESTED",
+      "evidence": "RELEASE070.md;mouse-kufen-delivery069.json",
+      "next": "Physical070preview and live full candidate recheck; keep proper whole mouse bundles."
     }
+  ],
+  "additionalUserRequirements070": [
+    "Sold/completed browser pages for independent retrospective filter cases, separately from live notification eligibility.",
+    "Current auction bids are separate from fixed purchase median; Auction+ proposal price unknown."
   ]
 }

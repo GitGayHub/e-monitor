@@ -49,6 +49,20 @@ def item(title, item_id="100", price=100, **overrides):
 
 
 class SearchIntentRuleTests(unittest.TestCase):
+    def test_mouse_kufen_are_parts_and_full_mouse_bundles_remain_devices(self):
+        import json
+        from pathlib import Path
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/mouse_kufen_oct13.json').read_text(encoding='utf8'))
+        for case in cases:
+            title=monitor._normalize(case['title'])
+            with self.subTest(title=case['title']):
+                self.assertEqual(case['accessory'],monitor._is_category_blocked_title(title,'mice','logitech superlight 2'))
+                query='logitech superlight 2 dex' if 'dex' in title else 'logitech superstrike' if 'superstrike' in title else 'logitech superlight 2'
+                for category in ('mice','all'):
+                    search={'query':query,'filters':{'category':category,'listing_type':'all'}}
+                    rows=monitor.filter_results([item(case['title'],price=100)],search,DummyConfig(),skip_seen=True,is_statistics=True)
+                    self.assertEqual(not case['accessory'],bool(rows),(case['title'],category))
+
     def test_independently_indexed_ebay_device_titles_and_seller_bans(self):
         """Public search index cases; only title intent, not live stock."""
         import json
