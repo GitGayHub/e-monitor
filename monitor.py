@@ -888,6 +888,28 @@ def _matches_lg_ultragear_oled_480(text_norm):
     return bool(has_ug and has_480 and has_oled)
 
 
+def _mouse_part_number_matches(details, requested_model):
+    # Logitech's original 2c datasheet, pp1–2:
+    # https://www.littlebit-tech.nl/media/productattach/l/o/log_l1138349.pdf
+    # Only own manufacturer-number fields are authoritative here. A reference
+    # to another mouse in compatibility, reviews or recommendations is not.
+    families = {
+        'superlight 2c': {'007531', '007532', '007538', '007539', '007545', '007546'},
+        # Manufacturer's DEX page, Japanese release and original BR datasheet:
+        # logitechg.com/en-gb/shop/p/pro-x-superlight-2-dex.910-007358
+        # press.logicool.co.jp/ja-jp/pro-x-superlight-2-dex/
+        # sistema.pauta.com.br/api2/produto/pdf/47148
+        'superlight 2 dex': {'007358', '007356', '007364', '007372', '007362', '007370', '007378'},
+        # Original Logitech 2020 datasheet: media.distrelec.com/Web/Downloads/_t/ds/Logitech_ProXSuperlight_eng_tds.pdf
+        'superlight 1': {'005881', '005943'},
+    }
+    names = {'herstellernummer', 'herstellerteilenummer', 'mpn', 'manufacturer part number', 'part number', 'teilenummer', 'numero de piece fabricant', 'modell', 'model', 'modellnummer', 'model number'}
+    values = [str(details.get('mpn') or '')]
+    values += [str(a.get('value') or '') for a in details.get('localizedAspects') or [] if _normalize(a.get('name') or '') in names]
+    declared = [family for value in values for number in re.findall(r'\b910[\s-]*(\d{6})\b', value) for family,numbers in families.items() if number in numbers]
+    return all(family == requested_model for family in declared)
+
+
 def _matches_superlight_2_mouse(title_norm, require_dex=False, require_se=False, require_compact=False):
     """Logitech G Pro X Superlight 2 (+ optional DEX). Not parts/dongle-only."""
     t = title_norm or ""
@@ -5844,6 +5866,9 @@ def _details_match_contract(item, search, details, *, require_description=True, 
                 return False
     mouse_intent = _search_intent(search)
     if mouse_intent and mouse_intent["kind"] in ("superlight_2", "superlight_2_dex"):
+        requested_model = 'superlight 2' + ('c' if mouse_intent.get('compact') else '') + (' dex' if mouse_intent['kind'] == 'superlight_2_dex' else '') + (' se' if mouse_intent.get('se') else '')
+        if not _mouse_part_number_matches(details, requested_model):
+            return False
         title = _normalize(details.get("title") or item.get("title") or "")
         if not _matches_superlight_2_mouse(title, mouse_intent["kind"] == "superlight_2_dex", mouse_intent.get("se",False), mouse_intent.get("compact",False)):
             return False

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-13T15:23:40.594059+00:00",
+  "updatedAt": "2026-10-13T16:53:13.241234+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
   "apkVersion": "0.071",
@@ -1918,7 +1918,7 @@
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
     "date": "2026-10-13",
-    "phone": "Physical071 installed with49/47/25 and unchanged revision/business rows. Four mouse baskets match Python; Scrollrad whole mouse now accepted at45.69, over45. New own MPN contradiction and waiting counter prevent full acceptance.",
+    "phone": "Physical072 installed, unchanged49/47/25, revision/business rows. All four Superlight2 prices and IDs match Python. Actual waiting counter fixed.44 manually opened lots/40 bodies; German Tasten finding and historical verification remain open.",
     "telegram": "Previous068/069 full client receipts confirmed. New070120009 API confirmed, background native history currently ends16:17, new client receipt not yet available; no re-send."
   },
   "newOpenFindings": [
@@ -1954,15 +1954,33 @@
     },
     {
       "id": "mouse_own_MPN_model_contradiction",
-      "status": "OPEN",
-      "evidence": "mouse-manual-partial071.json",
-      "next": "Verify authoritative part-number/model families; detect title/aspect/MPN contradictions in Python/Kotlin. Current Sofort+ minimum not accepted."
+      "status": "FIXED_RECHECKED",
+      "evidence": "mouse-phone072.json;mouse-python072.json;mouse-four072.png;36 shared MPN cases",
+      "next": "Contradictory item820221654834 excluded; new Sofort+76.51/366640211196 independently read. Remaining manual aliases/completed catalogue not accepted."
     },
     {
       "id": "inspector_waiting_counted_expensive",
+      "status": "FIXED_RECHECKED",
+      "evidence": "mouse-waiting072.png",
+      "next": "Actual inspector total2/pass0/waiting1/expensive1/reject0. Auction timing unchanged."
+    },
+    {
+      "id": "mouse_german_button_count_false_accessory",
       "status": "OPEN",
-      "evidence": "scrollrad-kept071.png;LocalStatsEngine.verifyBucket",
-      "next": "Separate waiting from over-limit and rejection. Actual12.69 bid waits but header counts both candidates expensive; preserve auction timing."
+      "evidence": "mouse-manual072.json:307150632164",
+      "next": "Verify actual contract, preserve replacement/compatibility/leading button kit rejection."
+    },
+    {
+      "id": "server_history_before_details_validation",
+      "status": "OPEN",
+      "evidence": "monitor.py:record_snapshot before _process_notify_candidate",
+      "next": "Only verified refreshed lots should enter price history. Preserve old aggregates and mark their confidence; do not clear production DB."
+    },
+    {
+      "id": "CI_artifact_storage_quota072",
+      "status": "OPEN",
+      "evidence": "CI38430771783 job115412050691",
+      "next": "Python302 and Android build passed; APK upload failed due to storage quota. Make optional artifact publication visible and non-blocking; no artifact deletion."
     }
   ],
   "additionalUserRequirements070": [

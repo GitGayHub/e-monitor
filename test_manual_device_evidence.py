@@ -6,6 +6,14 @@ import monitor
 
 
 class ManualDeviceEvidenceTests(unittest.TestCase):
+    def test_own_manufacturer_number_cannot_contradict_superlight_model(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/mouse_mpn_oct13.json').read_text(encoding='utf8'))['cases']
+        for case in cases:
+            with self.subTest(case=case['name']):
+                for category in ('mice','all'):
+                    search={'query':case['query'],'filters':{'category':category}}
+                    self.assertEqual(case['accepted'],monitor._details_match_contract({'title':case['title']},search,case))
+
     def test_console_contents_list_does_not_require_bundle_connector(self):
         cases = json.loads((Path(__file__).parent/'qa/fixtures/ps5_contents_manual_oct11.json').read_text(encoding='utf8'))
         for case in cases:
