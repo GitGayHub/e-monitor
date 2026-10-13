@@ -14,7 +14,7 @@ Nubia Leading: четыре названия сайта дают0 точных �
 |iPhone 16 Pro Max|[47 / 45](iphone_16_pro_max-historical-manual.json)|Историческая выборка6–7 октября; свежие названия и минимумы ещё требуют сверки|
 |iPhone 17 Pro Max|[48 / 47](iphone_17_pro_max-historical-manual.json)|Историческая выборка6–7 октября; свежие названия и минимумы ещё требуют сверки|
 |Lg Ultragear OLED 480hz|Требует сверки|Частичная выборка; вся группа ещё не принята|
-|Logitech Superlight 2|[6 / 6](mouse-manual-partial071.json)|Частичная выборка; вся группа ещё не принята|
+|Logitech Superlight 2|[7 / 7](MOUSE_PARTIAL071.md)|Частичная выборка; вся группа ещё не принята|
 |Logitech Superlight 2 Dex|[40 / 39](DEX_MANUAL064.md)|Частичная выборка; вся группа ещё не принята|
 |Logitech Superstrike|Требует сверки|Частичная выборка; вся группа ещё не принята|
 |Nubia Z70 Ultra|[25 / 25](Z70_PARTIAL066.md)|Частичная выборка; вся группа ещё не принята|
