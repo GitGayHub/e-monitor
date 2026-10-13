@@ -1,30 +1,30 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-12-pc-065",
+  "checkpointId": "2026-10-13-pc-066",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "d55ec982ae77a94c6fc845e0fdc65fa0ddfc9c50",
+    "sourceCommit": "649671eae7f341bae4065365132fce3269bbe95b",
     "cloudBranch": "codex/cloud-work"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "e78faf7a78d14bcd2b091c255373c766b7af1cd6",
+    "sourceCommit": "5237fc7d81c2e792c172618b8253cdac3a2c2ffa",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.065",
-  "logicVersion": 1791821873,
+  "apkVersion": "0.066",
+  "logicVersion": 1791824745,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "cleanLinuxCi": {
-    "id": 38276350013,
+    "id": 38282128507,
     "name": "Cloud readiness - both repositories",
     "status": "completed",
     "conclusion": "success",
-    "head_sha": "e78faf7a78d14bcd2b091c255373c766b7af1cd6",
-    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38276350013"
+    "head_sha": "5237fc7d81c2e792c172618b8253cdac3a2c2ffa",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38282128507"
   },
   "localCloudMergeTests": 7,
   "physicalReport": {
@@ -34,7 +34,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "5E8BFE30ADCE882BC0D2DB982CF784BF010BDF811CBBB1F17B7C85E9F122E3DA",
+  "apkSha256": "CD02B1DD6705D31FF0026C2D5ED1561FBCB8A84AE1194A0D1F1736B781AC4E7E",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -44,7 +44,7 @@
     "conclusion": "success"
   },
   "physicalInstall": {
-    "apkVersion": "0.065",
+    "apkVersion": "0.066",
     "result": "Success",
     "businessRowsChanged": 0,
     "dirty": false,
@@ -204,8 +204,8 @@
     "conflicts": 0,
     "appliedSourceFiles": 0
   },
-  "pythonTests": 288,
-  "androidTests": 273,
+  "pythonTests": 289,
+  "androidTests": 274,
   "previousCleanLinuxCi062": {
     "id": 38268720002,
     "name": "Cloud readiness - both repositories",
@@ -243,5 +243,33 @@
     "bot": "5acd85f3f9df8abdf147935e166523f1904d7154",
     "android": "8e14789c77051617e952bb8abdfa339942f520d3"
   },
-  "cloudSyncBackup": "20261012T163017585195Z"
+  "cloudSyncBackup": "20261012T163017585195Z",
+  "previousCleanLinuxCi065": {
+    "id": 38276350013,
+    "name": "Cloud readiness - both repositories",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "e78faf7a78d14bcd2b091c255373c766b7af1cd6",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38276350013"
+  },
+  "runtime066": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791824745,
+    "lastSuccessfulRun": "2026-10-13T00:46:05+00:00",
+    "updatedAt": "2026-10-13T00:46:05+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalAsus066": {
+    "elapsedMs": 6010,
+    "sameFourPricesAndIdsAsPython": true,
+    "logicVersion": 1791824745
+  },
+  "acceptanceLedger": "docs/qa/pc-20261010/acceptance-current.json"
 }

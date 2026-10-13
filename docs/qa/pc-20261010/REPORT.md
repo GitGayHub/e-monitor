@@ -1,3 +1,7 @@
+#0.066:Asusисправлен;полнаяприёмкаещёPARTIAL
+
+[Текущийсписок25товаров/100корзин/всехтребований](ACCEPTANCE_CURRENT.md). [Причина,фикс,реальныеAPK/Python/server/CIдоказательства](ASUS_CORRECTION066.md).
+
 Проверка [CI065](https://github.com/GitGayHub/e-monitor-android/actions/runs/38276350013): completed/success. После безопасного переноса тесты288/273/7 и сборка успешны. [Обзор телефона065](overview065.png), [исправленная карточка99.90€](dex-grade065.png).
 
 # Проверка 0.065 и восстановление USB — 12 октября
