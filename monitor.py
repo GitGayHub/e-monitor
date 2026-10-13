@@ -3063,6 +3063,8 @@ def _notify_eligibility(item, search):
     """
     if not item:
         return False, "missing"
+    if _hybrid_selected_price_missing(item):
+        return False, "price_unavailable"
     if _is_implausibly_cheap_device(item, search):
         return False, "too_cheap"
     hard_max = (search.get("filters") or {}).get("max_price")
@@ -3410,6 +3412,8 @@ def _category_device_floor(search):
 
 
 def _is_implausibly_cheap_device(item, search):
+    if _hybrid_selected_price_missing(item):
+        return False
     if item.get("auction"):
         return False
     floor = _min_plausible_device_price(search)
@@ -3884,7 +3888,7 @@ def parse_ebay_results(html):
                     bin_price = parsed_prices[1]
                 else:
                     auc_price = price
-                    bin_price = price
+                    bin_price = None
             elif auction:
                 auc_price = price
             else:
@@ -4589,8 +4593,8 @@ def parse_ebay_api_results(data):
         api_auc_price = _api_float(summary.get("currentBidPrice")) if "AUCTION" in opts else None
         api_bin_price = _api_float(summary.get("price")) if "FIXED_PRICE" in opts else None
         if "AUCTION" in opts and "FIXED_PRICE" in opts:
-            auc_price = api_auc_price or price
-            bin_price = api_bin_price or price
+            auc_price = api_auc_price
+            bin_price = api_bin_price
         elif "AUCTION" in opts:
             auc_price = price
             bin_price = None
@@ -6028,32 +6032,22 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # Select correct price for hybrid listings based on the search/bucket type
         if item.get("buy_now") and item.get("auction"):
             if listing_type in ("all", "offer") and not is_statistics:
-                buy_side = copy.deepcopy(item)
-                buy_side["auction"] = False
-                buy_side["price"] = item.get("bin_price") or item["price"]
-                buy_side["total_price"] = item.get("bin_total_price") or item["total_price"]
+                buy_side = _project_price_side(item, "bin")
                 minimum = filters.get("min_price")
                 hard_max = filters.get("max_price")
-                buy_qualifies = (_price_within_limit(buy_side, search)
+                buy_qualifies = (not _hybrid_selected_price_missing(buy_side) and _price_within_limit(buy_side, search)
                     and (minimum is None or buy_side["total_price"] >= minimum)
                     and (hard_max is None or buy_side["price"] <= hard_max)
                     and not _is_implausibly_cheap_device(buy_side, search))
                 listing_type = "buy_now" if buy_qualifies else "auction"
             if listing_type == "auction":
-                item["_was_hybrid"] = True
-                item["price"] = item.get("auc_price") or item["price"]
-                item["total_price"] = item.get("auc_total_price") or item["total_price"]
-                item["import_charges"] = item.get("auc_import_charges") or item.get("import_charges")
-                item["buy_now"] = False
+                item = _project_price_side(item, "auc")
             elif listing_type in ("buy_now", "buy_now_offer"):
-                item["_was_hybrid"] = True
-                item["price"] = item.get("bin_price") or item["price"]
-                item["total_price"] = item.get("bin_total_price") or item["total_price"]
-                item["import_charges"] = item.get("bin_import_charges") or item.get("import_charges")
-                item["auction"] = False
+                item = _project_price_side(item, "bin")
 
         # Apply the bait floor to the selected price, not the other hybrid side.
-        if _is_implausibly_cheap_device(item, search):
+        missing_price = _hybrid_selected_price_missing(item)
+        if not missing_price and _is_implausibly_cheap_device(item, search):
             continue
 
         if filters.get("location", "de") == "de" and item.get("location"):
@@ -6080,17 +6074,17 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 continue
             item["distance_km"] = distance
         hard_max = filters.get("max_price")
-        if not is_statistics and hard_max is not None and item.get("price", 0) > hard_max:
+        if not missing_price and not is_statistics and hard_max is not None and item.get("price", 0) > hard_max:
             continue
         # Check min_price only for Buy It Now (non-auction) items
         min_price = filters.get("min_price")
-        if min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
+        if not missing_price and min_price is not None and not item.get("auction") and item.get("total_price", 0) < min_price:
             continue
         # Check limit_price (or max_price if limit_price not set) for all items.
         # If the item (even an auction) is already more expensive than our target limit, filter it out.
         # Statistics keeps over-limit items so the report can show "🟣 Дорого".
         limit_or_max = filters.get("limit_price") if "limit_price" in filters else filters.get("max_price")
-        if limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
+        if not missing_price and limit_or_max is not None and item.get("total_price", 0) > limit_or_max:
             if not skip_seen and not is_statistics:
                 continue
 
@@ -6176,7 +6170,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 phone_floor = min(50.0, float(filters.get("limit_price") or 50.0))
             except (TypeError, ValueError):
                 phone_floor = 50.0
-            if "pixel" not in query_norm and item.get("buy_now") and item.get("total_price", 0) < phone_floor:
+            if not missing_price and "pixel" not in query_norm and item.get("buy_now") and item.get("total_price", 0) < phone_floor:
                 continue
             if not _matches_phone_query_model(title_norm, query_norm):
                 continue
@@ -6196,7 +6190,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         if not skip_seen:
             h = _item_hash(item["seller_name"], item["title"], item["price"])
-            if not item.get("auction") and h in item_hashes:
+            if not missing_price and not item.get("auction") and h in item_hashes:
                 continue
         filtered.append(item)
         seen_batch_ids.add(item_id)
@@ -6256,9 +6250,13 @@ def _merge_same_item(existing, incoming):
 
     if merged.get("auction") and merged.get("buy_now"):
         if _valid_price_value(merged.get("bin_price")) is None:
-            merged["bin_price"] = _prefer_present(merged.get("bin_price"), incoming.get("price"))
+            for source in (existing, incoming):
+                if source.get("buy_now") and not source.get("auction") and not source.get("_was_hybrid"):
+                    merged["bin_price"] = _prefer_lower_price(merged.get("bin_price"), source.get("price"))
         if _valid_price_value(merged.get("auc_price")) is None:
-            merged["auc_price"] = _prefer_present(merged.get("auc_price"), incoming.get("price"))
+            for source in (existing, incoming):
+                if source.get("auction") and not source.get("buy_now") and not source.get("_was_hybrid"):
+                    merged["auc_price"] = _prefer_lower_price(merged.get("auc_price"), source.get("price"))
         if _valid_price_value(merged.get("bin_total_price")) is None and _valid_price_value(merged.get("bin_price")) is not None:
             merged["bin_total_price"] = float(merged["bin_price"]) + float(merged.get("shipping_cost") or 0)
         if _valid_price_value(merged.get("auc_total_price")) is None and _valid_price_value(merged.get("auc_price")) is not None:
@@ -6590,17 +6588,36 @@ def _parse_search_body(body, host, query):
     return [], None
 
 
+def _hybrid_selected_price_missing(item):
+    if not (item.get("_was_hybrid") or item.get("buy_now") and item.get("auction")):
+        return False
+    if item.get("buy_now") and not item.get("auction"):
+        return item.get("bin_price") is None
+    if item.get("auction") and not item.get("buy_now"):
+        return item.get("auc_price") is None
+    return False
+
+
+def _project_price_side(item, prefix):
+    result = copy.deepcopy(item)
+    result["_was_hybrid"] = bool(item.get("_was_hybrid") or item.get("buy_now") and item.get("auction"))
+    result["buy_now"], result["auction"] = prefix == "bin", prefix == "auc"
+    if prefix == "auc" and item.get("buy_now") and item.get("auction"):
+        result["best_offer"] = False  # Hybrid BEST_OFFER belongs to its fixed-price side.
+    for key in ("price", "total_price", "import_charges"):
+        value = item.get(prefix + "_" + key)
+        if value is not None:
+            result[key] = value
+    return result
+
+
 def split_statistics_buckets(rows):
     """One bid basket and one BIN basket per hybrid, with their actual prices."""
     bins, offers, auctions, auction_offers = [], [], [], []
     for item in rows:
         def side(prefix, **flags):
-            result = copy.deepcopy(item)
+            result = _project_price_side(item, prefix)
             result.update(flags)
-            for key in ("price", "total_price", "import_charges"):
-                value = item.get(prefix + "_" + key)
-                if value is not None:
-                    result[key] = value
             return result
         if item.get("buy_now"):
             (offers if item.get("best_offer") else bins).append(side("bin", auction=False))
@@ -6996,6 +7013,9 @@ def _tag_items_for_search(items, search):
     out = []
     for raw in items:
         it = raw
+        if raw.get("buy_now") and raw.get("auction"):
+            it = dict(raw)
+            it["_was_hybrid"] = True
         # time-left is a strong auction signal even on mixed pages
         if it.get("time_left") and not it.get("auction"):
             it = dict(it)
@@ -7006,14 +7026,14 @@ def _tag_items_for_search(items, search):
             # Pure auction SERP: default parser buy_now=True is wrong unless hybrid.
             if not it.get("_was_hybrid"):
                 it["buy_now"] = False
-            if it.get("auc_price") is None and it.get("price") is not None:
+            if not it.get("buy_now") and not it.get("_was_hybrid") and it.get("auc_price") is None and it.get("price") is not None:
                 it["auc_price"] = it.get("price")
             if it.get("auc_total_price") is None and it.get("total_price") is not None:
                 it["auc_total_price"] = it.get("total_price")
         elif lt in ("buy_now", "buy_now_offer"):
             it = dict(it)
             it["buy_now"] = True
-            if it.get("bin_price") is None and it.get("price") is not None:
+            if not it.get("auction") and not it.get("_was_hybrid") and it.get("bin_price") is None and it.get("price") is not None:
                 it["bin_price"] = it.get("price")
             if it.get("bin_total_price") is None and it.get("total_price") is not None:
                 it["bin_total_price"] = it.get("total_price")
@@ -7458,6 +7478,8 @@ def get_category_emoji(cat_name):
 
 
 async def send_notification(bot, item, search, stats_7d=None, notify_stage="initial"):
+    if _hybrid_selected_price_missing(item):
+        return False
     item_url = item.get("url") or ""
     item_id = str(item.get("item_id") or "")
     if item_id:
@@ -7846,6 +7868,9 @@ async def _validate_candidate(item, search):
         logger.info("Blocking item %s: does not satisfy search intent for %s", item.get("item_id"), search.get("query"))
         return False, details
 
+    if _hybrid_selected_price_missing(item):
+        item["_details_status"] = "unavailable_price"
+        return False, details
     item["_details_status"] = "verified"
     return True, details
 
@@ -7923,7 +7948,7 @@ async def _verified_history(items, search):
     verified, unavailable = [], 0
     for candidate in _history_candidates(items, search):
         valid, details = await _validate_candidate(candidate, search)
-        if details is None:
+        if details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
         if valid:
             # Enforce refreshed user minimum, hard ceiling and pickup location.
@@ -7946,8 +7971,8 @@ async def _verified_history(items, search):
                 fixed = row.get("bin_total_price", row["total_price"])
                 if not with_signature(fixed, search["id"]):
                     record_seller_price(search["id"], row["seller_name"], fixed, row["item_id"])
-    if unavailable:
-        _runtime_errors.append(f"{search['id']}: описания недоступны ({unavailable}); история неполная")
+    if unavailable or missing_prices:
+        _runtime_errors.append(f"{search['id']}: описания или цены недоступны ({unavailable + missing_prices}); история неполная")
     return verified
 
 
@@ -8023,7 +8048,7 @@ async def _select_cheapest_valid_candidate(items, search_cfg, limit=None, stats_
                 card_total,
                 (item.get("title") or "")[:60],
             )
-    unavailable_pool = [x for x in soft_pool if x.get("_details_status") == "unavailable"]
+    unavailable_pool = [x for x in soft_pool if x.get("_details_status") in ("unavailable", "unavailable_price")]
     if not valid_items and stats_soft_fallback and unavailable_pool:
         selected = min(unavailable_pool, key=lambda x: float(x.get("total_price") or 0))
         logger.info(
@@ -8171,6 +8196,10 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
         # The formatter and final notification gate must use that same copy.
         item.update(refreshed[0])
         h = _item_hash(item["seller_name"], item["title"], item["price"])
+
+    if _hybrid_selected_price_missing(item):
+        logger.warning("Skipping notification for %s: selected price unavailable", item["item_id"])
+        return False
 
     if stage in ("final_hour", "final_15m"):
         # Re-notify only while the deal still stands: the price moved with every
@@ -8964,6 +8993,8 @@ async def process_searches(bot, once=False):
                     """🟢 = default mode would alert; 🟡 = wait / uncertain Auktion+; 🟣 = over limit."""
                     if not item:
                         return "❌ Не найдено"
+                    if _hybrid_selected_price_missing(item):
+                        return "🟡 " + ("Цена покупки" if item.get("buy_now") else "Текущая ставка") + " недоступна · проверка не завершена"
                     if item.get("_details_status") != "verified":
                         return "🟡 описание недоступно (eBay API)"
                     if _is_implausibly_cheap_device(item, search):
@@ -9022,7 +9053,7 @@ async def process_searches(bot, once=False):
                     return mapping.get(cat_name, "📦")
 
                 def display_price(item):
-                    if not item:
+                    if not item or _hybrid_selected_price_missing(item):
                         return None
                     return round(float(item.get("total_price") or 0), 2)
 
@@ -9108,6 +9139,7 @@ async def process_searches(bot, once=False):
                             v_emoji, v_text = "🟣", "Дорого"
 
                         verdict_info = f"{v_emoji} {v_text}"
+                        total_price_str = total_price_str or dashes
                         if item.get("import_estimated"):
                             total_price_str = "≈" + total_price_str
 
@@ -9127,7 +9159,7 @@ async def process_searches(bot, once=False):
                                 time_line = f"{time_emoji} {_shorten_time_left(t_left)}"
 
                         row_lines.append(f"{emoji} <code>{label}{padded_price}{after_price_spaces}│ </code>{verdict_info}")
-                        import_note = _import_price_note(item)
+                        import_note = None if _hybrid_selected_price_missing(item) else _import_price_note(item)
                         if import_note:
                             row_lines.append(f"⚠️ {import_note}")
                         if is_auction:
