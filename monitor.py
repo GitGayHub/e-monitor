@@ -7872,17 +7872,18 @@ def _market_history_prices(items, search_id, filter_signature=None):
     return purchases, offers, bids
 
 
-def _history_filter_signature(search):
+def _history_filter_signature(search, config_obj=None):
     """An edit to model/region/blacklists must not reuse another population."""
     filters = search.get("filters", {}) or {}
     structural = {k: v for k, v in filters.items() if k not in
                   {"limit_price", "sort", "_ipg", "_stats_bucket_filter"} and not k.startswith("_")}
-    settings = config.get_settings()
+    history_config = config if config_obj is None else config_obj
+    settings = history_config.get_settings()
     document = {"query": _normalize(_intent_query(search)), "filters": structural,
                 "words": {k: sorted(_normalize(x) for x in search.get(k, []))
                           for k in ("include_words", "exclude_words", "exclude_sellers")},
-                "bannedSellers": sorted(_normalize(x) for x in config.get_global_banned_sellers()),
-                "bannedItems": sorted(str(x) for x in config.get_banned_item_ids()),
+                "bannedSellers": sorted(_normalize(x) for x in history_config.get_global_banned_sellers()),
+                "bannedItems": sorted(str(x) for x in history_config.get_banned_item_ids()),
                 "pricingLocation": {k: settings.get(k) for k in ("user_zip", "warn_non_eu", "non_eu_tax_rate")}}
     return hashlib.sha256(json.dumps(document, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()).hexdigest()
 

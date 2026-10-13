@@ -1,7 +1,7 @@
 import asyncio,copy,json,sqlite3,tempfile,unittest
 from datetime import datetime
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, Mock, AsyncMock
 import monitor,price_history
 from test_search_intent_rules import item
 
@@ -111,3 +111,33 @@ class VerifiedHistoryTests(unittest.TestCase):
             asyncio.run(monitor._verified_history([raw],self.search))
         self.assertIsNone(price_history.get_stats_7d('qa'))
         c=sqlite3.connect(price_history.DB_PATH);self.assertEqual((86,0),c.execute('SELECT min_auction,validation_complete FROM price_snapshots').fetchone());c.close()
+
+    def telegram_menu(self, searches, config, action):
+        import settings_handlers
+        from telegram.ext import CallbackQueryHandler
+        config.get_searches=lambda:searches
+        app=Mock();settings_handlers.register_settings_handlers(app,config)
+        handler=next(c.args[0] for c in app.add_handler.call_args_list if isinstance(c.args[0],CallbackQueryHandler))
+        msg=Mock(edit_text=AsyncMock())
+        update=Mock(callback_query=Mock(answer=AsyncMock(),data=action,message=msg))
+        asyncio.run(handler.callback(update,Mock(user_data={})))
+        return msg.edit_text.await_args.args[0]
+
+    def test_real_telegram_statistics_uses_bid_median_and_menu_config_cohort(self):
+        cfg=HistoryConfig();cfg.get_settings=lambda:{'user_zip':'10115','warn_non_eu':False}
+        buy=copy.deepcopy(self.search);buy['id']='qa_buy';buy['filters']['listing_type']='buy_now'
+        auction=copy.deepcopy(self.search);auction['id']='qa_auc';auction['filters']['listing_type']='auction'
+        for search,purchases,bids in ((buy,[400],[]),(auction,[],[30])):
+            price_history.record_snapshot(search['id'],purchases,[],bids,1,verified=True,validation_complete=True,filter_signature=monitor._history_filter_signature(search,cfg))
+        price_history.record_snapshot('qa_auc',[],[],[900],1,verified=True,validation_complete=True,filter_signature=monitor._history_filter_signature(auction))
+        text=self.telegram_menu([buy,auction],cfg,'m:stats')
+        self.assertIn('~400€',text);self.assertIn('~30€',text);self.assertNotIn('~900€',text)
+        auction_section=text.split('Аукционы (ставки):')[1]
+        self.assertNotIn('~400€',auction_section)
+
+    def test_real_telegram_minimum_does_not_reuse_history_after_condition_edit(self):
+        cfg=HistoryConfig();search=copy.deepcopy(self.search);search['filters']['listing_type']='buy_now'
+        price_history.record_snapshot(search['id'],[100],[],[],1,verified=True,validation_complete=True,filter_signature=monitor._history_filter_signature(search,cfg))
+        self.assertIn('100€',self.telegram_menu([search],cfg,'m:prices'))
+        search['filters']['condition']='new'
+        self.assertNotIn('100€',self.telegram_menu([search],cfg,'m:prices'))
