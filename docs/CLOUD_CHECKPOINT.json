@@ -4,14 +4,14 @@
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "7068e84294171cdc45d02a812dc21e1770873eac",
+    "sourceCommit": "735b43ee3c5618aeaaacf71641b38fafb8885a95",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "eca4e9ee3031a60a91b30403b118be09a1447edd",
+    "sourceCommit": "f6a67662c30e1ad8fcffa7ab9aa30231dde52b90",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
@@ -696,13 +696,105 @@
     "wholeWorkflowAccepted": false
   },
   "pending073": [
-    "source_publication",
-    "runtime_ack",
-    "live_phone_parity",
-    "road_checkpoint",
     "verified_history_recording",
-    "newTelegramClientReceipt",
     "selected_variants",
     "full_acceptance"
-  ]
+  ],
+  "runtime073": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791922765,
+    "lastSuccessfulRun": "2026-10-13T20:20:40+00:00",
+    "updatedAt": "2026-10-13T20:20:40+00:00",
+    "state": "ok",
+    "error": null,
+    "dataSource": "api",
+    "warning": null,
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physicalMouse073": {
+    "appVersion": "0.073",
+    "elapsedMs": 14991,
+    "finishedAtMs": 1791922921213,
+    "logicVersionTs": 1791922765,
+    "buckets": [
+      {
+        "label": "Sofort",
+        "price": 61.19,
+        "url": "https://www.ebay.de/itm/920017485002?_skw=logitech+g+pro+x+superlight+2&hash=itemd63550bcca:g:R9kAAeSw6fBqxkTh",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Sofort+",
+        "price": 76.51,
+        "url": "https://www.ebay.de/itm/366640211196?_skw=logitech+superlight+2&hash=item555d75a4fc:g:awUAAeSwEphqlcMT",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Auktion",
+        "price": 12.69,
+        "url": "https://www.ebay.de/itm/206618622307?_skw=logitech+g+pro+x+superlight+2&hash=item301b6df963:g:OykAAeSw3C5qy0bL",
+        "verdict": "🟡 Ожидает времени аукциона · 4д 11ч · 6 ставок"
+      },
+      {
+        "label": "Auktion+",
+        "price": 41.19,
+        "url": "https://www.ebay.de/itm/168787849340?_skw=logitech+superlight+2&hash=item274c8a307c:g:lGsAAeSwWLdqw7tW",
+        "verdict": "🟢 Auktion+ · 5д 18ч · 0 ставок"
+      }
+    ],
+    "sameFourPricesAndIdsAsPython": true,
+    "independentAcceptanceComplete": false,
+    "wholeMouse5Tasten": {
+      "id": "307150632164",
+      "total": 102.94,
+      "phoneVerdict": "Дорого",
+      "limit": 45,
+      "evidence": "tasten-kept073.png"
+    },
+    "screenshotMouseFeet": {
+      "title": "Logitech X Superlight 2 Ersatzkufen für Maus",
+      "phoneVerdict": "аксессуар: ножки / глайды, не мышь",
+      "evidence": "kufen-rejected073.png"
+    },
+    "redundantAuctionPhraseRemoved": true
+  },
+  "telegram073": {
+    "preparedAt": "2026-10-13T20:25:52.814546+00:00",
+    "apkVersion": "0.073",
+    "logicVersion": 1791922765,
+    "itemId": "168787849340",
+    "total": 41.19,
+    "descriptionChars": 76,
+    "test": "current verified bid formatter, redundant phrase removed",
+    "productionStateChanged": false,
+    "sent": true,
+    "clientConfirmed": true,
+    "photoTested": false,
+    "status": "api_confirmed",
+    "messageId": 120017,
+    "completedAt": "2026-10-13T20:25:54.320570+00:00",
+    "clientReceipt": "AyuGram background accessibility, exact test/version/price/footer received22:25, no clicks/window activation"
+  },
+  "cleanLinuxCi073": {
+    "run": 38461883211,
+    "sourceCommit": "f6a67662c30e1ad8fcffa7ab9aa30231dde52b90",
+    "status": "completed",
+    "conclusion": "success",
+    "checksAndBuild": "passed",
+    "artifactUploaded": false,
+    "artifactWarning": "GitHub Artifact storage quota; optional APK not saved, existing artifacts preserved"
+  },
+  "safeSync073": {
+    "bot": "0a1132b2948783f96acfcaceccfe6b3f16b802ad",
+    "android": "cc39a3b69f8cb0e4156be0a71a64598ffeefaf18",
+    "filesChanged": 0,
+    "conflicts": 0,
+    "backup": "20261013T204211109693Z",
+    "postPythonTests": 302,
+    "postAndroidTests": 286,
+    "androidBuild": "passed, up-to-date"
+  }
 }
