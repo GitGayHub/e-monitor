@@ -5019,7 +5019,7 @@ def _fetch_item_details(item_id):
         return html_details()
     token, err = _get_ebay_api_token()
     if err:
-        return None
+        return html_details()
     if not browse_access.acquire():
         return html_details()
     browse_id = f"v1|{item_id}|0"
@@ -5046,7 +5046,10 @@ def _fetch_item_details(item_id):
         logger.warning("eBay Browse details HTTP %s for item %s", e.code, item_id)
     except Exception as e:
         logger.warning("eBay Browse details unavailable for item %s: %s", item_id, e)
-    return None
+    # A Browse failure is not evidence that the seller's page is unavailable.
+    # Read it once through the existing bounded HTML transport; the caller still
+    # validates the full own description, model, condition and live prices.
+    return html_details()
 
 
 _REVIEW_NODE_SELECTORS = (
