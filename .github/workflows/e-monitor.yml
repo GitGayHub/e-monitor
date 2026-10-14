@@ -18,6 +18,12 @@ on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
+  # App Sync shares our queue to protect production state. Its queued run can
+  # replace a pending push-triggered monitor; always resume after it succeeds.
+  workflow_run:
+    workflows: ["Android App Sync"]
+    branches: [main]
+    types: [completed]
 
 concurrency:
   # Exactly ONE e-monitor at a time (push/schedule/manual share the group).
@@ -29,6 +35,7 @@ concurrency:
 
 jobs:
   check_e:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     # Statistics (4 buckets × every product + live details) exceeds 20 min.
     timeout-minutes: 45

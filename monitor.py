@@ -9558,7 +9558,9 @@ async def _process_searches_in_pass(bot, once=False):
         # If any searches were blocked by HTML scraping, retry them NOW via API
         # so we don't miss items (especially important for GitHub Actions where
         # the next run is 15 minutes away).
-        if blocked_searches and _ebay_api_configured():
+        # auto already tried its bounded API reserve inside _fetch_html_primary.
+        # Explicit html forbids API. Never repeat that reserve at pass end.
+        if blocked_searches and EBAY_SOURCE == "api" and _ebay_api_configured() and browse_access.is_paused() is not True:
             logger.info("=== API retry for %d blocked search(es) ===", len(blocked_searches))
             for search in blocked_searches:
                 if MonitorPassBudget.exhausted(reserve=30):
