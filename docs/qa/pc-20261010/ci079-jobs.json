@@ -1,5 +1,5 @@
 {
-  "readAt": "2026-10-14T11:01:28.538371+00:00",
+  "readAt": "2026-10-14T11:16:22.860230+00:00",
   "runs": [
     {
       "run": 38552015169,
@@ -163,8 +163,8 @@
         {
           "id": 115812582693,
           "name": "stats-ui",
-          "status": "in_progress",
-          "conclusion": null,
+          "status": "completed",
+          "conclusion": "success",
           "steps": [
             {
               "name": "Set up job",
@@ -198,28 +198,33 @@
             },
             {
               "name": "Run reactivecircus/android-emulator-runner@v2",
-              "status": "in_progress",
-              "conclusion": null
+              "status": "completed",
+              "conclusion": "success"
             },
             {
               "name": "Preserve instrumented results and emulator evidence",
-              "status": "pending",
-              "conclusion": null
+              "status": "completed",
+              "conclusion": "success"
             },
             {
               "name": "Report unavailable emulator evidence artifact",
-              "status": "pending",
-              "conclusion": null
+              "status": "completed",
+              "conclusion": "success"
             },
             {
               "name": "Post Run actions/setup-java@v4",
-              "status": "pending",
-              "conclusion": null
+              "status": "completed",
+              "conclusion": "success"
             },
             {
               "name": "Post Run actions/checkout@v4",
-              "status": "pending",
-              "conclusion": null
+              "status": "completed",
+              "conclusion": "success"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success"
             }
           ]
         }
