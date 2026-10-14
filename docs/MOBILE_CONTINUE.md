@@ -1,3 +1,9 @@
+## 0.079: safeapply и чистые проверки завершены
+
+Safeapply0changes/0conflicts, backup20261014T110021537120Z.335Python/310Android/build/9sync posttestspassed, APKhashFE690CAA0BC1DC786EC21B95114885AD60F1043CFE6EC452ACEB8F717644B52D прежний. ПервоеGitHubread оборвалось без записи. Sync теперь exactGitblob skip download + bounded readonlyretry;401/403/404 не повторяются. Эти изменения tool/tests ещёпубликуются; APKcode/filters прежние. SourceCI38552015169 иroadReadiness38552197584completedsuccess. RoadEmulator38552197445ещёin_progress API36UI, не дублировать.
+
+Телефон079/device healthy, данные49/3902/6625/510 прежние; nativeAyuGramfull075120019 подтверждена, photo/current079delivery остаютсянепроверенными. Общая25/100 PARTIAL. Все текущие UI/копирование/диапазон/картинки/мини-инспектор+4soldownbodies в REPORT_079.md, sync079.json. Next: remaining catalogue/aliases/40–50each, exactvariant267736285233, quotas/fullbodies, обратныйwordUI, currentTGphoto/delivery. Chrome3/user eBay открыт, читатьвфоне; ПКнеактивировать, телефонтолькоAPK. Неотправлять повторно120019.
+
 ## 0.079 опубликована; финальный мини-инспектор проверен
 
 Код sourcebot0d624555fc0e6f25ec11c8a11def9d36d587c4b3 / Androidcac161a0d92ff4a16b8620c74ad9a728cac899d5;roadbot0fd2c473cc9bf3034e37909087e2ac2afcd2cb7a / Android44e887f9a05103206b3789513aea3a40ad2ef68c. APKhashFE690CAA0BC1DC786EC21B95114885AD60F1043CFE6EC452ACEB8F717644B52D. Телефон079, данные49/3902/6625/510 прежние. Финальный miniSofort через настоящийUI:31rows,0pass/3expensive/28reject; диапазон200+:24,3expensive/21reject. Фото видны, лимит325 не изменён. Детали REPORT_079.md/publication079.json/phone079-inspector*.png. Общая25/100 PARTIAL. Telegram120019075fullcaption реально прочитана вAyuGram безактивации;непересылать;photofalse,079newsendнет.
