@@ -1770,6 +1770,16 @@ def _phone_description_declares_fake(description):
 
 def _phone_description_purpose_confirmed(description):
     own = _normalize(_clean_description(description or ''))
+    # A complete-model title may mention an optional branded case. Seller
+    # contents must still reject a separately supplied case, including when
+    # the seller has put that accessory in the phone category.
+    case = r"(?:(?:phone|smartphone|protective)\s+)?(?:case|cover|huelle|schutzhuelle|schutzhülle)"
+    for match in re.finditer(rf"\b(?:nur|only)\s+(?:(?:das|die|der|the|a|eine?)\s+)?{case}\b|\b{case}\s+only\b", own):
+        before = own[max(0,match.start()-18):match.start()]
+        if not re.search(r"\b(?:nicht|not|mit|with|plus|und|and)\s+$|\+\s*$",before):
+            return False
+    if re.match(rf"^{case}\s+(?:fuer|for|compatible\s+with|fits)\b",own):
+        return False
     # 307191399998: the short seller body only inventories spare parts.
     # That does not independently establish that a whole phone is supplied.
     parts_inventory = re.search(r"\bersatzteile\s+(?:sind\s+)?(?:alle\s+)?(?:parat|vorhanden|komplett)\b", own)
@@ -2061,6 +2071,11 @@ def _is_phone_accessory_title(title_norm):
     # model-led handset with storage is being sold. Never remove actual defects
     # or parts elsewhere in the title; seller details remain mandatory.
     if _title_leads_with_phone_model(title_norm) and _has_phone_storage(title_norm):
+        # 407252918435: a sealed handset followed by "Neu Google Case".
+        # This is only candidate purpose; full seller contents remain required.
+        # Explicit compatibility/only-part titles never receive this exception.
+        if not re.search(r"\b(?:fuer|for|compatible|fits|nur|only|ersatz\w*|replacement|spare)\b",title_norm):
+            title_norm = re.sub(r"\b(?:neu|new|sealed|versiegelt|ovp)\s+(?:(?:original|originales)\s+)?(?:google|samsung|apple|oneplus)\s+(?:case|huelle)\s*$", " ", title_norm)
         title_norm = re.sub(
             r"\b(?:kein|keine|keinen|ohne|no)\s+ersatzteile?\b", " ", title_norm
         )

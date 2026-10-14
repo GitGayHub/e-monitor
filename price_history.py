@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 6  # Complete handset bundles and screen defects have distinct purpose.
+HISTORY_VERSION = 7  # Optional branded handset cases require seller-content purpose guards.
 _DB_LOCK = threading.Lock()
 
 
