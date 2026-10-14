@@ -6,10 +6,34 @@ import json
 import sqlite3
 import threading
 import time
+import os
+from contextvars import ContextVar
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
 import price_history
+
+
+class MonitorPassBudget:
+    """Cooperative runner deadline; never cancels an in-flight Telegram send."""
+    current = ContextVar('emonitor_pass_budget', default=None)
+
+    def __init__(self, seconds, clock=None):
+        self.clock = clock or time.monotonic
+        self.deadline = self.clock() + max(0, float(seconds))
+
+    @classmethod
+    def from_environment(cls):
+        value = os.environ.get('EMONITOR_PASS_SECONDS')
+        return cls(value) if value is not None else None
+
+    def should_yield(self, reserve=0):
+        return self.clock() + reserve >= self.deadline
+
+    @classmethod
+    def exhausted(cls, reserve=0):
+        budget = cls.current.get()
+        return budget is not None and budget.should_yield(reserve)
 
 
 class BrowseAccess:
@@ -114,6 +138,21 @@ class BrowseAccess:
             available = max(1, value.get("remaining", 0) * .8)
             return max(900, searches * (value["reset"] - now) / available)
         return 900
+
+    def normal_queue(self, searches, market):
+        """Resume the next active search after a checkpoint or forced shutdown."""
+        rows = [s for s in searches if s.get('enabled', True)]
+        next_id = self.state().get('normal_next_search', {}).get(market)
+        offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
+        return rows[offset:] + rows[:offset]
+
+    def start_normal_search(self, search_id, next_id, market):
+        # Save before network I/O: a hung request must not monopolize every job.
+        # This only rotates the queue. It does not mark any item sent or checked.
+        with self.lock:
+            state = self.state()
+            state.setdefault('normal_next_search', {})[market] = next_id
+            self.save(state)
 
 
 access = BrowseAccess()

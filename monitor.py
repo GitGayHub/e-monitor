@@ -34,7 +34,7 @@ from price_history import (
     get_last_run, record_search_run,
     record_api_call, get_api_calls_count_24h,
 )
-from ebay_access import access as browse_access
+from ebay_access import access as browse_access, MonitorPassBudget
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -4501,6 +4501,8 @@ def fetch_ebay_api_ex(search, force=False):
 
     Force bypasses scheduling, never the provider's quota/cooldown.
     """
+    if MonitorPassBudget.exhausted():
+        return [], "pass_deferred"
     if len(_build_ebay_api_query(search))>100:
         return [], 'api_query_too_long'
     token, err = _get_ebay_api_token()
@@ -4704,6 +4706,8 @@ def _html_auction_end(soup, now=None):
 
 def _fetch_item_details_html(item_id):
     """Fetches item details (description, exact end date, etc.) by scraping the item page."""
+    if MonitorPassBudget.exhausted():
+        return None
     session = _get_ebay_session()
     host = _ebay_active_host or "ebay.de"
     url = f"https://www.{host}/itm/{item_id}"
@@ -4719,6 +4723,8 @@ def _fetch_item_details_html(item_id):
         logger.warning("_fetch_item_details_html: network error for %s: %s", item_id, e)
         return _fetch_item_details_browser(item_id)
 
+    if MonitorPassBudget.exhausted():
+        return None
     if resp.status_code != 200 and host == "ebay.de":
         try:
             mobile_url = f"https://m.{host}/itm/{item_id}"
@@ -4757,7 +4763,7 @@ def _fetch_item_details_html(item_id):
 
 def _fetch_item_details_browser(item_id):
     """One bounded ordinary browser visit; never solve or retry a challenge."""
-    if os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
+    if MonitorPassBudget.exhausted() or os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
         return None
     try:
         from playwright.sync_api import sync_playwright
@@ -5054,6 +5060,8 @@ _item_details_cache = {}
 
 def _fetch_item_details(item_id):
     """Read the complete seller description before classifying a candidate."""
+    if MonitorPassBudget.exhausted():
+        return None
     context = _ebay_end_user_context(EBAY_MARKETPLACE_ID)
     cache_key = (str(item_id), EBAY_MARKETPLACE_ID, context)
     cached = _item_details_cache.get(cache_key)
@@ -7084,6 +7092,8 @@ def fetch_ebay_ex(search, force=False):
     error: None | 'rate_limit' | 'blocked' | 'cooldown' | 'network' | 'http_<code>' | 'parse' | 'api_*'.
     """
     global _ebay_active_host, _ebay_block_until, _ebay_consecutive_blocks
+    if MonitorPassBudget.exhausted():
+        return [], "pass_deferred"
     now = time.time()
     source = "html" if search.get("_html_fallback") else EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
     if source != "html" and _ebay_api_configured() and browse_access.is_paused() is True:
@@ -7095,7 +7105,7 @@ def fetch_ebay_ex(search, force=False):
     cache_key = _query_cache_key(search)
     if not force:
         cached = _ebay_query_cache.get(cache_key)
-        if cached and now - cached[0] < _EBAY_QUERY_CACHE_TTL:
+        if cached and cached[2] != "pass_deferred" and now - cached[0] < _EBAY_QUERY_CACHE_TTL:
             items, err = cached[1], cached[2]
             logger.info("  %s -> cached (%ds old, %d items, err=%s)",
                         search["query"], int(now - cached[0]), len(items), err)
@@ -7204,6 +7214,8 @@ def fetch_ebay_ex(search, force=False):
         attempts_per_host = 3 if _on_github_actions() else 2
         for host in chain:
             for attempt in range(attempts_per_host):
+                if MonitorPassBudget.exhausted():
+                    return [], "pass_deferred", None
                 its, e = _do_fetch_one(host, search, referer=referer)
                 if its:
                     return its, None, host
@@ -7257,6 +7269,8 @@ def fetch_ebay_ex(search, force=False):
         ]
         pw_err = None
         for pw_url in pw_urls:
+            if MonitorPassBudget.exhausted():
+                return [], "pass_deferred"
             pw_items, pw_err = _do_fetch_playwright(pw_url, search.get("query", ""))
             if pw_items:
                 _ebay_consecutive_blocks = 0
@@ -7945,8 +7959,12 @@ def _history_price_sides(candidate, search):
 async def _verified_history(items, search):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
-    verified, unavailable = [], 0
-    for candidate in _history_candidates(items, search):
+    verified, unavailable, deferred = [], 0, 0
+    candidates = _history_candidates(items, search)
+    for index, candidate in enumerate(candidates):
+        if MonitorPassBudget.exhausted(reserve=30):
+            deferred = len(candidates) - index
+            break
         valid, details = await _validate_candidate(candidate, search)
         if details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
@@ -7965,7 +7983,7 @@ async def _verified_history(items, search):
         observations = [side for row in verified for side in _history_price_sides(row, search)]
         purchases, offers, bids = _market_history_prices(observations, search["id"], signature)
         record_snapshot(search["id"], purchases, offers, bids, len(verified),
-                        verified=True, validation_complete=unavailable == 0 and missing_prices == 0 and context_unchanged, filter_signature=signature)
+                        verified=True, validation_complete=unavailable == 0 and missing_prices == 0 and deferred == 0 and context_unchanged, filter_signature=signature)
         for row in observations:
             if row.get("buy_now"):
                 fixed = row.get("bin_total_price", row["total_price"])
@@ -7973,6 +7991,8 @@ async def _verified_history(items, search):
                     record_seller_price(search["id"], row["seller_name"], fixed, row["item_id"])
     if unavailable or missing_prices:
         _runtime_errors.append(f"{search['id']}: описания или цены недоступны ({unavailable + missing_prices}); история неполная")
+    if deferred:
+        _runtime_errors.append(f"{search['id']}: проверка не завершена по времени ({deferred} описаний); очередь продолжится")
     return verified
 
 
@@ -8256,6 +8276,17 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
 
 
 async def process_searches(bot, once=False):
+    # Statistics keeps its existing reporting path. The normal deadline is
+    # context-local and is copied into asyncio.to_thread calls.
+    budget = None if _is_statistics_mode(config) else MonitorPassBudget.from_environment()
+    token = MonitorPassBudget.current.set(budget)
+    try:
+        return await _process_searches_in_pass(bot, once=once)
+    finally:
+        MonitorPassBudget.current.reset(token)
+
+
+async def _process_searches_in_pass(bot, once=False):
     async with process_lock:
         if bot is not None and not _is_statistics_mode(config):
             try:
@@ -9301,14 +9332,25 @@ async def process_searches(bot, once=False):
 
         total_new = 0
         blocked_searches = []  # Searches that failed due to block/rate_limit/cooldown
+        normal_queue = browse_access.normal_queue(searches, EBAY_MARKETPLACE_ID)
+        def report_yield():
+            message = "Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
+            if message not in _runtime_errors:
+                _runtime_errors.append(message)
+            logger.info(message)
 
-        for search in searches:
-            if not search.get("enabled", True):
-                continue
+        for index, search in enumerate(normal_queue):
+            if MonitorPassBudget.exhausted(reserve=30):
+                report_yield()
+                break
+            browse_access.start_normal_search(search.get('id'), normal_queue[(index + 1) % len(normal_queue)].get('id'), EBAY_MARKETPLACE_ID)
             # Same eBay sort/page profile as statistics so alerts match green rows.
             # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
             fetch_search = _prepare_monitor_fetch_search(search)
             results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
+            if fetch_err == "pass_deferred":
+                report_yield()
+                break
             if fetch_err == "api_deferred":
                 logger.debug("%s: waiting for next quota-aware refresh", search["query"])
                 continue
@@ -9395,6 +9437,9 @@ async def process_searches(bot, once=False):
                 logger.info("  %s: skip Telegram sends (notify=false)", search.get("query"))
             else:
                 for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
+                    if MonitorPassBudget.exhausted(reserve=30):
+                        report_yield()
+                        break
                     if await _process_notify_candidate(bot, item, search, stats_7d, stage):
                         total_new += 1
                     await asyncio.sleep(0.5)
@@ -9409,6 +9454,9 @@ async def process_searches(bot, once=False):
         if blocked_searches and _ebay_api_configured():
             logger.info("=== API retry for %d blocked search(es) ===", len(blocked_searches))
             for search in blocked_searches:
+                if MonitorPassBudget.exhausted(reserve=30):
+                    report_yield()
+                    break
                 fetch_search = _prepare_monitor_fetch_search(search)
                 api_items, api_err = await asyncio.to_thread(fetch_ebay_api_ex, fetch_search)
                 if api_err:
