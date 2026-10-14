@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 4  # Explicit broken connectors must not contribute current device prices.
+HISTORY_VERSION = 6  # Complete handset bundles and screen defects have distinct purpose.
 _DB_LOCK = threading.Lock()
 
 

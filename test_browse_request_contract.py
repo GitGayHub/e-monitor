@@ -37,7 +37,7 @@ class BrowseRequestContractTest(unittest.TestCase):
         def response(request, **kwargs):
             context = next(value for key, value in request.header_items() if key.lower() == 'x-ebay-c-enduserctx')
             received.append(context)
-            body = {'description': 'Complete functional controller.', 'shippingOptions': [
+            body = {'description': 'Complete functional controller.', 'price': {'value':'30','currency':'EUR'}, 'shippingOptions': [
                 {'shippingCost': {'value': '0' if '10115' in context else '6.19', 'currency': 'EUR'}, 'shippingCostType': 'FIXED'}]}
             return io.BytesIO(json.dumps(body).encode())
         with patch.object(monitor, '_item_details_cache', {}), patch.object(monitor, 'EBAY_SOURCE', 'api'), \

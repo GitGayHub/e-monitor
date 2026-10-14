@@ -157,7 +157,7 @@ class AuctionApiZeroTest(unittest.TestCase):
     def setUp(self):
         monitor._ebay_query_cache.clear()
         self._patches = [
-            mock.patch.object(monitor, "EBAY_SOURCE", "auto"),
+            mock.patch.object(monitor, "EBAY_SOURCE", "api"),
             mock.patch.object(monitor, "_ebay_api_circuit_open", False),
             mock.patch.object(monitor, "_ebay_block_until", 0),
             mock.patch.object(monitor, "_ebay_consecutive_blocks", 0),

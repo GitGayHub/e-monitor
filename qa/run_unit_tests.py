@@ -35,6 +35,8 @@ def main():
         modules.append("test_monitor_pass_budget")
         modules.append("test_sim_tray_purpose")
         modules.append("test_port_condition")
+        modules.append("test_html_primary")
+        modules.append("test_phone_bundle_defect")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)

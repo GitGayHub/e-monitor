@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "purpose": "Seller body and live price required equally for HTML and API; synthetic boundaries",
+  "cases": [
+    {"name":"complete_fixed","data":{"description":"Device works correctly.","price":{"value":"405","currency":"EUR"}},"complete":true},
+    {"name":"description_without_price","data":{"description":"Device works correctly."},"complete":false},
+    {"name":"specs_without_description","data":{"title":"Device","localizedAspects":[{"name":"Model","value":"Device"}],"price":{"value":"405"}},"complete":false},
+    {"name":"placeholder","data":{"description":"<html><head><title>eBay</title></head><body>N/a</body></html>","price":{"value":"405"}},"complete":false},
+    {"name":"confirmed_unavailable","data":{"estimatedAvailabilities":[{"estimatedAvailabilityStatus":"UNAVAILABLE"}]},"complete":true},
+    {"name":"available_without_body","data":{"price":{"value":"405"},"estimatedAvailabilities":[{"estimatedAvailabilityStatus":"AVAILABLE"}]},"complete":false},
+    {"name":"auction_live_bid","data":{"description":"Device works correctly.","currentBidPrice":{"value":"568.28","currency":"EUR"}},"complete":true},
+    {"name":"zero_is_explicit_price","data":{"description":"Device works correctly.","currentBidPrice":0},"complete":true},
+    {"name":"nan","data":{"description":"Device works correctly.","price":{"value":"NaN"}},"complete":false},
+    {"name":"infinity","data":{"description":"Device works correctly.","price":{"value":"Infinity"}},"complete":false},
+    {"name":"negative","data":{"description":"Device works correctly.","price":{"value":"-1"}},"complete":false},
+    {"name":"boolean_is_not_price","data":{"description":"Device works correctly.","price":{"value":true}},"complete":false}
+  ]
+}
