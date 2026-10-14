@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-14-pc-075",
+  "checkpointId": "2026-10-14-pc-076",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "79a75d521eac9891f5b399150030728579920be9",
+    "sourceCommit": "c3c801931f9c1599dde1854b5f2c856c47aeae48",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "16cf490b2d5e80d3966a3566661fe50f42330dc9",
+    "sourceCommit": "6d74bbe70c245a9de9b082f50754e97f75fa761f",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.075",
-  "logicVersion": 1791931197,
+  "apkVersion": "0.076",
+  "logicVersion": 1791942417,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "localCloudMergeTests": 7,
@@ -27,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "93D8235252BB9ABA6484795712B95E31E0437D79F6F3634B3F41932F0797B875",
+  "apkSha256": "7763F24B5EF234B9D246018FBDC7275B0850367F802AF2A403DD989300C95BF2",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -1009,5 +1009,84 @@
     "readiness": 38495501489,
     "emulator": 38495501366,
     "observedStatus": "in_progress"
-  }
+  },
+  "emulatorCrud076": {
+    "apkVersion": "0.076",
+    "serial": "emulator-5580",
+    "api": 36,
+    "createCount": 50,
+    "deleteCount": 49,
+    "restoreCount": 50,
+    "finalCount": 49,
+    "testQuery": "emonitor qa076",
+    "restoredIdAndAllConditionsPreserved": true,
+    "allOriginalSearchBusinessFieldsPreserved": true,
+    "newAfterSaveIsBlank": true,
+    "newAfterExistingEditIsBlank": true,
+    "newFormNoLongerTargetsOldEditingId": true,
+    "qaNotificationsOff": true,
+    "githubWritesDisabled": true,
+    "physicalPhoneAccessed": false,
+    "productionStateChanged": false,
+    "remaining": "Background-save/navigation race guarded in code; slow network UI race and physical076 not yet independently exercised."
+  },
+  "cleanLinuxCi076": {
+    "id": 38497623090,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "6d74bbe70c245a9de9b082f50754e97f75fa761f",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38497623090",
+    "observedChecks": [
+      "2026-10-14T01:49:03.9515223Z Ran 333 tests in 44.555s",
+      "2026-10-14T01:49:04.1846834Z Ran 7 tests in 0.097s",
+      "2026-10-14T01:55:42.3708761Z BUILD SUCCESSFUL in 6m 36s",
+      "2026-10-14T01:55:43.5265866Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours.",
+      "2026-10-14T01:49:03.9515220Z Ran 333 tests in 44.555s",
+      "2026-10-14T01:49:04.1846830Z Ran 7 tests in 0.097s",
+      "2026-10-14T01:55:42.3708748Z BUILD SUCCESSFUL in 6m 36s",
+      "2026-10-14T01:55:43.5265820Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours."
+    ],
+    "artifactCount": 0
+  },
+  "runtime076": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791942417,
+    "lastSuccessfulRun": "2026-10-13T23:05:41+00:00",
+    "updatedAt": "2026-10-14T01:53:47+00:00",
+    "state": "error",
+    "error": "asus_vivobook_14x_oled_auc: network; logitech_superlight_2_std_auc: network; logitech_superlight_2_dex_auc: описания или цены недоступны (1); история неполная; sony_ult_wear_buy: network; Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе",
+    "dataSource": "html",
+    "warning": "Квота API закончилась: проверяю сайт eBay через HTML",
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "server076Checkpoint": {
+    "immutableCommit": "46d97d4822976d865a99df319e9475aba22f7369",
+    "observedPasses": [
+      {
+        "time": "2026-10-14 01:53 UTC",
+        "loop_index": 1,
+        "logic_version": 1791942417,
+        "monitor_status": 0,
+        "blocked": true,
+        "blocked_reason": "blocked",
+        "source": "html",
+        "telegram_failed": false
+      }
+    ],
+    "job": 38497468332,
+    "jobCompletionVerified": false
+  },
+  "pending076": [
+    "fullIndependentAcceptance25Products100Baskets",
+    "Z70selectedVariant",
+    "serverHtmlErrorsAndFollowupQueue",
+    "slowSaveUiRace",
+    "physical076",
+    "historyBaitFloorContext",
+    "allDeliveryFailuresPhoto",
+    "Telegram120019fullCaption"
+  ]
 }
