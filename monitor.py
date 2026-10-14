@@ -281,7 +281,8 @@ PHONE_HARD_PART_WORDS = (
     "motherboard", "mainboard", "logic board", "flex cable", "flexkabel",
     "hauptplatine", "basisplatine", "earpiece", "vibrator", "sim tray",
     "ersatzteil", "ersatzteile", "modul", "module", "platine",
-    "sim kartenfach", "kartenfach", "ringer", "buzzer",
+    "sim kartenfach", "kartenfach", "kartenhalter", "kartenschublade",
+    "sim card tray", "sim card holder", "ringer", "buzzer",
     "replacement", "replacements", "sensor", "sensoren",
     "fingerprint", "fingerabdrucksensor",
     "signalkabel", "klingelton", "summer", "rückkamera", "rueckkamera",
@@ -2088,6 +2089,16 @@ def _is_phone_accessory_title(title_norm):
         return True
     if re.match(r"^(?:original\s+|replacement\s+)?(?:\d{1,3}\s*%\s*)?(?:akku|battery|batterie|batteries)\b", title_norm):
         return True
+
+    # "SIM + SIM-Kartenhalter" joins two spare components, not a phone
+    # with accessories. Keep a full handset declaring storage or Dual SIM.
+    sim_pair = re.search(r"\bsim\s*\+\s*sim[-\s]*(?:kartenhalter|kartenfach|kartenschublade|card[-\s]*(?:tray|holder))\b", title_norm)
+    if sim_pair:
+        before_plus = title_norm[:sim_pair.start() + 3]
+        complete_phone = (_has_phone_storage(before_plus) or
+            re.search(r"\b(?:dual[-\s]*sim|smartphone|handy|mobile[-\s]+phone)\b", before_plus))
+        if not complete_phone:
+            return True
 
     # Standalone bundle indicator checks
     is_bundle = re.search(r"\b(?:mit|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None

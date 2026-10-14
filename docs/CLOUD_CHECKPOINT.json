@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-14-pc-076",
+  "checkpointId": "2026-10-14-pc-079",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "c3c801931f9c1599dde1854b5f2c856c47aeae48",
+    "sourceCommit": "59cbf020e5a9a41e96e4d1289311ecb4e9759680",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "6d74bbe70c245a9de9b082f50754e97f75fa761f",
+    "sourceCommit": "5da1919ae8697d9e22ec4f4b682b8e42e972a8ca",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.077",
-  "logicVersion": 1791942417,
+  "apkVersion": "0.079",
+  "logicVersion": 1791951817,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "localCloudMergeTests": 7,
@@ -27,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "29785B201262050170398EB096AB3FFE6E9C57178D2267691A1B4BC7D2FD32B2",
+  "apkSha256": "FE690CAA0BC1DC786EC21B95114885AD60F1043CFE6EC452ACEB8F717644B52D",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -1168,5 +1168,102 @@
     "allOriginal49BusinessFieldsPreserved": true,
     "productionChanged": false,
     "physicalPhoneUsed": false
+  },
+  "historyVersion": 3,
+  "parts078": {
+    "apkBefore": "0.077",
+    "apkAfter": "0.078",
+    "androidRealEmulator": true,
+    "pythonBeforeMismatches": 8,
+    "androidBeforeMismatches": 8,
+    "pythonAfterMismatches": 0,
+    "androidAfterMismatches": 0,
+    "controlCases": 120,
+    "scope": "120 purpose-only cases:15 lots x2 categories x4 synthetic sale formats, neutral100EUR/DE/no bans. Short relevant excerpts, not full-body processor or live-fetch proof.",
+    "controlsAuthorizeTelegramDelivery": false,
+    "neutralPriceEur": 100,
+    "actualReportedLotWouldBeBelowOwnerFloor": true,
+    "productionFalseNotificationForThisLotConfirmed": false,
+    "qaAllOldRowsPreserved": {
+      "search_queries": 49,
+      "price_snapshots": 10,
+      "seller_prices": 16,
+      "seen_items": 16
+    },
+    "physicalPhoneUsed": false,
+    "productionSettingsChanged": false
+  },
+  "manualZ70": {
+    "unique": 40,
+    "fullBodies": 40,
+    "allBasketsAccepted": false
+  },
+  "stage079": {
+    "apkVersion": "0.079",
+    "apkSha256": "FE690CAA0BC1DC786EC21B95114885AD60F1043CFE6EC452ACEB8F717644B52D",
+    "serial": "emulator-5580",
+    "installResult": "Success",
+    "androidTests": 310,
+    "logicVersion": 1791951817,
+    "historyVersion": 3,
+    "physicalInstalled": true,
+    "oldPhoneRowsPreservedExactly": {
+      "search_queries": 49,
+      "price_snapshots": 3902,
+      "seller_prices": 6625,
+      "seen_items": 510
+    },
+    "qaUiCopy": {
+      "before": 49,
+      "created": 51,
+      "cleanup": 49,
+      "sourceRowsUnchanged": true,
+      "aliases": 3,
+      "copiedFormats": 2,
+      "limit": 326,
+      "externalPush": false
+    },
+    "phoneRejectedRows": [
+      {
+        "bucket": "Sofort",
+        "rejected": 320,
+        "saved": 320,
+        "imageUrls": 320
+      },
+      {
+        "bucket": "Sofort+",
+        "rejected": 32,
+        "saved": 32,
+        "imageUrls": 32
+      },
+      {
+        "bucket": "Auktion",
+        "rejected": 0,
+        "saved": 0,
+        "imageUrls": 0
+      },
+      {
+        "bucket": "Auktion+",
+        "rejected": 0,
+        "saved": 0,
+        "imageUrls": 0
+      }
+    ],
+    "phoneRange200": {
+      "before": 320,
+      "inRange": 21,
+      "visible": 15,
+      "notifyLimitUnchanged": 325
+    },
+    "phoneInvalidRange": {
+      "from": 200,
+      "to": 100,
+      "errorShown": true,
+      "reportedAsNotFound": false,
+      "reset": 320
+    },
+    "pythonTests": 335,
+    "syncTests": 7,
+    "acceptanceComplete": false
   }
 }
