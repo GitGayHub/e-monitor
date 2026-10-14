@@ -79,7 +79,7 @@ class VerifiedHistoryTests(unittest.TestCase):
             verified=asyncio.run(monitor._verified_history(rows,self.search))
         self.assertEqual(2,len(verified));self.assertIsNone(price_history.get_stats_7d('qa'))
         self.assertIn('история неполная',monitor._runtime_errors[0])
-        c=sqlite3.connect(price_history.DB_PATH);self.assertEqual((1,0),c.execute('SELECT history_version,validation_complete FROM price_snapshots').fetchone());c.close()
+        c=sqlite3.connect(price_history.DB_PATH);self.assertEqual((price_history.HISTORY_VERSION,0),c.execute('SELECT history_version,validation_complete FROM price_snapshots').fetchone());c.close()
     def test_refreshed_price_must_still_obey_hard_ceiling(self):
         rows,details=self.data();details['expensive']['price']['value']='300'
         with patch.object(monitor,'_fetch_item_details',side_effect=lambda i:details[i]):

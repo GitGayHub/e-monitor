@@ -1,22 +1,22 @@
 {
   "schema": 1,
-  "checkpointId": "2026-10-14-pc-074",
+  "checkpointId": "2026-10-14-pc-075",
   "bot": {
     "repository": "GitGayHub/e-monitor",
     "sourceBranch": "main",
-    "sourceCommit": "3d15e447bf7b2ef0953412487a2007daf2bc0346",
+    "sourceCommit": "79a75d521eac9891f5b399150030728579920be9",
     "cloudBranch": "codex/cloud-work",
     "versionMetadataCommit": "4029e190eef715624f67f32356ed13aa940b084d"
   },
   "android": {
     "repository": "GitGayHub/e-monitor-android",
     "sourceBranch": "claude/app-redesign-minimal-48me6n",
-    "sourceCommit": "2b5be020deebbc67e2ca6134ea9dd3ee645aac1d",
+    "sourceCommit": "16cf490b2d5e80d3966a3566661fe50f42330dc9",
     "cloudBranch": "codex/cloud-work",
     "previousSourceCommit058": "c89556251a8a579d2f75224e89f9c90258f0139f"
   },
-  "apkVersion": "0.074",
-  "logicVersion": 1791929185,
+  "apkVersion": "0.075",
+  "logicVersion": 1791931197,
   "acceptanceComplete": false,
   "environmentPublished": false,
   "localCloudMergeTests": 7,
@@ -27,7 +27,7 @@
     "elapsedMs": 752355,
     "independentAcceptanceComplete": false
   },
-  "apkSha256": "B74798341F474858D23AD4E5E5D4970DF1605442DA95DF2E98B6980018137996",
+  "apkSha256": "93D8235252BB9ABA6484795712B95E31E0437D79F6F3634B3F41932F0797B875",
   "pending059": [
     "fullIndependentAcceptance"
   ],
@@ -837,5 +837,127 @@
     "readiness": 38476490724,
     "emulator": 38476490749,
     "status": "in_progress"
-  }
+  },
+  "cleanLinuxCi075": {
+    "id": 38480498577,
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "16cf490b2d5e80d3966a3566661fe50f42330dc9",
+    "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38480498577",
+    "observedChecks": [
+      "2026-10-13T22:52:15.6730829Z Ran 324 tests in 55.150s",
+      "2026-10-13T22:52:15.8832379Z Ran 7 tests in 0.052s",
+      "2026-10-13T23:00:37.2128235Z BUILD SUCCESSFUL in 8m 19s",
+      "2026-10-13T23:00:38.2066500Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours."
+    ],
+    "artifactCount": 0
+  },
+  "runtime075": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791931197,
+    "lastSuccessfulRun": "2026-10-13T23:05:41+00:00",
+    "updatedAt": "2026-10-14T01:12:47+00:00",
+    "state": "error",
+    "error": "nubia_z70_ultra_buy: описания или цены недоступны (13); история неполная; pixel_5_buy: network; 5070_ti_pc_auc: blocked; lg_ultragear_oled_480hz_buy: описания или цены недоступны (2); история неполная",
+    "dataSource": "html",
+    "warning": "Квота API закончилась: проверяю сайт eBay через HTML",
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "physical075NormalHistory": {
+    "status": "completed",
+    "startedAt": 1791931273066,
+    "apkVersion": "0.075",
+    "searchId": "logitech_superlight_2_std_buy",
+    "isolatedState": true,
+    "notificationsEnabled": false,
+    "fetched": 255,
+    "filtered": 88,
+    "newNotifications": 0,
+    "message": "logitech superlight 2: получено 255, прошло фильтры 88, новых 0 через api · описания недоступны: 1, история неполная",
+    "snapshots": [
+      {
+        "historyVersion": 2,
+        "validationComplete": false,
+        "totalResults": 88,
+        "minSofort": 61.19,
+        "minPv": 72.79,
+        "medianSofort": 111.99
+      }
+    ],
+    "eligibleHistory": false,
+    "completedAt": 1791931364614,
+    "apkSha256AtAudit": "359F2AC49636869B8E9BD6A8360747C559FEBEE857AB9320737F38E34A5E298D"
+  },
+  "telegram075": {
+    "preparedAt": "2026-10-13T22:58:09.805029+00:00",
+    "apkVersion": "0.075",
+    "logicVersion": 1791931197,
+    "itemId": "168787849340",
+    "total": 41.19,
+    "descriptionChars": 4800,
+    "test": "current verified bid formatter, redundant phrase removed",
+    "productionStateChanged": false,
+    "sent": true,
+    "clientConfirmed": false,
+    "photoTested": false,
+    "status": "api_confirmed",
+    "messageId": 120019,
+    "completedAt": "2026-10-13T22:58:10.638702+00:00",
+    "clientPreviewConfirmed": true,
+    "fullCaptionPending": true,
+    "clientObservation": "Background native Telegram notification and sidebar preview observed; full caption occluded. Later own message not present in current accessibility rows. Do not resend."
+  },
+  "currentDevicePermission": {
+    "physicalPhone": false,
+    "qaEmulator": true,
+    "desktopTelegram": "background_read_only"
+  },
+  "pending075": [
+    "fullIndependentAcceptance25Products100Baskets",
+    "Z70selectedVariant",
+    "serverHtmlErrors",
+    "emulatorCrudFiltersAndRecovery",
+    "historyBaitFloorContext",
+    "TelegramFullCaptionAndPhoto",
+    "physicalFinalAcceptance"
+  ],
+  "cleanLinuxCi074Current": [
+    {
+      "id": 38476490724,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "4958c350dad8f6663ae57b6de2bbd53fc4d729d9",
+      "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38476490724",
+      "observedChecks": [
+        "2026-10-13T22:15:58.2599649Z Ran 314 tests in 30.657s",
+        "2026-10-13T22:15:58.4084520Z Ran 7 tests in 0.036s",
+        "2026-10-13T22:21:55.3652971Z BUILD SUCCESSFUL in 5m 55s",
+        "2026-10-13T22:21:56.9046617Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours.",
+        "2026-10-13T22:15:58.2599646Z Ran 314 tests in 30.657s",
+        "2026-10-13T22:15:58.4084516Z Ran 7 tests in 0.036s",
+        "2026-10-13T22:21:55.3652964Z BUILD SUCCESSFUL in 5m 55s",
+        "2026-10-13T22:21:56.9046589Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours."
+      ],
+      "artifactCount": 0
+    },
+    {
+      "id": 38476490749,
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "4958c350dad8f6663ae57b6de2bbd53fc4d729d9",
+      "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38476490749",
+      "observedChecks": [
+        "2026-10-13T22:22:33.2191119Z BUILD SUCCESSFUL in 7m 7s",
+        "2026-10-13T22:28:09.6135732Z BUILD SUCCESSFUL in 3m 5s",
+        "2026-10-13T22:28:34.9530426Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours.",
+        "2026-10-13T22:22:33.2191112Z BUILD SUCCESSFUL in 7m 7s",
+        "2026-10-13T22:28:09.6135231Z BUILD SUCCESSFUL in 3m 5s",
+        "2026-10-13T22:28:34.9530389Z ##[error]Failed to CreateArtifact: Artifact storage quota has been hit. Unable to upload any new artifacts. Usage is recalculated every 6-12 hours."
+      ],
+      "artifactCount": 0
+    }
+  ]
 }
