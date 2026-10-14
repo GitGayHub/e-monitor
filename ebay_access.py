@@ -20,7 +20,11 @@ class MonitorPassBudget:
 
     def __init__(self, seconds, clock=None):
         self.clock = clock or time.monotonic
-        self.deadline = self.clock() + max(0, float(seconds))
+        self.seconds = max(0, float(seconds))
+        self.deadline = self.clock() + self.seconds
+        # Retain the checkpoint reserve and, for normal sized passes, a small
+        # window to deliver candidates that have already been fully checked.
+        self.validation_reserve = 30 + min(15, max(0, self.seconds - 40))
 
     @classmethod
     def from_environment(cls):
@@ -153,6 +157,45 @@ class BrowseAccess:
             state = self.state()
             state.setdefault('normal_next_search', {})[market] = next_id
             self.save(state)
+
+    def normal_candidate_order(self, search_id, context, market, item_ids):
+        """Only reorder fresh IDs; no old price, description or verdict is reused."""
+        ids = list(dict.fromkeys(str(value) for value in item_ids))
+        saved = self.state().get('normal_candidates', {}).get(str(search_id)+'|'+market, {})
+        if saved.get('context') != context or not ids:
+            return ids
+        previous = set(saved.get('ids', []))
+        new = [value for value in ids if value not in previous]
+        known = [value for value in ids if value in previous]
+        old_order = saved.get('ids', [])
+        next_id = saved.get('next')
+        # If the exact next item disappeared, use the following surviving item.
+        if next_id not in known and next_id in old_order:
+            at = old_order.index(next_id)
+            next_id = next((value for value in old_order[at:]+old_order[:at] if value in known), None)
+        offset = known.index(next_id) if next_id in known else 0
+        return new + known[offset:] + known[:offset]
+
+    def start_normal_candidate(self, search_id, context, market, ids, next_id):
+        """Checkpoint before I/O so a hung description cannot starve the tail."""
+        with self.lock:
+            state = self.state()
+            now = time.time()
+            entries = {key:value for key,value in state.get('normal_candidates', {}).items()
+                       if now-value.get('updated', 0) < 86400}
+            key = str(search_id)+'|'+market
+            entries[key] = {'context':context,'ids':list(dict.fromkeys(str(value) for value in ids)),
+                            'next':str(next_id),'updated':now}
+            # Bound abandoned searches without storing any production secrets.
+            state['normal_candidates'] = dict(sorted(entries.items(),key=lambda row:row[1]['updated'])[-128:])
+            self.save(state)
+
+    def finish_normal_candidates(self, search_id, context, market):
+        with self.lock:
+            state = self.state(); entries = state.get('normal_candidates', {})
+            key = str(search_id)+'|'+market
+            if entries.get(key, {}).get('context') == context:
+                entries.pop(key, None); self.save(state)
 
 
 access = BrowseAccess()

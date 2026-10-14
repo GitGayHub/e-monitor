@@ -48,6 +48,43 @@ class MonitorPassBudgetTests(unittest.TestCase):
             self.assertEqual(([],'pass_deferred'),monitor.fetch_ebay_ex(self.search,force=True))
         request.assert_not_called()
 
+    def test_remaining_lot_is_checked_after_restart_with_a_fresh_price(self):
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        def first_fetch(item_id):
+            self.clock[0]=11
+            return details[item_id]
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_fetch_item_details',side_effect=first_fetch):
+            first=asyncio.run(monitor._verified_history(copy.deepcopy(rows),self.search))
+        self.assertEqual(['seen'],[row['item_id'] for row in first])
+        self.clock[0]=0
+        details['expensive']['price']['value']='180'
+        calls=[]
+        def resumed_fetch(item_id):
+            calls.append(item_id);self.clock[0]=11
+            return details[item_id]
+        with patch.object(monitor,'browse_access',BrowseAccess()),patch.object(monitor,'_fetch_item_details',side_effect=resumed_fetch):
+            resumed=asyncio.run(monitor._verified_history(copy.deepcopy(rows),self.search))
+        self.assertEqual(['expensive'],calls)
+        self.assertEqual(185,resumed[0]['total_price'])
+        self.assertIsNone(price_history.get_stats_7d('qa',monitor._history_filter_signature(self.search)))
+
+    def test_partial_normal_pass_keeps_time_to_notify_its_verified_lot(self):
+        budget=MonitorPassBudget(90,clock=lambda:self.clock[0])
+        token=MonitorPassBudget.current.set(budget)
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:[self.search];self.config.save=Mock()
+        self.config.get_item_hashes=lambda:set()
+        def fetch_details(item_id):self.clock[0]=45;return details[item_id]
+        try:
+            with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_is_statistics_mode',return_value=False),patch.object(monitor,'initialize_api_budget_and_queue'),patch.object(monitor,'fetch_ebay_ex',return_value=(copy.deepcopy(rows),None)),patch.object(monitor,'_fetch_item_details',side_effect=fetch_details),patch.object(monitor,'_process_notify_candidate',new=AsyncMock(return_value=True)) as send,patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}),patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'),patch.object(monitor.asyncio,'sleep',new=AsyncMock()):
+                asyncio.run(monitor._process_searches_in_pass(Mock(),once=True))
+            self.assertEqual(1,send.await_count)
+            self.assertEqual('seen',send.await_args.args[1]['item_id'])
+            self.assertEqual('verified',send.await_args.args[1]['_details_status'])
+            self.assertIsNone(price_history.get_stats_7d('qa',monitor._history_filter_signature(self.search)))
+        finally:
+            MonitorPassBudget.current.reset(token)
+
     def test_expired_api_attempt_does_not_request_token_or_consume_quota(self):
         self.clock[0]=40
         with patch.object(monitor,'_get_ebay_api_token') as token:
