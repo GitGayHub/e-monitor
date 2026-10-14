@@ -1,3 +1,13 @@
+## 0.079 опубликована; финальный мини-инспектор проверен
+
+Код sourcebot0d624555fc0e6f25ec11c8a11def9d36d587c4b3 / Androidcac161a0d92ff4a16b8620c74ad9a728cac899d5;roadbot0fd2c473cc9bf3034e37909087e2ac2afcd2cb7a / Android44e887f9a05103206b3789513aea3a40ad2ef68c. APKhashFE690CAA0BC1DC786EC21B95114885AD60F1043CFE6EC452ACEB8F717644B52D. Телефон079, данные49/3902/6625/510 прежние. Финальный miniSofort через настоящийUI:31rows,0pass/3expensive/28reject; диапазон200+:24,3expensive/21reject. Фото видны, лимит325 не изменён. Детали REPORT_079.md/publication079.json/phone079-inspector*.png. Общая25/100 PARTIAL. Telegram120019075fullcaption реально прочитана вAyuGram безактивации;непересылать;photofalse,079newsendнет.
+
+SourceCI38552015169/road38552197584/readiness/38552197445/emulator ещёпроверитьпослезавершения. Safeapply/posttests ещёидут. Chrome3/user eBay214033074 authenticated;сейчас167704519553defektcondition/workingbodyconflict. Следующие: independent25products/40–50lots/aliases/100baskets+selectedvariant267736285233, quota/fullbodies, обратныйwordUI иноваяdelivery+photo. Необъявлять общуюзадачузавершённой.
+
+## Telegram075: полная подпись наконец подтверждена в клиенте
+
+120019075 прочитан в настоящемAyuGram в фоне безактивации:TEST0.075,41.19=35+6.19,Auktion+,APK075/00:39,нетпокупнойСкидки/лишнейфразы. Nativeaccessibility completecaption, [telegram075-client079.json](qa/pc-20261010/telegram075-client079.json). Старыйfullcaptionpending закрыт, НЕпересылать120019. Это текстовый075 тест;photofalse, новой079Telegramдоставки пока нет. Старыеабзацыниже с pending относятсякраннимнаблюдениям.
+
 ## 0.079 — телефон обновлён, просмотр и копирование
 
 Физический телефон разрешён и установлен079; ПК не активировать, Telegram только наПК. [Отчёт](qa/pc-20261010/REPORT_079.md), build079.json, chrome-sold079.json. Общая25/100 PARTIAL.335Python/310Android/build/7sync passed, правила1791951817/History3 прежние. Все старые49/3902/6625/510 поля сохранены, revision/dirtyfalse прежние. Свежая Nubia13.264с сохраняет320/32 отсеянных с изображениями; диапазон200+21, неверный200–100 ошибка, reset320, лимит325 прежний. Финальный APKhash FE690CAA0BC1DC786EC21B95114885AD60F1043CFE6EC452ACEB8F717644B52D.
