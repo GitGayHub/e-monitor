@@ -5375,6 +5375,17 @@ def _has_charging_failure(text):
     return any(re.search(pattern, text) for pattern in patterns)
 
 
+def _has_port_failure(text):
+    """Explicit connector damage; do not combine box damage with a nearby port."""
+    port = r"(?:hdmi|displayport|ethernet|lan|usb(?:\s*c)?)(?:\s*(?:ports?|sockets?|connectors?|anschluss|anschluesse|buchsen?|ausgang|ausgaenge))?"
+    damage = r"(?:broken|damaged|defective|defekt(?:e[rsn]?)?|kaputt|gebrochen(?:e[rsn]?)?|beschaedigt(?:e[rsn]?)?|verbogen(?:e[rsn]?)?)"
+    denial = r"\b(?:no|not|without|nicht|kein\w*|ohne)\s+(?:(?:visible|noticeable|sichtbar\w*)\s+)?$"
+    patterns = [rf"\b{port}\b\s+(?:(?:is|are|was|ist|sind|wurde|leider|physically|completely|slightly|leicht|physisch|stark)\s+){{0,3}}{damage}\b",
+                rf"\b{damage}\s+{port}\b"]
+    return any(not re.search(denial, text[max(0, m.start()-36):m.start()])
+               for pattern in patterns for m in re.finditer(pattern, text))
+
+
 def _is_description_blocked(desc_html, category):
     """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
     if not desc_html:
@@ -5406,7 +5417,7 @@ def _is_description_blocked(desc_html, category):
     # spare-part noun. Remove only that noun; preserve every later defect.
     desc_norm = re.sub(r"\b(?:rueckglas|hinterglas|backglass)\b(?=\s+(?:(?:wurde|was)\s+)?(?:nie|nicht|never|not)\s+(?:(?:aus)?getauscht|ersetzt|repariert|replaced)\b)", " ", desc_norm)
 
-    if _has_battery_swelling(desc_norm) or _has_charging_failure(desc_norm):
+    if _has_battery_swelling(desc_norm) or _has_charging_failure(desc_norm) or _has_port_failure(desc_norm):
         return True
     # 227554664933: recurring SIM-Fehler persists with a newly supplied SIM.
     sim_error = r"\bsim[\s-]*(?:fehler|errors?)\b"

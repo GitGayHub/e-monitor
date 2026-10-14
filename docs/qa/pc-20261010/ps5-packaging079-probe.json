@@ -1,0 +1,41 @@
+{
+  "version": "0.079",
+  "scope": "Own excerpts observed in real Chrome; purpose/defect probe only, not full-body pipeline or live notification",
+  "cases": [
+    {
+      "id": "840004706157",
+      "title": "Sony PlayStation 5 PS5 Pro Console 2TB Digital Edition NEW SEALED",
+      "text": "Slightly damaged box, please see full details in images. PlayStation 5 Pro Console - 2TB. PS5 Pro is an all-digital console with no disc drive.",
+      "expectedBlocked": false,
+      "blocked": false,
+      "badConditionTerms": []
+    },
+    {
+      "id": "366731022021",
+      "title": "PlayStation 5 Pro Digital 2 TB – 3 Monate alt – mit OVP, Rechnung & Controller",
+      "text": "Die Konsole wurde vollständig getestet und funktioniert einwandfrei. Die OVP hat hinten einen kleinen Riss, die Konsole und der Controller befinden sich in einem sehr guten Zustand. Die OVP weist hinten leichte Beschädigungen auf.",
+      "expectedBlocked": false,
+      "blocked": false,
+      "badConditionTerms": []
+    },
+    {
+      "id": "control-damaged-console",
+      "title": "Sony PlayStation 5 Pro",
+      "text": "Slightly damaged box. The console HDMI port is broken.",
+      "expectedBlocked": true,
+      "blocked": false,
+      "badConditionTerms": []
+    },
+    {
+      "id": "control-damaged-display",
+      "title": "iPhone 17 Pro Max",
+      "text": "Die Verpackung hat einen Riss. Das Display ist beschädigt.",
+      "expectedBlocked": true,
+      "blocked": true,
+      "badConditionTerms": []
+    }
+  ],
+  "mismatches": [
+    "control-damaged-console"
+  ]
+}
