@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 2  # Full validation and explicit hybrid side prices.
+HISTORY_VERSION = 3  # SIM component pairs cannot contribute handset prices.
 _DB_LOCK = threading.Lock()
 
 

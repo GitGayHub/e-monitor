@@ -1,3 +1,15 @@
+## 0.078: SIM-держатель исправлен; Z70 manual40/40
+
+Общая приёмка25/100 PARTIAL. Телефон НЕ использовать до нового разрешения, на нём075. Headless emulator-5580/API36 обновлён077→078, hashACF294A000BF8DBEA7652838058A9893D6C0B8CAFD0492521481C1E3A5D12D53,правила1791951817,HistoryVersion3.335Python/305Android/build passed. Все старые QA49searches/10snapshots/16sellerprices/16seen сверены без изменений. Workerfalse/auto-syncfalse/notify0/qa-local isolated. Mode/recipient/productionsettings/seen не менялись.
+
+В настоящем браузере прочитаны15 новых уникальных лотов и15 полных собственных описаний поNX733J; вместе с прежними25 стало40/40, даты различаются. Это рамки, экраны, крышка, SIM-лотки, динамик, стекло и пустая коробка. Повтор при пустомiframe не добавляет unique. REPORT_078.md/z70-manual077.json. Все реальные новые15 Sofort/Sofort+, аукционными страницами их не называть.
+
+Новый воспроизведённый пропуск:327399691974 SIM+SIM-Kartenhalter старыеPython/установленная077 пропускали при нейтральных100EUR в8контрольныхсочетаниях2категории×4формата. Реальная26.76 нижеownerfloor, productionfalsealertНЕподтверждён.078 распознаётSIM-держатели/лотки и пару деталей, сохраняетwhole-phone DualSIM/GB/mittray.120контролей actualAPK078/Python теперь0mismatches. Короткиевыдержки/синтетическаяцена, не fullbodyprocessorproof и не120живыхлотов. История3вобоих,старые2сохраненынонеподтверждаютmedian.3970старыхпримеровнепереписаны.
+
+КонкретныйZ70variant267736285233 OPEN:Black512/16,777+25, parent1TB, fullbody2916прочитан; repeat0. СкриптHTTPполучил403, не объявлятьmissingstock/исправленным. Следующийприоритет — надёжнаяпривязкавыбранногоavailablevariant, полныеописания/HTMLквота иоставшийсякаталог25/100. МедленныйUIrace/delete-before-load, всеoutages/media/delivery/physical078 ещёнеполностьюпроверены. Telegram120019 не повторять,fullcaptionpending;новый078тестнеотправлялся.
+
+077sourcebotac556a518b4c85fde0fa60f3ac0781563db7215e/Android67db2efff4777fc70f32059077b6fcd799b47cbf,roadbotdfba03237c627a1fc09e7682980d3c171e655893/Android685e2b40c7fcb118f54da78f321f49a22bfa5073.078source/road/CI/runtime ещёсохраняются — записатьреальныеподтверждения,невыдаватьpendingзаготовое.
+
 ## 0.077 на эмуляторе — 14 октября
 
 Телефон по-прежнему НЕ использовать; физическая0.075. QA emulator-5580/API36 обновлён076→077, исходные49 businessfields сверены без изменений, notify0/workerfalse/auto-syncfalse/qa-local isolated.303Android/build успешны. Новые4 теста: null при удалённом editID не является success, не запускает create/push/status; existingID сохранён; offlinepush отделён от локальной записи; ошибка записи не вызываетpush. Настоящий in-memoryRoom audit на077 подтвердил deletedEditorCannotCreatePushOrClaimSuccess=true и все прежние транзакционные проверки. Визуальная гонка двух экранов не проверена. Доказательства REPORT_077.md/repository077.json/build077.json/overview077.png.
