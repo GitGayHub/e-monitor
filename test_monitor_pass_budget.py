@@ -9,6 +9,22 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_html_first_pass_does_not_repeat_its_api_reserve_at_the_end(self):
+        self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:[self.search];self.config.save=Mock()
+        token=MonitorPassBudget.current.set(MonitorPassBudget(90,clock=lambda:0.0))
+        try:
+            with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_is_statistics_mode',return_value=False), \
+                 patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor,'_ebay_api_configured',return_value=True), \
+                 patch.object(monitor,'_ebay_api_circuit_open',False),patch.object(monitor,'_ebay_block_until',0), \
+                 patch.object(monitor,'_search_query_variants',return_value=['qa']),patch.object(monitor,'_do_fetch_one',return_value=([],'blocked')), \
+                 patch.object(monitor,'_do_fetch_playwright',return_value=([],'blocked')),patch.object(monitor,'_ebay_query_cache',{}), \
+                 patch.object(monitor,'fetch_ebay_api_ex',return_value=([],None)) as reserve, \
+                 patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'),patch.object(monitor.asyncio,'sleep',new=AsyncMock()):
+                asyncio.run(monitor._process_searches_in_pass(None,once=True))
+            reserve.assert_called_once()
+        finally:
+            MonitorPassBudget.current.reset(token)
+
     def setUp(self):
         self.folder=tempfile.TemporaryDirectory();self.addCleanup(self.folder.cleanup)
         self.db=patch.object(price_history,'DB_PATH',str(Path(self.folder.name)/'history.db'))
