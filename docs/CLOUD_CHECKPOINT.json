@@ -916,6 +916,7 @@
     "desktopTelegram": "background_read_only"
   },
   "pending075": [
+    "server480sTimeoutAndQueueContinuation",
     "fullIndependentAcceptance25Products100Baskets",
     "Z70selectedVariant",
     "serverHtmlErrors",
@@ -959,5 +960,54 @@
       ],
       "artifactCount": 0
     }
-  ]
+  ],
+  "emulatorPrice075": {
+    "apkVersion": "0.075",
+    "device": "emulator-5580",
+    "androidApi": 36,
+    "physicalPhoneAccessed": false,
+    "actions": "UI edit45→46, save, process restart, verifyDB, UI restore45",
+    "changedOnlySearchIds": [
+      "logitech_superlight_2_std_auc",
+      "logitech_superlight_2_std_buy"
+    ],
+    "bothVariantsPersisted46AfterRestart": true,
+    "businessFieldsRestoredToOriginal": true,
+    "notifyDisabledInQaOnly": true,
+    "githubWriteCredentialsAbsent": true,
+    "backgroundWorkerDisabled": true,
+    "productionSettingsChanged": false,
+    "addDeleteRestoreNotYetCheckedThisStage": true,
+    "initialIsolationCorrected": "Local SQLite WAL had to be checkpointed before transferring DB. Final isolation verified from actual restarted emulator DB; no production credentials were present."
+  },
+  "runtime075Latest": {
+    "schema": 1,
+    "settingsRevision": "b03139a4-6df4-4869-9e23-a8ca749bd709",
+    "appliedAt": "2026-10-10T16:06:14+00:00",
+    "logicVersion": 1791931197,
+    "lastSuccessfulRun": "2026-10-13T23:05:41+00:00",
+    "updatedAt": "2026-10-14T01:28:27+00:00",
+    "state": "error",
+    "error": "4050_oled_auc: blocked; 4060_oled_auc: описания или цены недоступны (1); история неполная; logitech_superstrike_buy: network; sony_ult_wear_auc: network; ps5_pro_auc: blocked",
+    "dataSource": "html",
+    "warning": "Квота API закончилась: проверяю сайт eBay через HTML",
+    "activeSearches": 47,
+    "configFingerprint": "ad5e357aa184f67d2433d5dd533b24fcb6ed2415a0032006207cc538d17af989"
+  },
+  "road075": {
+    "bot": "528101672d9d77f3c4a96c2dcdbe73a4c9781876",
+    "android": "6015e4db06ffcb38a5a973dcb0429b004783d0c4"
+  },
+  "postRoad075": {
+    "pythonTests": 324,
+    "androidTests": 299,
+    "syncTests": 7,
+    "build": "passed",
+    "backup": "20261014T012747618671Z"
+  },
+  "roadCi075": {
+    "readiness": 38495501489,
+    "emulator": 38495501366,
+    "observedStatus": "in_progress"
+  }
 }
