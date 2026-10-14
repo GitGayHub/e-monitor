@@ -14,6 +14,27 @@ from ebay_access import BrowseAccess
 
 
 class BrowseAccessTest(unittest.TestCase):
+    def test_candidate_cursor_survives_restart_and_prioritizes_new_lots(self):
+        self.access.save({'remaining':0,'reset':time.time()+600})
+        self.access.start_normal_candidate('phone','rules-a','EBAY_DE',['a','b','c'],'b')
+        later=BrowseAccess()
+        self.assertEqual(['new','b','c','a'],later.normal_candidate_order('phone','rules-a','EBAY_DE',['a','b','c','new']))
+        self.assertEqual(0,later.state()['remaining'])
+        self.assertEqual(0,price_history.get_api_calls_count_24h())
+
+    def test_disappeared_next_lot_uses_following_survivor_and_edits_reset_scope(self):
+        self.access.start_normal_candidate('phone','rules-a','EBAY_DE',['a','b','c'],'b')
+        self.assertEqual(['c','a'],self.access.normal_candidate_order('phone','rules-a','EBAY_DE',['a','c']))
+        self.assertEqual(['a','c'],self.access.normal_candidate_order('phone','rules-b','EBAY_DE',['a','c']))
+        self.assertEqual(['a','c'],self.access.normal_candidate_order('phone','rules-a','EBAY_GB',['a','c']))
+
+    def test_finishing_one_scope_does_not_clear_another(self):
+        self.access.start_normal_candidate('phone','rules-new','EBAY_DE',['a','b'],'b')
+        self.access.finish_normal_candidates('phone','rules-old','EBAY_DE')
+        self.assertEqual(['b','a'],self.access.normal_candidate_order('phone','rules-new','EBAY_DE',['a','b']))
+        self.access.finish_normal_candidates('phone','rules-new','EBAY_DE')
+        self.assertEqual(['a','b'],self.access.normal_candidate_order('phone','rules-new','EBAY_DE',['a','b']))
+
     def test_html_queue_is_bounded_and_failed_attempts_do_not_starve_other_searches(self):
         self.access.save({'remaining':0,'reset':time.time()+21600,'checked':time.time()})
         searches=[{'id':f'p{i:02d}','query':'phone'} for i in range(14)]

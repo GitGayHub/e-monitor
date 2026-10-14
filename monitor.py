@@ -7983,16 +7983,30 @@ async def _verified_history(items, search):
     signature = _history_filter_signature(search)
     verified, unavailable, deferred = [], 0, 0
     candidates = _history_candidates(items, search)
+    budget = MonitorPassBudget.current.get()
+    resume_context = f"{_read_logic_version_timestamp()}:{signature}:{_search_limit_price(search)}"
+    if budget is not None:
+        by_id = {}
+        for candidate in candidates:
+            by_id.setdefault(str(candidate['item_id']), []).append(candidate)
+        order = browse_access.normal_candidate_order(search['id'],resume_context,EBAY_MARKETPLACE_ID,by_id)
+        candidates = [candidate for item_id in order for candidate in by_id[item_id]]
+    ids = list(dict.fromkeys(str(candidate['item_id']) for candidate in candidates))
     for index, candidate in enumerate(candidates):
-        if MonitorPassBudget.exhausted(reserve=30):
+        if MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
             deferred = len(candidates) - index
             break
+        if budget is not None:
+            at = ids.index(str(candidate['item_id']))
+            browse_access.start_normal_candidate(search['id'],resume_context,EBAY_MARKETPLACE_ID,ids,ids[(at+1)%len(ids)])
         valid, details = await _validate_candidate(candidate, search)
         if details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
         if valid:
             # Enforce refreshed user minimum, hard ceiling and pickup location.
             verified.extend(_history_candidates([candidate], search))
+    if budget is not None and deferred == 0:
+        browse_access.finish_normal_candidates(search['id'],resume_context,EBAY_MARKETPLACE_ID)
     context_unchanged = signature == _history_filter_signature(search)
     listing = search.get("filters", {}).get("listing_type", "all")
     missing_prices = sum(1 for r in verified if r.get("buy_now") and r.get("auction") and
