@@ -103,7 +103,7 @@ class BrowseTransportTest(unittest.TestCase):
         monitor._item_details_cache.clear()
 
     def test_rate_limit_switches_to_html_once_and_keeps_its_errors(self):
-        with patch.object(monitor, "EBAY_SOURCE", "auto"), patch.object(monitor, "_ebay_api_configured", return_value=True), \
+        with patch.object(monitor, "EBAY_SOURCE", "api"), patch.object(monitor, "_ebay_api_configured", return_value=True), \
              patch.object(monitor, "fetch_ebay_api_ex", return_value=([], "api_rate_limit")), \
              patch.object(monitor, "_fetch_quota_html",return_value=([], "blocked")) as html:
             self.assertEqual(monitor.fetch_ebay_ex({"id":"x", "query":"phone"}, force=True), ([], "blocked"))

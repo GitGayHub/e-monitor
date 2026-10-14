@@ -141,7 +141,9 @@ class SearchIntentRuleTests(unittest.TestCase):
         fault = "Apple iPhone 16 Pro Max 256GB Kein Ersatzteil, Display defekt"
         self.assertFalse(monitor._is_phone_accessory_title(monitor._normalize(keep)))
         self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(case)))
-        self.assertTrue(monitor._is_phone_accessory_title(monitor._normalize(fault)))
+        # A faulty handset is still a handset; its defect keeps it rejected.
+        self.assertFalse(monitor._is_phone_accessory_title(monitor._normalize(fault)))
+        self.assertTrue(monitor._is_category_blocked_title(monitor._normalize(fault), "phones"))
         self.assertTrue(monitor._is_phone_accessory_title(
             monitor._normalize("Ersatzteil iPhone 16 Pro Max 256GB")))
 

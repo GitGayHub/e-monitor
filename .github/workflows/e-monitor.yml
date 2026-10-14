@@ -72,7 +72,7 @@ jobs:
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
           EBAY_MARKETPLACE_ID: EBAY_DE
           EMOBILE_CONFIG: "1"
-          # Prefer Browse API, respect quota across runner checkpoints.
+          # HTML is primary; Browse API is a bounded reserve respecting quota.
           EBAY_SOURCE: auto
           EBAY_HTML_PLAYWRIGHT: "1"
           EBAY_HTML_MOBILE_FIRST: "1"
