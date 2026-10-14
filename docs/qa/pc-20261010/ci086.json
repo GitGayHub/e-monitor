@@ -1,0 +1,346 @@
+{
+  "runs": [
+    {
+      "id": 38653082456,
+      "name": "Cloud readiness - both repositories",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "8ad836bd40a94c02fdae5b0faf6b609e3cfa9506",
+      "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38653082456",
+      "jobs": [
+        {
+          "id": 116156305441,
+          "name": "isolated-checks",
+          "status": "in_progress",
+          "conclusion": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-14T23:16:48Z",
+              "completed_at": "2026-10-14T23:16:50Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-14T23:16:50Z",
+              "completed_at": "2026-10-14T23:16:55Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-14T23:16:55Z",
+              "completed_at": "2026-10-14T23:16:57Z"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-14T23:16:57Z",
+              "completed_at": "2026-10-14T23:16:57Z"
+            },
+            {
+              "name": "Prepare existing runner Java and Android SDK",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-14T23:16:57Z",
+              "completed_at": "2026-10-14T23:17:08Z"
+            },
+            {
+              "name": "Verify Python filters and build APK from clean checkouts",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 6,
+              "started_at": "2026-10-14T23:17:08Z",
+              "completed_at": null
+            },
+            {
+              "name": "Print debug APK SHA-256",
+              "status": "pending",
+              "conclusion": null,
+              "number": 7,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Save optional debug APK (fresh-install/test only)",
+              "status": "pending",
+              "conclusion": null,
+              "number": 8,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Report unavailable optional APK artifact",
+              "status": "pending",
+              "conclusion": null,
+              "number": 9,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/setup-python@v5",
+              "status": "pending",
+              "conclusion": null,
+              "number": 16,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "pending",
+              "conclusion": null,
+              "number": 17,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "pending",
+              "conclusion": null,
+              "number": 18,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 38653082369,
+      "name": "Cloud emulator - stats inspector",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "8ad836bd40a94c02fdae5b0faf6b609e3cfa9506",
+      "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38653082369",
+      "jobs": [
+        {
+          "id": 116156304674,
+          "name": "stats-ui",
+          "status": "in_progress",
+          "conclusion": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-14T23:16:48Z",
+              "completed_at": "2026-10-14T23:16:51Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-14T23:16:51Z",
+              "completed_at": "2026-10-14T23:16:55Z"
+            },
+            {
+              "name": "Run actions/setup-java@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-14T23:16:55Z",
+              "completed_at": "2026-10-14T23:16:55Z"
+            },
+            {
+              "name": "Enable KVM on isolated Actions emulator",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-14T23:16:55Z",
+              "completed_at": "2026-10-14T23:16:55Z"
+            },
+            {
+              "name": "Release unused hosted-runner packages for API36 userdata",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-14T23:16:55Z",
+              "completed_at": "2026-10-14T23:17:07Z"
+            },
+            {
+              "name": "Build fixture instrumentation APKs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-14T23:17:07Z",
+              "completed_at": "2026-10-14T23:24:16Z"
+            },
+            {
+              "name": "Run reactivecircus/android-emulator-runner@v2",
+              "status": "in_progress",
+              "conclusion": null,
+              "number": 7,
+              "started_at": "2026-10-14T23:24:16Z",
+              "completed_at": null
+            },
+            {
+              "name": "Preserve instrumented results and emulator evidence",
+              "status": "pending",
+              "conclusion": null,
+              "number": 8,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Report unavailable emulator evidence artifact",
+              "status": "pending",
+              "conclusion": null,
+              "number": 9,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/setup-java@v4",
+              "status": "pending",
+              "conclusion": null,
+              "number": 17,
+              "started_at": null,
+              "completed_at": null
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "pending",
+              "conclusion": null,
+              "number": 18,
+              "started_at": null,
+              "completed_at": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 38652925949,
+      "name": "Cloud readiness - both repositories",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "94baedc616b39eeaa01edeafdce34e00874fb26d",
+      "html_url": "https://github.com/GitGayHub/e-monitor-android/actions/runs/38652925949",
+      "jobs": [
+        {
+          "id": 116155793371,
+          "name": "isolated-checks",
+          "status": "completed",
+          "conclusion": "success",
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1,
+              "started_at": "2026-10-14T23:15:19Z",
+              "completed_at": "2026-10-14T23:15:20Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2,
+              "started_at": "2026-10-14T23:15:20Z",
+              "completed_at": "2026-10-14T23:15:26Z"
+            },
+            {
+              "name": "Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3,
+              "started_at": "2026-10-14T23:15:26Z",
+              "completed_at": "2026-10-14T23:15:32Z"
+            },
+            {
+              "name": "Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4,
+              "started_at": "2026-10-14T23:15:32Z",
+              "completed_at": "2026-10-14T23:15:32Z"
+            },
+            {
+              "name": "Prepare existing runner Java and Android SDK",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5,
+              "started_at": "2026-10-14T23:15:32Z",
+              "completed_at": "2026-10-14T23:15:39Z"
+            },
+            {
+              "name": "Verify Python filters and build APK from clean checkouts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6,
+              "started_at": "2026-10-14T23:15:39Z",
+              "completed_at": "2026-10-14T23:23:08Z"
+            },
+            {
+              "name": "Print debug APK SHA-256",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7,
+              "started_at": "2026-10-14T23:23:08Z",
+              "completed_at": "2026-10-14T23:23:08Z"
+            },
+            {
+              "name": "Save optional debug APK (fresh-install/test only)",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8,
+              "started_at": "2026-10-14T23:23:08Z",
+              "completed_at": "2026-10-14T23:23:09Z"
+            },
+            {
+              "name": "Report unavailable optional APK artifact",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9,
+              "started_at": "2026-10-14T23:23:09Z",
+              "completed_at": "2026-10-14T23:23:09Z"
+            },
+            {
+              "name": "Post Run actions/setup-python@v5",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16,
+              "started_at": "2026-10-14T23:23:09Z",
+              "completed_at": "2026-10-14T23:23:10Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17,
+              "started_at": "2026-10-14T23:23:10Z",
+              "completed_at": "2026-10-14T23:23:10Z"
+            },
+            {
+              "name": "Post Run actions/checkout@v4",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18,
+              "started_at": "2026-10-14T23:23:10Z",
+              "completed_at": "2026-10-14T23:23:10Z"
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19,
+              "started_at": "2026-10-14T23:23:10Z",
+              "completed_at": "2026-10-14T23:23:10Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
