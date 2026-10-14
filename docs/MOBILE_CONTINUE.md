@@ -1,9 +1,7 @@
 # Продолжение eMonitor на ПК
 
-Настройка Cloud отменена; продолжается основная проверка APK и сервера. Начать с [актуального состояния](WORK_STATE.md). На ПК это `C:\VibeCoding\e-monitor-apk\android\docs\WORK_STATE.md`.
+Cloud-настройка отменена. Продолжать основную проверку из docs/WORK_STATE.md. На ПК Android: C:/VibeCoding/e-monitor-apk/android; бот: C:/VibeCoding/e-monitor.
 
-Текущая установленная APK082, правила1791992886, HistoryVersion4;341Python/312Android. Все50поисков сохранены. Публикация082 и реальный серверный проход ещё должны быть подтверждены. Каталог26активныхпрофилей/104корзины, общаяприёмкаPARTIAL.
+Установлена финальная0.083,правила1791992886,History4;341Python/318Android/9sync. ОбщаяприёмкаPARTIAL:26активныхпрофилей/104корзины. Все50настроек сохранены. Новыеобщиеусловия и обратимость стоп-слов проверены Room иUIредактора; Stats.verify liveещёнеподтверждён. Telegram120022/081 полностьюпрочитанвПКбезактивации,нетповтора. Runtime082применён,ноeBayerrorsсохраняются.
 
-В двухрепозиториях выполнять cloud_synccheck/apply согласно AGENTS, сохранять чужие изменения. Не reset/clean/pullслепо. GitHub API publisher: `C:\VibeCoding\e-monitor-apk\audit\2026-10-04\publish_integrated_oct9.py`. Roadcodex/cloud-work остаётся способом сохранения кода; QR/Remote и отдельнуюCloudнастройку не запускать.
-
-Телефон разрешён толькодляAPK, USBdevice через официальныйphone_adb.py. TelegramтолькоПК;неактивироватьокна. Chromeплагинпотерялподключение, запросвосстановленияожидается. ТестTelegram120022/081сфото не повторять: APIdeliveryconfirmed,fullcaptionвклиенте пока нет. Подробности, ограничения и следующий пункт — в WORK_STATE.
+Перед работой cloud_sync --check/apply поAGENTS безreset/clean/force и ссохранениемчужихchanges. Передпубликацией выполнить проверки и обновить WORK_STATE. Телефон разрешёнтолькоAPK,phone_adb.py/WinGet37.0.1/USBlegacy;TelegramтолькоПКвфоне. Chromeнеподключён,ужеестьpendingпросьбавосстановитьплагин. Данные,секреты,normal/recipient/seen сохранять. Не утверждатьполнуюприёмкупоunit-тестам.
