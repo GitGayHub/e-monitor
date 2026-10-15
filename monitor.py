@@ -5768,12 +5768,40 @@ def _shipping_estimate_matches_destination(details, settings, cost):
     return False
 
 
+def _description_pickup_only(raw):
+    """Explicit own seller restriction, not optional collection or review text."""
+    text = _normalize(_clean_description(raw or ""))
+    pattern = r"\b(?:nur\s+(?:selbst)?abholung|(?:local\s+)?(?:pickup|collection)(?:\s+in\s+person)?\s+only|only\s+(?:local\s+)?(?:pickup|collection)(?:\s+in\s+person)?|kein(?:en)?\s+versand|no\s+shipping)\b"
+    for match in re.finditer(pattern, text):
+        before, after = text[:match.start()], text[match.end():]
+        if re.search(r"\b(?:nicht|not)\s*$", before):
+            continue
+        if re.match(r"\s+(?:der|des|ist\s+nicht|is\s+not|nicht\s+mehr|not\s+required|(?:oder|or)\s+(?:versand|lieferung|shipping|delivery))\b", after):
+            continue
+        if re.match(r"(?:kein(?:en)?\s+versand|no\s+shipping)", match.group()) and not re.match(r"\s*(?:$|[,.;!?]|moeglich\b|available\b|angeboten\b|offered\b)", after):
+            continue
+        return True
+    return False
+
+
+def _details_pickup_only(details, previous=False):
+    if _description_pickup_only(details.get("description")):
+        return True
+    if "htmlPickupOnly" in details:
+        return bool(details["htmlPickupOnly"])
+    if "shippingOptions" in details:
+        delivery = any(opt.get("shippingType", "").upper() != "LOCAL_PICKUP" and "pickup" not in opt.get("shippingServiceCode", "").lower() for opt in details.get("shippingOptions") or [])
+        return bool(details.get("pickupOptions") or details.get("localPickup")) and not delivery
+    return previous
+
+
 def _calculate_total(item, settings, details=None):
     """Calculate total price including import duties for non-EU items.
 
     Supports separate calculation for bin_price and auc_price in hybrid listings.
     """
     if details:
+        item["is_pickup_only"] = _details_pickup_only(details, item.get("is_pickup_only", False))
         # Refresh the own auction count, including an explicit zero. Missing or
         # malformed metadata must not invent a zero from unrelated bidders.
         bid_count = details.get("bidCount")
@@ -5843,6 +5871,10 @@ def _calculate_total(item, settings, details=None):
         elif api_shipping is not None and (verified_delivery or api_shipping > 0 or existing_shipping <= 0):
             item["shipping_cost"] = api_shipping
 
+    # A seller's explicit collection-only condition overrides the automatic
+    # shipping quote. Pickup has no parcel cost; distance is checked after refresh.
+    if item.get("is_pickup_only"):
+        item["shipping_cost"] = 0.0
     shipping = item.get("shipping_cost") or 0.0
     # This is a pricing estimate, not a fee quoted by eBay. Recompute after
     # every details refresh so a newly quoted amount (including zero) clears it.
@@ -6081,12 +6113,6 @@ def _refresh_candidate_details(item, details, settings, search=None):
     image = (details.get("image") or {}).get("imageUrl")
     if image:
         item["image_url"] = image
-    if "htmlPickupOnly" in details:
-        item["is_pickup_only"] = bool(details["htmlPickupOnly"])
-    elif "shippingOptions" in details:
-        shipping_options = details.get("shippingOptions") or []
-        delivery = any(opt.get("shippingType", "").upper() != "LOCAL_PICKUP" and "pickup" not in opt.get("shippingServiceCode", "").lower() for opt in shipping_options)
-        item["is_pickup_only"] = bool(details.get("pickupOptions") or details.get("localPickup")) and not delivery
     seller = details.get("seller") or {}
     if seller.get("username"):
         item["seller_name"] = seller["username"]
