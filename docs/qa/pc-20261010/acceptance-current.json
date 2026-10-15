@@ -1975,10 +1975,10 @@
   ],
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
-    "physicalPhone": "authorized again by owner;078 installed",
-    "telegram": "PC background, user opened bot",
-    "emulator": "authorized",
-    "pcWindowActivation": "not authorized"
+    "target": "cloud",
+    "physicalPhoneAllowed": false,
+    "localEmulatorOnly": true,
+    "localTelegramReadOnlyBackground": true
   },
   "newOpenFindings": [
     {
@@ -2167,6 +2167,17 @@
     },
     "allThreeCI": "success",
     "telegramNew090Confirmed": false,
+    "acceptanceComplete": false
+  },
+  "cloudHandoff090": {
+    "emulatorPriceRestored": true,
+    "testMessage": 120029,
+    "apiPhotoConfirmed": true,
+    "clientConfirmed": false,
+    "automaticFeedReceipts": [
+      120027,
+      120028
+    ],
     "acceptanceComplete": false
   }
 }
