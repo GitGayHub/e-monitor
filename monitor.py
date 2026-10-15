@@ -1782,6 +1782,13 @@ def _phone_description_refurbished(description):
 
 
 def _phone_packaging_only(text):
+    # 237125562884: a model-led box title is not enough to spot packaging,
+    # but its own seller body explicitly says that no handset is supplied.
+    if re.search(r"\b(?:originalverpac\s*kung|verpackung|ovp|box|schachtel)\b", text):
+        for absent in re.finditer(r"\b(?:ohne|kein(?:e|en)?|without|no)\s+(?:(?:ein|eine|einen|a|an|the)\s+)?(?:handy|smartphone|telefon|iphone|mobile\s+phone|phone)\b(?!\s*(?:vertrag|contract|lock|sperre))", text):
+            before = text[max(0, absent.start()-15):absent.start()]
+            if not re.search(r"\b(?:nicht|not)\s+$", before):
+                return True
     # Model and capacity can describe an empty retail box (237086192631).
     # Plain OVP / originalverpackt remain valid handset condition markers.
     for match in re.finditer(r"\b(?:ovp\s*[/|]\s*box|box\s*[/|]?\s*originalverpac\s*kung|empty\s+box|box\s+only)\b|^(?:(?:die|eine|the)\s+)?(?:originalverpackung|leerverpackung)\b", text):

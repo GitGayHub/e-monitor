@@ -3,6 +3,9 @@ from pathlib import Path
 import monitor
 
 class PhonePackagingTest(unittest.TestCase):
+    def test_own_box_without_handset_is_not_a_phone_bundle_or_contract(self):
+        for body,expected in [('Apple iPhone 17 Pro Max Originalverpackung in der Farbe Cosmic Orange. - Ohne Handy',True),('OVP ohne Smartphone.',True),('Originalverpackung. No phone included.',True),('iPhone mit OVP, ohne Handyvertrag.',False),('iPhone mit OVP, ohne Vertrag.',False),('Phone with box, without phone lock.',False),('Telefon mit Originalverpackung. Nicht ohne Handy.',False),('iPhone 17 Pro Max in Originalverpackung. Das Handy funktioniert.',False)]:
+            self.assertEqual(expected,monitor._phone_packaging_only(monitor._normalize(body)),body)
     def test_seller_declared_refurbished_does_not_require_header_agreement(self):
         for body,expected in [('Zustand: Hervorragend - Refurbished',True),('Artikelzustand: Sehr gut - Refurbished',True),('Condition: Excellent - Refurbished',True),('Neues Gerät. Professionell geprüft und aufbereitet. Zubehör wird bei Bedarf ersetzt.',False),('Zustand: Neu. Kein Refurbished Gerät.',False)]:
             self.assertEqual(expected,monitor._phone_description_refurbished(body),body)
@@ -19,7 +22,7 @@ class PhonePackagingTest(unittest.TestCase):
                 self.assertEqual(c['accessory'],monitor._is_phone_accessory_title(monitor._normalize(c['title'])))
                 for auction,offer in [(False,False),(False,True),(True,False),(True,True)]:
                     d={'title':c['title'],'description':c['description'],'categoryId':'9355','condition':'Gebraucht','buyingOptions':['AUCTION' if auction else 'FIXED_PRICE']+(['BEST_OFFER'] if offer else [])}
-                    search={'query':'samsung galaxy s25 edge','filters':{'category':'phones','listing_type':'auction' if auction else 'buy_now','best_offer':offer}}
+                    search={'query':c.get('query','samsung galaxy s25 edge'),'filters':{'category':'phones','listing_type':'auction' if auction else 'buy_now','best_offer':offer}}
                     item={'item_id':c['id'],'title':c['title']}
                     self.assertEqual(c['accepted'],bool(monitor._details_match_contract(item,search,d)),(c['id'],auction,offer))
                     d['estimatedAvailabilities']=[{'estimatedAvailabilityStatus':'UNAVAILABLE'}]
