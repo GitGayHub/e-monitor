@@ -2123,7 +2123,7 @@ def _is_phone_accessory_title(title_norm):
             return True
 
     # Standalone bundle indicator checks
-    is_bundle = re.search(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)", title_norm) is not None
+    is_bundle = re.search(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)|\|(?=\s*zubehoer(?:paket)?\b)", title_norm) is not None
 
     # Battery words can sometimes be description of battery health (e.g. "100% Akku")
     # rather than a replacement battery.
@@ -2142,7 +2142,7 @@ def _is_phone_accessory_title(title_norm):
     has_hard_part = any(_has_accessory_term(title_norm, w) for w in hard_parts_to_check)
     if has_hard_part:
         if is_bundle and _title_leads_with_phone_model(title_norm):
-            sep_pattern = re.compile(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
+            sep_pattern = re.compile(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)|\|(?=\s*zubehoer(?:paket)?\b)")
             m = sep_pattern.search(title_norm)
             if m:
                 before_sep = title_norm[:m.start()]
@@ -2166,7 +2166,7 @@ def _is_phone_accessory_title(title_norm):
         return False
     if has_acc:
         if is_bundle and _title_leads_with_phone_model(title_norm):
-            sep_pattern = re.compile(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)")
+            sep_pattern = re.compile(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)|\|(?=\s*zubehoer(?:paket)?\b)")
             m = sep_pattern.search(title_norm)
             if m:
                 before_sep = title_norm[:m.start()]
@@ -5448,6 +5448,35 @@ def _has_port_failure(text):
                for pattern in patterns for m in re.finditer(pattern, text))
 
 
+def _phone_repair_label(description):
+    """Actual completed handset service, not a future warranty or factory fit."""
+    text = _normalize(_clean_description(description or ""))
+    panel = r"(?:display|bildschirm|screen|oled)"
+    fresh = r"(?:nagelneu\w*|neu\w*|brand[ -]+new|new)"
+    fitted = r"(?:verbaut|eingebaut|eingesetzt|installed|fitted)"
+    past = r"(?:wurde|wurden|was|were|has\s+been|have\s+been)"
+    patterns = [
+        rf"\b{past}\b[^.!?]{{0,30}}\b{fresh}\s+(?:original[ -]+)?{panel}\b[^.!?]{{0,100}}\b{fitted}\b",
+        rf"\b{fresh}\s+(?:original[ -]+)?{panel}\b[^.!?]{{0,40}}\b{past}\b[^.!?]{{0,30}}\b{fitted}\b",
+        rf"\b{panel}\b[^.!?]{{0,50}}\bnewly\s+{fitted}\b",
+    ]
+    previous = r"\b(?:vorheriges|altes|previous|old)\s+(?:iphone|phone|handy|smartphone|geraet)\b"
+    factory = r"\b(?:werksseitig|ab\s+werk|factory[- ](?:fitted|installed)|from\s+the\s+factory)\b"
+    def before_clause(at,limit):
+        return re.split(r"[.!?]",text[max(0,at-limit):at])[-1]
+    for pattern in patterns:
+        for m in re.finditer(pattern,text):
+            before=before_clause(m.start(),80)
+            if not re.search(r"\b(?:nicht|nie|kein\w*|not|never|no)\b",m.group()) and not re.search(r"\b(?:can|could|will|would|may|might|kann|koennen|soll)\b",m.group()) and not re.search(factory,before+m.group()) and not re.search(previous,before):
+                return "замена дисплея в описании"
+    maker = r"\b(?:vom|von\s+dem)\s+(?:hersteller|google|apple|samsung)\s+repariert\b|\brepaired\s+by\s+(?:(?:the|an?\s+official)\s+)?(?:manufacturer|google|apple|samsung)\b"
+    for m in re.finditer(maker,text):
+        before=before_clause(m.start(),45)
+        if not re.search(r"\b(?:nicht(?:\s+mehr)?|nie|not(?:\s+ever)?|never)\s+$",before) and not re.search(r"\b(?:kann|koennen|wird|werden|can|could|will|would)\b[^.!?]{0,30}$",before) and not re.search(previous,before):
+            return "ремонт устройства производителем в описании"
+    return None
+
+
 def _is_description_blocked(desc_html, category):
     """Checks the description for bad condition keywords or lifting screen/backcover patterns."""
     if not desc_html:
@@ -5455,6 +5484,8 @@ def _is_description_blocked(desc_html, category):
     desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+    if category == "phones" and _phone_repair_label(clean_desc):
+        return True
     # 198304841229: clear lines describe the PC case's minimalist design,
     # not screen artefacts. Remove only this exact positive design clause.
     desc_norm = re.sub(r"\bminimalistisches\s+design\s*[-–—:]\s*hochwertige\s+materialien,?\s*klare\s+linien\b", " ", desc_norm)
