@@ -39,6 +39,7 @@ def main():
         modules.append("test_phone_bundle_defect")
         modules.append("test_description_pickup")
         modules.append("test_phone_packaging")
+        modules.append("test_selected_phone_variant")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)

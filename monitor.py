@@ -17,6 +17,7 @@ import sys
 import argparse
 import asyncio
 import json
+import selected_variant
 import html
 import hashlib
 import subprocess
@@ -1311,6 +1312,9 @@ def _query_match_plan(query):
 
 def _query_matches_title(title_norm, query):
     query_norm = _normalize(query)
+    if _is_phone_search_query(_phone_model_spacing(query_norm)):
+        title_norm = _phone_model_spacing(title_norm)
+        query = _phone_model_spacing(query)
     # RedMagic model must sit next to the brand — bare "11" later in the title
     # (compat list / chipset) is not a match for "Redmagic 11 Pro".
     if "redmagic" in query_norm or "red magic" in query_norm:
@@ -1702,6 +1706,10 @@ _IPHONE_PRO_MAX_CODES = {
 }  # https://support.apple.com/en-us/108044, checked 2026-10-05
 
 
+def _phone_model_spacing(text):
+    return re.sub(r"\bs\s+(\d{2})\b", r"s\1", text)
+
+
 _PHONE_MODEL_PATTERNS = (
     r"\biphone\s*(\d{1,2}|xs|xr|x|se)(?:\s*(pro\s*max|pro|max|plus|mini|air|se))?\b",
     r"\b(?:galaxy\s*)?s(\d{2})(?:\s*(ultra|plus|fe|edge))?\b",
@@ -1713,7 +1721,7 @@ _PHONE_MODEL_PATTERNS = (
 
 
 def _phone_model_aspect_matches(value, query):
-    value, query = _normalize(value), _normalize(query)
+    value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
     # Own Model often abbreviates a verified Nubia title as "Z80 Ultra".
     # Expand only that aspect, retaining generation/S/Leading comparisons.
     if "nubia" in query and re.match(r"^z\s*\d{2}[a-z]?\b", value):
@@ -1747,7 +1755,7 @@ def _phone_chipset_matches(value, query):
 
 def _phone_model_number_matches(value, query):
     """Code fields can abbreviate a family (S25); explicit conflicts still fail."""
-    value, query = _normalize(value), _normalize(query)
+    value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
     for pattern in _PHONE_MODEL_PATTERNS:
         actual, wanted = re.search(pattern,value), re.search(pattern,query)
         if actual and wanted:
@@ -1841,6 +1849,7 @@ def _phone_specifications_match(title, description, query):
 
 
 def _matches_phone_query_model(title_norm, query_norm):
+    title_norm, query_norm = _phone_model_spacing(title_norm), _phone_model_spacing(query_norm)
     # A seller can name the camera used for listing photographs, not a second
     # handset in the sale (298705766786). Keep competing models elsewhere.
     title_norm = re.sub(r"\b(?:fotos?|bilder|photos?|pictures)\s+(?:wurden\s+)?mit\s+[^.!?]{1,60}\s+(?:gemacht|aufgenommen)\b", " ", title_norm)
@@ -1861,10 +1870,13 @@ def _matches_phone_query_model(title_norm, query_norm):
         if not actual or signature(wanted) != signature(actual):
             return False
         break
+    # Google Play names the app service, not a competing Google handset.
+    title_norm = re.sub(r"\bgoogle\s+play(?:\s+store)?\b", " ", title_norm)
     # Brand cross-exclusion check (e.g. reject HTC U11 matching Google Pixel 5)
+    brand_query = re.sub(r"\bgoogle\s+play(?:\s+store)?\b", " ", query_norm)
     query_brands = set()
     for b in ("pixel", "google", "iphone", "apple", "samsung", "galaxy", "oneplus", "nubia", "redmagic", "red magic", "xiaomi", "redmi", "huawei", "honor", "oppo", "realme", "sony", "xperia", "motorola", "moto", "lg", "htc", "nokia", "asus", "rog"):
-        if b in query_norm:
+        if b in brand_query:
             query_brands.add(b)
             if b == "pixel": query_brands.add("google")
             if b == "google": query_brands.add("pixel")
@@ -5110,7 +5122,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
             seller["sellerAccountType"] = "INDIVIDUAL"
         result["seller"] = seller
 
-    return result
+    return selected_variant.enrich(soup, result)
 
 
 _item_details_cache = {}
@@ -6121,7 +6133,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             if "iphone" in query and name in ("betriebssystem", "operating system") and "android" in value:
                 return False
     return not (
-        details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS"
+        (details.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS" and not (category == "phones" and selected_variant.matches(details, item.get("item_id"), _intent_query(search))))
         or _is_details_blocked(details, search)
         or _is_description_blocked(details.get("description", ""), category)
         or not _intent_details_match(search, item, details)
@@ -6156,6 +6168,9 @@ def _refresh_candidate_details(item, details, settings, search=None):
     _calculate_total(item, settings, details)
     item["_details_loaded"] = True
     _refresh_candidate_metadata(item, details)
+    if selected_variant.valid(details, item.get("item_id")):
+        item["url"] = details["selectedVariant"]["url"]
+        item["is_multivariation"] = False
     if details.get("title"):
         item["title"] = details["title"]
     if details.get("condition") or details.get("itemCondition"):

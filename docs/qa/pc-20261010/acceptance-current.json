@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-15T10:46:29.856173+00:00",
+  "updatedAt": "2026-10-15T18:39:12.590147+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
   "apkVersion": "0.090",
@@ -1012,7 +1012,9 @@
           "url": "https://www.ebay.de/itm/306294088377?_skw=nubia+z70+ultra&hash=item47508ce2b9:g:5ywAAOSwwgJoHcUl",
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": 275.30999999999995
+          "estimatedImportCharges": 275.30999999999995,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Sofort+",
@@ -1021,7 +1023,9 @@
           "url": "https://www.ebay.de/itm/128040520757?_skw=nubia+z70+ultra&hash=item1dcfcf4c35:g:CE4AAeSwFLNqixdM",
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": null
+          "estimatedImportCharges": null,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion",
@@ -1030,7 +1034,9 @@
           "url": null,
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": null
+          "estimatedImportCharges": null,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion+",
@@ -1039,14 +1045,33 @@
           "url": null,
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": null
+          "estimatedImportCharges": null,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         }
       ],
       "remaining": [
-        "Fix confirmed whole-device variant false rejection267736285233 before accepting minima",
+        "0.092 selected-capacity fix passed local paired replay; review/apply on PC, then verify current complete catalogue. No minimum certified.",
         "Complete aliases/all sale profiles and per-candidate comparison",
         "Actual import quote remains unknown"
-      ]
+      ],
+      "cloudAudit092": {
+        "observedAtUtc": "2026-10-15T18:06:11.960918+00:00",
+        "ownBodies": 1,
+        "itemId": "267736285233",
+        "selectedVariantId": "567540570817",
+        "selectedCapacity": "512GB / 16GB RAM",
+        "price": 777,
+        "shipping": 25,
+        "importEstimated": 189.46,
+        "totalEstimated": 991.46,
+        "notifyLimit": 325,
+        "verdict": "over_limit",
+        "currentImportQuoteVerified": false,
+        "minimumVerified": false,
+        "evidence": "../cloud-20261015/nubia092.json",
+        "pairedReplay": "success"
+      }
     },
     {
       "key": "nubia_z70s_ultra",
@@ -1756,7 +1781,9 @@
           "total": 499.9,
           "url": "https://www.ebay.de/itm/198611296847?_skw=samsung+galaxy+s24+ultra&hash=item2e3e27e24f:g:FeQAAeSwxZRqlztJ",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Sofort+",
@@ -1764,7 +1791,9 @@
           "total": 466.19,
           "url": "https://www.ebay.de/itm/298435287203?_skw=samsung+galaxy+s24+ultra&hash=item457c2118a3:g:wYQAAeSw8ShqLdn7",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion",
@@ -1772,7 +1801,9 @@
           "total": 121.08,
           "url": "https://www.ebay.de/itm/287642663040?_skw=samsung+galaxy+s24+ultra&hash=item42f8d6b880:g:uUoAAeSwa3RqzFpF",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion+",
@@ -1780,7 +1811,9 @@
           "total": 5.5,
           "url": "https://www.ebay.de/itm/920033013392?_skw=samsung+galaxy+s24+ultra&hash=itemd6363dae90:g:ak8AAeSwE3tqzQKE",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         }
       ],
       "remaining": [
@@ -1788,7 +1821,20 @@
         "Сопоставление всех ручных ID и причин с APK/сервером",
         "Более дешёвые пропуски, price/shipping/import refresh",
         "Подтверждение права уведомления и действующих этапов"
-      ]
+      ],
+      "cloudAudit092": {
+        "observedAtUtc": "2026-10-15T18:06:17+00:00",
+        "ownSerpCardsReviewed": 120,
+        "ownFullDescriptions": 0,
+        "manualRefurbishedRefusals": 29,
+        "manualUnboundRangeRefusals": 16,
+        "preliminaryOnlyAccepted": 69,
+        "status": "BLOCKED",
+        "minimumVerified": false,
+        "aliasesComplete": false,
+        "blocker": "Auction search and one direct item attempt returned splashui/challenge; stopped requests.",
+        "evidence": "../cloud-20261015/s24-serp092.json"
+      }
     },
     {
       "key": "sony_ult_wear",
@@ -2200,5 +2246,40 @@
     "build": "success",
     "privatePairedLiveDetails": 2,
     "ciStatus": "pending latest test checkpoint"
+  },
+  "latestCloudStage092": {
+    "versionName": "0.092",
+    "versionCode": 92,
+    "logicVersion": 1792088387,
+    "historyVersion": 12,
+    "pythonTests": 366,
+    "android": {
+      "tests": 343,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "syncTests": 9,
+    "build": "success",
+    "apkSha256": "5460cb1fbc88f68f3d75de4b8e315ba2ef90eecb792a87c10f23bc08b911ada5",
+    "apkBytes": 70491179,
+    "privateFullNubiaReplay": {
+      "python": 1,
+      "android": 1,
+      "result": "success",
+      "sameSavedOwnDescription": true
+    },
+    "ciStatus": "awaiting publication",
+    "installed": false,
+    "productionApplied": false,
+    "acceptanceComplete": false,
+    "verifiedAtUtc": "2026-10-15T18:39:12.590147+00:00",
+    "manualOwnBodies": 1,
+    "s24RealSerpItems": 120,
+    "s24OwnDescriptions": 0,
+    "s24RetrievalStatus": "BLOCKED",
+    "report": "docs/qa/cloud-20261015/REPORT_092.md",
+    "serverApplied": false,
+    "telegramSent": false
   }
 }
