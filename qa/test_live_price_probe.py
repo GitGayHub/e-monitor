@@ -1,0 +1,63 @@
+import asyncio
+import copy
+import unittest
+from unittest.mock import AsyncMock, Mock
+from qa.live_price_probe import deliver_once, validate_snapshot, fingerprint
+
+
+class DurableStore:
+    def __init__(self):
+        self.rows = {}
+        self.fail_claim = False
+
+    def receipts(self):
+        return copy.deepcopy(self.rows), 'sha'
+
+    def write(self, rows, sha):
+        if self.fail_claim:
+            raise TimeoutError('unknown commit result')
+        self.rows = copy.deepcopy(rows)
+        return 'updated'
+
+
+class PriceProbeTests(unittest.TestCase):
+    def test_actual_applied_revision_and_both_variants_are_required(self):
+        revision = '48b8e24e-2e4e-46cf-a9f2-bd666dce8fb6'
+        ids = ['lg_ultragear_oled_480hz_buy', 'lg_ultragear_oled_480hz_auc']
+        cfg = {'mobile_settings_revision': revision, 'searches': [{'id': i, 'filters': {'limit_price': 429}} for i in ids]}
+        manifest = {'settingsRevision': revision, 'searches': [{'id': i, 'maxPrice': 429} for i in ids]}
+        runtime = {'settingsRevision': revision, 'logicVersion': 123, 'configFingerprint': fingerprint(cfg)}
+        meta = {'logicVersion': 123}
+        self.assertEqual(ids[0], validate_snapshot(cfg, runtime, manifest, meta, 'normal', revision, 429)['id'])
+        for target, key, value in [(runtime, 'settingsRevision', 'old'), (runtime, 'configFingerprint', 'old'),
+                                   (runtime, 'logicVersion', 122), (manifest['searches'][1], 'maxPrice', 430)]:
+            old = target[key]; target[key] = value
+            with self.assertRaises(ValueError):
+                validate_snapshot(cfg, runtime, manifest, meta, 'normal', revision, 429)
+            target[key] = old
+
+    def test_confirmed_photo_is_not_resent_after_a_fresh_runner(self):
+        store = DurableStore()
+        send = AsyncMock(return_value=Mock(message_id=987, photo=['photo']))
+        first = asyncio.run(deliver_once(store, 'lg-price-case', {'limit': 429}, send))
+        self.assertEqual('photo_confirmed', first['status'])
+        again = DurableStore(); again.rows = copy.deepcopy(store.rows)
+        repeat = asyncio.run(deliver_once(again, 'lg-price-case', {'limit': 429}, send))
+        self.assertTrue(repeat['duplicateSuppressed']); send.assert_awaited_once()
+
+    def test_failed_durable_claim_never_calls_telegram(self):
+        store = DurableStore(); store.fail_claim = True
+        send = AsyncMock()
+        with self.assertRaises(TimeoutError):
+            asyncio.run(deliver_once(store, 'lg-price-case', {}, send))
+        send.assert_not_awaited()
+
+    def test_ambiguous_or_incomplete_acknowledgement_cannot_send_again(self):
+        for no_photo in [False, True]:
+            store = DurableStore()
+            send = AsyncMock(return_value=Mock(message_id=987, photo=[])) if no_photo else AsyncMock(side_effect=TimeoutError())
+            with self.assertRaises((TimeoutError, RuntimeError)):
+                asyncio.run(deliver_once(store, 'lg-price-case', {}, send))
+            self.assertEqual('uncertain_do_not_retry', store.rows['lg-price-case']['status'])
+            self.assertTrue(asyncio.run(deliver_once(store, 'lg-price-case', {}, send))['duplicateSuppressed'])
+            send.assert_awaited_once()

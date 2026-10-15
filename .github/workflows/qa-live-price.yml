@@ -1,0 +1,54 @@
+name: Explicit LG price delivery QA
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Exact APK settings revision already applied by monitor
+        required: true
+        type: string
+      limit:
+        description: Authorized temporary LG group limit
+        required: true
+        type: choice
+        options: ['429', '430']
+      request_id:
+        description: Unique lg-price- request; any earlier claim prevents resending
+        required: true
+        type: string
+      send:
+        description: Send one explicitly labelled photo after all guards pass
+        type: boolean
+        default: false
+concurrency:
+  group: explicit-lg-price-qa
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  verify_and_deliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Verify active revision and perform one isolated control
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || github.token }}
+          CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          QA_SETTINGS_REVISION: ${{ inputs.revision }}
+          QA_EXPECTED_LIMIT: ${{ inputs.limit }}
+          QA_REQUEST_ID: ${{ inputs.request_id }}
+          QA_SEND: ${{ inputs.send }}
+          EBAY_SOURCE: html
+          EBAY_HTML_PLAYWRIGHT: '1'
+          EBAY_MARKETPLACE_ID: EBAY_DE
+        run: python qa/live_price_probe.py
