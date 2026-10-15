@@ -33,7 +33,7 @@
   "publication086Pending": false,
   "runtimeVersionConfirmed": 1792059553,
   "newTelegram086Confirmed": false,
-  "remaining": "WORK_STATE.md / REPORT_090.md",
+  "remaining": "CLOUD_NEXT.md / WORK_STATE.md",
   "publication086": {
     "bot": "9d565e88fcbdc0a7ad58ce5666b5fc7e3694cd71",
     "android": "94baedc616b39eeaa01edeafdce34e00874fb26d",
@@ -69,7 +69,10 @@
   "publication089Pending": false,
   "telegramClientReceiptsConfirmed": [
     120025,
-    120026
+    120026,
+    120027,
+    120028,
+    120029
   ],
   "newTelegram089Confirmed": false,
   "publication089": {
@@ -96,5 +99,120 @@
     "bot-cloud": "1d1bffc9ced8444342d3400a36a6705c17665c02",
     "android-cloud": "038fc5187eaca4b9a009348179a2ef28e2c67d37"
   },
-  "newTelegram090Confirmed": false
+  "newTelegram090Confirmed": false,
+  "latestUserTarget": "pc",
+  "physicalPhoneAllowed": true,
+  "localEmulatorInstalled": "0.090",
+  "emulatorPriceReverted": true,
+  "newTelegram090ApiConfirmed": 120029,
+  "newTelegram090ClientConfirmed": true,
+  "automatic090FeedReceipts": [
+    120027,
+    120028
+  ],
+  "cloudStage091": {
+    "versionName": "0.091",
+    "versionCode": 91,
+    "logicVersion": 1792085545,
+    "historyVersion": 11,
+    "installed": false,
+    "serverApplied": false,
+    "telegramSent": false,
+    "pythonTests": 362,
+    "syncTests": 9,
+    "androidStatus": "success",
+    "acceptanceComplete": false,
+    "report": "docs/qa/cloud-20261015/REPORT_091.md",
+    "openFinding": null,
+    "baseBotCommit": "c96a1571b25a4f3086d594b60be8ef368e819e05",
+    "baseAndroidCommit": "95036075efde077019d64bbcf118c773fc6542b6",
+    "shippingDestinationFix": true,
+    "androidTests": 339,
+    "build": "success",
+    "apkSha256": "62abc450775cfaf2e2fea54a71669c771a58fcd566ad02281e7337e4d40d56b0",
+    "privatePairedLiveDetails": 2,
+    "botCodeCommit": "ea2b00ea9ae09b8000a658501a940ab7938ce694",
+    "androidCodeCommit": "9cb67f44546ce245fa161b687bbe13bc67eb779f",
+    "ciStatus": "success",
+    "ci": {
+      "headSha": "29a52d7542d8fa8d2bd4799ee50616afa7e3b5e8",
+      "readinessRun": 38779957363,
+      "emulatorRun": 38779957334,
+      "status": "success",
+      "note": "Local 362 Python / 339 Android / 9 sync / APK build and 2 private paired detail cases passed; readiness and emulator jobs for 29a52d7542d8fa8d2bd4799ee50616afa7e3b5e8 both completed successfully."
+    }
+  },
+  "cloudStage092": {
+    "versionName": "0.092",
+    "versionCode": 92,
+    "logicVersion": 1792088387,
+    "historyVersion": 12,
+    "pythonTests": 366,
+    "android": {
+      "tests": 343,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "syncTests": 9,
+    "build": "success",
+    "apkSha256": "5460cb1fbc88f68f3d75de4b8e315ba2ef90eecb792a87c10f23bc08b911ada5",
+    "apkBytes": 70491247,
+    "privateFullNubiaReplay": {
+      "python": 1,
+      "android": 1,
+      "result": "success",
+      "sameSavedOwnDescription": true
+    },
+    "ciStatus": "success",
+    "installed": false,
+    "productionApplied": false,
+    "acceptanceComplete": false,
+    "verifiedAtUtc": "2026-10-15T18:40:56.583219+00:00",
+    "manualOwnBodies": 1,
+    "s24RealSerpItems": 120,
+    "s24OwnDescriptions": 0,
+    "s24RetrievalStatus": "BLOCKED",
+    "report": "docs/qa/cloud-20261015/REPORT_092.md",
+    "serverApplied": false,
+    "telegramSent": false,
+    "ci": {
+      "status": "success",
+      "headSha": "af24acd324a772fe8f8d171cb05112cd5f85a003",
+      "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
+      "readinessRun": 38787776084,
+      "readinessJob": 116604131636,
+      "emulatorRun": 38787776085,
+      "emulatorJob": 116608964284,
+      "emulatorFirstAttempt": {
+        "status": "failure",
+        "cause": "Android Emulator SDK archive failed to unpack before boot; no UI tests ran",
+        "failedJob": 116604131645
+      },
+      "emulatorRerunRequested": true,
+      "emulatorAttempt": 2,
+      "emulatorStatus": "success",
+      "emulatorUiTests": 5,
+      "optionalUiArtifactStored": false,
+      "readinessStatus": "success",
+      "ciApkSha256": "2b494ab05b5a195f2d483336f41d2bcdd2c97986ecfba9f6c11a35730e13456a",
+      "optionalApkArtifactStored": false,
+      "artifactBlocker": "GitHub Actions artifact storage quota exceeded; existing artifacts preserved; local QA APK available separately.",
+      "note": "Tests/build refer to these exact code/test commits. Subsequent changes only update reports and acceptance inventory; installed APK/production remain0.090."
+    },
+    "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
+    "androidCodeCommit": "af24acd324a772fe8f8d171cb05112cd5f85a003",
+    "ciObservedAtUtc": "2026-10-15T19:08:42.502047+00:00"
+  },
+  "pcReturn093": {
+    "cloudApplied": true,
+    "tests092": {
+      "python": 366,
+      "android": 343,
+      "sync": 9,
+      "build": "success"
+    },
+    "installation": "pending",
+    "newFalsePositiveMessage": 120031
+  }
 }

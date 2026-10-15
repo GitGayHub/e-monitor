@@ -4,6 +4,22 @@ from unittest.mock import patch
 import monitor
 
 class DescriptionPickupTest(unittest.TestCase):
+    def test_destination_warning_is_not_global_pickup_and_retains_known_delivery(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/shipping_destination_oct15.json').read_text(encoding='utf8'))
+        for case in cases:
+            for auction,offer in [(False,False),(False,True),(True,False),(True,True)]:
+                html='<div class="ux-labels-values--shipping">'+case['text']+'</div>'
+                d=monitor._parse_item_details_html(html,description='Whole working device.')
+                if not case['pickupOnly']:
+                    self.assertIsNot(True,d.get('htmlPickupOnly'),case['id'])
+                item={'item_id':case['id'],'title':'Apple iPhone 17 Pro Max','price':732,'shipping_cost':8.99,
+                      'buy_now':not auction,'auction':auction,'best_offer':offer,'is_pickup_only':False,'location':'DE'}
+                monitor._refresh_candidate_details(item,d,{'warn_non_eu':False})
+                with self.subTest(id=case['id'],auction=auction,offer=offer):
+                    self.assertEqual(case['pickupOnly'],item['is_pickup_only'])
+                    self.assertAlmostEqual(0 if case['pickupOnly'] else 8.99,item['shipping_cost'])
+                    self.assertAlmostEqual(732 if case['pickupOnly'] else 740.99,item['total_price'])
+
     def test_own_seller_delivery_overrides_header_in_all_baskets(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/description_pickup_oct15.json').read_text(encoding='utf8'))['cases']
         for c in cases:

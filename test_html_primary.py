@@ -17,6 +17,54 @@ class HtmlPrimaryTest(unittest.TestCase):
             self.assertFalse(accepted);self.assertEqual('unavailable_price',item['_details_status'])
             self.assertFalse(asyncio.run(monitor._process_notify_candidate(None,item,self.search,{},'initial')))
             send.assert_not_called()
+    def test_rejected_details_refresh_seller_and_photo_without_accepting_or_replacing_price(self):
+        seller_case=json.loads((Path(__file__).parent/'qa/fixtures/html_seller.json').read_text(encoding='utf8'))[0]
+        own_photo='https://i.ebayimg.com/images/g/own/s-l1600.jpg'
+        html=seller_case['html'] + f'<meta property="og:image" content="{own_photo}">'
+        details=monitor._parse_item_details_html(html,description='Der Controller ist defekt. Stickdrift, nur als Ersatzteil.')
+        item={'item_id':'128121409205','title':'Sony DualSense Wireless Controller','price':30.0,
+              'seller_name':'unknown','image_url':'old','_details_status':'preliminary'}
+        with patch.object(monitor,'_fetch_item_details',return_value=details) as fetch, \
+             patch.object(monitor,'_refresh_candidate_details') as refresh, \
+             patch.object(monitor,'send_notification') as send:
+            accepted,returned=asyncio.run(monitor._validate_candidate(item,{'query':'DualSense','filters':{}}))
+            self.assertFalse(accepted)
+            self.assertIs(details,returned)
+            self.assertEqual('rejected',item['_details_status'])
+            self.assertEqual('marclemmor',item['seller_name'])
+            self.assertEqual(452,item['seller_rating_count'])
+            self.assertEqual(100.0,item['seller_rating_percent'])
+            self.assertEqual('private',item['seller_type'])
+            self.assertEqual(own_photo,item['image_url'])
+            self.assertEqual(30.0,item['price'])
+            self.assertNotIn('_details_loaded',item)
+            fetch.assert_called_once();refresh.assert_not_called();send.assert_not_called()
+
+    def test_missing_seller_metadata_preserves_known_card_fields_on_refusal(self):
+        item={'item_id':'128121409205','title':'Sony DualSense Wireless Controller','price':30.0,
+              'seller_name':'known-seller','seller_rating_count':42,'seller_rating_percent':99.5,
+              'seller_type':'commercial','image_url':'known-photo'}
+        with patch.object(monitor,'_fetch_item_details',return_value={'description':'defekt'}), \
+             patch.object(monitor,'_details_match_contract',return_value=False):
+            accepted,_=asyncio.run(monitor._validate_candidate(item,self.search))
+        self.assertFalse(accepted)
+        self.assertEqual('known-seller',item['seller_name'])
+        self.assertEqual(42,item['seller_rating_count'])
+        self.assertEqual(99.5,item['seller_rating_percent'])
+        self.assertEqual('commercial',item['seller_type'])
+        self.assertEqual('known-photo',item['image_url'])
+
+    def test_fresh_serp_sellers_survive_refurbished_refusal(self):
+        from test_search_intent_rules import DummyConfig
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/seller_cards_oct15.json').read_text(encoding='utf8'))
+        search={'id':'qa-s25','query':'samsung galaxy s25 edge','filters':{'category':'phones','listing_type':'all','limit_price':325}}
+        for case in cases:
+            item=monitor.parse_ebay_results(case['html'])[0]
+            self.assertEqual(case['seller'],item['seller_name'])
+            accepted=monitor.filter_results([item],search,DummyConfig(),skip_seen=True,is_statistics=True)
+            self.assertEqual(not case['rejected'],bool(accepted),case['id'])
+            self.assertEqual(case['seller'],item['seller_name'])
+
     def test_same_provider_completeness_boundaries_as_android(self):
         fixture=json.loads((Path(__file__).parent/'qa/fixtures/provider_details_oct14.json').read_text(encoding='utf8'))
         for case in fixture['cases']:

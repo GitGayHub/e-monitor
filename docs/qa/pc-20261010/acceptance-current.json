@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-15T10:46:29.856173+00:00",
+  "updatedAt": "2026-10-15T19:08:42.502047+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
   "apkVersion": "0.090",
@@ -1012,7 +1012,9 @@
           "url": "https://www.ebay.de/itm/306294088377?_skw=nubia+z70+ultra&hash=item47508ce2b9:g:5ywAAOSwwgJoHcUl",
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": 275.30999999999995
+          "estimatedImportCharges": 275.30999999999995,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Sofort+",
@@ -1021,7 +1023,9 @@
           "url": "https://www.ebay.de/itm/128040520757?_skw=nubia+z70+ultra&hash=item1dcfcf4c35:g:CE4AAeSwFLNqixdM",
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": null
+          "estimatedImportCharges": null,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion",
@@ -1030,7 +1034,9 @@
           "url": null,
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": null
+          "estimatedImportCharges": null,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion+",
@@ -1039,14 +1045,33 @@
           "url": null,
           "executionEvidence": "z70-phone069.json",
           "independentAcceptance": "PENDING",
-          "estimatedImportCharges": null
+          "estimatedImportCharges": null,
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         }
       ],
       "remaining": [
-        "Fix confirmed whole-device variant false rejection267736285233 before accepting minima",
+        "0.092 selected-capacity fix passed local paired replay; review/apply on PC, then verify current complete catalogue. No minimum certified.",
         "Complete aliases/all sale profiles and per-candidate comparison",
         "Actual import quote remains unknown"
-      ]
+      ],
+      "cloudAudit092": {
+        "observedAtUtc": "2026-10-15T18:06:11.960918+00:00",
+        "ownBodies": 1,
+        "itemId": "267736285233",
+        "selectedVariantId": "567540570817",
+        "selectedCapacity": "512GB / 16GB RAM",
+        "price": 777,
+        "shipping": 25,
+        "importEstimated": 189.46,
+        "totalEstimated": 991.46,
+        "notifyLimit": 325,
+        "verdict": "over_limit",
+        "currentImportQuoteVerified": false,
+        "minimumVerified": false,
+        "evidence": "../cloud-20261015/nubia092.json",
+        "pairedReplay": "success"
+      }
     },
     {
       "key": "nubia_z70s_ultra",
@@ -1756,7 +1781,9 @@
           "total": 499.9,
           "url": "https://www.ebay.de/itm/198611296847?_skw=samsung+galaxy+s24+ultra&hash=item2e3e27e24f:g:FeQAAeSwxZRqlztJ",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Sofort+",
@@ -1764,7 +1791,9 @@
           "total": 466.19,
           "url": "https://www.ebay.de/itm/298435287203?_skw=samsung+galaxy+s24+ultra&hash=item457c2118a3:g:wYQAAeSw8ShqLdn7",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion",
@@ -1772,7 +1801,9 @@
           "total": 121.08,
           "url": "https://www.ebay.de/itm/287642663040?_skw=samsung+galaxy+s24+ultra&hash=item42f8d6b880:g:uUoAAeSwa3RqzFpF",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         },
         {
           "label": "Auktion+",
@@ -1780,7 +1811,9 @@
           "total": 5.5,
           "url": "https://www.ebay.de/itm/920033013392?_skw=samsung+galaxy+s24+ultra&hash=itemd6363dae90:g:ak8AAeSwE3tqzQKE",
           "executionEvidence": "global-phone063.json",
-          "independentAcceptance": "PENDING"
+          "independentAcceptance": "PENDING",
+          "cloud092Acceptance": "BLOCKED",
+          "cloud092MinimumVerified": false
         }
       ],
       "remaining": [
@@ -1788,7 +1821,20 @@
         "Сопоставление всех ручных ID и причин с APK/сервером",
         "Более дешёвые пропуски, price/shipping/import refresh",
         "Подтверждение права уведомления и действующих этапов"
-      ]
+      ],
+      "cloudAudit092": {
+        "observedAtUtc": "2026-10-15T18:06:17+00:00",
+        "ownSerpCardsReviewed": 120,
+        "ownFullDescriptions": 0,
+        "manualRefurbishedRefusals": 29,
+        "manualUnboundRangeRefusals": 16,
+        "preliminaryOnlyAccepted": 69,
+        "status": "BLOCKED",
+        "minimumVerified": false,
+        "aliasesComplete": false,
+        "blocker": "Auction search and one direct item attempt returned splashui/challenge; stopped requests.",
+        "evidence": "../cloud-20261015/s24-serp092.json"
+      }
     },
     {
       "key": "sony_ult_wear",
@@ -1975,10 +2021,10 @@
   ],
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
-    "physicalPhone": "authorized again by owner;078 installed",
-    "telegram": "PC background, user opened bot",
-    "emulator": "authorized",
-    "pcWindowActivation": "not authorized"
+    "target": "cloud",
+    "physicalPhoneAllowed": false,
+    "localEmulatorOnly": true,
+    "localTelegramReadOnlyBackground": true
   },
   "newOpenFindings": [
     {
@@ -1995,9 +2041,9 @@
     },
     {
       "id": "confirmed_device_variant_rejected",
-      "status": "OPEN",
-      "evidence": "Z70_PARTIAL066.md;z70-selected-variant069.json",
-      "next": "Resolve exact available variant price/model through API children or explicit own-page selection; keep unconfirmed from-price rejected. Do not declare Z70minimum accepted yet."
+      "status": "FIXED_CLOUD_REPLAY_PC_RECHECK_PENDING",
+      "evidence": "Z70_PARTIAL066.md;z70-selected-variant069.json;../cloud-20261015/REPORT_092.md;../cloud-20261015/nubia092.json",
+      "next": "0.092 bound own selected Black512GB/16GB var567540570817 to777EUR and positive stock; paired full-description replay passed. Review/apply on PC and recheck. Unbound ranges still refused, actual import quote and catalogue minimum remain unverified."
     },
     {
       "id": "mouse_kufen_false_device",
@@ -2037,15 +2083,21 @@
     },
     {
       "id": "CI_artifact_storage_quota072",
-      "status": "FIXED_RECHECKED",
-      "evidence": "workflow38430771783/readiness and38433983088/emulator logs; both code/test builds passed, Artifact storage quota failure",
-      "next": "074readiness38475301043success; inspect ci074.json exact counts and artifact outcome. No original artifacts deleted."
+      "status": "HANDLED_EXTERNAL_QUOTA_UNRESOLVED",
+      "evidence": "workflow38430771783/readiness and38433983088/emulator logs; both code/test builds passed, Artifact storage quota failure;readiness38787776084",
+      "next": "0.092 checks/build green, optional upload again blocked by artifact quota; local QA APK saved separately, previous artifacts preserved."
     },
     {
       "id": "hybrid_missing_purchase_notification_fallback",
       "status": "OPEN",
       "evidence": "filter_results hybrid or item[price]; MonitorFilters.selectPrice fallback; history074 protects missing side only",
       "next": "Never present known auction bid as unknown BIN. Keep known side usable; report unavailable price distinctly; test preview/stats/monitor/notifications."
+    },
+    {
+      "id": "s24_unread_current_bodies092",
+      "status": "BLOCKED",
+      "evidence": "../cloud-20261015/REPORT_092.md;../cloud-20261015/s24-serp092.json",
+      "next": "Obtain own current descriptions at ordinary eBay access, including model-code conflicts880011273268/398396410018 and whole-bundle question257796872236; verify four-basket/alias minima.120SERP fields reviewed,0new full bodies; requests stopped on challenge."
     }
   ],
   "additionalUserRequirements070": [
@@ -2168,5 +2220,105 @@
     "allThreeCI": "success",
     "telegramNew090Confirmed": false,
     "acceptanceComplete": false
+  },
+  "cloudHandoff090": {
+    "emulatorPriceRestored": true,
+    "testMessage": 120029,
+    "apiPhotoConfirmed": true,
+    "clientConfirmed": false,
+    "automaticFeedReceipts": [
+      120027,
+      120028
+    ],
+    "acceptanceComplete": false
+  },
+  "latestCloudStage091": {
+    "report": "../cloud-20261015/REPORT_091.md",
+    "version": "0.091",
+    "logicVersion": 1792085545,
+    "historyVersion": 11,
+    "manualOwnSellerDescriptions": 2,
+    "catalogueAcceptanceComplete": false,
+    "pythonTests": 362,
+    "syncTests": 9,
+    "androidStatus": "success",
+    "sellerMetadataFix": true,
+    "shippingDestinationFix": true,
+    "physicalInstalled": false,
+    "serverApplied": false,
+    "telegramSent": false,
+    "remaining": "Full catalogue/aliases/minima, destination-selected delivery verification, PC integration and local emulator UI, Telegram client confirmation.",
+    "androidTests": 339,
+    "build": "success",
+    "privatePairedLiveDetails": 2,
+    "ciStatus": "success",
+    "ci": {
+      "readinessRun": 38779957363,
+      "emulatorRun": 38779957334,
+      "headSha": "29a52d7542d8fa8d2bd4799ee50616afa7e3b5e8",
+      "status": "success"
+    }
+  },
+  "latestCloudStage092": {
+    "versionName": "0.092",
+    "versionCode": 92,
+    "logicVersion": 1792088387,
+    "historyVersion": 12,
+    "pythonTests": 366,
+    "android": {
+      "tests": 343,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "syncTests": 9,
+    "build": "success",
+    "apkSha256": "5460cb1fbc88f68f3d75de4b8e315ba2ef90eecb792a87c10f23bc08b911ada5",
+    "apkBytes": 70491247,
+    "privateFullNubiaReplay": {
+      "python": 1,
+      "android": 1,
+      "result": "success",
+      "sameSavedOwnDescription": true
+    },
+    "ciStatus": "success",
+    "installed": false,
+    "productionApplied": false,
+    "acceptanceComplete": false,
+    "verifiedAtUtc": "2026-10-15T18:40:56.583219+00:00",
+    "manualOwnBodies": 1,
+    "s24RealSerpItems": 120,
+    "s24OwnDescriptions": 0,
+    "s24RetrievalStatus": "BLOCKED",
+    "report": "docs/qa/cloud-20261015/REPORT_092.md",
+    "serverApplied": false,
+    "telegramSent": false,
+    "ci": {
+      "status": "success",
+      "headSha": "af24acd324a772fe8f8d171cb05112cd5f85a003",
+      "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
+      "readinessRun": 38787776084,
+      "readinessJob": 116604131636,
+      "emulatorRun": 38787776085,
+      "emulatorJob": 116608964284,
+      "emulatorFirstAttempt": {
+        "status": "failure",
+        "cause": "Android Emulator SDK archive failed to unpack before boot; no UI tests ran",
+        "failedJob": 116604131645
+      },
+      "emulatorRerunRequested": true,
+      "emulatorAttempt": 2,
+      "emulatorStatus": "success",
+      "emulatorUiTests": 5,
+      "optionalUiArtifactStored": false,
+      "readinessStatus": "success",
+      "ciApkSha256": "2b494ab05b5a195f2d483336f41d2bcdd2c97986ecfba9f6c11a35730e13456a",
+      "optionalApkArtifactStored": false,
+      "artifactBlocker": "GitHub Actions artifact storage quota exceeded; existing artifacts preserved; local QA APK available separately.",
+      "note": "Tests/build refer to these exact code/test commits. Subsequent changes only update reports and acceptance inventory; installed APK/production remain0.090."
+    },
+    "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
+    "androidCodeCommit": "af24acd324a772fe8f8d171cb05112cd5f85a003",
+    "ciObservedAtUtc": "2026-10-15T19:08:42.502047+00:00"
   }
 }

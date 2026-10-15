@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 10  # Reject retail packaging sold under a handset model and capacity.
+HISTORY_VERSION = 13  # Exact selected phone variant; Google Play is not another handset.
 _DB_LOCK = threading.Lock()
 
 
