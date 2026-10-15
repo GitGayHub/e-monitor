@@ -6,6 +6,21 @@ from test_parity import evaluate
 
 
 class PhoneBundleDefectTests(unittest.TestCase):
+    def test_manually_reviewed_sold_examples_and_case_only_controls(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/manual_phone_purpose_oct15.json').read_text(encoding='utf8'))['cases']
+        for case in cases:
+            title=case['title']; query=case.get('query','google pixel 9 pro xl')
+            with self.subTest(case=case['id']):
+                self.assertEqual(case['accessory'],monitor._is_phone_accessory_title(monitor._normalize(title)))
+                for listing,offer in [('buy_now',False),('buy_now',True),('auction',False),('auction',True)]:
+                    search={'query':query,'filters':{'category':'phones','listing_type':listing,'best_offer':offer}}
+                    details={**case,'categoryId':'9355'}
+                    item={'title':title,'item_id':case['id']}
+                    self.assertEqual(case['accepted'],monitor._details_match_contract(item,search,details),(case['id'],listing,offer))
+                    # All actual historical ended lots remain ineligible now.
+                    ended={**details,'estimatedAvailabilities':[{'estimatedAvailabilityStatus':'UNAVAILABLE'}]}
+                    self.assertFalse(monitor._details_match_contract(item,search,ended))
+
     def test_purpose_and_selection_in_all_formats(self):
         cases = json.loads((Path(__file__).parent / 'qa/fixtures/phone_bundle_defect_oct15.json').read_text(encoding='utf8'))
         for case in cases:
