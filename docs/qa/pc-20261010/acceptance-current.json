@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-15T21:52:44.383578+00:00",
+  "updatedAt": "2026-10-15T22:45:00Z",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
-  "apkVersion": "0.093",
+  "apkVersion": "0.094",
   "logicVersion": 1792100348,
-  "inventorySource": "Physical APK0.090,50 saved/48active/26active products; all settings preserved",
+  "inventorySource": "Physical APK0.093:50 saved/48active/26active products; LG430 restored and runtime revision confirmed",
   "savedSearches": 50,
   "activeSearches": 48,
   "activeProducts": 26,
@@ -18,16 +18,21 @@
       "status": "PARTIAL",
       "evidence": [
         "runtime066.json",
-        "REPORT.md"
+        "REPORT.md",
+        "PRICE_CHAIN_094.md",
+        "EMULATOR_094.md",
+        "EMULATOR_094.json"
       ],
-      "remaining": "Повторить полный набор полей и точное применение изменённой цены на текущей версии."
+      "remaining": "Проверить полный набор schema1/пустые/нули/false, отключённые варианты и конфликты; реальная LG430→429→430 цепочка и GitHub Telegram120032 подтверждены на093."
     },
     {
       "id": "settings_concurrency",
       "request": "Фоновая синхронизация, удаление/восстановление, конфликт и offline-правки",
       "status": "PARTIAL",
       "evidence": [
-        "REPORT.md"
+        "REPORT.md",
+        "EMULATOR_094.md",
+        "EMULATOR_094.json"
       ],
       "remaining": "Свежие UI сценарии гонок, сохранение после перезапуска и отсутствие воскрешения удалённых поисков."
     },
@@ -36,9 +41,12 @@
       "request": "Один лимит обновляет все варианты товара, включая отключённые, без потери ID/флагов",
       "status": "PARTIAL",
       "evidence": [
-        "REPORT.md"
+        "REPORT.md",
+        "PRICE_CHAIN_094.md",
+        "EMULATOR_094.md",
+        "EMULATOR_094.json"
       ],
-      "remaining": "Повторить одну транзакцию, серверный ACK именно новой ревизии и помеченный Telegram тест; восстановить условия."
+      "remaining": "Проверить полный набор schema1/пустые/нули/false, отключённые варианты и конфликты; реальная LG430→429→430 цепочка и GitHub Telegram120032 подтверждены на093."
     },
     {
       "id": "owner_changes",
@@ -2329,5 +2337,7 @@
     "telegramClient090Read": true,
     "serverApplicationConfirmed": true,
     "report": "../pc-20261015/REPORT_093.md"
-  }
+  },
+  "physicalApkVersion": "0.093",
+  "emulatorApkVersion": "0.094"
 }

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "apkVersion": "0.094",
+  "device": "isolated Android16 emulator-5580",
+  "physicalPhoneUsed": false,
+  "sourceOriginalRows": 49,
+  "originalSemanticChanges": [],
+  "scenarios": {
+    "spacesInPrimary": "PASS; actual key input plus Android Compose test",
+    "copyIphone17To18WithThreeNames": "PASS",
+    "oneRowTrashRestoreSameIdAndConditions": "PASS",
+    "copyTwoFormatsRetainsBuyNowBestOfferAuctionDifferentPriceFloors": "PASS",
+    "disableGroup": "PASS; both enabled=false, notify=false",
+    "editDisabledGroupLimit401To402": "PASS; both same IDs and all other fields preserved",
+    "deleteRestartNoResurrection": "PASS; both rows absent after restart",
+    "restoreTwoRows": "PASS; same IDs, enabled=false, prices, bestOffer and all other conditions preserved",
+    "postSaveVariantSummary": "PASS429 and430"
+  },
+  "limitations": [
+    "Emulator contains isolated older49search fixture, not physical production50search data.",
+    "No GitHub credentials; worker/auto_sync disabled and all notification flags false. Expected push error visible, local edits retained.",
+    "No successful offline-to-GitHub recovery or active server ACK demonstrated by this emulator CRUD scenario. Real physical093 price-chain evidence is separate."
+  ]
+}
