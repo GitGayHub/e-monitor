@@ -20,9 +20,32 @@
     "result": "success",
     "sameSavedOwnDescription": true
   },
-  "ciStatus": "awaiting publication",
+  "ciStatus": "in_progress",
   "installed": false,
   "productionApplied": false,
   "acceptanceComplete": false,
-  "verifiedAtUtc": "2026-10-15T18:39:12.590147+00:00"
+  "verifiedAtUtc": "2026-10-15T18:40:56.583219+00:00",
+  "ci": {
+    "status": "in_progress",
+    "headSha": "af24acd324a772fe8f8d171cb05112cd5f85a003",
+    "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
+    "readinessRun": 38787776084,
+    "readinessJob": 116604131636,
+    "emulatorRun": 38787776085,
+    "emulatorJob": 116608964284,
+    "emulatorFirstAttempt": {
+      "status": "failure",
+      "cause": "Android Emulator SDK archive failed to unpack before boot; no UI tests ran",
+      "failedJob": 116604131645
+    },
+    "emulatorRerunRequested": true,
+    "readinessStatus": "success",
+    "ciApkSha256": "2b494ab05b5a195f2d483336f41d2bcdd2c97986ecfba9f6c11a35730e13456a",
+    "optionalApkArtifactStored": false,
+    "artifactBlocker": "GitHub Actions artifact storage quota exceeded; existing artifacts preserved; local QA APK available separately.",
+    "note": "Tests/build refer to these exact code/test commits. Subsequent changes only update reports and acceptance inventory; installed APK/production remain0.090."
+  },
+  "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
+  "androidCodeCommit": "af24acd324a772fe8f8d171cb05112cd5f85a003",
+  "ciObservedAtUtc": "2026-10-15T18:53:07.801071+00:00"
 }
