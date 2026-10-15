@@ -1768,8 +1768,26 @@ def _phone_description_declares_fake(description):
     return False
 
 
+def _phone_description_refurbished(description):
+    own = _normalize(_clean_description(description or ''))
+    return bool(re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:]?\s*)?(?:refurbished|generalueberholt|wiederaufbereitet|renewed|reconditioned)\b", own))
+
+
+def _phone_packaging_only(text):
+    # Model and capacity can describe an empty retail box (237086192631).
+    # Plain OVP / originalverpackt remain valid handset condition markers.
+    for match in re.finditer(r"\b(?:ovp\s*[/|]\s*box|box\s*[/|]?\s*originalverpac\s*kung|empty\s+box|box\s+only)\b|^(?:(?:die|eine|the)\s+)?(?:originalverpackung|leerverpackung)\b", text):
+        before = text[max(0, match.start()-45):match.start()]
+        if re.search(r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|und|and|ohne|kein\w*|no|without)\s+(?:(?:der|die|das|the|einer?|originalen?)\s+)*$|[+&]\s*$", before):
+            continue
+        return True
+    return False
+
+
 def _phone_description_purpose_confirmed(description):
     own = _normalize(_clean_description(description or ''))
+    if _phone_packaging_only(own):
+        return False
     # A complete-model title may mention an optional branded case. Seller
     # contents must still reject a separately supplied case, including when
     # the seller has put that accessory in the phone category.
@@ -1823,6 +1841,9 @@ def _phone_specifications_match(title, description, query):
 
 
 def _matches_phone_query_model(title_norm, query_norm):
+    # A seller can name the camera used for listing photographs, not a second
+    # handset in the sale (298705766786). Keep competing models elsewhere.
+    title_norm = re.sub(r"\b(?:fotos?|bilder|photos?|pictures)\s+(?:wurden\s+)?mit\s+[^.!?]{1,60}\s+(?:gemacht|aufgenommen)\b", " ", title_norm)
     if not _phone_specifications_match(title_norm, "", query_norm):
         return False
     # Parse the number next to the device name, not iOS 17 / A17 / 17 cm.
@@ -2067,6 +2088,10 @@ def _has_accessory_term(title_norm, term):
 
 
 def _is_phone_accessory_title(title_norm):
+    if re.search(r"\b(?:nur|only)\s+(?:(?:die|das|the)\s+)?(?:ersatzteile?|spare\s+parts?)\b", title_norm):
+        return True
+    if _phone_packaging_only(title_norm):
+        return True
     # Keep explicit "kein Ersatzteil" / "ohne Ersatzteile" when a complete
     # model-led handset with storage is being sold. Never remove actual defects
     # or parts elsewhere in the title; seller details remain mandatory.
@@ -6068,6 +6093,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
     if _effective_category(category, query) == "phones":
         title = _normalize(details.get("title") or item.get("title") or "")
+        if _phone_description_refurbished(details.get("description") or ""):
+            return False
         if not _matches_phone_query_model(title, query):
             return False
         if not _phone_specifications_match(title, details.get("description") or "", query):
