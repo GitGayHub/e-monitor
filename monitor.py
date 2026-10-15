@@ -5017,7 +5017,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     shipping_module = soup.select_one(".ux-labels-values--shipping, [data-testid='ux-labels-values--shipping']")
     if shipping_module:
         shipping_text = shipping_module.get_text(" ", strip=True)
-        explicit_only = re.search(r"nur abholung|nur selbstabhol|kein versand|no shipping|pickup only|collection only", shipping_text, re.I)
+        explicit_only = _description_pickup_only(shipping_text)
         if explicit_only:
             result["htmlPickupOnly"] = True
         elif shipping_cost is not None:
@@ -6128,15 +6128,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
     )
 
 
-def _refresh_candidate_details(item, details, settings, search=None):
-    # An All search must reconsider both live prices after a detail refresh.
-    if (search or {}).get("filters", {}).get("listing_type", "all") in ("all", "offer") and search is not None:
-        options = details.get("buyingOptions") or []
-        if options:
-            item["buy_now"] = "FIXED_PRICE" in options
-            item["auction"] = "AUCTION" in options
-    _calculate_total(item, settings, details)
-    item["_details_loaded"] = True
+def _refresh_candidate_metadata(item, details):
+    """Keep display metadata from fetched details even when validation refuses it."""
     image = (details.get("image") or {}).get("imageUrl")
     if image:
         item["image_url"] = image
@@ -6150,6 +6143,19 @@ def _refresh_candidate_details(item, details, settings, search=None):
     account = {"BUSINESS": "commercial", "INDIVIDUAL": "private"}.get(seller.get("sellerAccountType"))
     if account:
         item["seller_type"] = account
+    return item
+
+
+def _refresh_candidate_details(item, details, settings, search=None):
+    # An All search must reconsider both live prices after a detail refresh.
+    if (search or {}).get("filters", {}).get("listing_type", "all") in ("all", "offer") and search is not None:
+        options = details.get("buyingOptions") or []
+        if options:
+            item["buy_now"] = "FIXED_PRICE" in options
+            item["auction"] = "AUCTION" in options
+    _calculate_total(item, settings, details)
+    item["_details_loaded"] = True
+    _refresh_candidate_metadata(item, details)
     if details.get("title"):
         item["title"] = details["title"]
     if details.get("condition") or details.get("itemCondition"):
@@ -8041,6 +8047,7 @@ def _is_item_page_multivariation(item_id):
 async def _validate_candidate(item, search):
     details = await asyncio.to_thread(_fetch_item_details, item["item_id"])
     if details:
+        _refresh_candidate_metadata(item, details)
         item["_details_status"] = "rejected"
         if not _details_match_contract(item, search, details):
             return False, details
