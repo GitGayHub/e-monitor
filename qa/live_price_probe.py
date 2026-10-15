@@ -156,6 +156,11 @@ async def main():
     if limit not in (429, 430):
         raise ValueError("Only the authorized one-euro LG control is supported")
     store = GitHubStore()
+    existing, _ = store.receipts()
+    previous = existing.get(request_id)
+    if previous and (os.environ.get('QA_CORRECT_EXISTING') != 'true' or previous.get('correction')):
+        print(json.dumps({**previous, 'duplicateSuppressed': True}))
+        return
     head, config, runtime, manifest, meta, mode = store.snapshot()
     search = validate_snapshot(config, runtime, manifest, meta, mode, revision, limit)
     old_cwd = Path.cwd()
