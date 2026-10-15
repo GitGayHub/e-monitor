@@ -6,6 +6,14 @@ from test_parity import evaluate
 
 
 class PhoneBundleDefectTests(unittest.TestCase):
+    def test_completed_service_has_specific_label_from_seller_description(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/manual_phone_purpose_oct15.json').read_text(encoding='utf8'))['cases']
+        for c in cases:
+            if 'repairLabel' in c:
+                self.assertEqual(c['repairLabel'],monitor._phone_repair_label(c['description']),c['id'])
+            elif c['id'].startswith('synthetic-') and c['accepted']:
+                self.assertIsNone(monitor._phone_repair_label(c['description']),c['id'])
+
     def test_manually_reviewed_sold_examples_and_case_only_controls(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/manual_phone_purpose_oct15.json').read_text(encoding='utf8'))['cases']
         for case in cases:
