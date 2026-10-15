@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 8  # Completed handset service and installed replacement panels are excluded.
+HISTORY_VERSION = 9  # Own seller collection-only conditions override automatic shipping quotes.
 _DB_LOCK = threading.Lock()
 
 
