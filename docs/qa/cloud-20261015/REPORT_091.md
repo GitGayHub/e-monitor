@@ -38,3 +38,5 @@ Code commits: bot `ea2b00ea9ae09b8000a658501a940ab7938ce694`, Android `9cb67f445
 Полная339проверка закончилась0failures/0skips,362Python/9sync. SourceCI и отдельный emulatorCI для нового checkpoint проверяются отдельно; старые090success не используются как доказательство091. Общая приёмка26/104остаётсяPARTIAL; локальный эмуляторПК/физическийтелефон/Telegramклиент изCloudне проверялись.
 
 Проверенный checkpoint тестов Android: `29a52d7542d8fa8d2bd4799ee50616afa7e3b5e8` (основной код APK тот же, что9cb67f4).
+
+CI проверяемого test checkpoint: [readiness38779957363](https://github.com/GitGayHub/e-monitor-android/actions/runs/38779957363) и [emulator38779957334](https://github.com/GitGayHub/e-monitor-android/actions/runs/38779957334) ещёin_progress. Последний cloud_sync --check на db5003c/c43e82c:0файлов/0конфликтов,applyне выполнялся. Следующий агент должен дочитать итог этих двух запусков; старые/superseded результаты не подменяют их.
