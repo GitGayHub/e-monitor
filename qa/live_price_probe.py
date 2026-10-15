@@ -5,6 +5,7 @@ an uncertain send is never retried. Only the owner's existing LG search is used.
 """
 import asyncio
 import base64
+import copy
 import hashlib
 import json
 import logging
@@ -112,6 +113,40 @@ async def deliver_once(store, request_id, proof, sender):
     return proof
 
 
+def quote_candidate(rows, item_id, expected_shipping):
+    row = next((value for value in rows if value.get('item_id') == item_id), None)
+    if row is None or row.get('is_pickup_only') or row.get('shipping_cost') != expected_shipping:
+        raise ValueError('Fresh search card does not confirm the independently checked shipping quote')
+    return copy.deepcopy(row)
+
+
+async def correct_caption_once(store, request_id, proof, editor):
+    records, sha = store.receipts()
+    existing = records.get(request_id)
+    if not existing or not existing.get('messageId'):
+        raise ValueError('No confirmed original photo is available for correction')
+    if existing.get('correction'):
+        return {**existing, 'duplicateCorrectionSuppressed': True}
+    if existing.get('status') != 'photo_confirmed':
+        raise ValueError('Original photo delivery is not confirmed')
+    existing['initialDelivery'] = copy.deepcopy(existing)
+    existing['correction'] = {**proof, 'status': 'claimed_no_blind_retry'}
+    sha = store.write(records, sha)
+    try:
+        message = await editor(existing['messageId'])
+        if not message or message.message_id != existing['messageId']:
+            raise RuntimeError('Caption correction acknowledgement missing')
+    except Exception as error:
+        existing['correction'].update(status='uncertain_do_not_retry', errorType=type(error).__name__)
+        store.write(records, sha)
+        raise
+    existing.update(proof)
+    existing['status'] = 'photo_confirmed_caption_corrected'
+    existing['correction'].update(status='confirmed', confirmedAtUtc=datetime.now(timezone.utc).isoformat())
+    store.write(records, sha)
+    return existing
+
+
 async def main():
     request_id = os.environ["QA_REQUEST_ID"]
     if not re.fullmatch(r"lg-price-[a-z0-9-]{1,70}", request_id):
@@ -137,17 +172,21 @@ async def main():
             monitor.EBAY_SOURCE = "html"
             monitor.SEEN_IDS_FILE = str(Path(directory) / "seen.json")
             logging.disable(logging.CRITICAL)
-            token = MonitorPassBudget.current.set(MonitorPassBudget(110))
+            expected_shipping = float(os.environ.get('QA_EXPECTED_SHIPPING', '18.99'))
+            token = MonitorPassBudget.current.set(MonitorPassBudget(170))
             try:
+                rows, fetch_error = monitor.fetch_ebay_ex(monitor._prepare_monitor_fetch_search(search))
+                if fetch_error:
+                    raise ValueError('Fresh search quote is unavailable; nothing sent or edited')
+                item = quote_candidate(rows, '800366377085', expected_shipping)
                 details = monitor._fetch_item_details("800366377085")
             finally:
                 MonitorPassBudget.current.reset(token)
-            item = {"item_id": "800366377085", "title": "LG UltraGear 27GX790A-B OLED Gaming Monitor 27 480Hz",
-                    "url": "https://www.ebay.de/itm/800366377085", "price": 0, "shipping_cost": 0,
-                    "buy_now": True, "auction": False, "best_offer": True, "source": "html"}
             if not monitor._provider_details_complete(details) or not monitor._details_match_contract(item, search, details):
                 raise ValueError("Fresh own listing details are unavailable or rejected; nothing sent")
             monitor._refresh_candidate_details(item, details, config.get("settings", {}), search)
+            if item.get('shipping_cost') != expected_shipping:
+                raise ValueError('Refreshed delivery quote changed; independently recheck before sending')
             item["_details_status"] = "verified"
             kept = monitor.filter_results([item], search, monitor.config, skip_seen=True, is_statistics=True)
             if len(kept) != 1 or not monitor._notify_eligibility(kept[0], search)[0] or not item.get("image_url"):
@@ -176,6 +215,20 @@ async def main():
                      "execution": "github", "productionStateChanged": False}
             if os.environ.get("QA_SEND") != "true":
                 print(json.dumps({**proof, "status": "preview_no_send"})); return
+            if os.environ.get('QA_CORRECT_EXISTING') == 'true':
+                caption = '🧪 Исправление теста: доставка учтена.\n' + caption
+                if len(caption) > 1024:
+                    raise ValueError('Corrected caption exceeds Telegram photo limit')
+                async def editor(message_id):
+                    async with Bot(os.environ['TELEGRAM_BOT_TOKEN']) as bot:
+                        if (await bot.get_me()).username.lower() != 'ebaysearcherbot':
+                            raise ValueError('Wrong bot identity')
+                        return await bot.edit_message_caption(chat_id=os.environ['TELEGRAM_CHAT_ID'],
+                                                              message_id=message_id, caption=caption,
+                                                              parse_mode='HTML', connect_timeout=20,
+                                                              read_timeout=35, write_timeout=35)
+                print(json.dumps(await correct_caption_once(store, request_id, proof, editor)))
+                return
             async def sender():
                 async with Bot(os.environ["TELEGRAM_BOT_TOKEN"]) as bot:
                     if (await bot.get_me()).username.lower() != "ebaysearcherbot":
