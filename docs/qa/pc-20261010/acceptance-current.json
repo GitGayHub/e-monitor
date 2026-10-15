@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-15T19:08:42.502047+00:00",
+  "updatedAt": "2026-10-15T21:52:44.383578+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
-  "apkVersion": "0.090",
-  "logicVersion": 1792059553,
+  "apkVersion": "0.093",
+  "logicVersion": 1792100348,
   "inventorySource": "Physical APK0.090,50 saved/48active/26active products; all settings preserved",
   "savedSearches": 50,
   "activeSearches": 48,
@@ -2021,10 +2021,9 @@
   ],
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
-    "target": "cloud",
-    "physicalPhoneAllowed": false,
-    "localEmulatorOnly": true,
-    "localTelegramReadOnlyBackground": true
+    "target": "pc",
+    "physicalPhoneAllowed": true,
+    "telegram": "pc-background-readonly"
   },
   "newOpenFindings": [
     {
@@ -2320,5 +2319,15 @@
     "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
     "androidCodeCommit": "af24acd324a772fe8f8d171cb05112cd5f85a003",
     "ciObservedAtUtc": "2026-10-15T19:08:42.502047+00:00"
+  },
+  "pcReturn093": {
+    "phoneInstalled": true,
+    "settingsPreservedExactly": true,
+    "oneProductFourBuckets": true,
+    "boxOwnBodyReject": true,
+    "priceViewRange": true,
+    "telegramClient090Read": true,
+    "serverApplicationConfirmed": false,
+    "report": "../pc-20261015/REPORT_093.md"
   }
 }
