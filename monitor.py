@@ -7088,6 +7088,8 @@ def _do_fetch_playwright(url, query=""):
     each retry (lighter wait, then fewer cards) instead of repeating the exact
     attempt that just crashed.
     """
+    if MonitorPassBudget.exhausted():
+        return [], "pass_deferred"
     if os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").strip().lower() in ("0", "false", "no"):
         return [], "no_playwright"
     try:
