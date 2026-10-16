@@ -1,128 +1,240 @@
-===== E MONITOR ITERATION 1 (budget 1800s) =====
-iteration_start=2026-10-16 09:56:44 UTC
-pass_seconds=403
-2026-10-16 09:56:46,886 - ╔══════════════════════════════════════════════╗
-2026-10-16 09:56:46,886 - ║              eBay Monitor Bot               ║
-2026-10-16 09:56:46,886 - ╠══════════════════════════════════════════════╣
-2026-10-16 09:56:46,886 -   Mode:       ONE-SHOT
-2026-10-16 09:56:46,887 -   Repo:       GitGayHub/e-monitor
-2026-10-16 09:56:46,887 -   GH Token:   ✅ GitGayHub
-2026-10-16 09:56:46,887 -   GH Actions: 🔄 in_progress 11m ago (E Monitor)
-2026-10-16 09:56:46,887 -   eBay API:   ✅ source=auto, market=EBAY_DE, token ok
-2026-10-16 09:56:46,887 -   Telegram:   ✅ @eBaySearcherBOT id=8303538057
-2026-10-16 09:56:46,887 -   Chat ID:    5326338543
-2026-10-16 09:56:46,887 - ╠══════════════════════════════════════════════╣
-2026-10-16 09:56:46,887 -   Searches:   50 (746 excl, 8 incl words)
-2026-10-16 09:56:46,887 -   Bans:       1 sellers, 16 items
-2026-10-16 09:56:46,887 -   Seen:       1178 ids
-2026-10-16 09:56:46,887 - ╚══════════════════════════════════════════════╝
-2026-10-16 09:56:52,356 - eBay Browse: 8/48 searches due; interval 900s; real quota remaining=0, reset=1792047600.0
-2026-10-16 09:56:52,362 - Checking 4060 oled through primary HTML
-2026-10-16 09:56:52,364 - Fetching: 4060 oled
-2026-10-16 09:56:52,364 - eBay session ready (impersonate=chrome124)
-2026-10-16 09:56:57,558 -   4060 oled -> 61 items via m.ebay.de body_len=1464141
-2026-10-16 09:56:57,559 -   4060 oled -> 61 items via ebay.de
-2026-10-16 09:56:57,559 - Fetching: 4060 oled
-2026-10-16 09:56:58,097 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-16 09:56:58,217 - eBay session ready (impersonate=chrome120)
-2026-10-16 09:57:02,808 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-16 09:57:02,809 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-16 09:57:22,428 - Playwright still got challenge for '4060 oled'
-2026-10-16 09:57:38,151 - eBay fetch fail #1 (network) for '4060 oled' on GH — no cooldown, next product retries
-2026-10-16 09:57:38,714 -   4060 oled -> 4 items via eBay Browse API (EBAY_DE)
-2026-10-16 09:57:38,714 - Fetching: 4060 oled
-2026-10-16 09:57:38,714 - eBay session ready (impersonate=safari17_0)
-2026-10-16 09:57:42,344 - eBay challenge on ebay.de for '4060 oled' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-16 09:57:42,450 - eBay session ready (impersonate=chrome131)
-2026-10-16 09:57:46,062 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-16 09:57:46,064 - eBay session ready (impersonate=chrome124)
-2026-10-16 09:57:51,236 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-16 09:58:08,643 - Playwright still got challenge for '4060 oled'
-2026-10-16 09:58:24,081 - eBay fetch fail #2 (network) for '4060 oled' on GH — no cooldown, next product retries
-2026-10-16 09:58:24,629 -   4060 oled -> 4 items via eBay Browse API (EBAY_DE)
-2026-10-16 09:58:24,630 - Fetching: 4060 oled
-2026-10-16 09:58:24,630 - eBay session ready (impersonate=chrome120)
-2026-10-16 09:58:28,352 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-16 09:58:32,738 -   4060 oled -> 13 items via m.ebay.de body_len=576005
-2026-10-16 09:58:32,738 -   4060 oled -> 13 items via ebay.de
-2026-10-16 09:58:32,738 - Fetching: 4060 oled
-2026-10-16 09:58:33,936 -   4060 oled -> 23 items via m.ebay.de body_len=710707
-2026-10-16 09:58:33,936 -   4060 oled -> 23 items via ebay.de
-2026-10-16 09:58:33,939 -   4060 oled: newly listed sweep error api_deferred
-2026-10-16 09:58:34,050 - Scraping item page details for item 178480452677 via HTML
-2026-10-16 09:58:41,717 - HTML browser details unavailable for 178480452677: TimeoutError
-2026-10-16 09:58:42,489 - Scraping item page details for item 267516716051 via HTML
-2026-10-16 09:58:50,353 - HTML browser details unavailable for 267516716051: TimeoutError
-2026-10-16 09:58:51,076 - Scraping item page details for item 406798204502 via HTML
-2026-10-16 09:58:58,786 - HTML browser details unavailable for 406798204502: TimeoutError
-2026-10-16 09:58:59,267 - Scraping item page details for item 377099286282 via HTML
-2026-10-16 09:59:06,911 - HTML browser details unavailable for 377099286282: TimeoutError
-2026-10-16 09:59:07,522 - Scraping item page details for item 188805790047 via HTML
-2026-10-16 09:59:15,084 - HTML browser details unavailable for 188805790047: TimeoutError
-2026-10-16 09:59:15,594 - Scraping item page details for item 397387890135 via HTML
-2026-10-16 09:59:23,521 - HTML browser details unavailable for 397387890135: TimeoutError
-2026-10-16 09:59:24,012 - Scraping item page details for item 189048779464 via HTML
-2026-10-16 09:59:31,866 - HTML browser details unavailable for 189048779464: TimeoutError
-2026-10-16 09:59:32,326 - Scraping item page details for item 168420837999 via HTML
-2026-10-16 09:59:39,981 - HTML browser details unavailable for 168420837999: TimeoutError
-2026-10-16 09:59:40,442 - Scraping item page details for item 335978931394 via HTML
-2026-10-16 09:59:48,272 - HTML browser details unavailable for 335978931394: TimeoutError
-2026-10-16 09:59:48,852 - Scraping item page details for item 147616933774 via HTML
-2026-10-16 09:59:56,610 - HTML browser details unavailable for 147616933774: TimeoutError
-2026-10-16 09:59:57,079 - Scraping item page details for item 147114343084 via HTML
-2026-10-16 10:00:04,546 - HTML browser details unavailable for 147114343084: TimeoutError
-2026-10-16 10:00:05,077 - Scraping item page details for item 128070952941 via HTML
-2026-10-16 10:00:12,659 - HTML browser details unavailable for 128070952941: TimeoutError
-2026-10-16 10:00:13,337 - Scraping item page details for item 117425940859 via HTML
-2026-10-16 10:00:21,068 - HTML browser details unavailable for 117425940859: TimeoutError
-2026-10-16 10:00:21,517 - Scraping item page details for item 800792206526 via HTML
-2026-10-16 10:00:29,418 - HTML browser details unavailable for 800792206526: TimeoutError
-2026-10-16 10:00:29,853 - Scraping item page details for item 800795474330 via HTML
-2026-10-16 10:00:37,707 - HTML browser details unavailable for 800795474330: TimeoutError
-2026-10-16 10:00:38,190 - Scraping item page details for item 287640459561 via HTML
-2026-10-16 10:00:45,830 - HTML browser details unavailable for 287640459561: TimeoutError
-2026-10-16 10:00:46,472 - Scraping item page details for item 920029253983 via HTML
-2026-10-16 10:00:54,275 - HTML browser details unavailable for 920029253983: TimeoutError
-2026-10-16 10:00:54,698 - Scraping item page details for item 206589653005 via HTML
-2026-10-16 10:01:02,702 - HTML browser details unavailable for 206589653005: TimeoutError
-2026-10-16 10:01:03,698 - Scraping item page details for item 800788086872 via HTML
-2026-10-16 10:01:11,477 - HTML browser details unavailable for 800788086872: TimeoutError
-2026-10-16 10:01:11,951 - Scraping item page details for item 960032795437 via HTML
-2026-10-16 10:01:19,950 - HTML browser details unavailable for 960032795437: TimeoutError
-2026-10-16 10:01:20,578 - Scraping item page details for item 398381051626 via HTML
-2026-10-16 10:01:28,406 - HTML browser details unavailable for 398381051626: TimeoutError
-2026-10-16 10:01:28,914 - Scraping item page details for item 800784516677 via HTML
-2026-10-16 10:01:36,755 - HTML browser details unavailable for 800784516677: TimeoutError
-2026-10-16 10:01:37,361 - Scraping item page details for item 820170388810 via HTML
-2026-10-16 10:01:45,461 - HTML browser details unavailable for 820170388810: TimeoutError
-2026-10-16 10:01:45,905 - Scraping item page details for item 307226467621 via HTML
-2026-10-16 10:01:53,839 - HTML browser details unavailable for 307226467621: TimeoutError
-2026-10-16 10:01:54,316 - Scraping item page details for item 860026964628 via HTML
-2026-10-16 10:02:01,907 - HTML browser details unavailable for 860026964628: TimeoutError
-2026-10-16 10:02:02,545 - Scraping item page details for item 407271716823 via HTML
-2026-10-16 10:02:10,126 - HTML browser details unavailable for 407271716823: TimeoutError
-2026-10-16 10:02:10,527 - Scraping item page details for item 357046091736 via HTML
-2026-10-16 10:02:18,547 - HTML browser details unavailable for 357046091736: TimeoutError
-2026-10-16 10:02:19,169 - Scraping item page details for item 278209889908 via HTML
-2026-10-16 10:02:27,235 - HTML browser details unavailable for 278209889908: TimeoutError
-2026-10-16 10:02:27,775 - Scraping item page details for item 800792423528 via HTML
-2026-10-16 10:02:35,671 - HTML browser details unavailable for 800792423528: TimeoutError
-2026-10-16 10:02:36,137 - Scraping item page details for item 227559182792 via HTML
-2026-10-16 10:02:44,133 - HTML browser details unavailable for 227559182792: TimeoutError
-2026-10-16 10:02:44,786 -   4060 oled: 0 results, 0 candidates (none)
-2026-10-16 10:02:44,790 - Checking 4060 oled through primary HTML
-2026-10-16 10:02:44,790 - Fetching: 4060 oled
-2026-10-16 10:02:46,595 -   4060 oled -> 35 items via m.ebay.de body_len=841433
-2026-10-16 10:02:46,596 -   4060 oled -> 35 items via ebay.de
-2026-10-16 10:02:46,596 - Fetching: 4060 oled
-2026-10-16 10:02:48,093 -   4060 oled -> 21 items via m.ebay.de body_len=673227
-2026-10-16 10:02:48,093 -   4060 oled -> 21 items via ebay.de
-2026-10-16 10:02:48,093 - Fetching: 4060 oled
-2026-10-16 10:02:48,810 - eBay session ready (impersonate=safari17_0)
-2026-10-16 10:02:52,297 - eBay session ready (impersonate=chrome131)
-2026-10-16 10:02:56,218 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-16 10:03:11,805 - Playwright still got challenge for '4060 oled'
-2026-10-16 10:03:27,286 - eBay fetch fail #1 (network) for '4060 oled' on GH — no cooldown, next product retries
-2026-10-16 10:03:27,287 -   4060 oled: fetch error network
-2026-10-16 10:03:27,287 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
-2026-10-16 10:03:27,296 - === Done ===
+2026-10-16 10:05:54,985 - Scraping item page details for item 307206750850 via HTML
+2026-10-16 10:05:55,920 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/307206750850?t=1792053050000&category=23160&seller=mediamarkt-bad-oeynhausen&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:05:56,442 - Scraping item page details for item 377520132383 via HTML
+2026-10-16 10:05:57,469 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/377520132383?t=0&category=23160&seller=ilas_7244&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:05:57,608 - Scraping item page details for item 800719136759 via HTML
+2026-10-16 10:05:58,575 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800719136759?t=1792055246000&category=23160&seller=mediamarkt-leipzig-hoefe&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:05:59,193 - Scraping item page details for item 336784836779 via HTML
+2026-10-16 10:06:00,198 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/336784836779?t=1792058594000&category=23160&seller=mediamarkt-bielefeld&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:00,667 - Scraping item page details for item 336798475653 via HTML
+2026-10-16 10:06:01,672 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/336798475653?t=1792048536000&category=23160&seller=mediamarkt-aalen&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:02,208 - Scraping item page details for item 206427570122 via HTML
+2026-10-16 10:06:03,135 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/206427570122?t=1792053223000&category=23160&seller=mediamarkt-hamburg-altona&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:03,634 - Scraping item page details for item 257608210243 via HTML
+2026-10-16 10:06:04,669 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/257608210243?t=1792044161000&category=23160&seller=mediamarkt-zwickau-am-glueck-auf-center&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:05,203 - Scraping item page details for item 940008774677 via HTML
+2026-10-16 10:06:06,144 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/940008774677?t=0&category=23160&seller=jb-vertrieb-gmbh&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:06,509 - Description blocked due to bad condition word/phrase: 'defekt'
+2026-10-16 10:06:06,511 - Scraping item page details for item 267751141307 via HTML
+2026-10-16 10:06:07,485 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/267751141307?t=1792047594000&category=23160&seller=mediamarkt-kaiserslautern&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:07,980 - Scraping item page details for item 158253547522 via HTML
+2026-10-16 10:06:09,321 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/158253547522?t=1792046509000&category=23160&seller=mediamarkt-stade&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:09,786 - Scraping item page details for item 327381202846 via HTML
+2026-10-16 10:06:11,001 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/327381202846?t=1792045127000&category=23160&seller=mediamarkt-dueren&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:11,534 - Scraping item page details for item 227532541590 via HTML
+2026-10-16 10:06:12,696 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/227532541590?t=1792059770000&category=23160&seller=mediamarkt-potsdam-city&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:13,220 - Scraping item page details for item 257571044668 via HTML
+2026-10-16 10:06:14,369 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/257571044668?t=1791964121000&category=23160&seller=mediamarkt-buxtehude&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:14,632 - Scraping item page details for item 307113024215 via HTML
+2026-10-16 10:06:15,666 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/307113024215?t=0&category=170&seller=future-x_de&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:15,799 - Scraping item page details for item 298741403985 via HTML
+2026-10-16 10:06:16,812 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/298741403985?t=0&category=162&seller=ersazza&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:16,956 - Scraping item page details for item 820215321342 via HTML
+2026-10-16 10:06:18,318 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/820215321342?t=0&category=162&seller=ersazza&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:18,484 - Scraping item page details for item 406744470380 via HTML
+2026-10-16 10:06:19,508 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/406744470380?t=1781826612000&category=179&seller=rj_kingfisher&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:19,945 - Scraping item page details for item 137810920648 via HTML
+2026-10-16 10:06:21,049 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/137810920648?t=0&category=23160&seller=muhaca_43&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:21,173 - Scraping item page details for item 198717641605 via HTML
+2026-10-16 10:06:22,188 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/198717641605?t=0&category=23160&seller=hexa-lilon&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:22,519 - Scraping item page details for item 267813383616 via HTML
+2026-10-16 10:06:23,549 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/267813383616?t=0&category=23160&seller=mediamarkt-gruendau-lieblos&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:23,941 - Scraping item page details for item 860045419499 via HTML
+2026-10-16 10:06:25,197 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/860045419499?t=0&category=23160&seller=oskothen0&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:25,512 - Scraping item page details for item 137846109526 via HTML
+2026-10-16 10:06:26,551 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/137846109526?t=0&category=23160&seller=mediamarkt-lueneburg&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:27,020 - Scraping item page details for item 227565638260 via HTML
+2026-10-16 10:06:28,042 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/227565638260?t=0&category=23160&seller=phikleno1&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:28,226 - Scraping item page details for item 206513284742 via HTML
+2026-10-16 10:06:29,366 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/206513284742?t=1787864694000&category=23160&seller=epicstormx&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:29,478 - Description blocked due to bad condition word/phrase: 'defekt'
+2026-10-16 10:06:29,977 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-10-16 10:06:29,982 - Checking logitech superstrike through primary HTML
+2026-10-16 10:06:29,982 - Fetching: logitech superstrike
+2026-10-16 10:06:31,664 -   logitech superstrike -> 12 items via www.ebay.de body_len=760362
+2026-10-16 10:06:31,664 -   logitech superstrike -> 12 items via ebay.de
+2026-10-16 10:06:31,664 - Fetching: logitech superstrike
+2026-10-16 10:06:32,946 -   logitech superstrike -> 11 items via m.ebay.de body_len=681626
+2026-10-16 10:06:32,946 -   logitech superstrike -> 11 items via ebay.de
+2026-10-16 10:06:32,946 - Fetching: logitech superstrike
+2026-10-16 10:06:34,341 -   logitech superstrike -> 14 items via www.ebay.de body_len=725902
+2026-10-16 10:06:34,341 -   logitech superstrike -> 14 items via ebay.de
+2026-10-16 10:06:34,341 - Fetching: logitech superstrike
+2026-10-16 10:06:35,931 -   logitech superstrike -> 20 items via www.ebay.de body_len=762169
+2026-10-16 10:06:35,931 -   logitech superstrike -> 20 items via ebay.de
+2026-10-16 10:06:35,931 - Fetching: logitech superstrike
+2026-10-16 10:06:37,314 -   logitech superstrike -> 21 items via m.ebay.de body_len=776521
+2026-10-16 10:06:37,315 -   logitech superstrike -> 21 items via ebay.de
+2026-10-16 10:06:37,361 - Scraping item page details for item 800796255038 via HTML
+2026-10-16 10:06:38,349 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800796255038?t=0&category=23160&seller=jacksellsstuff5&excSoj=1&ver=1&excTrk=1&lsite=0&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:38,774 -   logitech superstrike: 0 results, 0 candidates (none)
+2026-10-16 10:06:38,779 - Checking logitech superlight 2 through primary HTML
+2026-10-16 10:06:38,779 - Fetching: logitech superlight 2
+2026-10-16 10:06:40,403 -   logitech superlight 2 -> 60 items via www.ebay.de body_len=1846261
+2026-10-16 10:06:40,403 -   logitech superlight 2 -> 60 items via ebay.de
+2026-10-16 10:06:40,404 - Fetching: logitech superlight 2
+2026-10-16 10:06:41,849 -   logitech superlight 2 -> 60 items via m.ebay.de body_len=1779449
+2026-10-16 10:06:41,849 -   logitech superlight 2 -> 60 items via ebay.de
+2026-10-16 10:06:41,853 -   logitech superlight 2: newly listed sweep error api_deferred
+2026-10-16 10:06:41,929 - Scraping item page details for item 920017485002 via HTML
+2026-10-16 10:06:42,863 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/920017485002?t=0&category=23160&seller=tobkra6764&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:43,048 - Scraping item page details for item 406063677998 via HTML
+2026-10-16 10:06:44,023 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/406063677998?t=1753095364000&category=23160&seller=der_chrisi_1&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:44,144 - Scraping item page details for item 880019431598 via HTML
+2026-10-16 10:06:45,292 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/880019431598?t=0&category=23160&seller=nikitadesy-5&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:45,436 - Scraping item page details for item 318924464255 via HTML
+2026-10-16 10:06:46,317 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/318924464255?t=0&category=23160&seller=aizencan&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:46,457 - Scraping item page details for item 366717729242 via HTML
+2026-10-16 10:06:47,650 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366717729242?t=0&category=23160&seller=sb-direct&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:47,967 - Scraping item page details for item 820221654834 via HTML
+2026-10-16 10:06:48,945 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/820221654834?t=1791551556000&category=23160&seller=jasmin26737&excSoj=1&ver=1&excTrk=1&lsite=16&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:49,029 - Scraping item page details for item 840018806110 via HTML
+2026-10-16 10:06:50,039 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/840018806110?t=0&category=23160&seller=moth4nn4&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:50,163 - Scraping item page details for item 298232475701 via HTML
+2026-10-16 10:06:51,153 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/298232475701?t=1777896259000&category=23160&seller=sellectro&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:51,508 - Scraping item page details for item 377482068020 via HTML
+2026-10-16 10:06:52,428 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/377482068020?t=0&category=23160&seller=gutedealsde&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:52,543 - Scraping item page details for item 960070846867 via HTML
+2026-10-16 10:06:53,610 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/960070846867?t=0&category=23160&seller=lukas.ld20&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:53,716 - Scraping item page details for item 800039305197 via HTML
+2026-10-16 10:06:55,032 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800039305197?t=0&category=23160&seller=sb-direct&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:55,289 - Scraping item page details for item 406915161615 via HTML
+2026-10-16 10:06:56,311 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/406915161615?t=0&category=23160&seller=briho566&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:56,431 - Scraping item page details for item 137835810963 via HTML
+2026-10-16 10:06:57,646 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/137835810963?t=0&category=23160&seller=thehonoredone&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:57,729 - Scraping item page details for item 117441593935 via HTML
+2026-10-16 10:06:58,611 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/117441593935?t=0&category=23160&seller=micharogal&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:06:58,737 - Scraping item page details for item 800501611207 via HTML
+2026-10-16 10:06:59,697 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800501611207?t=0&category=23160&seller=sb-direct&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:00,020 - Scraping item page details for item 317993979002 via HTML
+2026-10-16 10:07:00,970 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/317993979002?t=0&category=23160&seller=vod_7961&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:01,066 - Scraping item page details for item 800034533658 via HTML
+2026-10-16 10:07:02,328 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800034533658?t=1784618922000&category=23160&seller=sb-direct&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:02,609 - Scraping item page details for item 257762697634 via HTML
+2026-10-16 10:07:03,867 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/257762697634?t=0&category=23160&seller=heunz_de&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:04,097 - Scraping item page details for item 397899358853 via HTML
+2026-10-16 10:07:05,194 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/397899358853?t=0&category=23160&seller=boxmediaelectronic&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:05,348 - Scraping item page details for item 168172896512 via HTML
+2026-10-16 10:07:06,394 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/168172896512?t=0&category=23160&seller=gng_tech&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:06,514 - Scraping item page details for item 800102051931 via HTML
+2026-10-16 10:07:07,526 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800102051931?t=0&category=23160&seller=phi5334&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:07,635 - Scraping item page details for item 158205780894 via HTML
+2026-10-16 10:07:08,995 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/158205780894?t=1792047303000&category=23160&seller=mediamarkt-heidelberg&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:09,363 - Scraping item page details for item 168551890594 via HTML
+2026-10-16 10:07:10,441 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/168551890594?t=1792048500000&category=23160&seller=mediamarkt-sinsheim&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:10,727 - Scraping item page details for item 267772980424 via HTML
+2026-10-16 10:07:11,828 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/267772980424?t=1792053780000&category=23160&seller=mediamarkt-weilheim&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:12,098 - Scraping item page details for item 278143304334 via HTML
+2026-10-16 10:07:13,155 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/278143304334?t=1792054750000&category=23160&seller=mediamarkt-dorsten&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:13,521 - Scraping item page details for item 366640211196 via HTML
+2026-10-16 10:07:14,558 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/366640211196?t=0&category=23160&seller=oppe_1094&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:14,711 - Scraping item page details for item 137683506494 via HTML
+2026-10-16 10:07:15,689 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/137683506494?t=0&category=23160&seller=olaftx&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:15,927 - Scraping item page details for item 820185570853 via HTML
+2026-10-16 10:07:23,815 - HTML browser details unavailable for 820185570853: TimeoutError
+2026-10-16 10:07:24,692 -   logitech superlight 2: 0 results, 0 candidates (none)
+2026-10-16 10:07:24,696 - Checking logitech superlight 2 through primary HTML
+2026-10-16 10:07:24,696 - Fetching: logitech superlight 2
+2026-10-16 10:07:25,989 -   logitech superlight 2 -> 11 items via m.ebay.de body_len=723914
+2026-10-16 10:07:25,989 -   logitech superlight 2 -> 11 items via ebay.de
+2026-10-16 10:07:25,989 - Fetching: logitech superlight 2
+2026-10-16 10:07:27,234 -   logitech superlight 2 -> 14 items via m.ebay.de body_len=792492
+2026-10-16 10:07:27,234 -   logitech superlight 2 -> 14 items via ebay.de
+2026-10-16 10:07:27,249 - Scraping item page details for item 206618622307 via HTML
+2026-10-16 10:07:28,246 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/206618622307?t=0&category=23160&seller=mysterro&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:28,429 - Scraping item page details for item 900005491322 via HTML
+2026-10-16 10:07:29,468 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/900005491322?t=0&category=23160&seller=pitschi92&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:29,588 - Scraping item page details for item 147634144080 via HTML
+2026-10-16 10:07:30,595 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/147634144080?t=0&category=23160&seller=mililio&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:30,753 - Scraping item page details for item 168787849340 via HTML
+2026-10-16 10:07:31,795 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/168787849340?t=0&category=23160&seller=co202478&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:32,117 -   logitech superlight 2: 1 results, 0 candidates (none)
+2026-10-16 10:07:32,121 - Checking logitech superlight 2 dex through primary HTML
+2026-10-16 10:07:32,121 - Fetching: logitech superlight 2 dex
+2026-10-16 10:07:32,594 - eBay session ready (impersonate=chrome131)
+2026-10-16 10:07:38,223 -   logitech superlight 2 dex -> 76 items via m.ebay.de body_len=1769429
+2026-10-16 10:07:38,223 -   logitech superlight 2 dex -> 76 items via ebay.de
+2026-10-16 10:07:38,223 - Fetching: logitech superlight 2 dex
+2026-10-16 10:07:39,844 -   logitech superlight 2 dex -> 83 items via www.ebay.de body_len=1873670
+2026-10-16 10:07:39,844 -   logitech superlight 2 dex -> 83 items via ebay.de
+2026-10-16 10:07:39,848 -   logitech superlight 2 dex: newly listed sweep error api_deferred
+2026-10-16 10:07:39,938 - Scraping item page details for item 406218262078 via HTML
+2026-10-16 10:07:41,021 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/406218262078?t=1789503530000&category=23160&seller=rs.retourenhandel&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:41,527 - Scraping item page details for item 287501902036 via HTML
+2026-10-16 10:07:42,453 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/287501902036?t=0&category=23160&seller=yusufcc&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:42,561 - Scraping item page details for item 800501582214 via HTML
+2026-10-16 10:07:43,653 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800501582214?t=0&category=23160&seller=sb-direct&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:43,898 - Scraping item page details for item 960048498813 via HTML
+2026-10-16 10:07:44,900 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/960048498813?t=1791649005000&category=23160&seller=kamiya10969&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:45,015 - Scraping item page details for item 287377713431 via HTML
+2026-10-16 10:07:46,060 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/287377713431?t=0&category=23160&seller=cyros.ks&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:46,178 - Scraping item page details for item 406481591254 via HTML
+2026-10-16 10:07:47,107 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/406481591254?t=0&category=23160&seller=hp5mc_17&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:47,193 - Scraping item page details for item 406218242948 via HTML
+2026-10-16 10:07:48,508 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/406218242948?t=1791758429000&category=23160&seller=rs.retourenhandel&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:51,075 - Scraping item page details for item 800767733690 via HTML
+2026-10-16 10:07:52,412 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800767733690?t=0&category=23160&seller=sb-direct&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:52,653 - Scraping item page details for item 237126774150 via HTML
+2026-10-16 10:07:53,697 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/237126774150?t=0&category=23160&seller=wowzer-uk&excSoj=1&ver=1&excTrk=1&lsite=3&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:54,171 - Scraping item page details for item 178288449090 via HTML
+2026-10-16 10:07:55,331 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/178288449090?t=1773690298000&category=23160&seller=xgiovioforyou&excSoj=1&ver=1&excTrk=1&lsite=101&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:55,497 - Scraping item page details for item 800659783196 via HTML
+2026-10-16 10:07:56,538 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/800659783196?t=0&category=23160&seller=peperlinoug&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:56,745 - Scraping item page details for item 880010081895 via HTML
+2026-10-16 10:07:57,808 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/880010081895?t=0&category=23160&seller=expert_ecommerce&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:58,124 - Scraping item page details for item 318673431032 via HTML
+2026-10-16 10:07:59,094 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/318673431032?t=0&category=23160&seller=aibor_27&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:07:59,198 - Scraping item page details for item 820051369632 via HTML
+2026-10-16 10:08:00,377 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/820051369632?t=0&category=23160&seller=tronyq&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:00,638 - Scraping item page details for item 198643104967 via HTML
+2026-10-16 10:08:01,684 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/198643104967?t=0&category=23160&seller=price-guard&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:02,470 - Scraping item page details for item 357127234891 via HTML
+2026-10-16 10:08:10,159 - HTML browser details unavailable for 357127234891: TimeoutError
+2026-10-16 10:08:10,829 - Scraping item page details for item 178455413280 via HTML
+2026-10-16 10:08:11,959 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/178455413280?t=1792013550000&category=23160&seller=expert_ecommerce&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:12,299 - Scraping item page details for item 278380406204 via HTML
+2026-10-16 10:08:13,410 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/278380406204?t=1792047425000&category=23160&seller=mediamarkt-ludwigshafen-oggersheim&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:13,688 - Scraping item page details for item 940012942806 via HTML
+2026-10-16 10:08:14,731 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/940012942806?t=0&category=23160&seller=jb-vertrieb-gmbh&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:15,077 - Description blocked due to bad condition word/phrase: 'defekt'
+2026-10-16 10:08:15,079 - Scraping item page details for item 277570973627 via HTML
+2026-10-16 10:08:16,296 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/277570973627?t=0&category=23160&seller=deltatecc-home&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:16,748 - Scraping item page details for item 358863573650 via HTML
+2026-10-16 10:08:17,806 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/358863573650?t=0&category=23160&seller=deltatecc&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:18,051 - Scraping item page details for item 358863573550 via HTML
+2026-10-16 10:08:19,205 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/358863573550?t=0&category=23160&seller=deltatecc&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:19,503 - Scraping item page details for item 117402936514 via HTML
+2026-10-16 10:08:20,509 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/117402936514?t=1791683224000&category=23160&seller=rm.elektronik&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:20,692 - Description blocked due to bad condition word/phrase: 'tausch'
+2026-10-16 10:08:20,694 - Scraping item page details for item 278436747989 via HTML
+2026-10-16 10:08:21,740 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/278436747989?t=1791465095000&category=23160&seller=eeeshop&excSoj=1&ver=1&excTrk=1&lsite=101&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:21,947 - Scraping item page details for item 278442632880 via HTML
+2026-10-16 10:08:22,981 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/278442632880?t=1792103391000&category=23160&seller=jb-vertrieb-gmbh&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:23,425 - Scraping item page details for item 398394933404 via HTML
+2026-10-16 10:08:24,384 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/398394933404?t=1791465094000&category=23160&seller=eeeshop&excSoj=1&ver=1&excTrk=1&lsite=101&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:24,544 - Scraping item page details for item 407268351242 via HTML
+2026-10-16 10:08:25,831 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/407268351242?t=0&category=23160&seller=eeeshop&excSoj=1&ver=1&excTrk=1&lsite=101&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:26,000 - Scraping item page details for item 920020761476 via HTML
+2026-10-16 10:08:27,106 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/920020761476?t=0&category=23160&seller=eeeshop&excSoj=1&ver=1&excTrk=1&lsite=101&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:27,346 - Scraping item page details for item 287529302683 via HTML
+2026-10-16 10:08:28,303 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/287529302683?t=1788478273000&category=23160&seller=vulpano&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:28,520 - Scraping item page details for item 287528328359 via HTML
+2026-10-16 10:08:29,515 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/287528328359?t=1788478273000&category=23160&seller=vulpano&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:29,656 - Scraping item page details for item 188719586686 via HTML
+2026-10-16 10:08:30,650 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/188719586686?t=1786927513000&category=23160&seller=technology-germany&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:31,158 - Scraping item page details for item 278140435556 via HTML
+2026-10-16 10:08:32,328 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/278140435556?t=0&category=23160&seller=deltatecc-home&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:32,782 - Scraping item page details for item 178455413537 via HTML
+2026-10-16 10:08:33,829 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/178455413537?t=1790930143000&category=23160&seller=expert_ecommerce&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:34,440 -   logitech superlight 2 dex: 0 results, 0 candidates (none)
+2026-10-16 10:08:34,444 - Checking logitech superlight 2 dex through primary HTML
+2026-10-16 10:08:34,444 - Fetching: logitech superlight 2 dex
+2026-10-16 10:08:35,703 -   logitech superlight 2 dex -> 14 items via www.ebay.de body_len=633345
+2026-10-16 10:08:35,704 -   logitech superlight 2 dex -> 14 items via ebay.de
+2026-10-16 10:08:35,704 - Fetching: logitech superlight 2 dex
+2026-10-16 10:08:37,016 -   logitech superlight 2 dex -> 10 items via www.ebay.de body_len=534938
+2026-10-16 10:08:37,016 -   logitech superlight 2 dex -> 10 items via ebay.de
+2026-10-16 10:08:37,024 - Scraping item page details for item 960062889812 via HTML
+2026-10-16 10:08:37,945 - Fetching description HTML from iframe: https://itm.ebaydesc.com/itmdesc/960062889812?t=0&category=23160&seller=valeriseymou-0&excSoj=1&ver=1&excTrk=1&lsite=3&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-16 10:08:38,154 -   logitech superlight 2 dex: 0 results, 0 candidates (none)
+2026-10-16 10:08:38,247 - === Done ===
