@@ -9,6 +9,16 @@ import monitor
 
 
 class RuntimeStatusTests(unittest.TestCase):
+    def test_optional_attempt_coverage_does_not_claim_search_success(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'status.json'
+            coverage={'activeSearches':48,'attemptedSearches':48,'within15Minutes':20,'neverAttempted':0,
+                      'oldestAttemptAt':'2026-10-16T19:20:00Z','oldestAttemptAgeSeconds':1600}
+            value=publish({'searches':[]},100,'partial',path=path,coverage=coverage,search_errors=['phone: blocked'])
+            loaded=json.loads(path.read_text())
+            self.assertEqual(1,loaded['schema']);self.assertEqual(coverage,loaded['searchCoverage'])
+            self.assertEqual('partial',loaded['state']);self.assertIsNone(loaded['lastSuccessfulRun'])
+            self.assertEqual('blocked',loaded['searchIssues'][0]['code'])
     def test_query_failure_does_not_become_process_failure_and_delivery_is_confirmed(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/'runtime_status.json'

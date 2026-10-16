@@ -36,7 +36,7 @@ def search_issues(active_config, errors):
     return issues
 
 
-def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None,search_errors=None,last_pass=None):
+def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None,search_errors=None,last_pass=None,coverage=None):
     path = Path(path or STATUS_PATH)
     try:
         previous = json.loads(path.read_text(encoding="utf-8"))
@@ -63,6 +63,7 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         "searchIssueCount": len(search_errors or []),
         "searchIssues": search_issues(active_config,search_errors)[:48],
         "lastPass": last_pass,
+        "searchCoverage": coverage,
         "dataSource": data_source,
         "sourcePolicy": source_policy,
         "warning": str(warning)[:1000] if warning else None,

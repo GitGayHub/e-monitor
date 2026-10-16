@@ -7,6 +7,7 @@ import sqlite3
 import threading
 import time
 import os
+import math
 from contextvars import ContextVar
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -180,6 +181,26 @@ class BrowseAccess:
         next_id = self.state().get('normal_next_search', {}).get(market)
         offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
         return rows[offset:] + rows[:offset]
+
+    def search_coverage(self, searches, market, now=None):
+        """Freshness of attempts, never a claim of successful search/delivery."""
+        now = time.time() if now is None else now
+        attempts = self.state().get('html_attempts', {})
+        active = {str(row['id']) for row in searches if row.get('enabled', True)}
+        ages = []
+        for search_id in active:
+            stamp = attempts.get(search_id+'|'+market)
+            if isinstance(stamp, bool) or not isinstance(stamp, (float, int)):
+                continue
+            if not math.isfinite(stamp) or stamp <= 0 or stamp > now + 5:
+                continue
+            ages.append(max(0, now-stamp))
+        oldest = max(ages, default=None)
+        return dict(activeSearches=len(active), attemptedSearches=len(ages),
+                    within15Minutes=sum(age <= 900 for age in ages),
+                    neverAttempted=len(active)-len(ages),
+                    oldestAttemptAt=datetime.fromtimestamp(now-oldest, timezone.utc).isoformat(timespec='seconds') if oldest is not None else None,
+                    oldestAttemptAgeSeconds=int(oldest) if oldest is not None else None)
 
     def note_normal_discovery(self, items, search_id, market):
         """First observed time is evidence, never an inferred listing start."""

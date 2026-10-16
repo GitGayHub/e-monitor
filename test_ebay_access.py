@@ -10,10 +10,38 @@ from unittest.mock import patch, MagicMock
 
 import monitor
 import price_history
-from ebay_access import BrowseAccess
+from ebay_access import BrowseAccess, MonitorPassBudget
 
 
 class BrowseAccessTest(unittest.TestCase):
+    def test_budgeted_html_queue_can_use_time_beyond_eight_products_and_keeps_pacing(self):
+        self.access.save({'remaining':0,'reset':time.time()+21600,'checked':time.time()})
+        searches=[{'id':f'p{i:02d}','query':'phone'} for i in range(14)]
+        token=MonitorPassBudget.current.set(MonitorPassBudget(390))
+        try:
+            with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'EBAY_SOURCE','auto'):
+                monitor.initialize_api_budget_and_queue(searches)
+                self.assertEqual(14,len(monitor._allowed_api_targets_this_run))
+                for row in searches[:9]:self.access.record_html_attempt(row['id'],monitor.EBAY_MARKETPLACE_ID)
+                monitor.initialize_api_budget_and_queue(searches)
+                self.assertEqual({(r['id'],monitor.EBAY_MARKETPLACE_ID) for r in searches[9:]},monitor._allowed_api_targets_this_run)
+                self.assertEqual(0,price_history.get_api_calls_count_24h())
+        finally:MonitorPassBudget.current.reset(token)
+
+    def test_coverage_counts_attempts_in_this_market_with_exact_fifteen_minute_boundary(self):
+        self.access.save({'html_attempts':{'a|EBAY_DE':2000,'b|EBAY_DE':1100,'c|EBAY_DE':1099,
+                                           'disabled|EBAY_DE':2000,'missing|EBAY_GB':2000,'removed|EBAY_DE':2000}})
+        rows=[{'id':x} for x in ('a','b','c','missing')]+[{'id':'disabled','enabled':False}]
+        value=self.access.search_coverage(rows,'EBAY_DE',now=2000)
+        self.assertEqual((4,3,2,1,901),(value['activeSearches'],value['attemptedSearches'],value['within15Minutes'],value['neverAttempted'],value['oldestAttemptAgeSeconds']))
+        self.assertEqual('1970-01-01T00:18:19+00:00',value['oldestAttemptAt'])
+        self.assertEqual(0,price_history.get_api_calls_count_24h())
+
+    def test_unknown_and_future_attempts_cannot_claim_fresh_coverage(self):
+        self.access.save({'html_attempts':{'bool|DE':True,'nan|DE':float('nan'),'future|DE':3000}})
+        value=self.access.search_coverage([{'id':x} for x in ('bool','nan','future')],'DE',now=2000)
+        self.assertEqual(0,value['attemptedSearches']);self.assertEqual(3,value['neverAttempted'])
+        self.assertIsNone(value['oldestAttemptAt']);self.assertIsNone(value['oldestAttemptAgeSeconds'])
     def test_candidate_cursor_survives_restart_and_prioritizes_new_lots(self):
         self.access.save({'remaining':0,'reset':time.time()+600})
         self.access.start_normal_candidate('phone','rules-a','EBAY_DE',['a','b','c'],'b')

@@ -9,6 +9,32 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_real_budgeted_normal_loop_searches_all_forty_eight_when_they_fit(self):
+        searches=[dict(copy.deepcopy(self.search),id=f'p{i:02d}',query=f'QA Device {i}',notify=False) for i in range(48)]
+        self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:searches;self.config.save=Mock()
+        fetched=[]
+        def html(host,search,**kwargs):
+            fetched.append(search['id']);self.clock[0]+=4;return [],None
+        parent=MonitorPassBudget(390,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        try:
+            with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor,'_ebay_api_configured',return_value=False),patch.object(monitor,'_is_statistics_mode',return_value=False),patch.object(monitor,'_ebay_query_cache',{}),patch.object(monitor,'_ebay_block_until',0),patch.object(monitor,'_ebay_active_host',None),patch.object(monitor,'_host_chain_for_search',return_value=['ebay.de']),patch.object(monitor,'_search_query_variants',side_effect=lambda s:[s['query']]),patch.object(monitor,'_do_fetch_one',side_effect=html),patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'):
+                asyncio.run(monitor._process_searches_in_pass(None,once=True))
+            self.assertEqual([s['id'] for s in searches],fetched)
+            self.assertEqual(48,len(self.access.state()['html_attempts']))
+            self.assertEqual(192,self.clock[0]);self.assertEqual(0,price_history.get_api_calls_count_24h())
+        finally:MonitorPassBudget.current.reset(token)
+
+    def test_rejected_own_descriptions_count_as_read_but_unavailable_does_not(self):
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self,unavailable=True)
+        progress={'descriptionsVerified':0}
+        token=MonitorPassBudget.current.set(MonitorPassBudget(390,clock=lambda:self.clock[0]))
+        try:
+            with patch.object(monitor,'_runtime_progress',progress),patch.object(monitor,'_fetch_item_details',side_effect=lambda i:details[i]):
+                verified=asyncio.run(monitor._verified_history(rows,self.search))
+            self.assertEqual({'seen','expensive'},{r['item_id'] for r in verified})
+            self.assertEqual(4,progress['descriptionsVerified'])
+            self.assertIsNone(price_history.get_stats_7d('qa',monitor._history_filter_signature(self.search)))
+        finally:MonitorPassBudget.current.reset(token)
     def test_full_seller_details_keep_eight_seconds_for_api_after_html_timeout(self):
         data={'description':'Own fully working device, with original box.','price':{'value':'400'}}
         def html(*a,**k):self.assertEqual(12,MonitorPassBudget.current.get().seconds);self.clock[0]=12;return None

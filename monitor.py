@@ -8433,9 +8433,11 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
             description_deferred += 1
         elif details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
+        if _runtime_progress and details and _clean_description(details.get('description') or '').strip():
+            # A fully read description can reject a damaged/wrong device.
+            # The counter measures reads, not only accepted listings.
+            _runtime_progress['descriptionsVerified'] += 1
         if valid:
-            if _runtime_progress:
-                _runtime_progress['descriptionsVerified'] += 1
             candidate['_details_verified_at'] = time.time()
             # Enforce refreshed user minimum, hard ceiling and pickup location.
             checked = _history_candidates([candidate], search)
@@ -8619,9 +8621,10 @@ def initialize_api_budget_and_queue(searches):
             target = (search.get("id", ""), EBAY_MARKETPLACE_ID)
             due.add(target)
             priority[target] = elapsed
-    if quota_paused or html_primary:
-        # A HTML sweep must checkpoint before the runner's execution limit.
-        # Oldest due searches go first; subsequent passes continue the queue.
+    if (quota_paused or html_primary) and MonitorPassBudget.current.get() is None:
+        # Unbudgeted local runs retain the legacy batch limit. Hosted runs have
+        # cooperative search/detail deadlines and a persisted cursor: do not
+        # leave their remaining time idle after just eight products.
         due = set(sorted(due, key=lambda target: (-priority[target], target))[:8])
     _allowed_api_targets_this_run = due
     state = browse_access.state()
@@ -10309,7 +10312,8 @@ def _publish_runtime(state, error=None):
     publish(config.raw, _read_logic_version_timestamp(), state, error,
             data_source=("html+api" if _runtime_api_fallback else "html") if html_primary else "html" if html_only else "api+html" if _runtime_html_fallback else "api",
             warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first",pending=_runtime_pending,
-            search_errors=_runtime_errors,last_pass=dict(_runtime_progress) or None)
+            search_errors=_runtime_errors,last_pass=dict(_runtime_progress) or None,
+            coverage=browse_access.search_coverage(config.raw.get('searches', []),EBAY_MARKETPLACE_ID) if html_primary else None)
 
 
 async def run_once():
