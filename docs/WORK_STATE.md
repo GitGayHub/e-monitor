@@ -1,3 +1,31 @@
+<!-- stage100 -->
+# Продолжение 0.100 — 16 октября 2026
+
+Цель ACTIVE, общая приёмка26/104 PARTIAL. Финальная физическая100/code100 установлена, правила1792177727/History20/SHAfa9d5fe4a35defba77f199090c45e534003d8487fe246a43e8ca7b60d9b5af90;все столбцы50поисков сохранены,ce6/dirtyfalse/normal48/LG430. Первая промежуточная100SHA1d448d…устарела.400Python/356Android/9sync/4installer/buildPASS,3970snapshotsнеизменны.
+
+Новый запрос пользователя: различать сбой одного поиска/аварию сервера/явную пустую выдачу; до15мин; объяснить доставку. Доказано: 099 реальныйserverACK1792152281,3CI099 SUCCESS; телефонpartial11/обеправила14:04. Реальная автоматическая доставка099120036Ray175.90/120037SonyXM6106.19/120038iPhone17PM898 подтвержденаTelegram+feed, pending0; НЕпересылать. Послеdescription1.3/1.6/1.9сек,ноRayотпервогонаблюдения37мин. До100 возраст48поисков2.8–24.8мин,20старше15. SLA15НЕдоказан.
+
+100 исправляет лишнийhomepagewarmup ДОпоиска(могсъестьвесь20с),подтверждённый0завершаетсразу безPW/API,рекомендацииподнулевымзаголовкомневыдача. РеальныйcachedSORRYвAPK≠текущий0вChrome. SiteUnavailableотдельноотNetwork. СлужебныйJSошибкинеравенвидимойошибке. Новыйruntime searchIssues/lastPass/lastTelegramConfirmedAt schema1optional; searcherrors→partial, fatalexception→error; названиявUIбезsearchID. lastPassсчётчикинеclaimall48, APIdeferredнеучитываетсякакпопытка. ПолныемедианыдвухописанийНЕисправлены.
+
+ACK100=False,последнийruntime1792152281/error/2026-10-16T19:11:13+00:00. ПроверитьреальноеACK100/CI100/Обзор+свежиеLGаукиикругооборотпослеwarmupfix. Не объявлятьSLA15повыполнению400тестов. ПоследнийChromeID3(старый4отключился),userTab214034247:вечернийLGauction0+рекомендации подтвержденыDOM. PhoneUSBdevice,неперезапускать;толькоAPK. AyuGramвдругомчате,вПКнеактивировать/некликать,толькофон. Работатьскрыто. GitHubQA099preview38898882415 FAILED ДОclaim/send:Freshsearchquoteunavailable,неblindrerun. Новыйpreviewтолькоеслиисправлена/диагностированапричина.
+
+Далее полныйкаталог26/104/40–50уникальныхownописаний/алиасы/минимумы/CRUD/гонки/сеть/повторы. REPORT_100/PHONE_100/RUNTIME_100/CI_100 иактуальнаяacceptance-current. Сохранитькод/документыmain/source/обеroad;послепубликацииcloud_sync--check/--applyдолжныдать0conflict/0fileиобновитьcheckpoint. Неpull/reset/clean/force,неprodstateвroad. Старые120019/120022/120025–120035непересылать. ОбщаяприёмкаНЕзавершена.
+<!-- /stage100 -->
+
+<!-- stage099 -->
+# Продолжение 0.099 — 16 октября 2026
+
+Цель ACTIVE; общая приёмка26товаров/104корзины PARTIAL. Физический телефон толькоAPK,Telegram толькоПК,окнаПК не активировать. Финальная099/code99 установлена,правила1792152281/History19,SHA7e51211b04bb8041af98aaaba467ce6f413569760825d9b54448c467ed73feaf;все столбцы50поисков сохранены,ce6/dirtyfalse/normal48/LG430.
+
+397Python/353Android/9sync/4installer/buildPASS. Новые20сек childdeadlines ограничивают поиск/описание,не отменяют Telegram/worker;частичные карточки сохраняются,следующий товар продолжает очередь. Pending отделён от настоящих errors;runtime schema1 получил optional pendingCount/pendingChecks/statepartial;старый lastSuccessfulRun сохраняется. Защита sellerdescription общаяPython/Kotlin,не путать CAPTCHA сownbody. ДиагностикаQA теперь reason/status безсекретов/описания. History19 исключает прежний некорректный cohort. Первые2CI099 FAILED из-за noPlaywright/status;исправление2821fe33/5a61da93 опубликовано,397PythonповторноPASS. ПовторныеCI проверитьCI_099.
+
+Код source/road опубликован:bot2821fe337188e609f9c5290fb24c43e4a755f40c/5a61da93b5a0433557495a891bdd2f7bd8a4ceea;Androida989a9553b4af94593efba9ed12fd5a856d2dd1d/d4363530fddd3a22b68abb999c2adfeedacfef79. ACK099=False;последнийruntime1792148597/error/2026-10-16T12:05:00+00:00. Не путать опубликованнуюmeta099 сruntimeACK. Активныйстарыйrun38895869724 не отменять;следующийpending может заменятьсяcron,нооднорабочееочередьсохранена.
+
+Полныйcaption120035 реальнопрочитанAyuGram вфоне текущимэтапом:APK098/LG423.99/430/Германия/локальный. НЕпересылать120035 иранние120019/120022/120025–120032. GitHubQA098attempts1/2failedдоclaim;третийслепойповторне делать. НовыйQA099сначала preview send=false дляструктурнойдиагностикипослеACK;только послеуспехаиотдельнойпроверкисвежейценыобычныйявныйтест. LG800366377085вChrome открыт405+18.99,113ownсимволов/10месяцев. ТелефонзапустилтолькоLG4корзины099,результатпроверитьбезперезапускапоиска.
+
+Дальше:ACK099/CI/фактическийpartialвОбзоре,изолированныйGHpreviewдиагностика,потомдоставка;реальныйзамеркаденса;полныемедианыпридвухописанияхНЕисправлены. Продолжитьвеськаталог26/104,40–50уникальныхown/алиасы/минимумы/CRUD/гонки/сеть/повторы. REPORT_099/PHONE_099/RUNTIME_099/CI_099/TELEGRAM_099. Не pull/reset/clean/force,не productionstateвroad. Финальныедокументыпубликоватьвsource/обеroad[skipci].
+<!-- /stage099 -->
+
 <!-- stage098 -->
 # Продолжение0.098 —16октября2026
 

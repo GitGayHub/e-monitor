@@ -41,7 +41,7 @@ def _page(marker_html, *, container=True, items=0, head_filler=True):
 class DeepEmptyMarkerTest(unittest.TestCase):
     def test_real_sorry_error_page_is_network_failure_not_empty_or_captcha(self):
         body='<html><body><p>SORRY</p><p>Something went wrong on our end</p><p>Please go back and try again or go to eBay Homepage.</p></body></html>'
-        self.assertEqual(([], 'network'),monitor._parse_search_body(body,'ebay.de','4080 rechner'))
+        self.assertEqual(([], 'site_error'),monitor._parse_search_body(body,'ebay.de','4080 rechner'))
 
     def test_transport_error_never_becomes_not_found_in_statistics(self):
         for error in ('network','parse','http_503','side_fetch_failed'):
