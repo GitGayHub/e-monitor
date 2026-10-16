@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-16T11:15:43.082855+00:00",
+  "updatedAt": "2026-10-16T11:46:15.345985+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
   "apkVersion": "0.098",
@@ -2535,7 +2535,7 @@
     "historyVersion": 18,
     "sha256": "cf24820a4538c3fae88c2e049a2aa52868ed75ba6cbe463f6ed26e63de78e84e",
     "tests": {
-      "python": 388,
+      "python": 389,
       "androidUnit": 351,
       "cloudSync": 9,
       "phoneInstaller": 4,
@@ -2657,7 +2657,7 @@
         "imageUrl": "https://i.ebayimg.com/images/g/KIIAAeSwnd5qy6ir/s-l300.webp"
       }
     },
-    "deployment": "published, runtime and CI pending",
+    "deployment": "actual runtime ACK1792148597; 3 initial098CI successful; later workflow/QA helper changes also pass389localPython",
     "latencySlaProven": false,
     "fullCatalogueAccepted": false,
     "miniview": {
@@ -2683,6 +2683,49 @@
       "cause": "cancelled App Sync completion shared workflow-level pending slot despite job if; it displaced real monitor",
       "fixed": "non-success workflow_run uses unique nonproduction group; only successful sync resumes shared production queue",
       "acceptance": "new production run pending"
-    }
+    },
+    "runtimeEvidence": "RUNTIME_098.json",
+    "telegram": {
+      "githubRun": 38894292831,
+      "githubAttempts": [
+        {
+          "attempt": 1,
+          "conclusion": "failure",
+          "sent": false,
+          "reason": "fresh own listing details unavailable or rejected; combined old diagnostic"
+        },
+        {
+          "attempt": 2,
+          "conclusion": "failure",
+          "sent": false,
+          "reason": "Fresh listing details unavailable"
+        }
+      ],
+      "githubRequestId": "lg-price-20261016-430-098",
+      "githubDeliveryProven": false,
+      "localDelivery": {
+        "requestId": "lg-price-20261016-430-098-local",
+        "execution": "local",
+        "logicVersion": 1792148597,
+        "apkVersion": "0.098",
+        "settingsRevision": "ce6d8944-34df-441a-8cd5-483e0b5a9542",
+        "serverCommit": "5a17c715a996fb2e3e1d0f6488945dfec7ab4fed",
+        "itemId": "800366377085",
+        "price": 405.0,
+        "shipping": 18.99,
+        "total": 423.99,
+        "limit": 430,
+        "descriptionCharacters": 113,
+        "productionStateChanged": false,
+        "status": "photo_confirmed",
+        "claimedAtUtc": "2026-10-16T11:42:11.719094+00:00",
+        "messageId": 120035,
+        "confirmedAtUtc": "2026-10-16T11:42:13.785830+00:00",
+        "desktopToastObserved": true,
+        "fullCaptionReadInDesktop": false,
+        "duplicateSuppressedByDurableClaim": true
+      }
+    },
+    "all50ColumnsAfterSync": true
   }
 }
