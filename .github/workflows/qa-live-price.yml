@@ -19,6 +19,10 @@ on:
         description: Send one explicitly labelled photo after all guards pass
         type: boolean
         default: false
+      correct_existing:
+        description: Correct only the already confirmed test caption; never send another photo
+        type: boolean
+        default: false
 concurrency:
   group: explicit-lg-price-qa
   cancel-in-progress: false
@@ -48,6 +52,8 @@ jobs:
           QA_EXPECTED_LIMIT: ${{ inputs.limit }}
           QA_REQUEST_ID: ${{ inputs.request_id }}
           QA_SEND: ${{ inputs.send }}
+          QA_CORRECT_EXISTING: ${{ inputs.correct_existing }}
+          QA_EXPECTED_SHIPPING: '18.99'
           EBAY_SOURCE: html
           EBAY_HTML_PLAYWRIGHT: '1'
           EBAY_MARKETPLACE_ID: EBAY_DE
