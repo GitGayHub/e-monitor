@@ -1320,15 +1320,24 @@ def _query_matches_title(title_norm, query):
     if "redmagic" in query_norm or "red magic" in query_norm:
         return _matches_redmagic_query(title_norm, query_norm)
     required_words, alternative_groups = _query_match_plan(query)
-    if required_words and not all(_has_query_word(title_norm, w) for w in required_words):
+    if required_words and not all(_has_query_word(title_norm, w, query_norm) for w in required_words):
         return False
     for alternatives in alternative_groups:
-        if not any(all(_has_query_word(title_norm, w) for w in alt) for alt in alternatives):
+        if not any(all(_has_query_word(title_norm, w, query_norm) for w in alt) for alt in alternatives):
             return False
     return True
 
 
-def _has_query_word(title_norm, word):
+def _has_query_word(title_norm, word, query_norm=""):
+    if query_norm and _is_phone_search_query(_phone_model_spacing(query_norm)):
+        family = {
+            "samsung": r"\bgalaxy\s+s\d{2}\b",
+            "galaxy": r"\bsamsung\s+s\d{2}\b",
+            "google": r"\bpixel\s*\d+[a-z]?\b",
+            "apple": r"\biphone\s*(?:\d{1,2}|xs|xr|x|se)\b",
+        }.get(word)
+        if family and re.search(family, title_norm):
+            return True
     if word == "redmagic":
         return _has_term(title_norm, "redmagic") or "red magic" in title_norm
     # DualSense Gamepad is the pad, not a miss for query «dualsense controller».
@@ -2115,6 +2124,9 @@ def _is_phone_accessory_title(title_norm):
     # model-led handset with storage is being sold. Never remove actual defects
     # or parts elsewhere in the title; seller details remain mandatory.
     if _title_leads_with_phone_model(title_norm) and _has_phone_storage(title_norm):
+        # 257794983463 sells a complete handset; Slate Design is its form factor.
+        # Keep separate case/screen/repair terms and require own seller contents.
+        title_norm = re.sub(r"\b(?:slate|candy\s*bar|bar)\s+(?:design|style|stil)\s+(?:smartphone|handy|phone)\b", "smartphone", title_norm)
         # 407252918435: a sealed handset followed by "Neu Google Case".
         # This is only candidate purpose; full seller contents remain required.
         # Explicit compatibility/only-part titles never receive this exception.
