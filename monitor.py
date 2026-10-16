@@ -272,7 +272,13 @@ PHONE_HARD_ACCESSORY_WORDS = (
 
 # HARD PART WORDS — these ALWAYS indicate a spare part / repair listing.
 # No override possible. A title with "motherboard" or "digitizer" is never a phone for sale.
-PHONE_HARD_PART_WORDS = (
+PHONE_CONVERSION_PART_WORDS = (
+    "umbaugehäuse", "umbaugehaeuse", "umrüstgehäuse", "umruestgehaeuse",
+    "umbaukit", "umbau-kit", "umbau kit", "umbauset", "umbau set",
+    "umrüstkit", "umruestkit", "conversion kit", "conversion housing",
+    "conversion shell", "conversion case", "conversion cover",
+)
+PHONE_HARD_PART_WORDS = PHONE_CONVERSION_PART_WORDS + (
     "display", "bildschirm", "screen", "oled",
     "lcd", "digitizer", "touch screen", "touchscreen", "displayeinheit",
     "reparatur", "reparaturservice", "serviceware", "pulled",
@@ -1731,6 +1737,11 @@ _PHONE_MODEL_PATTERNS = (
 
 def _phone_model_aspect_matches(value, query):
     value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
+    # Own Model of257801627073: "14 PM zu17PM". PM is ProMax here,
+    # not an unknown model code that can silently agree with every iPhone.
+    if "iphone" in query and any(not _matches_phone_query_model(f"iphone {generation} pro max", query)
+                                 for generation in re.findall(r"\b(\d{1,2})\s*pm\b", value)):
+        return False
     # Own Model often abbreviates a verified Nubia title as "Z80 Ultra".
     # Expand only that aspect, retaining generation/S/Leading comparisons.
     if "nubia" in query and re.match(r"^z\s*\d{2}[a-z]?\b", value):
@@ -1875,10 +1886,14 @@ def _phone_description_purpose_confirmed(description):
     own = _normalize(_clean_description(description or ''))
     if _phone_packaging_only(own):
         return False
+    conversion = "|".join(re.escape(_normalize(word)) for word in PHONE_CONVERSION_PART_WORDS)
+    if re.match(rf"^(?:diy\s+)?(?:{conversion})\b", own):
+        return False
     # A complete-model title may mention an optional branded case. Seller
     # contents must still reject a separately supplied case, including when
     # the seller has put that accessory in the phone category.
     case = r"(?:(?:phone|smartphone|protective)\s+)?(?:case|cover|huelle|schutzhuelle|schutzhülle|stylus|s[ -]?pen)"
+    case = rf"(?:{case}|{conversion})"
     for match in re.finditer(rf"\b(?:nur|only)\s+(?:(?:das|die|der|the|a|eine?)\s+)?{case}\b|\b{case}\s+only\b", own):
         before = own[max(0,match.start()-18):match.start()]
         if not re.search(r"\b(?:nicht|not|mit|with|plus|und|and)\s+$|\+\s*$",before):

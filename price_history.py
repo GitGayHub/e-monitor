@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 20  # Explicit zero-result pages exclude unrelated recommendation cards.
+HISTORY_VERSION = 21  # Conversion housings/kits are not complete handsets.
 _DB_LOCK = threading.Lock()
 
 
