@@ -4476,7 +4476,7 @@ def _get_ebay_api_token():
                 "Accept": "application/json",
             },
         )
-        with urllib.request.urlopen(req, timeout=20) as resp:
+        with urllib.request.urlopen(req, timeout=MonitorPassBudget.timeout(20)) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
         token = data.get("access_token")
         if not token:
@@ -4698,7 +4698,7 @@ def fetch_ebay_api_ex(search, force=False):
         "X-EBAY-C-ENDUSERCTX": _ebay_end_user_context(market),
     })
     try:
-        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
+        with urllib.request.urlopen(req, timeout=MonitorPassBudget.timeout(HTTP_TIMEOUT[1])) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
         if data.get("warnings"):
             logger.warning("eBay did not fully apply search parameters for %s", search.get("query"))
@@ -4880,6 +4880,7 @@ def _html_auction_end(soup, now=None):
 def _fetch_item_details_html(item_id):
     """Fetches item details (description, exact end date, etc.) by scraping the item page."""
     if MonitorPassBudget.exhausted():
+        _details_event(item_id,'html_deadline')
         return None
     session = _get_ebay_session()
     host = _ebay_active_host or "ebay.de"
@@ -4891,22 +4892,25 @@ def _fetch_item_details_html(item_id):
     }
     logger.info("Scraping item page details for item %s via HTML", item_id)
     try:
-        resp = session.get(url, headers=headers, timeout=15)
+        resp = session.get(url, headers=headers, timeout=MonitorPassBudget.timeout(15))
     except Exception as e:
         logger.warning("_fetch_item_details_html: network error for %s: %s", item_id, e)
+        _details_event(item_id,'html_network')
         return _fetch_item_details_browser(item_id)
 
     if MonitorPassBudget.exhausted():
+        _details_event(item_id,'html_deadline')
         return None
     if resp.status_code != 200 and host == "ebay.de":
         try:
             mobile_url = f"https://m.{host}/itm/{item_id}"
-            resp = session.get(mobile_url, headers=headers, timeout=15)
+            resp = session.get(mobile_url, headers=headers, timeout=MonitorPassBudget.timeout(15))
         except Exception as e:
             logger.warning("_fetch_item_details_html: mobile retry network error for %s: %s", item_id, e)
 
     if resp.status_code != 200:
         logger.warning("_fetch_item_details_html: HTTP %d for item %s", resp.status_code, item_id)
+        _details_event(item_id,'html_http',resp.status_code)
         return _fetch_item_details_browser(item_id)
 
     html = resp.text or ""
@@ -4926,10 +4930,12 @@ def _fetch_item_details_html(item_id):
     title_text = title_el.get_text(strip=True) if title_el else ""
     if "/splashui/" in resp.url.lower() or any(m in title_text.lower() for m in challenge_markers) or any(m in html[:8000].lower() for m in challenge_markers):
         logger.warning("_fetch_item_details_html: challenge page hit for item %s", item_id)
+        _details_event(item_id,'html_challenge',resp.status_code)
         return None
 
-    details = _parse_item_details_html(html, session=session, host=host)
+    details = _parse_item_details_html(html, session=session, host=host,item_id=item_id)
     if not _provider_details_complete(details):
+        _details_event(item_id,'seller_description_missing' if not _clean_description(details.get('description') or '') else 'live_price_missing')
         return _fetch_item_details_browser(item_id)
     return details
 
@@ -4941,28 +4947,34 @@ def _fetch_item_details_browser(item_id):
     try:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+            browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage"],timeout=MonitorPassBudget.milliseconds(30000))
             try:
                 page = browser.new_page(locale="de-DE")
-                page.goto(f"https://www.ebay.de/itm/{item_id}", wait_until="domcontentloaded", timeout=25000)
+                page.goto(f"https://www.ebay.de/itm/{item_id}", wait_until="domcontentloaded", timeout=MonitorPassBudget.milliseconds(25000))
+                if MonitorPassBudget.exhausted():
+                    _details_event(item_id,'browser_deadline')
+                    return None
                 if _is_challenge_html(page.content(), page.url):
+                    _details_event(item_id,'browser_challenge')
                     return None
                 # Wait only for the seller's own iframe, excluding reviews/recs.
-                page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=6000)
+                page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=MonitorPassBudget.milliseconds(6000))
                 frame = page.frame_locator("#desc_ifr")
-                frame.locator("body").wait_for(state="visible", timeout=6000)
-                desc = frame.locator("body").inner_html(timeout=6000)
+                frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
+                desc = frame.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
                 if not _clean_description(desc).strip():
+                    _details_event(item_id,'browser_description_missing')
                     return None
-                return _parse_item_details_html(page.content(), description=desc)
+                return _parse_item_details_html(page.content(), description=desc,item_id=item_id)
             finally:
                 browser.close()
     except Exception as exc:
         logger.warning("HTML browser details unavailable for %s: %s", item_id, type(exc).__name__)
+        _details_event(item_id,'browser_'+type(exc).__name__)
         return None
 
 
-def _parse_item_details_html(html, description=None, session=None, host="ebay.de"):
+def _parse_item_details_html(html, description=None, session=None, host="ebay.de",item_id=None):
     """Parse own listing fields. Characteristics cannot substitute seller text."""
     soup = BeautifulSoup(html, "html.parser")
     title_el = soup.select_one("h1.x-item-title, .x-item-title__mainTitle") or soup.find("title")
@@ -5061,7 +5073,9 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         desc_html = description
     elif desc_ifr:
         desc_src = desc_ifr.get("src") or ""
-        if desc_src:
+        if desc_src and MonitorPassBudget.exhausted():
+            _details_event(item_id,'seller_description_deadline')
+        elif desc_src:
             if desc_src.startswith("//"):
                 desc_src = "https:" + desc_src
             elif desc_src.startswith("/"):
@@ -5072,19 +5086,24 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
                     "User-Agent": headers["User-Agent"] if "User-Agent" in headers else "Mozilla/5.0",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 }
-                desc_resp = (session or _get_ebay_session()).get(desc_src, headers=desc_headers, timeout=10)
+                desc_resp = (session or _get_ebay_session()).get(desc_src, headers=desc_headers, timeout=MonitorPassBudget.timeout(10))
+                _details_event(item_id,'seller_description_http',desc_resp.status_code)
                 if desc_resp.status_code == 200:
                     desc_html = desc_resp.text or ""
                 else:
                     logger.warning("Description iframe HTTP %d", desc_resp.status_code)
             except Exception as e:
                 logger.warning("Failed to fetch description iframe: %s", e)
+                _details_event(item_id,'seller_description_network')
     else:
         desc_div = soup.find(id="desc_div") or soup.find(class_="vi-desc-main-container")
         if desc_div:
             desc_html = str(desc_div)
 
     # Buyer reviews (Produktbewertungen) are never seller description.
+    if _description_is_protection(desc_html):
+        _details_event(item_id,'seller_description_challenge')
+        desc_html=''
     if desc_html:
         desc_html = _strip_review_sections(desc_html)
     # Keep the description separate: specs-only pages remain unverified.
@@ -5229,6 +5248,22 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
 
 
 _item_details_cache = {}
+_item_details_events = {}
+
+
+def _details_event(item_id, reason, status=None):
+    if item_id is None:
+        return
+    key = str(item_id)
+    if key not in _item_details_events and len(_item_details_events)>=512:
+        _item_details_events.pop(next(iter(_item_details_events)))
+    events=_item_details_events.setdefault(key,[])
+    events.append(dict(reason=reason,httpStatus=status))
+    del events[:-12]
+
+
+def item_details_diagnostics(item_id):
+    return dict(itemId=str(item_id),events=copy.deepcopy(_item_details_events.get(str(item_id),[])))
 
 
 def _provider_details_complete(data):
@@ -5255,12 +5290,15 @@ def _provider_details_complete(data):
 
 def _fetch_item_details(item_id):
     """Read the complete seller description before classifying a candidate."""
+    _item_details_events.pop(str(item_id),None)
     if MonitorPassBudget.exhausted():
+        _details_event(item_id,'deadline_before_details')
         return None
     context = _ebay_end_user_context(EBAY_MARKETPLACE_ID)
     cache_key = (str(item_id), EBAY_MARKETPLACE_ID, context)
     cached = _item_details_cache.get(cache_key)
     if cached and time.time() - cached[0] < 120:
+        _details_event(item_id,'cache_hit')
         return copy.deepcopy(cached[1])
     html_attempted, html_result, html_partial, api_partial = False, None, None, None
     def html_details():
@@ -5301,7 +5339,7 @@ def _fetch_item_details(item_id):
         "X-EBAY-C-ENDUSERCTX": context,
     })
     try:
-        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT[1]) as resp:
+        with urllib.request.urlopen(req, timeout=MonitorPassBudget.timeout(HTTP_TIMEOUT[1])) as resp:
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
         if _clean_description(data.get("description") or "").strip():
             api_partial = data
@@ -5404,9 +5442,27 @@ def _item_specifics_html(soup):
     return "\n".join(chunks)
 
 
+def _description_is_protection(raw):
+    if not raw:
+        return False
+    phrases=('pardon our interruption','bitte entschuldigen sie die storung','access denied',
+             'verify you are a human','are you a robot','checking your browser','unusual traffic')
+    if '<' in raw:
+        doc=BeautifulSoup(raw, 'html.parser')
+        headings=[_normalize(e.get_text(' ',strip=True)) for e in doc.select('title,h1')]
+        if any(any(phrase in heading for phrase in phrases) for heading in headings):
+            return True
+        if doc.select_one('form[action*="/splashui/"],.g-recaptcha,.h-captcha'):
+            return True
+        plain=_normalize(doc.get_text(' ',strip=True))
+    else:
+        plain=_normalize(raw)
+    return len(plain)<1000 and any(plain.startswith(phrase) or plain.startswith('please '+phrase) for phrase in phrases)
+
+
 def _clean_description(html_text):
     """Strips HTML tags and unescapes HTML entities from the description."""
-    if not html_text:
+    if not html_text or _description_is_protection(html_text):
         return ""
     html_text = _strip_review_sections(html_text)
     if "<" in html_text:
@@ -6752,9 +6808,14 @@ def _warmup_session(session, host):
     try:
         session.get(
             home,
-            timeout=HTTP_TIMEOUT,
+            timeout=MonitorPassBudget.timeout(HTTP_TIMEOUT),
             headers=None if _HAS_CURL_CFFI else {"Referer": ""},
         )
+        budget = MonitorPassBudget.current.get()
+        if budget is not None and budget.seconds<=20:
+            # Spend live-query time on the requested search, not unrelated
+            # category/test pages from the legacy session warmup.
+            return
         time.sleep(random.uniform(0.8, 1.8) if _on_github_actions() else random.uniform(0.6, 1.4))
         # Touch electronics + phones like a real shopper (more cookies / consent).
         for path in (
@@ -6762,7 +6823,9 @@ def _warmup_session(session, host):
             f"https://www.{host}/sch/i.html?_nkw=test&_sacat=0",
         ):
             try:
-                session.get(path, timeout=HTTP_TIMEOUT, headers={"Referer": home})
+                if MonitorPassBudget.exhausted():
+                    return
+                session.get(path, timeout=MonitorPassBudget.timeout(HTTP_TIMEOUT), headers={"Referer": home})
                 time.sleep(random.uniform(0.3, 0.9))
             except Exception:
                 pass
@@ -7055,6 +7118,8 @@ def _do_fetch_playwright(url, query=""):
 
     last_err = None
     for attempt, plan in enumerate(attempts):
+        if MonitorPassBudget.exhausted():
+            return [], "pass_deferred"
         browser = None
         try:
             with sync_playwright() as p:
@@ -7077,7 +7142,7 @@ def _do_fetch_playwright(url, query=""):
                         "--disable-features=IsolateOrigins,site-per-process,TranslateUI",
                         "--renderer-process-limit=2",
                     ]
-                browser = p.chromium.launch(headless=True, args=launch_args)
+                browser = p.chromium.launch(headless=True, args=launch_args,timeout=MonitorPassBudget.milliseconds(30000))
                 context = browser.new_context(
                     locale="de-DE",
                     timezone_id="Europe/Berlin",
@@ -7100,9 +7165,9 @@ def _do_fetch_playwright(url, query=""):
                         page.goto(
                             "https://www.ebay.de/",
                             wait_until="domcontentloaded",
-                            timeout=25000,
+                            timeout=MonitorPassBudget.milliseconds(25000),
                         )
-                        page.wait_for_timeout(600)
+                        page.wait_for_timeout(MonitorPassBudget.milliseconds(600))
                     except Exception:
                         pass
                 if attempt:
@@ -7110,8 +7175,10 @@ def _do_fetch_playwright(url, query=""):
                         "Playwright retry %d/%d for '%s' (%s)",
                         attempt + 1, len(attempts), query, plan["name"],
                     )
-                page.goto(plan["url"], wait_until=plan["wait_until"], timeout=35000)
-                page.wait_for_timeout(plan["settle"])
+                if MonitorPassBudget.exhausted():
+                    return [], "pass_deferred"
+                page.goto(plan["url"], wait_until=plan["wait_until"], timeout=MonitorPassBudget.milliseconds(35000))
+                page.wait_for_timeout(MonitorPassBudget.milliseconds(plan["settle"]))
                 # dismiss cookie banner if present
                 for sel in (
                     "button#gdpr-banner-accept",
@@ -7119,19 +7186,19 @@ def _do_fetch_playwright(url, query=""):
                     "#consent-page .btn-primary",
                 ):
                     try:
-                        page.locator(sel).first.click(timeout=1200)
-                        page.wait_for_timeout(400)
+                        page.locator(sel).first.click(timeout=MonitorPassBudget.milliseconds(1200))
+                        page.wait_for_timeout(MonitorPassBudget.milliseconds(400))
                     except Exception:
                         pass
                 # Wait for result cards when SPA paints late (common on auction SERP).
                 try:
                     page.wait_for_selector(
                         "li.s-card, li.s-item, .srp-results, .srp-river-results",
-                        timeout=8000,
+                        timeout=MonitorPassBudget.milliseconds(8000),
                     )
-                    page.wait_for_timeout(700)
+                    page.wait_for_timeout(MonitorPassBudget.milliseconds(700))
                 except Exception:
-                    page.wait_for_timeout(900)
+                    page.wait_for_timeout(MonitorPassBudget.milliseconds(900))
                 body = page.content()
                 final = page.url
                 browser.close()
@@ -7164,7 +7231,7 @@ def _do_fetch_playwright(url, query=""):
 
 
 def _http_get_search(session, url, common_headers):
-    resp = session.get(url, timeout=HTTP_TIMEOUT, headers=common_headers)
+    resp = session.get(url, timeout=MonitorPassBudget.timeout(HTTP_TIMEOUT), headers=common_headers)
     sc = resp.status_code
     body = resp.text or ""
     final_url = getattr(resp, "url", "") or ""
@@ -7207,6 +7274,8 @@ def _do_fetch_one(host, search, referer=None):
 
         last_err = "blocked"
         for try_url in urls_try:
+            if MonitorPassBudget.exhausted():
+                return [],'pass_deferred'
             try:
                 sc, body, final_url = _http_get_search(session, try_url, common_headers)
             except Exception as e:
@@ -8279,10 +8348,10 @@ def _history_price_sides(candidate, search):
     return sides
 
 
-async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix=""):
+async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix="", population_complete=True):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
-    verified, unavailable, deferred = [], 0, 0
+    verified, unavailable, deferred, description_deferred = [], 0, 0, 0
     fair_slice_exhausted = False
     candidates = _history_candidates(items, search)
     budget = MonitorPassBudget.current.get()
@@ -8308,8 +8377,16 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         if resumable:
             at = ids.index(str(candidate['item_id']))
             browse_access.start_normal_candidate(queue_id,resume_context,EBAY_MARKETPLACE_ID,ids,ids[(at+1)%len(ids)])
-        valid, details = await _validate_candidate(candidate, search)
-        if details is None or candidate.get("_details_status") == "unavailable_price":
+        if on_verified is not None:
+            with MonitorPassBudget.slice(20,reserve=30) as detail_budget:
+                valid, details = await _validate_candidate(candidate, search)
+                detail_expired = detail_budget is not None and detail_budget.should_yield()
+        else:
+            valid, details = await _validate_candidate(candidate, search)
+            detail_expired = False
+        if details is None and detail_expired:
+            description_deferred += 1
+        elif details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
         if valid:
             candidate['_details_verified_at'] = time.time()
@@ -8335,7 +8412,7 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         observations = [side for row in verified for side in _history_price_sides(row, search)]
         purchases, offers, bids = _market_history_prices(observations, search["id"], signature)
         record_snapshot(search["id"], purchases, offers, bids, len(verified),
-                        verified=True, validation_complete=unavailable == 0 and missing_prices == 0 and deferred == 0 and context_unchanged, filter_signature=signature)
+                        verified=True, validation_complete=population_complete and unavailable == 0 and missing_prices == 0 and deferred == 0 and description_deferred == 0 and context_unchanged, filter_signature=signature)
         for row in observations:
             if row.get("buy_now"):
                 fixed = row.get("bin_total_price", row["total_price"])
@@ -8343,9 +8420,11 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
                     record_seller_price(search["id"], row["seller_name"], fixed, row["item_id"])
     if unavailable or missing_prices:
         _runtime_errors.append(f"{search['id']}: описания или цены недоступны ({unavailable + missing_prices}); история неполная")
+    if description_deferred:
+        _runtime_pending.append(f"{search['id']}: истекло время проверки {description_deferred} описаний; проверка повторится")
     if deferred:
         reason = 'очередь проверки, переход к следующему товару' if fair_slice_exhausted else 'проверка не завершена по времени'
-        _runtime_errors.append(f"{search['id']}: {reason} ({deferred} описаний); очередь продолжится")
+        _runtime_pending.append(f"{search['id']}: {reason} ({deferred} описаний); очередь продолжится")
     return verified
 
 
@@ -8647,6 +8726,15 @@ async def process_searches(bot, once=False):
         return await _process_searches_in_pass(bot, once=once)
     finally:
         MonitorPassBudget.current.reset(token)
+
+
+async def _fetch_normal_slice(search, force=False):
+    """A slow query yields to other products without consuming their deadline."""
+    with MonitorPassBudget.slice(20,reserve=30):
+        rows, error = await asyncio.to_thread(fetch_ebay_ex,search,force=force)
+    if error == 'pass_deferred' and not MonitorPassBudget.exhausted(reserve=30):
+        return rows,'search_deferred'
+    return rows,error
 
 
 async def _process_searches_in_pass(bot, once=False):
@@ -9698,8 +9786,8 @@ async def _process_searches_in_pass(bot, once=False):
         normal_queue = browse_access.normal_queue(searches, EBAY_MARKETPLACE_ID)
         def report_yield():
             message = "Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
-            if message not in _runtime_errors:
-                _runtime_errors.append(message)
+            if message not in _runtime_pending:
+                _runtime_pending.append(message)
             logger.info(message)
 
         for index, search in enumerate(normal_queue):
@@ -9710,7 +9798,7 @@ async def _process_searches_in_pass(bot, once=False):
             # Same filters as statistics, but discover new stock before old cheap bids.
             # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
             fetch_search = _normal_discovery_search(search)
-            results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
+            results, fetch_err = await _fetch_normal_slice(fetch_search)
             if fetch_err == "pass_deferred":
                 report_yield()
                 break
@@ -9721,8 +9809,9 @@ async def _process_searches_in_pass(bot, once=False):
                 if fetch_err in ("blocked", "rate_limit", "cooldown"):
                     blocked_searches.append(search)
                 logger.warning("  %s: fetch error %s", search["query"], fetch_err)
-                _runtime_errors.append(f"{search['id']}: {fetch_err}")
-                continue
+                (_runtime_pending if fetch_err=='search_deferred' else _runtime_errors).append(f"{search['id']}: {fetch_err}")
+                if not results:
+                    continue
             # Flag listing types from the search we ran, exactly like statistics
             # does. eBay cards often omit "Gebot"/"Auktion", and an untagged lot
             # from an auction-only search counts as Sofort: it would be alerted
@@ -9752,7 +9841,7 @@ async def _process_searches_in_pass(bot, once=False):
             # Two descriptions per page: an old catalogue of hundreds
             # must not hold every other product for an entire runner budget.
             # The persistent candidate cursor resumes the rest with fresh prices.
-            verified = await _verified_history(results, search, on_verified=notify_verified, max_candidates=2)
+            verified = await _verified_history(results, search, on_verified=notify_verified, max_candidates=2,population_complete=not fetch_err)
             logger.info("  %s: %d results, %d verified in fair live slice", search['query'],len(results),len(verified))
 
             fresh_ids = {str(row["item_id"]) for row in results}
@@ -9765,12 +9854,12 @@ async def _process_searches_in_pass(bot, once=False):
             sweep = _auction_sweep_search(fetch_search)
             if sweep and not any(row.get("auction") for row in results):
                 sweep = _normal_discovery_search(sweep)
-                auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep, force=True)
+                auction_results, auction_err = await _fetch_normal_slice(sweep,force=True)
                 if auction_err:
                     logger.warning("  %s: auction sweep error %s", search["query"], auction_err)
                     if auction_err != "api_deferred":
-                        _runtime_errors.append(f"{search['id']}: auction {auction_err}")
-                else:
+                        (_runtime_pending if auction_err=='search_deferred' else _runtime_errors).append(f"{search['id']}: auction {auction_err}")
+                if auction_results:
                     before = len(results)
                     auction_results = _tag_items_for_search(auction_results or [], sweep)
                     results = _merge_items_by_id(results, auction_results)
@@ -9782,12 +9871,13 @@ async def _process_searches_in_pass(bot, once=False):
                 nonlocal results
                 if not sweep_search:
                     return
-                items, err = await asyncio.to_thread(fetch_ebay_ex, sweep_search, force=True)
+                items, err = await _fetch_normal_slice(sweep_search,force=True)
                 if err:
                     logger.warning("  %s: %s sweep error %s", search["query"], label, err)
                     if err != "api_deferred":
-                        _runtime_errors.append(f"{search['id']}: {label} {err}")
-                    return
+                        (_runtime_pending if err=='search_deferred' else _runtime_errors).append(f"{search['id']}: {label} {err}")
+                    if not items:
+                        return
                 before = len(results)
                 items = _tag_items_for_search(items or [], sweep_search)
                 results = _merge_items_by_id(results, items)
@@ -10094,6 +10184,11 @@ def _log_startup_banner(mode):
 
 
 _runtime_errors = []
+_runtime_pending = []
+
+
+def _runtime_result():
+    return 'error' if _runtime_errors else 'partial' if _runtime_pending else 'ok'
 _runtime_html_fallback = False
 _runtime_api_fallback = False
 
@@ -10117,12 +10212,13 @@ def _publish_runtime(state, error=None):
         warnings.append("Описание проверяется через сайт eBay")
     publish(config.raw, _read_logic_version_timestamp(), state, error,
             data_source=("html+api" if _runtime_api_fallback else "html") if html_primary else "html" if html_only else "api+html" if _runtime_html_fallback else "api",
-            warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first")
+            warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first",pending=_runtime_pending)
 
 
 async def run_once():
     load_seen_ids()
     _runtime_errors.clear()
+    _runtime_pending.clear()
     _publish_runtime("running")
     _log_startup_banner("ONE-SHOT")
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
@@ -10134,7 +10230,7 @@ async def run_once():
     except Exception as error:
         _publish_runtime("error", type(error).__name__)
         raise
-    _publish_runtime("error" if _runtime_errors else "ok", "; ".join(_runtime_errors) or None)
+    _publish_runtime(_runtime_result(), "; ".join(_runtime_errors) or None)
     logger.info("=== Done ===")
 
     # The workflow publishes one atomic checkpoint after this sweep.
@@ -10200,10 +10296,11 @@ async def run_continuous():
 async def scheduled_check(context: ContextTypes.DEFAULT_TYPE):
     bot = context.bot
     _runtime_errors.clear()
+    _runtime_pending.clear()
     _publish_runtime("running")
     try:
         await process_searches(bot, once=False)
-        _publish_runtime("error" if _runtime_errors else "ok", "; ".join(_runtime_errors) or None)
+        _publish_runtime(_runtime_result(), "; ".join(_runtime_errors) or None)
     except Exception as e:
         _publish_runtime("error", type(e).__name__)
         logger.error("scheduled_check error: %s", e)

@@ -9,6 +9,53 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_child_deadline_clips_io_and_restores_parent_on_exception(self):
+        parent=MonitorPassBudget(90,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        try:
+            with self.assertRaisesRegex(RuntimeError,'qa'):
+                with MonitorPassBudget.slice(20,reserve=30) as child:
+                    self.assertEqual(20,child.deadline)
+                    self.assertEqual((10,10),MonitorPassBudget.timeout((10,20)))
+                    self.clock[0]=19
+                    self.assertEqual((.5,.5),MonitorPassBudget.timeout((10,20)))
+                    self.assertEqual(1000,MonitorPassBudget.milliseconds(25000))
+                    raise RuntimeError('qa')
+            self.assertIs(parent,MonitorPassBudget.current.get())
+            self.assertFalse(MonitorPassBudget.exhausted(reserve=30))
+        finally:MonitorPassBudget.current.reset(token)
+
+    def test_slow_first_query_does_not_block_next_product_or_discard_valid_partial_rows(self):
+        parent=MonitorPassBudget(200,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        self.config.get_item_hashes=lambda:set();self.config.save=Mock();self.config.raw={'mobile_managed':True}
+        searches=[dict(copy.deepcopy(self.search),id=s) for s in ('a','b')];self.config.get_searches=lambda:searches
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self);base=rows[0];body=details[base['item_id']];fetched=[]
+        def fetch(search,*args,**kwargs):
+            fetched.append(search['id'])
+            if search['id']=='a':self.clock[0]+=21
+            return [dict(copy.deepcopy(base),item_id=search['id'])], 'pass_deferred' if search['id']=='a' else None
+        try:
+            with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_is_statistics_mode',return_value=False),patch.object(monitor,'initialize_api_budget_and_queue'),patch.object(monitor,'fetch_ebay_ex',side_effect=fetch),patch.object(monitor,'_fetch_item_details',return_value=body),patch.object(monitor,'_process_notify_candidate',new=AsyncMock(return_value=True)) as send,patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}),patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'),patch.object(monitor.asyncio,'sleep',new=AsyncMock()):
+                asyncio.run(monitor._process_searches_in_pass(None,once=True))
+            self.assertEqual(['a','b'],fetched)
+            self.assertEqual(['a','b'],[call.args[1]['item_id'] for call in send.await_args_list])
+            self.assertTrue(all(call.args[1]['_details_status']=='verified' for call in send.await_args_list))
+            self.assertIsNone(price_history.get_stats_7d('a',monitor._history_filter_signature(searches[0])))
+            self.assertTrue(any('search_deferred' in value for value in monitor._runtime_pending))
+        finally:MonitorPassBudget.current.reset(token)
+
+    def test_expired_live_description_yields_without_becoming_a_fake_filter_rejection(self):
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        self.config.get_item_hashes=lambda:set()
+        def fetch(item_id):self.clock[0]+=21;return None
+        parent=MonitorPassBudget(200,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        try:
+            callback=AsyncMock()
+            with patch.object(monitor,'_fetch_item_details',side_effect=fetch),patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}):
+                values=asyncio.run(monitor._verified_history(rows[:1],self.search,on_verified=callback,max_candidates=2))
+            self.assertFalse(values);callback.assert_not_awaited()
+            self.assertFalse(monitor._runtime_errors)
+            self.assertTrue(any('истекло время проверки' in value for value in monitor._runtime_pending))
+        finally:MonitorPassBudget.current.reset(token)
     def test_live_slice_delivers_before_next_description_then_resumes_remainder(self):
         self.config.get_item_hashes=lambda:set()
         rows,details=history_fixtures.VerifiedHistoryTests.data(self)
@@ -109,6 +156,7 @@ class MonitorPassBudgetTests(unittest.TestCase):
             MonitorPassBudget.current.reset(token)
 
     def setUp(self):
+        pending=patch.object(monitor,'_runtime_pending',[]);pending.start();self.addCleanup(pending.stop)
         self.folder=tempfile.TemporaryDirectory();self.addCleanup(self.folder.cleanup)
         self.db=patch.object(price_history,'DB_PATH',str(Path(self.folder.name)/'history.db'))
         self.db.start();self.addCleanup(self.db.stop);price_history.init_db()
@@ -137,7 +185,7 @@ class MonitorPassBudgetTests(unittest.TestCase):
         self.assertIsNone(price_history.get_stats_7d('qa',monitor._history_filter_signature(self.search)))
         with closing(sqlite3.connect(price_history.DB_PATH)) as db:
             self.assertEqual(0,db.execute('select validation_complete from price_snapshots').fetchone()[0])
-        self.assertTrue(any('проверка не завершена по времени' in e for e in monitor._runtime_errors))
+        self.assertTrue(any('проверка не завершена по времени' in e for e in monitor._runtime_pending))
         self.assertTrue(all(r['_details_status']=='verified' for r in verified))
         self.assertNotIn('expensive',[r['item_id'] for r in verified])
 

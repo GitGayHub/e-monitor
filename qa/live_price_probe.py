@@ -150,6 +150,9 @@ async def correct_caption_once(store, request_id, proof, editor):
 def require_verified_details(monitor, details, item, search):
     """Report the failed guard without dumping seller text or credentials."""
     if not details:
+        if hasattr(monitor,'item_details_diagnostics'):
+            diagnostic=monitor.item_details_diagnostics(item.get('item_id'))
+            if isinstance(diagnostic,dict):print(json.dumps({'qaDetailsFailure':diagnostic}))
         raise ValueError('Fresh listing details unavailable; nothing sent')
     description = monitor._clean_description(details.get('description') or '')
     print(json.dumps({'qaDetails': {'descriptionCharacters': len(description),

@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 18  # Explicit country tokens and newest-first, bounded verified sampling.
+HISTORY_VERSION = 19  # Seller protection pages cannot confirm descriptions or historical prices.
 _DB_LOCK = threading.Lock()
 
 
