@@ -75,6 +75,8 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         confirmed=latest.get('telegramConfirmedTime') or latest.get('spottedTime')
         if latest.get('telegramMessageId') and confirmed:
             status['lastTelegramConfirmedAt']=datetime.fromtimestamp(confirmed/1000,timezone.utc).isoformat(timespec='seconds')
+            for key in ('telegramBotUsername','telegramDeliveryRoute'):
+                if latest.get(key):status['last'+key[0].upper()+key[1:]]=latest[key]
     except (OSError,ValueError,TypeError):
         pass
     path.parent.mkdir(parents=True, exist_ok=True)

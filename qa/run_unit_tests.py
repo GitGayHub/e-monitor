@@ -49,6 +49,7 @@ def main():
         modules.append("test_workflow_dispatch_queue")
         modules.append("test_description_protection")
         modules.append("test_search_response_status")
+        modules.append("test_telegram_delivery_uncertain")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
