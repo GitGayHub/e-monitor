@@ -9,6 +9,19 @@ import monitor
 
 
 class RuntimeStatusTests(unittest.TestCase):
+    def test_query_failure_does_not_become_process_failure_and_delivery_is_confirmed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'runtime_status.json'
+            cfg={'searches':[{'id':'phone','query':'iPhone 16 Pro Max'}]}
+            (Path(folder)/'feed.json').write_text(json.dumps({'schema':1,'items':[{'telegramMessageId':123,'spottedTime':1000,'telegramConfirmedTime':2000}]}))
+            progress=dict(startedAt='2026-10-16T18:00:00Z',finishedAt='2026-10-16T18:02:00Z',searchesAttempted=8,searchesSucceeded=7,candidatesReceived=40,descriptionsVerified=3,notificationsConfirmed=1)
+            v=publish(cfg,100,'partial',path=path,search_errors=['phone: blocked'],last_pass=progress)
+            self.assertIsNone(v['error']);self.assertEqual('partial',v['state'])
+            self.assertEqual('iPhone 16 Pro Max',v['searchIssues'][0]['searchName']);self.assertEqual('blocked',v['searchIssues'][0]['code'])
+            self.assertEqual(progress,v['lastPass']);self.assertEqual('1970-01-01T00:00:02+00:00',v['lastTelegramConfirmedAt'])
+            failed=application_failure('RuntimeError',path)
+            self.assertEqual('error',failed['state']);self.assertEqual('RuntimeError',failed['error'])
+
     def test_partial_queue_preserves_success_date_and_applied_revision(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/'status.json'
@@ -20,7 +33,7 @@ class RuntimeStatusTests(unittest.TestCase):
             self.assertEqual(2,partial['pendingCount']);self.assertEqual(['search a','search b'],partial['pendingChecks']);self.assertIsNone(partial['error'])
             import monitor
             with patch.object(monitor,'_runtime_pending',['search']),patch.object(monitor,'_runtime_errors',[]) as errors:
-                self.assertEqual('partial',monitor._runtime_result());errors.append('network');self.assertEqual('error',monitor._runtime_result())
+                self.assertEqual('partial',monitor._runtime_result());errors.append('network');self.assertEqual('partial',monitor._runtime_result())
 
     def test_declared_hardware_agrees_with_known_phone_model(self):
         for generation in (15, 16, 17):

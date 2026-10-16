@@ -9,6 +9,13 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_live_slice_does_not_spend_search_deadline_on_homepage_warmup(self):
+        session=Mock()
+        with MonitorPassBudget.slice(20):
+            with patch.object(monitor.time,'sleep') as sleep:
+                monitor._warmup_session(session,'ebay.de')
+        session.get.assert_not_called();sleep.assert_not_called()
+
     def test_child_deadline_clips_io_and_restores_parent_on_exception(self):
         parent=MonitorPassBudget(90,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
         try:

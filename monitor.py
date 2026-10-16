@@ -3914,6 +3914,11 @@ def _parse_feedback_count(num, suffix=""):
 
 def parse_ebay_results(html):
     soup = BeautifulSoup(html, "html.parser")
+    # eBay renders unrelated recommendation cards below an explicit zero.
+    # They are not results of the requested query or sale format.
+    heading=soup.select_one('#srp-results-heading,.srp-controls__count-heading')
+    if heading and re.match(r'^\s*0\s+(?:ergebnisse|results)\b',heading.get_text(' ',strip=True),re.I):
+        return []
     items = []
     cards = soup.select("li.s-card, li.s-item")
     for card in cards:
@@ -6803,6 +6808,11 @@ def _warmup_session(session, host):
     """Visit homepage and a category index before the search to look like a
     real user navigating the site. Cookies stick to the session, which keeps
     eBay's anti-bot far happier than a cold search hit."""
+    budget = MonitorPassBudget.current.get()
+    if budget is not None and budget.seconds <= 20:
+        # The live slice is for this search. A slow homepage must not consume
+        # its whole deadline before the first requested SERP is even attempted.
+        return
     import random
     home = f"https://www.{host}/"
     try:
@@ -6811,11 +6821,6 @@ def _warmup_session(session, host):
             timeout=MonitorPassBudget.timeout(HTTP_TIMEOUT),
             headers=None if _HAS_CURL_CFFI else {"Referer": ""},
         )
-        budget = MonitorPassBudget.current.get()
-        if budget is not None and budget.seconds<=20:
-            # Spend live-query time on the requested search, not unrelated
-            # category/test pages from the legacy session warmup.
-            return
         time.sleep(random.uniform(0.8, 1.8) if _on_github_actions() else random.uniform(0.6, 1.4))
         # Touch electronics + phones like a real shopper (more cookies / consent).
         for path in (
@@ -6883,19 +6888,15 @@ def _parse_search_body(body, host, query):
     if items:
         return items, None
     raw = body or ""
-    low = raw[:12000].lower()
+    visible=BeautifulSoup(raw,"html.parser")
+    for node in visible.select('script,style,noscript'):
+        node.decompose()
+    low = visible.get_text(' ',strip=True).lower()
+    if _description_is_protection(raw):
+        return [], "blocked"
     if "something went wrong on our end" in low:
-        return [], "network"
-    has_result_container = (
-        'class="srp-results' in raw
-        or "srp-river-results" in raw
-        or 'class="srp-list' in raw
-        or "data-listingid" in raw
-        or "li.s-card" in raw
-        or 'class="s-item' in raw
-        or "s-item__" in raw
-        or "s-card__" in raw
-    )
+        return [], "site_error"
+    has_result_container = visible.select_one('.srp-results,.srp-river-results,.srp-list,[data-listingid],li.s-card,li.s-item,[class*="s-item__"],[class*="s-card__"]') is not None
     has_no_results_marker = (
         "kein ergebnis" in low
         or "keine treffer" in low
@@ -6904,7 +6905,6 @@ def _parse_search_body(body, host, query):
         or "no exact matches" in low
         or "0 ergebnisse" in low
         or "0 results" in low
-        or "we couldn" in low
         or "no results found" in low
         or "es wurden keine ergebnisse" in low
     )
@@ -7449,7 +7449,7 @@ def _fetch_html_primary(search, force=False, allow_api=False):
                 if listing == "auction":
                     variant["filters"].pop("min_price", None)
             found, error = fetch_ebay_ex(variant, force=force)
-            if error in ("blocked", "rate_limit", "cooldown", "network", "parse") and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
+            if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse") and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
                 reserve = copy.deepcopy(variant)
                 reserve.pop("_html_fallback", None)
                 api_rows, api_error = fetch_ebay_api_ex(reserve, force=True)
@@ -7614,14 +7614,7 @@ def fetch_ebay_ex(search, force=False):
                 # upgraded real empty SERPs (LG/G6/Z80 LV) to eBay block after
                 # one soft-block attempt earlier in the chain.
                 if e is None and not its:
-                    saw_clean_empty = True
-                    last = None
-                    if _on_github_actions() and attempt < attempts_per_host - 1:
-                        reset_ebay_session(rotate=True)
-                        continue
-                    # Last attempt on this host with clean empty — try next host.
-                    reset_ebay_session(rotate=True)
-                    break
+                    return [], None, host
                 last = e
                 if e in ("blocked", "rate_limit", "parse"):
                     # Last attempt for this host? Roll over to the next host.
@@ -7650,9 +7643,12 @@ def fetch_ebay_ex(search, force=False):
     # True empty SERP from curl (0 itm, result chrome) — e.g. unlisted models.
     # Must NOT be upgraded to eBay block / API 429 by a later Playwright crash.
     html_confirmed_empty = (err is None)
+    if html_confirmed_empty:
+        _ebay_query_cache[cache_key]=(time.time(),[],None)
+        return [],None
 
     # Chromium recovery when chain failed or to double-check soft empties.
-    if not items and err in (None, "blocked", "rate_limit", "parse", "network"):
+    if not items and err in ("blocked", "rate_limit", "parse", "network", "site_error"):
         pw_urls = [
             _build_url_with_host("ebay.de", search, sub="www"),
             _build_url_with_host("ebay.de", search, sub="m"),
@@ -7690,7 +7686,7 @@ def fetch_ebay_ex(search, force=False):
         _ebay_query_cache[cache_key] = (time.time(), [], None)
         return [], None
 
-    if err not in ("blocked", "rate_limit", "network", "parse"):
+    if err not in ("blocked", "rate_limit", "network", "site_error", "parse"):
         _ebay_query_cache[cache_key] = (time.time(), items or [], err)
         return items or [], err
 
@@ -8391,6 +8387,8 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         elif details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
         if valid:
+            if _runtime_progress:
+                _runtime_progress['descriptionsVerified'] += 1
             candidate['_details_verified_at'] = time.time()
             # Enforce refreshed user minimum, hard ceiling and pickup location.
             checked = _history_candidates([candidate], search)
@@ -9801,6 +9799,12 @@ async def _process_searches_in_pass(bot, once=False):
             # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
             fetch_search = _normal_discovery_search(search)
             results, fetch_err = await _fetch_normal_slice(fetch_search)
+            if _runtime_progress:
+                if fetch_err != 'api_deferred':
+                    _runtime_progress['searchesAttempted'] += 1
+                _runtime_progress['candidatesReceived'] += len(results or [])
+                if fetch_err is None:
+                    _runtime_progress['searchesSucceeded'] += 1
             if fetch_err == "pass_deferred":
                 report_yield()
                 break
@@ -9838,6 +9842,8 @@ async def _process_searches_in_pass(bot, once=False):
                         break
                     if await _process_notify_candidate(bot, item, search, stats_7d, stage):
                         total_new += 1
+                        if _runtime_progress:
+                            _runtime_progress['notificationsConfirmed'] += 1
                     await asyncio.sleep(0.5)
 
             # Two descriptions per page: an old catalogue of hundreds
@@ -9865,6 +9871,8 @@ async def _process_searches_in_pass(bot, once=False):
                     before = len(results)
                     auction_results = _tag_items_for_search(auction_results or [], sweep)
                     results = _merge_items_by_id(results, auction_results)
+                    if _runtime_progress:
+                        _runtime_progress['candidatesReceived'] += len(results)-before
                     if len(results) > before:
                         logger.info("  %s: auction sweep added %d item(s)", search["query"], len(results) - before)
 
@@ -9883,6 +9891,8 @@ async def _process_searches_in_pass(bot, once=False):
                 before = len(results)
                 items = _tag_items_for_search(items or [], sweep_search)
                 results = _merge_items_by_id(results, items)
+                if _runtime_progress:
+                    _runtime_progress['candidatesReceived'] += len(results)-before
                 if len(results) > before:
                     logger.info(
                         "  %s: %s sweep added %d item(s)",
@@ -10187,10 +10197,27 @@ def _log_startup_banner(mode):
 
 _runtime_errors = []
 _runtime_pending = []
+_runtime_progress = {}
+
+
+def _start_runtime_pass():
+    from datetime import datetime,timezone
+    _runtime_errors.clear()
+    _runtime_pending.clear()
+    _runtime_progress.clear()
+    _runtime_progress.update(startedAt=datetime.now(timezone.utc).isoformat(timespec='seconds'),finishedAt=None,
+        searchesAttempted=0,searchesSucceeded=0,candidatesReceived=0,descriptionsVerified=0,notificationsConfirmed=0)
+
+
+def _finish_runtime_pass():
+    from datetime import datetime,timezone
+    _runtime_progress['finishedAt']=datetime.now(timezone.utc).isoformat(timespec='seconds')
 
 
 def _runtime_result():
-    return 'error' if _runtime_errors else 'partial' if _runtime_pending else 'ok'
+    # Per-search eBay failures do not mean the monitoring process crashed.
+    # Fatal exceptions still publish state=error directly in the caller.
+    return 'partial' if _runtime_errors or _runtime_pending else 'ok'
 _runtime_html_fallback = False
 _runtime_api_fallback = False
 
@@ -10214,13 +10241,13 @@ def _publish_runtime(state, error=None):
         warnings.append("Описание проверяется через сайт eBay")
     publish(config.raw, _read_logic_version_timestamp(), state, error,
             data_source=("html+api" if _runtime_api_fallback else "html") if html_primary else "html" if html_only else "api+html" if _runtime_html_fallback else "api",
-            warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first",pending=_runtime_pending)
+            warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first",pending=_runtime_pending,
+            search_errors=_runtime_errors,last_pass=dict(_runtime_progress) or None)
 
 
 async def run_once():
     load_seen_ids()
-    _runtime_errors.clear()
-    _runtime_pending.clear()
+    _start_runtime_pass()
     _publish_runtime("running")
     _log_startup_banner("ONE-SHOT")
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
@@ -10230,9 +10257,11 @@ async def run_once():
         await process_searches(bot, once=True)
         save_seen_ids()
     except Exception as error:
+        _finish_runtime_pass()
         _publish_runtime("error", type(error).__name__)
         raise
-    _publish_runtime(_runtime_result(), "; ".join(_runtime_errors) or None)
+    _finish_runtime_pass()
+    _publish_runtime(_runtime_result())
     logger.info("=== Done ===")
 
     # The workflow publishes one atomic checkpoint after this sweep.
@@ -10297,13 +10326,14 @@ async def run_continuous():
 
 async def scheduled_check(context: ContextTypes.DEFAULT_TYPE):
     bot = context.bot
-    _runtime_errors.clear()
-    _runtime_pending.clear()
+    _start_runtime_pass()
     _publish_runtime("running")
     try:
         await process_searches(bot, once=False)
-        _publish_runtime(_runtime_result(), "; ".join(_runtime_errors) or None)
+        _finish_runtime_pass()
+        _publish_runtime(_runtime_result())
     except Exception as e:
+        _finish_runtime_pass()
         _publish_runtime("error", type(e).__name__)
         logger.error("scheduled_check error: %s", e)
 

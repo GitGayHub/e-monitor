@@ -81,10 +81,11 @@ class HtmlPrimaryTest(unittest.TestCase):
     def test_html_success_and_confirmed_empty_never_use_api(self):
         for rows in ([{'item_id':'123456789012','source':'html'}],[]):
             with self.subTest(rows=rows),patch.object(monitor,'_do_fetch_one',return_value=(rows,None)), \
-                 patch.object(monitor,'_do_fetch_playwright',return_value=([],None)),patch.object(monitor,'fetch_ebay_api_ex') as api:
+                 patch.object(monitor,'_do_fetch_playwright',return_value=([],None)) as browser,patch.object(monitor,'fetch_ebay_api_ex') as api:
                 monitor._ebay_query_cache.clear()
                 result,error=monitor.fetch_ebay_ex(self.search,force=True)
                 self.assertEqual(rows,result);self.assertIsNone(error);api.assert_not_called()
+                browser.assert_not_called()
 
     def test_html_failure_uses_api_once_but_empty_or_quota_preserve_error(self):
         api_rows=[{'item_id':'123456789012','source':'api'}]

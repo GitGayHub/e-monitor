@@ -24,7 +24,19 @@ def application_failure(message, path=None):
     return previous
 
 
-def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None):
+def search_issues(active_config, errors):
+    searches={str(row.get('id')):row for row in active_config.get('searches',[])}
+    issues=[]
+    for text in errors or []:
+        search_id,_,detail=str(text).partition(':')
+        row=searches.get(search_id,{})
+        code=next((c for c in ('site_error','blocked','rate_limit','cooldown','network','parse') if c in detail),'details_unavailable')
+        message={'site_error':'eBay вернул страницу временной ошибки','blocked':'eBay ограничил доступ к выдаче','rate_limit':'eBay ограничил частоту запросов','cooldown':'Ожидается повторная проверка','network':'Не удалось получить ответ eBay','parse':'Не удалось прочитать ответ eBay','details_unavailable':'Не удалось полностью проверить описание или цену'}[code]
+        issues.append(dict(searchId=search_id,searchName=row.get('display_name') or row.get('query') or search_id,code=code,message=message))
+    return issues
+
+
+def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None,search_errors=None,last_pass=None):
     path = Path(path or STATUS_PATH)
     try:
         previous = json.loads(path.read_text(encoding="utf-8"))
@@ -48,12 +60,23 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         "error": str(error)[:1000] if error else None,
         "pendingCount": len(pending or []),
         "pendingChecks": [str(value)[:200] for value in (pending or [])[:48]],
+        "searchIssueCount": len(search_errors or []),
+        "searchIssues": search_issues(active_config,search_errors)[:48],
+        "lastPass": last_pass,
         "dataSource": data_source,
         "sourcePolicy": source_policy,
         "warning": str(warning)[:1000] if warning else None,
         "activeSearches": sum(bool(row.get("enabled", True)) for row in active_config.get("searches", [])),
         "configFingerprint": fingerprint,
     }
+    try:
+        feed=json.loads(path.with_name('feed.json').read_text(encoding='utf8'))
+        latest=max(feed.get('items',[]),key=lambda r:r.get('telegramConfirmedTime') or r.get('spottedTime') or 0,default={})
+        confirmed=latest.get('telegramConfirmedTime') or latest.get('spottedTime')
+        if latest.get('telegramMessageId') and confirmed:
+            status['lastTelegramConfirmedAt']=datetime.fromtimestamp(confirmed/1000,timezone.utc).isoformat(timespec='seconds')
+    except (OSError,ValueError,TypeError):
+        pass
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(dir=path.parent, prefix=".runtime-", suffix=".tmp")
     try:
