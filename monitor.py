@@ -1762,9 +1762,23 @@ def _phone_chipset_matches(value, query):
     return not chip or (chip.group(1) == '8' and chip.group(2) in (None, 'elite'))
 
 
+def _samsung_phone_code_matches(value, query):
+    """Recognized device codes must agree, including every code in a list."""
+    query = _phone_model_spacing(_normalize(query))
+    expected = '928' if re.search(r"\bs24\s*ultra\b", query) else '937' if re.search(r"\bs25\s*edge\b", query) else None
+    if expected is None:
+        return True
+    # Official Samsung support: SM-S928=S24Ultra, SM-S938=S25Ultra,
+    # SM-S937=S25Edge. Snapdragon SM8650 and unknown seller typos are not codes.
+    codes = re.findall(r"\b(?:sm[-\s]*)?s(9\d{2})[a-z0-9]*(?:/ds)?\b", _normalize(value))
+    return all(code == expected for code in codes)
+
+
 def _phone_model_number_matches(value, query):
     """Code fields can abbreviate a family (S25); explicit conflicts still fail."""
     value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
+    if not _samsung_phone_code_matches(value, query):
+        return False
     for pattern in _PHONE_MODEL_PATTERNS:
         actual, wanted = re.search(pattern,value), re.search(pattern,query)
         if actual and wanted:
@@ -1881,7 +1895,13 @@ def _phone_ram_matches(value):
 
 def _phone_specifications_match(title, description, query):
     q = _normalize(query)
+    own_title = re.split(r"\b(?:mit|with|inkl(?:usive)?|incl(?:uded|uding)?|ink|bundle)\b", _normalize(title), maxsplit=1)[0]
+    if not _samsung_phone_code_matches(own_title, q):
+        return False
     own_description = _normalize(_clean_description(description))
+    for field in re.finditer(r"(?im)^\s*(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*([^\r\n]{1,160})", _clean_description(description)):
+        if not _samsung_phone_code_matches(field.group(1), q):
+            return False
     if re.search(r"\b(?:typ|produkttyp|produktart|device\s+type|type)\s*:?\s*(?:notebook|laptop|desktop|gaming\s*pc|monitor|headphones|kopfhoerer)\b", own_description):
         return False
     # Samsung's official S24 Ultra specification lists 12GB for every variant.
@@ -6188,6 +6208,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         for aspect in details.get("localizedAspects") or []:
             name = _normalize(aspect.get("name") or "")
             value = _normalize(aspect.get("value") or "")
+            if name.replace(' ', '') in ('modell', 'model', 'modello', 'modellnummer', 'modelnumber', 'modellnr', 'modelno', 'numeromodello', 'herstellernummer', 'manufacturerpartnumber', 'mpn') and not _samsung_phone_code_matches(value, query):
+                return False
             if name in ('modell','model','modello') and value and not _phone_model_aspect_matches(value, query):
                 return False
             if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno','numeromodello') and value and not _phone_model_number_matches(value, query):

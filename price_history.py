@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 16  # Verified handset/pen bundles, seller display chips and explicit RAM units.
+HISTORY_VERSION = 17  # Verified handset/pen bundles, seller display chips and explicit RAM units.
 _DB_LOCK = threading.Lock()
 
 
