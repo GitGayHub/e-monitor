@@ -44,7 +44,7 @@ def build_entry(item, search, seller_trust="", is_outlier=False, price_drop_perc
                 spotted_time=None, telegram_message_id=None, notify_stage="initial", logic_version=None):
     price = round(float(item.get("price") or 0), 2)
     shipping = round(float(item.get("shipping_cost") or 0), 2)
-    return {
+    entry = {
         "itemId": str(item.get("item_id") or ""), "searchId": str(search.get("id") or ""),
         "searchQuery": search.get("display_name") or search.get("query") or "",
         "title": item.get("title") or "", "price": price, "shipping": shipping,
@@ -59,6 +59,12 @@ def build_entry(item, search, seller_trust="", is_outlier=False, price_drop_perc
         "source": "github", "telegramMessageId": telegram_message_id,
         "notifyStage": notify_stage, "logicVersion": logic_version,
     }
+    for source, target in (("_first_discovered_at", "firstDiscoveredTime"),
+                           ("_details_verified_at", "detailsVerifiedTime"),
+                           ("_telegram_confirmed_at", "telegramConfirmedTime")):
+        if item.get(source) is not None:
+            entry[target] = int(item[source]*1000)
+    return entry
 
 
 def enqueue(item, search, **kwargs):
