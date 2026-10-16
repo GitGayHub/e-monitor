@@ -147,6 +147,21 @@ async def correct_caption_once(store, request_id, proof, editor):
     return existing
 
 
+def require_verified_details(monitor, details, item, search):
+    """Report the failed guard without dumping seller text or credentials."""
+    if not details:
+        raise ValueError('Fresh listing details unavailable; nothing sent')
+    description = monitor._clean_description(details.get('description') or '')
+    print(json.dumps({'qaDetails': {'descriptionCharacters': len(description),
+        'pricePresent': bool(details.get('price')), 'bidPresent': bool(details.get('currentBidPrice')),
+        'providerComplete': monitor._provider_details_complete(details),
+        'unavailable': any(x.get('estimatedAvailabilityStatus')=='UNAVAILABLE' for x in (details.get('estimatedAvailabilities') or []) if isinstance(x,dict))}}))
+    if not monitor._provider_details_complete(details):
+        raise ValueError('Fresh seller description unavailable; nothing sent' if not description else 'Fresh live price unavailable; nothing sent')
+    if not monitor._details_match_contract(item, search, details):
+        raise ValueError('Fresh own listing rejected by common filters; nothing sent')
+
+
 async def main():
     request_id = os.environ["QA_REQUEST_ID"]
     if not re.fullmatch(r"lg-price-[a-z0-9-]{1,70}", request_id):
@@ -187,8 +202,7 @@ async def main():
                 details = monitor._fetch_item_details("800366377085")
             finally:
                 MonitorPassBudget.current.reset(token)
-            if not monitor._provider_details_complete(details) or not monitor._details_match_contract(item, search, details):
-                raise ValueError("Fresh own listing details are unavailable or rejected; nothing sent")
+            require_verified_details(monitor, details, item, search)
             monitor._refresh_candidate_details(item, details, config.get("settings", {}), search)
             if item.get('shipping_cost') != expected_shipping:
                 raise ValueError('Refreshed delivery quote changed; independently recheck before sending')

@@ -3,7 +3,7 @@ import copy
 import unittest
 import contextlib,io,os
 from unittest.mock import AsyncMock, Mock,patch
-from qa.live_price_probe import deliver_once, validate_snapshot, fingerprint, quote_candidate, correct_caption_once,main
+from qa.live_price_probe import deliver_once, validate_snapshot, fingerprint, quote_candidate, correct_caption_once,main,require_verified_details
 
 
 class DurableStore:
@@ -22,6 +22,12 @@ class DurableStore:
 
 
 class PriceProbeTests(unittest.TestCase):
+    def test_missing_body_price_and_filter_rejection_are_distinct_without_raw_description(self):
+        for details,complete,accepted,error in [(None,False,False,'listing details unavailable'),({},False,False,'listing details unavailable'),({'description':''},False,False,'seller description unavailable'),({'description':'private seller body'},False,False,'live price unavailable'),({'description':'private seller body','price':{'value':'405'},'estimatedAvailabilities':None},True,False,'rejected by common filters')]:
+            fake=Mock();fake._clean_description.side_effect=lambda s:s;fake._provider_details_complete.return_value=complete;fake._details_match_contract.return_value=accepted
+            output=io.StringIO()
+            with contextlib.redirect_stdout(output),self.assertRaisesRegex(ValueError,error):require_verified_details(fake,details,{}, {})
+            self.assertNotIn('private seller body',output.getvalue())
     def test_restarted_workflow_stops_before_config_or_ebay_for_an_existing_claim(self):
         store=DurableStore();store.rows={'lg-price-case':{'status':'photo_confirmed_caption_corrected','correction':{'status':'confirmed'},'messageId':987}}
         store.snapshot=Mock(side_effect=AssertionError('No fresh config or eBay request needed for duplicate'))
