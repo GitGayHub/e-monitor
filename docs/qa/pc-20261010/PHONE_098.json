@@ -6,7 +6,7 @@
   "historyVersion": 18,
   "sha256": "cf24820a4538c3fae88c2e049a2aa52868ed75ba6cbe463f6ed26e63de78e84e",
   "tests": {
-    "python": 387,
+    "python": 388,
     "androidUnit": 351,
     "cloudSync": 9,
     "phoneInstaller": 4,
@@ -81,8 +81,78 @@
     ],
     "all50ColumnsUnchanged": true
   },
-  "s25FinalPhone": "running",
-  "deployment": "pending",
+  "s25FinalPhone": {
+    "appVersion": "0.098",
+    "logicVersionTs": 1792148597,
+    "finishedAtMs": 1792149389086,
+    "elapsedMs": 162859,
+    "all50ColumnsUnchanged": true,
+    "buckets": [
+      {
+        "label": "Sofort",
+        "price": 485.99,
+        "url": "https://www.ebay.de/itm/920038228164",
+        "title": "Samsung Galaxy S25 EDGE - titanium silver - 256 GB/12 GB RAM - gebraucht in OVP",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Sofort+",
+        "price": 499.99,
+        "url": "https://www.ebay.de/itm/188989652905",
+        "title": "Samsung Galaxy S25 Edge 256GB Schwarz Titanium Jetblack - WIE NEU & OVP",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Auktion",
+        "price": 506.19,
+        "url": "https://www.ebay.de/itm/237121832128",
+        "title": "Samsung Galaxy S25 Edge SM-S937B/DS 256GB 12GB RAM Dual SIM Titanium Jetblack",
+        "verdict": "🟣 Дорого"
+      },
+      {
+        "label": "Auktion+",
+        "price": 556.19,
+        "url": "https://www.ebay.de/itm/940016054198",
+        "title": "Samsung Galaxy S25 Edge 256 GB Titanium Jetblack",
+        "verdict": "🟣 Дорого"
+      }
+    ],
+    "rejectedOwnRefurbished": {
+      "itemId": "336839721068",
+      "title": "Samsung Galaxy S25 Edge - 512 GB - Titanium Icyblue (Ohne Simlock)",
+      "url": "https://www.ebay.de/itm/336839721068",
+      "seller": "yello96",
+      "totalPrice": 490.0,
+      "reason": "восстановленный телефон: состояние Refurbished указано в описании продавца",
+      "estimatedImportCharges": null,
+      "imageUrl": "https://i.ebayimg.com/images/g/KIIAAeSwnd5qy6ir/s-l300.webp"
+    }
+  },
+  "deployment": "published, runtime and CI pending",
   "latencySlaProven": false,
-  "fullCatalogueAccepted": false
+  "fullCatalogueAccepted": false,
+  "miniview": {
+    "basket": "Sofort+",
+    "rows": 15,
+    "expensive": 10,
+    "rejected": 5,
+    "unavailable": 0,
+    "refurbishedRowPhotoVisuallyConfirmed": true,
+    "refurbishedReasonVisible": true,
+    "priceRange": [
+      450,
+      495
+    ],
+    "rangeRows": 1,
+    "rangeRejected": 1,
+    "resetRestoredRows": 15,
+    "all50ColumnsUnchanged": true
+  },
+  "workflowQueueFix": {
+    "previousRun": 38892562909,
+    "previousConclusion": "skipped",
+    "cause": "cancelled App Sync completion shared workflow-level pending slot despite job if; it displaced real monitor",
+    "fixed": "non-success workflow_run uses unique nonproduction group; only successful sync resumes shared production queue",
+    "acceptance": "new production run pending"
+  }
 }
