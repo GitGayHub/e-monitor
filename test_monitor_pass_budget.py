@@ -9,6 +9,89 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_live_slice_delivers_before_next_description_then_resumes_remainder(self):
+        self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        base=rows[0];detail=details[base['item_id']]
+        rows=[dict(copy.deepcopy(base),item_id=str(n)) for n in range(5)]
+        events=[]
+        def fetch(i):events.append('fetch:'+i);return copy.deepcopy(detail)
+        async def deliver(row):events.append('deliver:'+row['item_id'])
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_fetch_item_details',side_effect=fetch),patch.object(monitor,'seen_state',{}),patch.object(monitor,'seen_ids',set()):
+            first=asyncio.run(monitor._verified_history(rows,self.search,on_verified=deliver,max_candidates=2))
+            second=asyncio.run(monitor._verified_history(rows,self.search,on_verified=deliver,max_candidates=2))
+        self.assertEqual(['0','1'],[x['item_id'] for x in first])
+        self.assertEqual(['2','3'],[x['item_id'] for x in second])
+        self.assertEqual(['fetch:0','deliver:0','fetch:1','deliver:1','fetch:2','deliver:2','fetch:3','deliver:3'],events)
+        self.assertIsNone(price_history.get_stats_7d('qa',monitor._history_filter_signature(self.search)))
+
+    def test_unseen_affordable_lot_precedes_old_expensive_history(self):
+        self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        expensive=rows[1];cheap=rows[0]
+        calls=[]
+        def fetch(i):calls.append(i);return details[i]
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_fetch_item_details',side_effect=fetch),patch.object(monitor,'seen_state',{}),patch.object(monitor,'seen_ids',set()):
+            asyncio.run(monitor._verified_history([expensive,cheap],self.search,on_verified=AsyncMock(),max_candidates=1))
+        self.assertEqual([cheap['item_id']],calls)
+
+    def test_newest_live_discovery_does_not_change_stats_or_original_settings(self):
+        original=copy.deepcopy(self.search)
+        live=monitor._normal_discovery_search(self.search)
+        self.assertEqual('newest',live['filters']['sort'])
+        self.assertEqual(self.search['id'],live['id'])
+        self.assertEqual('price_asc',monitor._statistics_search_variant(self.search,'buy_now')['filters']['sort'])
+        self.assertEqual(original,self.search)
+
+    def test_first_discovery_survives_restart_and_is_not_listing_creation(self):
+        rows=[{'item_id':'a'}]
+        with patch('ebay_access.time.time',return_value=100):self.access.note_normal_discovery(rows,'s','DE')
+        with patch('ebay_access.time.time',return_value=200):later=BrowseAccess().note_normal_discovery([{'item_id':'a'},{'item_id':'b'}],'s','DE')
+        self.assertEqual([100,200],[r['_first_discovered_at'] for r in later])
+        from mobile.feed_writer import build_entry
+        entry=build_entry(dict(later[0],_details_verified_at=201,_telegram_confirmed_at=202),{'id':'s'})
+        self.assertEqual((100000,201000,202000),(entry['firstDiscoveredTime'],entry['detailsVerifiedTime'],entry['telegramConfirmedTime']))
+        self.assertNotIn('listingCreatedAt',entry)
+
+    def test_long_first_product_yields_to_next_product_and_sends_each_immediately(self):
+        searches=[dict(copy.deepcopy(self.search),id=s) for s in ('a','b')]
+        self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:searches;self.config.save=Mock();self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self);base=rows[0];detail=details[base['item_id']]
+        events=[]
+        def fetch(s,*args,**kwargs):
+            events.append('search:'+s['id']);self.assertEqual('newest',s['filters']['sort'])
+            return [dict(copy.deepcopy(base),item_id=s['id']+str(n)) for n in range(6)],None
+        def fetch_details(i):events.append('details:'+i);return copy.deepcopy(detail)
+        async def send(bot,row,*args):events.append('send:'+row['item_id']);return True
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_is_statistics_mode',return_value=False),patch.object(monitor,'initialize_api_budget_and_queue'),patch.object(monitor,'fetch_ebay_ex',side_effect=fetch),patch.object(monitor,'_fetch_item_details',side_effect=fetch_details),patch.object(monitor,'_process_notify_candidate',side_effect=send),patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}),patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'),patch.object(monitor.asyncio,'sleep',new=AsyncMock()):
+            asyncio.run(monitor._process_searches_in_pass(None,once=True))
+        self.assertEqual(['search:a','details:a0','send:a0','details:a1','send:a1','search:b','details:b0','send:b0','details:b1','send:b1'],events)
+
+    def test_html_refresh_uses_three_minute_pacing_without_consuming_api_quota(self):
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor,'get_last_run',return_value=None),patch.object(monitor,'_get_ebay_api_token') as token:
+            with patch('ebay_access.time.time',return_value=1000):self.access.record_html_attempt('qa',monitor.EBAY_MARKETPLACE_ID)
+            with patch('ebay_access.time.time',return_value=1179):monitor.initialize_api_budget_and_queue([self.search]);self.assertFalse(monitor._allowed_api_targets_this_run)
+            with patch('ebay_access.time.time',return_value=1180):monitor.initialize_api_budget_and_queue([self.search]);self.assertIn(('qa',monitor.EBAY_MARKETPLACE_ID),monitor._allowed_api_targets_this_run)
+        token.assert_not_called()
+
+    def test_ending_sweep_uses_own_cursor_after_fresh_delivery_and_is_not_quota_deferred(self):
+        self.search['filters']['listing_type']='auction'
+        self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:[self.search];self.config.save=Mock();self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self);base=rows[0]
+        events=[]
+        def fetch(s,*args,**kwargs):
+            ending=s['id'].endswith('__ending_soon');events.append('fetch-ending' if ending else 'fetch-newest')
+            if ending:self.assertTrue(kwargs.get('force'));self.assertEqual('ending_soon',s['filters']['sort'])
+            return [dict(copy.deepcopy(base),item_id='ending' if ending else 'fresh'+str(n),auction=True,buy_now=False,best_offer=True,time_left='10 min') for n in range(1 if ending else 60)],None
+        async def verify(items,search,on_verified=None,**kwargs):
+            events.append('verify'+kwargs.get('cursor_suffix',''))
+            if on_verified:await on_verified(items[0])
+            return items[:1]
+        async def send(bot,row,*args):events.append('send:'+row['item_id']);return True
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_on_github_actions',return_value=True),patch.object(monitor,'_is_statistics_mode',return_value=False),patch.object(monitor,'initialize_api_budget_and_queue'),patch.object(monitor,'fetch_ebay_ex',side_effect=fetch),patch.object(monitor,'_verified_history',side_effect=verify),patch.object(monitor,'_process_notify_candidate',side_effect=send),patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}),patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'),patch.object(monitor.asyncio,'sleep',new=AsyncMock()):
+            asyncio.run(monitor._process_searches_in_pass(None,once=True))
+        self.assertEqual(['fetch-newest','verify','send:fresh0','fetch-ending','verify__ending','send:ending'],events)
+
     def test_html_first_pass_does_not_repeat_its_api_reserve_at_the_end(self):
         self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:[self.search];self.config.save=Mock()
         token=MonitorPassBudget.current.set(MonitorPassBudget(90,clock=lambda:0.0))

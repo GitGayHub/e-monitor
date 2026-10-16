@@ -150,6 +150,19 @@ class BrowseAccess:
         offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
         return rows[offset:] + rows[:offset]
 
+    def note_normal_discovery(self, items, search_id, market):
+        """First observed time is evidence, never an inferred listing start."""
+        now = time.time()
+        with self.lock:
+            state = self.state()
+            observed = {k:v for k,v in state.get('normal_observed', {}).items() if now-v < 7*86400}
+            for item in items:
+                key = str(search_id)+'|'+market+'|'+str(item.get('item_id'))
+                item['_first_discovered_at'] = observed.setdefault(key,now)
+            state['normal_observed'] = dict(sorted(observed.items(),key=lambda x:x[1])[-10000:])
+            self.save(state)
+        return items
+
     def start_normal_search(self, search_id, next_id, market):
         # Save before network I/O: a hung request must not monopolize every job.
         # This only rotates the queue. It does not mark any item sent or checked.

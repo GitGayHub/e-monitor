@@ -1801,7 +1801,16 @@ def _phone_description_declares_fake(description):
 
 def _phone_description_refurbished(description):
     own = _normalize(_clean_description(description or ''))
-    return bool(re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:]?\s*)?(?:refurbished|generalueberholt|wiederaufbereitet|renewed|reconditioned)\b", own))
+    restored = r"(?:refurbished|generalueberholt|wiederaufbereitet|renewed|reconditioned)"
+    own = re.sub(r"\b(?:nicht|nie|kein\w*|not|never|no)\s+"+restored+r"\b", " ", own)
+    if re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:]?\s*)?"+restored+r"\b", own):
+        return True
+    # 336839721068: own purchase history, not generic shop advertising.
+    # A dot in "28. Mai" must not hide the rest of that same sentence.
+    own = re.sub(r"\b(\d{1,2})\.(?=\s+[a-z])", r"\1", own)
+    phone = r"(?:geraet|handy|smartphone|iphone|phone|handset|device)"
+    subject = r"(?:(?:gekauft|erworben)\s+wurde\s+(?:es|(?:das|dieses)\s+"+phone+r")|(?:ich|wir)\s+(?:habe[n]?|hatte[n]?)\s+(?:es|(?:das|dieses|mein)\s+"+phone+r")|(?:i|we)\s+(?:bought|purchased)\s+(?:it|this(?:\s+phone)?|the\s+"+phone+r"))"
+    return bool(re.search(r"\b"+subject+r"\b[^.!?\n]{0,100}\b"+restored+r"\b",own))
 
 
 def _phone_packaging_only(text):
@@ -3132,6 +3141,14 @@ def _country_code_from_location(location_text):
     if not location_text:
         return None
     raw = str(location_text).strip()
+    # eBay pickup-map locations are e.g. "Brand-Erbisdorf DE 09618".
+    # A code is an independent token, not necessarily a comma-separated field.
+    # Keep mixed-case city words (Val de ... / De ...) from becoming countries.
+    codes = re.findall(r"(?<![A-Za-z])([A-Z]{2})(?![A-Za-z])", raw)
+    for code in reversed(codes):
+        code = "GB" if code == "UK" else code
+        if code in COUNTRY_INFO:
+            return code
     for part in reversed([p.strip() for p in re.split(r"[,|/]", raw) if p.strip()]):
         token = re.sub(r"[^A-Za-z]", "", part).upper()
         if token in COUNTRY_INFO:
@@ -6625,6 +6642,14 @@ def _newly_listed_search(search):
     return sweep
 
 
+def _normal_discovery_search(search):
+    """Live alerts see newest listings first; statistics keeps its price sort."""
+    prepared = _prepare_monitor_fetch_search(search)
+    prepared["filters"]["sort"] = "newest"
+    prepared["filters"].pop("sort_code", None)
+    return prepared
+
+
 def _statistics_search_variant(search, listing_type, min_price=None, best_offer=False):
     # Same base fetch profile as normal monitoring (price_asc + large page).
     variant = _prepare_monitor_fetch_search(search)
@@ -8254,35 +8279,50 @@ def _history_price_sides(candidate, search):
     return sides
 
 
-async def _verified_history(items, search):
+async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix=""):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
     verified, unavailable, deferred = [], 0, 0
+    fair_slice_exhausted = False
     candidates = _history_candidates(items, search)
     budget = MonitorPassBudget.current.get()
+    resumable = budget is not None or max_candidates is not None
+    queue_id = str(search['id']) + cursor_suffix
     resume_context = f"{_read_logic_version_timestamp()}:{signature}:{_search_limit_price(search)}"
-    if budget is not None:
+    if resumable:
         by_id = {}
         for candidate in candidates:
             by_id.setdefault(str(candidate['item_id']), []).append(candidate)
-        order = browse_access.normal_candidate_order(search['id'],resume_context,EBAY_MARKETPLACE_ID,by_id)
+        order = browse_access.normal_candidate_order(queue_id,resume_context,EBAY_MARKETPLACE_ID,by_id)
         candidates = [candidate for item_id in order for candidate in by_id[item_id]]
+    if on_verified is not None:
+        # Do not spend the live slice on already notified or over-limit stock
+        # while an unseen affordable listing waits in the same newest page.
+        candidates.sort(key=lambda row: not bool(_notify_candidates_from_filtered(filter_results([row],search,config))))
     ids = list(dict.fromkeys(str(candidate['item_id']) for candidate in candidates))
     for index, candidate in enumerate(candidates):
-        if MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
+        if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
             deferred = len(candidates) - index
+            fair_slice_exhausted = max_candidates is not None and index >= max_candidates
             break
-        if budget is not None:
+        if resumable:
             at = ids.index(str(candidate['item_id']))
-            browse_access.start_normal_candidate(search['id'],resume_context,EBAY_MARKETPLACE_ID,ids,ids[(at+1)%len(ids)])
+            browse_access.start_normal_candidate(queue_id,resume_context,EBAY_MARKETPLACE_ID,ids,ids[(at+1)%len(ids)])
         valid, details = await _validate_candidate(candidate, search)
         if details is None or candidate.get("_details_status") == "unavailable_price":
             unavailable += 1
         if valid:
+            candidate['_details_verified_at'] = time.time()
             # Enforce refreshed user minimum, hard ceiling and pickup location.
-            verified.extend(_history_candidates([candidate], search))
-    if budget is not None and deferred == 0:
-        browse_access.finish_normal_candidates(search['id'],resume_context,EBAY_MARKETPLACE_ID)
+            checked = _history_candidates([candidate], search)
+            verified.extend(checked)
+            # Deliver a verified find before checking the rest of the catalogue.
+            # The callback still applies refreshed prices, timing and dedup.
+            if on_verified is not None:
+                for row in checked:
+                    await on_verified(row)
+    if resumable and deferred == 0:
+        browse_access.finish_normal_candidates(queue_id,resume_context,EBAY_MARKETPLACE_ID)
     context_unchanged = signature == _history_filter_signature(search)
     listing = search.get("filters", {}).get("listing_type", "all")
     missing_prices = sum(1 for r in verified if r.get("buy_now") and r.get("auction") and
@@ -8304,7 +8344,8 @@ async def _verified_history(items, search):
     if unavailable or missing_prices:
         _runtime_errors.append(f"{search['id']}: описания или цены недоступны ({unavailable + missing_prices}); история неполная")
     if deferred:
-        _runtime_errors.append(f"{search['id']}: проверка не завершена по времени ({deferred} описаний); очередь продолжится")
+        reason = 'очередь проверки, переход к следующему товару' if fair_slice_exhausted else 'проверка не завершена по времени'
+        _runtime_errors.append(f"{search['id']}: {reason} ({deferred} описаний); очередь продолжится")
     return verified
 
 
@@ -8427,7 +8468,7 @@ def initialize_api_budget_and_queue(searches):
         except Exception as exc:
             logger.warning("eBay quota refresh unavailable: %s", exc)
     quota_paused = browse_access.is_paused() is True
-    interval = 900 if quota_paused or html_primary else browse_access.interval(len(active))
+    interval = 180 if quota_paused or html_primary else browse_access.interval(len(active))
     state = browse_access.state()
     if state.get('remaining',1)<=0 and state.get('reset',0)>time.time():
         from datetime import datetime, timezone
@@ -8566,10 +8607,15 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
             return False
 
     # Reserve stage before send to prevent double-notify across overlapping runs
+    item['_details_verified_at'] = time.time()
     previous_seen = get_seen_entry(item["item_id"])
     mark_seen_item(item["item_id"], stage=stage)
     sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
     if sent:
+        item['_telegram_confirmed_at'] = time.time()
+        if item.get('_first_discovered_at'):
+            logger.info('Delivery latency item=%s search=%s stage=%s discovered_to_confirmed_seconds=%.3f',
+                        item['item_id'],search['id'],stage,item['_telegram_confirmed_at']-item['_first_discovered_at'])
         try:
             from mobile.feed_writer import enqueue
             enqueue(item, search, telegram_message_id=item.get("_telegram_message_id"),
@@ -9661,9 +9707,9 @@ async def _process_searches_in_pass(bot, once=False):
                 report_yield()
                 break
             browse_access.start_normal_search(search.get('id'), normal_queue[(index + 1) % len(normal_queue)].get('id'), EBAY_MARKETPLACE_ID)
-            # Same eBay sort/page profile as statistics so alerts match green rows.
+            # Same filters as statistics, but discover new stock before old cheap bids.
             # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
-            fetch_search = _prepare_monitor_fetch_search(search)
+            fetch_search = _normal_discovery_search(search)
             results, fetch_err = await asyncio.to_thread(fetch_ebay_ex, fetch_search)
             if fetch_err == "pass_deferred":
                 report_yield()
@@ -9684,16 +9730,42 @@ async def _process_searches_in_pass(bot, once=False):
             # reach the final-hour or 15-minute stages, which both require
             # auction and not buy_now.
             results = _tag_items_for_search(results, fetch_search)
-            # A full page means the price sort truncated the market: fresh or
-            # ending lots can be hiding behind it. A short page already IS the
+            if not results:
+                logger.info("  %s: 0 results", search["query"])
+                continue
+
+            results = browse_access.note_normal_discovery(results, search['id'], EBAY_MARKETPLACE_ID)
+            stats_7d = get_stats_7d(search["id"], _history_filter_signature(search))
+            async def notify_verified(row):
+                nonlocal total_new
+                if not search.get('notify', True):
+                    return
+                filtered = filter_results([row], search, config)
+                for item, stage in _notify_candidates_from_filtered(filtered):
+                    if MonitorPassBudget.exhausted(reserve=30):
+                        report_yield()
+                        break
+                    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
+                        total_new += 1
+                    await asyncio.sleep(0.5)
+
+            # Two descriptions per page: an old catalogue of hundreds
+            # must not hold every other product for an entire runner budget.
+            # The persistent candidate cursor resumes the rest with fresh prices.
+            verified = await _verified_history(results, search, on_verified=notify_verified, max_candidates=2)
+            logger.info("  %s: %d results, %d verified in fair live slice", search['query'],len(results),len(verified))
+
+            fresh_ids = {str(row["item_id"]) for row in results}
+            # A full page means the newest sort truncated the market: ending
+            # lots can be hiding behind it. A short page already IS the
             # whole market, and paying for two more fetches there would only
             # slow every pass down.
             page_size = int((fetch_search.get("filters") or {}).get("_ipg") or 0)
             market_truncated = bool(page_size) and len(results) >= page_size
             sweep = _auction_sweep_search(fetch_search)
-            if sweep:
-                sweep = _prepare_monitor_fetch_search(sweep)
-                auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep)
+            if sweep and not any(row.get("auction") for row in results):
+                sweep = _normal_discovery_search(sweep)
+                auction_results, auction_err = await asyncio.to_thread(fetch_ebay_ex, sweep, force=True)
                 if auction_err:
                     logger.warning("  %s: auction sweep error %s", search["query"], auction_err)
                     if auction_err != "api_deferred":
@@ -9710,7 +9782,7 @@ async def _process_searches_in_pass(bot, once=False):
                 nonlocal results
                 if not sweep_search:
                     return
-                items, err = await asyncio.to_thread(fetch_ebay_ex, sweep_search)
+                items, err = await asyncio.to_thread(fetch_ebay_ex, sweep_search, force=True)
                 if err:
                     logger.warning("  %s: %s sweep error %s", search["query"], label, err)
                     if err != "api_deferred":
@@ -9726,40 +9798,14 @@ async def _process_searches_in_pass(bot, once=False):
                     )
 
             if market_truncated:
-                # Newest first: catches a listing the price sort buried.
-                await _extra_sweep("newly listed", _newly_listed_search(fetch_search))
                 # Ending soonest: without it a lot in its last minutes can sit
                 # deep on page 3 and the final-hour / 15-minute alerts never fire.
                 await _extra_sweep("ending soon", _ending_soon_auction_search(fetch_search))
 
-            if not results:
-                logger.info("  %s: 0 results", search["query"])
-                continue
-
-            verified = await _verified_history(results, search)
-            filtered = filter_results(verified, search, config)
-            stats_7d = get_stats_7d(search["id"], _history_filter_signature(search))
-
-            candidates = _notify_candidates_from_filtered(filtered)
-            by_stage = {s: sum(1 for _, st in candidates if st == s) for s in NOTIFY_STAGES}
-            logger.info(
-                "  %s: %d results, %d candidates (%s)",
-                search["query"], len(filtered), len(candidates),
-                ", ".join(f"{s}={by_stage[s]}" for s in NOTIFY_STAGES if by_stage[s]) or "none",
-            )
-
-            # notify=false: still scan/record, only skip Telegram deal alerts.
-            # (Earlier bug: continue at top skipped the whole search → TG silent forever.)
-            if not search.get("notify", True):
-                logger.info("  %s: skip Telegram sends (notify=false)", search.get("query"))
-            else:
-                for item, stage in sorted(candidates, key=lambda x: x[0]["total_price"]):
-                    if MonitorPassBudget.exhausted(reserve=30):
-                        report_yield()
-                        break
-                    if await _process_notify_candidate(bot, item, search, stats_7d, stage):
-                        total_new += 1
-                    await asyncio.sleep(0.5)
+            ending_rows = [row for row in results if str(row["item_id"]) not in fresh_ids]
+            if ending_rows:
+                browse_access.note_normal_discovery(ending_rows,search["id"],EBAY_MARKETPLACE_ID)
+                await _verified_history(ending_rows,search,on_verified=notify_verified,max_candidates=2,cursor_suffix="__ending")
 
             if not once:
                 await asyncio.sleep(random.uniform(2, 5))
