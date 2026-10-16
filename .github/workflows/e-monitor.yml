@@ -30,7 +30,10 @@ concurrency:
   # Parallel runners (old unique-per-dispatch groups) hammer eBay and turn
   # half of statistics into soft-blocks. Do NOT cancel-in-progress:
   # statistics needs ~15–40 min; a 5‑min cron must wait, not kill mid-run.
-  group: e-monitor-v2
+  # A cancelled/failed App Sync completion is skipped below, but workflow-level
+  # concurrency is evaluated before that job condition. Keep skipped events out
+  # of the production queue so they cannot replace a pending real monitor run.
+  group: ${{ (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') && 'e-monitor-v2' || format('e-monitor-skipped-{0}', github.run_id) }}
   cancel-in-progress: false
 
 jobs:
