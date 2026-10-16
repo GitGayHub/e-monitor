@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from config_manager import ConfigManager
 from mobile.runtime_status import publish, application_failure
@@ -8,6 +9,19 @@ import monitor
 
 
 class RuntimeStatusTests(unittest.TestCase):
+    def test_partial_queue_preserves_success_date_and_applied_revision(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'status.json'
+            active={'mobile_settings_revision':'saved','searches':[],'settings':{}}
+            old=publish(active,1,'ok',path=path);old['lastSuccessfulRun']='2020-01-01T00:00:00+00:00';path.write_text(json.dumps(old),encoding='utf8')
+            partial=publish(active,2,'partial',path=path,pending=['search a','search b'])
+            self.assertEqual('saved',partial['settingsRevision']);self.assertEqual(old['appliedAt'],partial['appliedAt'])
+            self.assertEqual(old['lastSuccessfulRun'],partial['lastSuccessfulRun'])
+            self.assertEqual(2,partial['pendingCount']);self.assertEqual(['search a','search b'],partial['pendingChecks']);self.assertIsNone(partial['error'])
+            import monitor
+            with patch.object(monitor,'_runtime_pending',['search']),patch.object(monitor,'_runtime_errors',[]) as errors:
+                self.assertEqual('partial',monitor._runtime_result());errors.append('network');self.assertEqual('error',monitor._runtime_result())
+
     def test_declared_hardware_agrees_with_known_phone_model(self):
         for generation in (15, 16, 17):
             query = f"iphone {generation} pro max"

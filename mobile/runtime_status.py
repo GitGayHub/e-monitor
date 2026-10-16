@@ -24,7 +24,7 @@ def application_failure(message, path=None):
     return previous
 
 
-def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None):
+def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None):
     path = Path(path or STATUS_PATH)
     try:
         previous = json.loads(path.read_text(encoding="utf-8"))
@@ -46,6 +46,8 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         "updatedAt": now,
         "state": state,
         "error": str(error)[:1000] if error else None,
+        "pendingCount": len(pending or []),
+        "pendingChecks": [str(value)[:200] for value in (pending or [])[:48]],
         "dataSource": data_source,
         "sourcePolicy": source_policy,
         "warning": str(warning)[:1000] if warning else None,

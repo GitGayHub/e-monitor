@@ -8,6 +8,7 @@ import threading
 import time
 import os
 from contextvars import ContextVar
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
@@ -38,6 +39,36 @@ class MonitorPassBudget:
     def exhausted(cls, reserve=0):
         budget = cls.current.get()
         return budget is not None and budget.should_yield(reserve)
+
+    @classmethod
+    @contextmanager
+    def slice(cls, seconds, reserve=0):
+        """A synchronous child deadline propagated into awaited worker threads."""
+        parent = cls.current.get()
+        if parent is None:
+            yield None
+            return
+        child = cls(min(seconds, max(0, parent.deadline-parent.clock()-reserve)),clock=parent.clock)
+        token = cls.current.set(child)
+        try:
+            yield child
+        finally:
+            cls.current.reset(token)
+
+    @classmethod
+    def timeout(cls, seconds):
+        """Clip each eBay I/O stage; no cancellation of Telegram or worker threads."""
+        budget = cls.current.get()
+        if budget is None:
+            return seconds
+        remaining = max(.001,budget.deadline-budget.clock())
+        if isinstance(seconds,tuple):
+            return tuple(min(value,remaining/len(seconds)) for value in seconds)
+        return min(seconds,remaining)
+
+    @classmethod
+    def milliseconds(cls, value):
+        return max(1,int(cls.timeout(value/1000)*1000))
 
 
 class BrowseAccess:
