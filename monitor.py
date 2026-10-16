@@ -1808,6 +1808,46 @@ def _phone_packaging_only(text):
     return False
 
 
+def _phone_implicit_bundle_title(title):
+    """Preliminary handset + bare case/pen; its own sale text is still required."""
+    if not (_title_leads_with_phone_model(title) and _has_phone_storage(title)):
+        return title
+    if re.search(r"\b(?:fuer|fur|for|compatible|fits|nur|only|ersatz\w*|replacement|spare)\b", title):
+        return title
+    if re.search(r"\b(?:smartphone|handy|phone|protective)\s+(?:huelle|case|cover)\s*$", title):
+        return title
+    # The existing sealed-handset/branded-case path is independently covered;
+    # do not turn that established path into this new ambiguous bare suffix.
+    if re.search(r"\b(?:neu|new|sealed|versiegelt|ovp)\s+(?:(?:original|originales)\s+)?(?:google|samsung|apple|oneplus)\s+(?:case|huelle)\s*$", title):
+        return title
+    part = re.search(r"\b(?:stylus|s[ -]?pen)\b|\b(?:huelle|case|cover)\s*$", title)
+    separator = re.search(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)[+&](?=\s)", title)
+    if part and separator and separator.start() < part.start():
+        return title
+    candidate = re.sub(r"\b(?:huelle|case|cover)\s*$", " ", title)
+    candidate = re.sub(r"\b(?:stylus|s[ -]?pen)\b", " ", candidate)
+    return candidate
+
+
+def _phone_implicit_bundle_confirmed(title, description):
+    if _phone_implicit_bundle_title(title) == title:
+        return True
+    own = _normalize(_clean_description(description or ''))
+    if not _phone_description_purpose_confirmed(own):
+        return False
+    absent = r"\b(?:ohne|kein(?:e|en)?|without|no)\s+(?:(?:ein|eine|einen|a|an|the)\s+)?(?:handset|handy|smartphone|telefon|iphone|mobile\s+phone|phone)\b(?!\s*(?:vertrag|contract|lock|sperre|case|cover|huelle))|\b(?:handset|handy|smartphone|telefon|iphone|phone)\s+(?:(?:is|ist|wird)\s+)?(?:not\s+(?:included|supplied)|nicht\s+(?:enthalten|mitgeliefert))"
+    if re.search(absent, own):
+        return False
+    # A model/capacity at the start of the seller's own first sentence is a
+    # handset declaration only if that sentence does not itself sell a part.
+    first = re.split(r"[.!?\n]", own, maxsplit=1)[0]
+    if (_title_leads_with_phone_model(first) and _has_phone_storage(first)
+            and not any(_has_accessory_term(first, word) for word in PHONE_HARD_PART_WORDS + PHONE_HARD_ACCESSORY_WORDS)):
+        return True
+    phone = r"(?:smartphone|handy|telefon|phone|iphone|(?:samsung\s+)?(?:galaxy\s+)?s\d{2}|(?:google\s+)?pixel\s+\d)"
+    return bool(re.search(rf"\b(?:verkaufe|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|complete|gebraucht\w*|used)\s+){{0,6}}{phone}\b", own))
+
+
 def _phone_description_purpose_confirmed(description):
     own = _normalize(_clean_description(description or ''))
     if _phone_packaging_only(own):
@@ -1815,7 +1855,7 @@ def _phone_description_purpose_confirmed(description):
     # A complete-model title may mention an optional branded case. Seller
     # contents must still reject a separately supplied case, including when
     # the seller has put that accessory in the phone category.
-    case = r"(?:(?:phone|smartphone|protective)\s+)?(?:case|cover|huelle|schutzhuelle|schutzhülle)"
+    case = r"(?:(?:phone|smartphone|protective)\s+)?(?:case|cover|huelle|schutzhuelle|schutzhülle|stylus|s[ -]?pen)"
     for match in re.finditer(rf"\b(?:nur|only)\s+(?:(?:das|die|der|the|a|eine?)\s+)?{case}\b|\b{case}\s+only\b", own):
         before = own[max(0,match.start()-18):match.start()]
         if not re.search(r"\b(?:nicht|not|mit|with|plus|und|and)\s+$|\+\s*$",before):
@@ -1831,6 +1871,12 @@ def _phone_description_purpose_confirmed(description):
     supplied = re.search(rf"\b(?:lieferumfang|enthalten|verkaufe|verkauft\s+wird)\b[^.!?]{{0,80}}\b{phone}\b", own)
     functional = re.search(rf"\b{phone}\b[^.!?]{{0,70}}\b(?:funktioniert|funktionsfaehig|funktionstuechtig)\b", own)
     return bool(supplied or functional)
+
+
+def _phone_ram_matches(value):
+    declared = re.findall(r"\b(\d+(?:[.,]\d+)?)\s*(gib|gb|mib|mb)\b", _normalize(value))
+    return all(float(number.replace(',', '.')) / (1024 if unit in ('mb', 'mib') else 1) == 12
+               for number, unit in declared)
 
 
 def _phone_specifications_match(title, description, query):
@@ -2120,6 +2166,7 @@ def _is_phone_accessory_title(title_norm):
         return True
     if _phone_packaging_only(title_norm):
         return True
+    title_norm = _phone_implicit_bundle_title(title_norm)
     # Keep explicit "kein Ersatzteil" / "ohne Ersatzteile" when a complete
     # model-led handset with storage is being sold. Never remove actual defects
     # or parts elsewhere in the title; seller details remain mandatory.
@@ -2356,7 +2403,7 @@ _DAMAGE_DEFECT_RE = (
     r"|damage|damaged|defect|defective"
     r"|gebrochen\w*|gesprungen\w*|gerissen\w*|kaputt"
     r"|riss(?:e|ig\w*)?|sprung|spruenge|sprünge|bruch|brueche|brüche"
-    r"|crack(?:s|ed)?|absplitter\w*|gesplittert\w*|zerkratzt\w*|zerschrammt\w*)"
+    r"|crack(?:s|ed)?|absplitter\w*|gesplittert\w*|abplatz\w*|platzer|zerkratzt\w*|zerschrammt\w*)"
 )
 _DAMAGE_PART_RE = (
     r"(?:backcover|back\s*cover|rueckseite|rueckabdeckung|rueckglas|hinterglas"
@@ -5827,7 +5874,7 @@ def _shipping_estimate_matches_destination(details, settings, cost):
 def _description_pickup_only(raw):
     """Explicit own seller restriction, not optional collection or review text."""
     text = _normalize(_clean_description(raw or ""))
-    pattern = r"\b(?:nur\s+(?:selbst)?abholung|(?:local\s+)?(?:pickup|collection)(?:\s+in\s+person)?\s+only|only\s+(?:local\s+)?(?:pickup|collection)(?:\s+in\s+person)?|kein(?:en)?\s+versand|no\s+shipping)\b"
+    pattern = r"\b(?:nur\s+(?:(?:an\s+)?(?:selbst)?abholer[n]?|(?:selbst)?abholung)|(?:local\s+)?(?:pickup|collection)(?:\s+in\s+person)?\s+only|only\s+(?:local\s+)?(?:pickup|collection)(?:\s+in\s+person)?|kein(?:en)?\s+versand|no\s+shipping)\b"
     for match in re.finditer(pattern, text):
         before, after = text[:match.start()], text[match.end():]
         if re.search(r"\b(?:nicht|not)\s*$", before):
@@ -6132,6 +6179,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
         if not _phone_description_purpose_confirmed(details.get("description") or ""):
             return False
+        if not _phone_implicit_bundle_confirmed(title, details.get("description") or ""):
+            return False
         if _phone_description_declares_fake(details.get("description") or ""):
             return False
         if "iphone" in query and re.search(r"\b(?:nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b|\b(?:nicht|kein)\s+(?:um\s+)?(?:ein\s+)?(?:original(?:es|er|en)?\s+)?(?:apple\s+)?iphone\b", _normalize(_clean_description(details.get("description") or ""))):
@@ -6146,8 +6195,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query):
                 return False
             if name in ("ram", "arbeitsspeicher", "memory") and re.search(r"\bs24\s*ultra\b|\bs25\s*edge\b", query):
-                ram = re.search(r"\b(\d+)\s*gb\b", value)
-                if ram and int(ram.group(1)) != 12:
+                if not _phone_ram_matches(value):
                     return False
             if "iphone" in query and name in ("betriebssystem", "operating system") and "android" in value:
                 return False

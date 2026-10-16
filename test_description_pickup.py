@@ -33,8 +33,8 @@ class DescriptionPickupTest(unittest.TestCase):
                     self.assertAlmostEqual(0 if c['pickupOnly'] else 6.19,item['shipping_cost'])
                     self.assertAlmostEqual(432 if c['pickupOnly'] else 438.19,item['total_price'])
     def test_refresh_runs_pickup_distance_guard_without_shipping_escape(self):
-        description='Google Pixel 9 Pro XL 256GB, voll funktionsfähig. Nur Abholung.'
-        for location,nearby in [('Berlin, DE',True),('99999 Entfernt, DE',False)]:
+        description='Google Pixel 9 Pro XL 256GB, voll funktionsfähig. Nur an Selbstabholer.'
+        for location,nearby in [('Berlin, DE',True),('99999 Entfernt, DE',False),('Frankfurt am Main, DE',False)]:
             item={'item_id':'qa-pickup','title':'Google Pixel 9 Pro XL 256GB','price':432,'shipping_cost':6.19,'location':location,'buy_now':True,'auction':False,'best_offer':False,'seller_name':'fixture','condition':'Gebraucht'}
             d={'description':description,'htmlPickupOnly':False,'htmlShippingCost':{'value':'6.19','currency':'EUR'}}
             monitor._refresh_candidate_details(item,d,{'warn_non_eu':False})
