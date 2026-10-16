@@ -91,7 +91,9 @@ jobs:
           # So one run keeps sweeping for its whole budget instead of doing two
           # passes and waiting for the scheduler; the concurrency group makes
           # the next run queue up right behind it.
-          RUN_INTERVAL_SEC: 60
+          # Search-level180s pacing and provider quota still apply. This is
+          # only the checkpoint-to-next-pass pause, not a per-product interval.
+          RUN_INTERVAL_SEC: 10
           # 30 min of sweeping + the manifest and state-commit steps stay clear
           # of the job's 45-min timeout even when a pass runs long.
           RUN_BUDGET_SEC: 1800
