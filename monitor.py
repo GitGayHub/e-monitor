@@ -3414,6 +3414,10 @@ def _normalize_seen_payload(data):
                     # no flag; those lots get their last call on the next pass.
                     "final_15m": bool(v.get("final_15m")),
                 }
+                if isinstance(v.get('deliveryUncertain'),dict):
+                    state[iid]['deliveryUncertain']={stage:str(reason)[:80] for stage,reason in v['deliveryUncertain'].items() if stage in NOTIFY_STAGES}
+                if v.get('deliveryPending') in NOTIFY_STAGES:
+                    state[iid].setdefault('deliveryUncertain',{})[v['deliveryPending']]='interrupted_before_confirmation'
             else:
                 # Bare true / legacy values mean initial notify done
                 state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
@@ -3447,6 +3451,11 @@ def save_seen_ids():
         }
         for k, v in seen_state.items()
     }
+    for iid,entry in seen_state.items():
+        if entry.get('deliveryUncertain'):
+            payload[iid]['deliveryUncertain']=entry['deliveryUncertain']
+        if entry.get('deliveryPending') in NOTIFY_STAGES:
+            payload[iid]['deliveryPending']=entry['deliveryPending']
     with open(SEEN_IDS_FILE, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False)
 
@@ -5313,7 +5322,9 @@ def _fetch_item_details(item_id):
             return copy.deepcopy(html_result)
         html_attempted = True
         _runtime_html_fallback = True
-        data = _fetch_item_details_html(item_id)
+        reserve_available=EBAY_SOURCE not in ('html','api') and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open
+        with MonitorPassBudget.slice(12 if reserve_available else 20):
+            data = _fetch_item_details_html(item_id)
         if data and _clean_description(data.get("description") or "").strip():
             html_partial = data
         if _provider_details_complete(data):
@@ -5327,7 +5338,7 @@ def _fetch_item_details(item_id):
         primary = html_details()
         if primary is not None:
             return primary
-    if not _ebay_api_configured() or EBAY_SOURCE == "html" or browse_access.is_paused() is True:
+    if MonitorPassBudget.exhausted() or not _ebay_api_configured() or EBAY_SOURCE == "html" or browse_access.is_paused() is True:
         return fallback_details()
     token, err = _get_ebay_api_token()
     if err:
@@ -7448,8 +7459,12 @@ def _fetch_html_primary(search, force=False, allow_api=False):
                 variant.setdefault("filters",{})["listing_type"] = listing
                 if listing == "auction":
                     variant["filters"].pop("min_price", None)
-            found, error = fetch_ebay_ex(variant, force=force)
-            if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse") and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
+            # Normal live searches have a20s parent slice. Keep time for the
+            # authorized API reserve instead of exhausting it all inside HTML.
+            reserve_available=allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open
+            with MonitorPassBudget.slice(12 if reserve_available else 20):
+                found, error = fetch_ebay_ex(variant, force=force)
+            if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse", "pass_deferred") and not MonitorPassBudget.exhausted() and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
                 reserve = copy.deepcopy(variant)
                 reserve.pop("_html_fallback", None)
                 api_rows, api_error = fetch_ebay_api_ex(reserve, force=True)
@@ -8087,7 +8102,20 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         )
         if sent:
             item["_telegram_message_id"] = getattr(sent, "message_id", None)
+            sender=getattr(sent,'from_user',None)
+            sender_id=getattr(sender,'id',None)
+            sender_name=getattr(sender,'username',None)
+            if isinstance(sender_id,int) and isinstance(sender_name,str):
+                item['_telegram_bot_id']=sender_id
+                item['_telegram_bot_username']=sender_name
+                try:
+                    delivery_token=sent.get_bot().token
+                    item['_telegram_delivery_route']=('primary' if delivery_token==bot.token else 'backup') if isinstance(delivery_token,str) else 'unknown'
+                except Exception:
+                    item['_telegram_delivery_route']='unknown'
         return bool(sent)
+    except TelegramDeliveryUncertain:
+        raise
     except Exception as e:
         logger.error("send_notification error: %s", e)
         return False
@@ -8141,6 +8169,10 @@ async def _refresh_sticky_menu(bot):
         logger.debug("sticky menu send error: %s", e)
 
 
+class TelegramDeliveryUncertain(Exception):
+    """The request may have been accepted; do not switch bot or blindly resend."""
+
+
 async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_mode="HTML", force_backup=False):
     backup_token = os.environ.get("TELEGRAM_BOT_TOKEN_BACKUP")
 
@@ -8162,6 +8194,7 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
             pass
 
     for active_bot in bots_to_try:
+        request_started=False
         try:
             if img and not img.startswith("data:"):
                 plain = BeautifulSoup(text, "html.parser").get_text()
@@ -8169,12 +8202,14 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
                 if long_caption:
                     from mobile import telegram_text_outbox
                     telegram_text_outbox.prepare()
+                request_started=True
                 message = await active_bot.send_photo(
                     chat_id=chat_id,
                     photo=img,
                     caption=(plain.encode("utf-16-le")[:1800].decode("utf-16-le", errors="ignore") + "\n… Полный текст ниже") if long_caption else text,
                     reply_markup=keyboard,
                     parse_mode=None if long_caption else parse_mode,
+                    connect_timeout=10,read_timeout=35,write_timeout=10,pool_timeout=10,
                 )
                 if long_caption:
                     try:
@@ -8186,26 +8221,38 @@ async def safe_send_telegram(bot, chat_id, text, img=None, keyboard=None, parse_
                         logger.error("Photo delivered but expanded notification checkpoint failed: %s", type(detail_error).__name__)
                         _runtime_errors.append("Telegram: фото доставлено, полный текст не сохранён; требуется проверка")
             else:
+                request_started=True
                 message = await active_bot.send_message(
                     chat_id=chat_id,
                     text=text,
                     reply_markup=keyboard,
                     parse_mode=parse_mode,
                     disable_web_page_preview=True,
+                    connect_timeout=10,read_timeout=35,write_timeout=10,pool_timeout=10,
                 )
             return message
         except Exception as e:
-            from telegram.error import BadRequest
+            from telegram.error import BadRequest,Forbidden,InvalidToken,RetryAfter
+            if not request_started:
+                logger.error('Telegram request not started: %s',type(e).__name__)
+                _runtime_delivery_warnings.append('Telegram: отправка не началась; проверка будет повторена')
+                return False
             if img and isinstance(e, BadRequest):
                 # A definite photo rejection delivered nothing; text is safe to
                 # retry. An ambiguous timeout is never retried by this fallback.
                 try:
                     return await active_bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard,
-                                                         parse_mode=parse_mode, disable_web_page_preview=True)
+                                                         parse_mode=parse_mode, disable_web_page_preview=True,
+                                                         connect_timeout=10,read_timeout=35,write_timeout=10,pool_timeout=10)
                 except Exception as fallback_error:
-                    logger.warning("Telegram text fallback failed: %s", fallback_error)
+                    if not isinstance(fallback_error,(BadRequest,Forbidden,InvalidToken,RetryAfter)):
+                        raise TelegramDeliveryUncertain(type(fallback_error).__name__) from fallback_error
+                    logger.warning("Telegram text fallback rejected: %s", type(fallback_error).__name__)
+            if not isinstance(e,(BadRequest,Forbidden,InvalidToken,RetryAfter)):
+                raise TelegramDeliveryUncertain(type(e).__name__) from e
             logger.warning("Failed to send message via bot: %s. Trying next...", e)
 
+    _runtime_delivery_warnings.append('Telegram: отправка отклонена; будет повторена после восстановления')
     return False
 
 
@@ -8618,6 +8665,8 @@ def _notify_candidates_from_filtered(filtered):
 
 
 async def _process_notify_candidate(bot, item, search, stats_7d, stage):
+    if seen_state.get(str(item.get('item_id')),{}).get('deliveryUncertain'):
+        return False
     """Validate details and send one notification stage. Returns True if sent."""
     item["item_id"] = str(item.get("item_id") or "")
     if get_seen_entry(item["item_id"]).get(stage):
@@ -8688,9 +8737,21 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
     # Reserve stage before send to prevent double-notify across overlapping runs
     item['_details_verified_at'] = time.time()
     previous_seen = get_seen_entry(item["item_id"])
+    seen_state.setdefault(str(item['item_id']),_empty_seen_entry())['deliveryPending']=stage
     mark_seen_item(item["item_id"], stage=stage)
-    sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
+    try:
+        sent = await send_notification(bot, item, search, stats_7d, notify_stage=stage)
+    except TelegramDeliveryUncertain as error:
+        # mark_seen_item already checkpointed the reservation before the request.
+        # Keep it held, distinctly from a confirmed feed entry, across restarts.
+        seen_state[str(item['item_id'])].setdefault('deliveryUncertain',{})[stage]=str(error)
+        seen_state[str(item['item_id'])].pop('deliveryPending',None)
+        save_seen_ids()
+        logger.error('Telegram delivery uncertain for %s; automatic resend held',item['item_id'])
+        return False
     if sent:
+        seen_state[str(item['item_id'])].pop('deliveryPending',None)
+        save_seen_ids()
         item['_telegram_confirmed_at'] = time.time()
         if item.get('_first_discovered_at'):
             logger.info('Delivery latency item=%s search=%s stage=%s discovered_to_confirmed_seconds=%.3f',
@@ -10198,12 +10259,14 @@ def _log_startup_banner(mode):
 _runtime_errors = []
 _runtime_pending = []
 _runtime_progress = {}
+_runtime_delivery_warnings = []
 
 
 def _start_runtime_pass():
     from datetime import datetime,timezone
     _runtime_errors.clear()
     _runtime_pending.clear()
+    _runtime_delivery_warnings.clear()
     _runtime_progress.clear()
     _runtime_progress.update(startedAt=datetime.now(timezone.utc).isoformat(timespec='seconds'),finishedAt=None,
         searchesAttempted=0,searchesSucceeded=0,candidatesReceived=0,descriptionsVerified=0,notificationsConfirmed=0)
@@ -10217,7 +10280,7 @@ def _finish_runtime_pass():
 def _runtime_result():
     # Per-search eBay failures do not mean the monitoring process crashed.
     # Fatal exceptions still publish state=error directly in the caller.
-    return 'partial' if _runtime_errors or _runtime_pending else 'ok'
+    return 'partial' if _runtime_errors or _runtime_pending or _runtime_delivery_warnings or any(row.get('deliveryUncertain') for row in seen_state.values()) else 'ok'
 _runtime_html_fallback = False
 _runtime_api_fallback = False
 
@@ -10229,6 +10292,10 @@ def _publish_runtime(state, error=None):
     html_only = quota_paused or EBAY_SOURCE == "html" or not _ebay_api_configured()
     html_primary = EBAY_SOURCE != "api"
     warnings = []
+    uncertain=sum(bool(row.get('deliveryUncertain')) for row in seen_state.values())
+    if uncertain:
+        warnings.append(f'Telegram: доставка {uncertain} уведомлений не подтверждена; автоматический повтор остановлен до проверки')
+    warnings.extend(dict.fromkeys(_runtime_delivery_warnings))
     try:
         delivery_warning = telegram_text_outbox.warning()
         if delivery_warning:

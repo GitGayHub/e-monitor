@@ -64,6 +64,9 @@ def build_entry(item, search, seller_trust="", is_outlier=False, price_drop_perc
                            ("_telegram_confirmed_at", "telegramConfirmedTime")):
         if item.get(source) is not None:
             entry[target] = int(item[source]*1000)
+    for source,target in (('_telegram_bot_id','telegramBotId'),('_telegram_bot_username','telegramBotUsername'),('_telegram_delivery_route','telegramDeliveryRoute')):
+        if item.get(source) is not None:
+            entry[target]=item[source]
     return entry
 
 

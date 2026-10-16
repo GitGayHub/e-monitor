@@ -12,6 +12,8 @@ import monitor
 
 class TelegramTextOutboxTests(unittest.TestCase):
     def setUp(self):
+        warnings=patch.object(monitor,'_runtime_delivery_warnings',[])
+        warnings.start();self.addCleanup(warnings.stop)
         self.folder = tempfile.TemporaryDirectory()
         self.addCleanup(self.folder.cleanup)
         self.path = Path(self.folder.name) / "queue.enc"

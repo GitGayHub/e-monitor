@@ -1,3 +1,15 @@
+<!-- stage101 -->
+# Продолжение 0.101 — 16 октября 2026
+
+ЦельACTIVE,общаяприёмка26/104PARTIAL. Физическая101/code101 установлена,правила1792179196/History20/SHAe088db8a73ee706130ce935c521eb273008fe867acc5ed3534b1994cf302246a;все50столбцовпоисковсохранены,ce6/dirtyfalse/normal48/LG430.409Python/356Android/9sync/4installer/buildPASS,3970snapshotsнеизменны. Все6CI100SUCCESS. ФизическийтелефонтолькоAPK;TelegramтолькоПК/фон,неактивироватьокна. USBwrapperdeviceнеперезапускать.
+
+101 реализовано: HTMLпервый12сек+APIreserveдо8вобщем20 дляпоискаИownописания;квотаpaused→HTMLвсе20,послеобщегоdeadline APIдаженезапрашивается. Не0дляошибки,неAPIдляподтверждённого0. Сервер100ACKуже был1792177727,новыйACK101=False;последнийruntime1792177727/partial/2026-10-16T19:41:00+00:00. Первый100pass8/0полныхуспехов0карточек;следующий8/0полных71partial/1описание/0send. НельзяутверждатьeBayисправленилиSLA15достигнут. Sonyистинныйstart≈14:48/send15:05≈17мин. После101замеритьзаново.
+
+Реальнаяпричинадоставкипоrun38949753040:основнойTimedOut19:12:56UTC→backupподтвердил2049/мышь128139444599/7.79/rules099. Primaryзапросмогбытьпринят;неутверждать,чтоегоне было. ЛокальныйgetMeподтвердил2разныхбота(токены/usernamebackupнепубликовать).101увеличилTelegramread35/connect-write-pool10;unknownTimeoutнепереключаетбота,сохраняетdeliveryPendingдоI/O→deliveryUncertainпослерестарта,видимоепредупреждение,неfakefeed/неblindresend. ЯвныеBadRequest/Forbidden/InvalidToken/RetryAfterмогутдатьbackup;подтверждённыйsenderID/name/routeсохраняютсяoptionalвfeed/runtime,APKпоказываетroute. Старой2049routeзаднимчисломНЕредактировать. Старые120019/120022/120025–120038/2049НЕпересылать.
+
+Источник101кодаещёсверятьpublicationrecords/CI101,сохранитьsource+обеroadсWORK_STATE. ПодтвердитьACK/автообновление/новыйAPIрезерв/квоту/доставку101,приQAтолькоpreviewпередsend. QA099preview38898882415failedFreshsearchquoteдоclaim;101добавилбезопасныйqaSearchFailureerrorCode/receivedItems. Небыло101тестовыхотправок. Следомвеськаталог26/104/40–50own/алиасы/минимумы/CRUD/гонки/сеть/повторы/полныемедианы. Неpull/reset/clean/force;неproductionstateвroad. Checkpoint100послеcloud_sync--apply0files:bot28656db6be796d0f1f3194ac0d88900337f0c8ab/Androidf6dc7ff55c213de6a4243620f0d7378b8c01c9f6. Следующееapplyтолькопослепубликации101и0conflict.
+<!-- /stage101 -->
+
 <!-- stage100 -->
 # Продолжение 0.100 — 16 октября 2026
 

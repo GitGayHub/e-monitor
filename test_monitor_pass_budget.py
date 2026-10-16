@@ -1,6 +1,6 @@
 """Runner deadlines preserve verification and rotate the persisted queue."""
-import asyncio,copy,os,sqlite3,tempfile,unittest
-from contextlib import closing
+import asyncio,copy,json,os,sqlite3,tempfile,unittest
+from contextlib import closing,nullcontext
 from pathlib import Path
 from unittest.mock import patch,Mock,AsyncMock
 import monitor,price_history
@@ -9,12 +9,62 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_full_seller_details_keep_eight_seconds_for_api_after_html_timeout(self):
+        data={'description':'Own fully working device, with original box.','price':{'value':'400'}}
+        def html(*a,**k):self.assertEqual(12,MonitorPassBudget.current.get().seconds);self.clock[0]=12;return None
+        def api(*a,**k):
+            self.assertEqual(8,k['timeout']);return nullcontext(Mock(read=lambda:json.dumps(data).encode()))
+        parent=MonitorPassBudget(20,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        try:
+            with patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor,'_item_details_cache',{}),patch.object(monitor,'_ebay_api_circuit_open',False),patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_ebay_api_configured',return_value=True),patch.object(monitor,'_fetch_item_details_html',side_effect=html),patch.object(monitor,'_get_ebay_api_token',return_value=('isolated-token',None)),patch.object(monitor.urllib.request,'urlopen',side_effect=api):
+                self.assertEqual(data,monitor._fetch_item_details('description-control'))
+        finally:MonitorPassBudget.current.reset(token)
+
+    def test_overshooting_html_details_cannot_spend_api_quota_after_parent_deadline(self):
+        def html(*a,**k):self.clock[0]=21;return None
+        parent=MonitorPassBudget(20,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        try:
+            with patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(monitor,'_item_details_cache',{}),patch.object(monitor,'_ebay_api_circuit_open',False),patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_ebay_api_configured',return_value=True),patch.object(monitor,'_fetch_item_details_html',side_effect=html),patch.object(monitor,'_get_ebay_api_token') as oauth:
+                self.assertIsNone(monitor._fetch_item_details('expired-description-control'))
+            oauth.assert_not_called()
+        finally:MonitorPassBudget.current.reset(token)
+    def test_html_deadline_retains_time_for_one_quota_checked_api_reserve(self):
+        seen=[]
+        parent=MonitorPassBudget(20,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        def html(*args,**kwargs):
+            seen.append(('html',MonitorPassBudget.current.get().deadline))
+            self.clock[0]=12
+            return [],'pass_deferred'
+        def api(*args,**kwargs):
+            seen.append(('api',MonitorPassBudget.current.get().deadline-self.clock[0]))
+            return [{'item_id':'verified-later'}],None
+        try:
+            with patch.object(monitor,'fetch_ebay_ex',side_effect=html),patch.object(monitor,'fetch_ebay_api_ex',side_effect=api) as reserve,patch.object(monitor,'_search_query_variants',return_value=['qa']),patch.object(monitor,'_ebay_api_configured',return_value=True),patch.object(monitor,'_ebay_api_circuit_open',False),patch.object(monitor,'record_search_run'),patch.object(monitor,'browse_access',self.access):
+                rows,error=monitor._fetch_html_primary(self.search,force=True,allow_api=True)
+            self.assertIsNone(error);self.assertEqual('verified-later',rows[0]['item_id'])
+            self.assertEqual([('html',12),('api',8)],seen);reserve.assert_called_once()
+            self.assertIs(parent,MonitorPassBudget.current.get())
+        finally:MonitorPassBudget.current.reset(token)
+
     def test_live_slice_does_not_spend_search_deadline_on_homepage_warmup(self):
         session=Mock()
         with MonitorPassBudget.slice(20):
             with patch.object(monitor.time,'sleep') as sleep:
                 monitor._warmup_session(session,'ebay.de')
         session.get.assert_not_called();sleep.assert_not_called()
+
+    def test_expired_html_never_ignores_a_real_api_quota_pause(self):
+        import time
+        self.access.save({'remaining':0,'reset':time.time()+60})
+        parent=MonitorPassBudget(20,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        def html(*args,**kwargs):
+            self.assertEqual(20,MonitorPassBudget.current.get().seconds)
+            return [],'pass_deferred'
+        try:
+            with patch.object(monitor,'fetch_ebay_ex',side_effect=html),patch.object(monitor,'fetch_ebay_api_ex') as api,patch.object(monitor,'_search_query_variants',return_value=['qa']),patch.object(monitor,'_ebay_api_configured',return_value=True),patch.object(monitor,'_ebay_api_circuit_open',False),patch.object(monitor,'browse_access',self.access):
+                rows,error=monitor._fetch_html_primary(self.search,force=True,allow_api=True)
+            self.assertEqual(([],'pass_deferred'),(rows,error));api.assert_not_called()
+        finally:MonitorPassBudget.current.reset(token)
 
     def test_child_deadline_clips_io_and_restores_parent_on_exception(self):
         parent=MonitorPassBudget(90,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)

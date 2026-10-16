@@ -200,6 +200,7 @@ async def main():
             try:
                 rows, fetch_error = monitor.fetch_ebay_ex(monitor._prepare_monitor_fetch_search(search))
                 if fetch_error:
+                    print(json.dumps({'qaSearchFailure':{'errorCode':fetch_error,'receivedItems':len(rows)}}))
                     raise ValueError('Fresh search quote is unavailable; nothing sent or edited')
                 item = quote_candidate(rows, '800366377085', expected_shipping)
                 details = monitor._fetch_item_details("800366377085")
