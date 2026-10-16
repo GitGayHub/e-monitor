@@ -1,42 +1,86 @@
 {
-  "at": "2026-10-16T19:14:46.561467+00:00",
-  "head": "01beb6f2f0bbe13a8a222e0001aaf755eb588e82",
+  "at": "2026-10-16T19:24:58.783730+00:00",
+  "head": "05924cffe8170f8b3cb612b56a6dfaaf24a869b8",
   "runtime": {
     "schema": 1,
     "settingsRevision": "ce6d8944-34df-441a-8cd5-483e0b5a9542",
     "appliedAt": "2026-10-15T22:15:20+00:00",
-    "logicVersion": 1792152281,
+    "logicVersion": 1792177727,
     "lastSuccessfulRun": "2026-10-16T10:08:38+00:00",
-    "updatedAt": "2026-10-16T19:11:13+00:00",
-    "state": "error",
-    "error": "4060_oled_buy: network",
-    "pendingCount": 8,
+    "updatedAt": "2026-10-16T19:22:23+00:00",
+    "state": "partial",
+    "error": null,
+    "pendingCount": 4,
     "pendingChecks": [
-      "samsung_s24_ultra_buy: очередь проверки, переход к следующему товару (17 описаний); очередь продолжится",
-      "samsung_s24_ultra_auc: search_deferred",
-      "samsung_s24_ultra_auc: очередь проверки, переход к следующему товару (26 описаний); очередь продолжится",
-      "samsung_s24_ultra_auc: ending soon search_deferred",
-      "4050_oled_buy: search_deferred",
-      "4050_oled_buy: очередь проверки, переход к следующему товару (98 описаний); очередь продолжится",
-      "4050_oled_auc: очередь проверки, переход к следующему товару (34 описаний); очередь продолжится",
-      "4060_oled_auc: очередь проверки, переход к следующему товару (35 описаний); очередь продолжится"
+      "redmagic_11_pro_buy: search_deferred",
+      "redmagic_11_pro_auc: search_deferred",
+      "redmagic_11s_pro_buy: search_deferred",
+      "redmagic_11s_pro_auc: search_deferred"
     ],
+    "searchIssueCount": 4,
+    "searchIssues": [
+      {
+        "searchId": "pixel_9_pro_xl",
+        "searchName": "Pixel 9 pro xl",
+        "code": "blocked",
+        "message": "eBay ограничил доступ к выдаче"
+      },
+      {
+        "searchId": "ray_ban_meta_gen_2",
+        "searchName": "Ray-Ban Meta Gen 2",
+        "code": "site_error",
+        "message": "eBay вернул страницу временной ошибки"
+      },
+      {
+        "searchId": "samsung_galaxy_s25_edge",
+        "searchName": "samsung galaxy s25 edge",
+        "code": "site_error",
+        "message": "eBay вернул страницу временной ошибки"
+      },
+      {
+        "searchId": "iphone_17_pro_max",
+        "searchName": "iphone 17 pro max",
+        "code": "site_error",
+        "message": "eBay вернул страницу временной ошибки"
+      }
+    ],
+    "lastPass": {
+      "startedAt": "2026-10-16T19:19:34+00:00",
+      "finishedAt": "2026-10-16T19:22:23+00:00",
+      "searchesAttempted": 8,
+      "searchesSucceeded": 0,
+      "candidatesReceived": 71,
+      "descriptionsVerified": 1,
+      "notificationsConfirmed": 0
+    },
     "dataSource": "html+api",
     "sourcePolicy": "html_first",
     "warning": "Описание проверяется через сайт eBay",
     "activeSearches": 48,
-    "configFingerprint": "9c448cc704360eac9dcd14e8502cd977a43ab12c49a376e157bb0dd4b6242987"
+    "configFingerprint": "9c448cc704360eac9dcd14e8502cd977a43ab12c49a376e157bb0dd4b6242987",
+    "lastTelegramConfirmedAt": "2026-10-16T19:12:57+00:00"
   },
   "meta": {
     "schema": 1,
-    "versionName": "0.099",
-    "versionCode": 99,
-    "logicVersion": 1792152281
+    "versionName": "0.100",
+    "versionCode": 100,
+    "logicVersion": 1792177727
   },
   "mode": "normal",
   "saved": 50,
   "active": 48,
   "confirmedNotifications": [
+    {
+      "itemId": "128139444599",
+      "title": "Logitech Pro X2 Superstrike Gaming Mouse Maus",
+      "searchQuery": "logitech superstrike",
+      "telegramMessageId": 2049,
+      "totalPrice": 7.79,
+      "logicVersion": 1792152281,
+      "firstDiscoveredTime": 1792177969542,
+      "detailsVerifiedTime": 1792177971294,
+      "telegramConfirmedTime": 1792177977454
+    },
     {
       "itemId": "168797225310",
       "title": "APPLE iPhone 17 Pro Max 5G 256 GB 6,9 Zoll DualSIM 48MP Blau",
@@ -74,17 +118,45 @@
   "feedPending": 0,
   "runs": [
     {
+      "id": 38953544841,
+      "name": "E Monitor",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "68e3f7e91500d139f77145210b944a6954fcdbc4"
+    },
+    {
+      "id": 38953309976,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "c9473e7f37036134cf948c5a0d88c2a5a170e992"
+    },
+    {
+      "id": 38953303591,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "c9473e7f37036134cf948c5a0d88c2a5a170e992"
+    },
+    {
+      "id": 38953303579,
+      "name": "Android App Sync",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "c9473e7f37036134cf948c5a0d88c2a5a170e992"
+    },
+    {
       "id": 38951694927,
       "name": "E Monitor",
-      "status": "pending",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "cancelled",
       "head_sha": "cc24aa19248a23c45ca4637bf3753c505fbaa782"
     },
     {
       "id": 38949753040,
       "name": "E Monitor",
-      "status": "in_progress",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "head_sha": "b6299b10ae682f727e14d1bc07a890af390a0a79"
     },
     {
@@ -114,34 +186,6 @@
       "status": "completed",
       "conclusion": "cancelled",
       "head_sha": "83562c28aa70c5cae952b25bf18d982e17dd3ee8"
-    },
-    {
-      "id": 38942105074,
-      "name": "E Monitor",
-      "status": "completed",
-      "conclusion": "success",
-      "head_sha": "d7be2f5fa0facedbd6ad355007c94cf4774b2b2d"
-    },
-    {
-      "id": 38940212500,
-      "name": "E Monitor",
-      "status": "completed",
-      "conclusion": "success",
-      "head_sha": "36a2472ee167c24e4b75e0058a6fe5305119a579"
-    },
-    {
-      "id": 38938266780,
-      "name": "E Monitor",
-      "status": "completed",
-      "conclusion": "cancelled",
-      "head_sha": "142b56c2c149f4bba736216ed27a34a531484aca"
-    },
-    {
-      "id": 38936362002,
-      "name": "E Monitor",
-      "status": "completed",
-      "conclusion": "success",
-      "head_sha": "23ffcf911e47598f70323eb6461c5f0017ea6145"
     }
   ]
 }
