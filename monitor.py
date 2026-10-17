@@ -1,4 +1,5 @@
 import time
+import math
 import logging
 import re
 import functools
@@ -4031,6 +4032,8 @@ def parse_ebay_results(html):
                         shipping_cost = 0.0
                         break
 
+            if shipping_cost is None:
+                continue
             buy_now = True
             best_offer = False
             auction = False
@@ -4255,12 +4258,14 @@ def _currency_rate(currency):
         "CHF": 1.04,
         "CAD": 0.67,
     }
-    return rates.get((currency or "EUR").strip().upper(), 1.0)
+    return rates.get((currency or "EUR").strip().upper())
 
 
 def _detect_price_currency(text):
     text_upper = (text or "").replace("\xa0", " ").upper()
-    if "GBP" in text_upper or "£" in text_upper or "Ł" in text_upper:
+    if "PLN" in text_upper or re.search(r"\bZ[ŁL]\b",text_upper):
+        return "PLN"
+    if "GBP" in text_upper or "£" in text_upper:
         return "GBP"
     if "AUD" in text_upper or "A$" in text_upper or re.search(r"\bAU\s*\$", text_upper):
         return "AUD"
@@ -4270,6 +4275,11 @@ def _detect_price_currency(text):
         return "CHF"
     if "USD" in text_upper or re.search(r"\bUS\s*\$", text_upper) or "$" in text_upper:
         return "USD"
+    code=re.search(r"\b([A-Z]{3})\s*(?=\d)|(?<=\d)\s*([A-Z]{3})\b",text_upper)
+    if code:
+        return next(value for value in code.groups() if value)
+    if any(symbol in text_upper for symbol in "¥₽₴₺₩₹Ł"):
+        return "UNSUPPORTED"
     return "EUR"
 
 
@@ -4290,11 +4300,20 @@ def _convert_currency_value(value, currency):
         val = float(value)
     except (TypeError, ValueError):
         return None
-    return round(val * _currency_rate(currency), 2)
+    rate=_currency_rate(currency)
+    return round(val*rate,2) if rate is not None else None
 
 
 def _parse_price(text):
     text = text.replace("\xa0", " ").strip()
+    # eBay's own EUR conversion is the quote the owner sees, including when
+    # the original currency is unsupported. Never truncate it as parentheses.
+    number=r"(?:\d{1,3}(?:[., ]\d{3})+|\d+)(?:[.,]\d{1,2})?"
+    eur=re.search(rf"(?:EUR|€)\s*({number})|({number})\s*(?:EUR|€)",text,re.I)
+    if eur:
+        token=next(value for value in eur.groups() if value)
+        try:return float(_normalize_price_number(token.strip()))
+        except ValueError:return None
     if "bis" in text.lower() or "to" in text.lower():
         parts = re.split(r"bis|to", text, flags=re.IGNORECASE)
         text = parts[0].strip()
@@ -4338,7 +4357,11 @@ def _is_delivery_speed_or_date(text):
 
 def _parse_shipping(text):
     text_clean = text.lower().strip()
-    if not text_clean or any(w in text_clean for w in ("kostenlos", "free", "gratis")):
+    if not text_clean:
+        return 0.0
+    if re.search(r"EUR|€",text,re.I):
+        return _parse_price(text)
+    if any(w in text_clean for w in ("kostenlos", "free", "gratis")):
         return 0.0
 
     # Truncate anything in parentheses or after "ca." / "approx."
@@ -4352,7 +4375,7 @@ def _parse_shipping(text):
         val_str = _normalize_price_number(match.group(0).strip())
         try:
             val = float(val_str)
-            return _convert_currency_value(val, currency) or 0.0
+            return _convert_currency_value(val, currency)
         except ValueError:
             return 0.0
     return 0.0
@@ -4382,6 +4405,8 @@ def _parse_labeled_money(lines, label_patterns):
                 break
             candidates.append(nxt)
         for candidate in candidates:
+            if re.search(r"(?:EUR|€)\s*\d|\d\s*(?:EUR|€)",candidate,re.I):
+                return _parse_price(candidate)
             if any(w in candidate.lower() for w in ("kostenlos", "free", "gratis")):
                 return 0.0
             if re.search(r"(?:eur|€|gbp|£|usd|\$|\d+[,.]\d+)", candidate, re.IGNORECASE):
@@ -4401,7 +4426,8 @@ def _extract_html_current_bid_price(html, soup=None):
             value = float(str(raw_value).replace(",", "."))
         except (TypeError, ValueError):
             return None
-        return round(value * _currency_rate(currency or "EUR"), 2)
+        rate=_currency_rate(currency or "EUR")
+        return round(value*rate,2) if rate is not None else None
 
     # eBay often embeds a dedicated currentBidPrice object even when the main
     # Product offer price is the Sofort-Kaufen value on hybrid listings.
@@ -4422,8 +4448,10 @@ def _extract_html_current_bid_price(html, soup=None):
     if soup is None:
         soup = BeautifulSoup(html, "html.parser")
 
+    hybrid = set(_html_buying_options(soup)) >= {"AUCTION", "FIXED_PRICE"}
     for node in soup.find_all(class_=lambda c: c and "bid-price" in " ".join(c if isinstance(c, list) else [c]).lower()):
-        price = _parse_price(node.get_text(" ", strip=True))
+        primary=node.select_one('.x-price-primary') if hybrid else None
+        price = _parse_price((primary or node).get_text(" ", strip=True))
         if price and price > 0:
             return price
 
@@ -4435,6 +4463,10 @@ def _extract_html_current_bid_price(html, soup=None):
             continue
         for candidate in page_lines[idx: idx + 4]:
             if buy_now_label.search(candidate):
+                break
+            # An unconvertible labelled bid cannot borrow the next price's
+            # EUR quote (which may be the buy-now side of a hybrid).
+            if re.search(r'\d',candidate) and _currency_rate(_detect_price_currency(candidate)) is None and _parse_price(candidate) is None:
                 break
             if re.search(r"(?:eur|gbp|usd|\$|[0-9][0-9.,]+\s*(?:eur|gbp|usd))", candidate, re.IGNORECASE):
                 price = _parse_price(candidate)
@@ -4530,10 +4562,15 @@ def _api_float(obj):
     if not obj:
         return None
     try:
-        val = float(obj.get("value"))
+        raw=obj.get("value")
+        if isinstance(raw,bool):return None
+        val = float(raw)
+        if not math.isfinite(val) or val<0:return None
         currency = obj.get("currency", "EUR")
         if currency and currency.strip().upper() != "EUR":
-            val = round(val * _currency_rate(currency), 2)
+            rate=_currency_rate(currency)
+            if rate is None:return None
+            val = round(val * rate, 2)
         return val
     except (TypeError, ValueError, AttributeError):
         return None
@@ -4542,7 +4579,10 @@ def _api_float(obj):
 def _api_shipping_cost(summary):
     costs = []
     for opt in summary.get("shippingOptions") or []:
-        cost = _api_float(opt.get("shippingCost"))
+        raw=opt.get("shippingCost")
+        cost = _api_float(raw)
+        if isinstance(raw,dict) and raw.get('value') is not None and cost is None:
+            return None
         if cost is not None:
             costs.append(cost)
     return min(costs) if costs else 0.0
@@ -4735,7 +4775,7 @@ def fetch_ebay_api_ex(search, force=False):
         record_search_run(search.get("id", ""), market)
         items = parse_ebay_api_results(data)
         logger.info("  %s -> %d items via eBay Browse API (%s)", search.get("query"), len(items), market)
-        return items, None
+        return items, "parse" if len(items)<len(data.get("itemSummaries") or []) else None
     except urllib.error.HTTPError as e:
         if e.code == 429:
             browse_access.pause(e.headers.get("Retry-After") if e.headers else None)
@@ -4767,6 +4807,8 @@ def parse_ebay_api_results(data):
             feedback_score = 0
         image = summary.get("image") or {}
         shipping_cost = _api_shipping_cost(summary)
+        if shipping_cost is None:
+            continue
         is_multivariation = summary.get("itemGroupType") == "SELLER_DEFINED_VARIATIONS"
 
         is_pickup_only = False
@@ -5224,6 +5266,10 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
             result["htmlPickupOnly"] = True
     if item_group_type:
         result["itemGroupType"] = item_group_type
+    for module in soup.select('.ux-labels-values--shipping,.ux-labels-values--importCharges'):
+        text=module.get_text(' ',strip=True)
+        if re.search(r'\d',text) and _detect_price_currency(text)!='EUR' and _parse_price(text) is None:
+            result['htmlMoneyIncomplete']=True
     if shipping_cost is not None:
         result["htmlShippingCost"] = _money_obj_eur(shipping_cost)
     if import_charges is not None:
@@ -5246,7 +5292,13 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
             result["itemEndDate"] = visible_end
             result["htmlEndPrecision"] = "minute"
     primary = soup.select_one(".x-price-primary")
-    primary_price = _parse_labeled_money(["price: " + primary.get_text(" ", strip=True)], (r"^price\b",)) if primary else None
+    primary_text=primary.get_text(" ",strip=True) if primary else ''
+    if primary and not ("AUCTION" in buying_options and "FIXED_PRICE" in buying_options):
+        # Same own price module only: never a recommendation or another hybrid side.
+        parent=primary.parent
+        approx=parent.select_one('.x-price-approx') if parent else None
+        if approx:primary_text += ' '+approx.get_text(' ',strip=True)
+    primary_price = _parse_labeled_money(["price: " + primary_text], (r"^price\b",)) if primary else None
     if primary_price is not None and (price_val is None or buying_options == ["AUCTION"]):
         result["price"] = _money_obj_eur(primary_price)
     if primary_price is not None and "AUCTION" in buying_options and "FIXED_PRICE" not in buying_options:
@@ -5298,9 +5350,15 @@ def item_details_diagnostics(item_id):
 def _provider_details_complete(data):
     if not data:
         return False
+    if data.get('htmlMoneyIncomplete'):
+        return False
     if any(row.get("estimatedAvailabilityStatus") == "UNAVAILABLE" for row in (data.get("estimatedAvailabilities") or []) if isinstance(row, dict)):
         return True
     if not _clean_description(data.get("description") or "").strip():
+        return False
+    costs=[data.get('htmlShippingCost'),data.get('htmlImportCharges')]
+    costs.extend(row.get('shippingCost') for row in data.get('shippingOptions') or [] if isinstance(row,dict))
+    if any(isinstance(cost,dict) and cost.get('value') is not None and _api_float(cost) is None for cost in costs):
         return False
     import math
     for key in ("price", "currentBidPrice"):
@@ -5309,7 +5367,8 @@ def _provider_details_complete(data):
         if isinstance(value, bool):
             continue
         try:
-            number = float(value)
+            number = _api_float(raw) if isinstance(raw,dict) else float(value)
+            if number is None:continue
             if math.isfinite(number) and number >= 0:
                 return True
         except (ValueError, TypeError):
