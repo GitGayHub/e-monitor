@@ -1919,6 +1919,24 @@ def _phone_ram_matches(value):
                for number, unit in declared)
 
 
+def _phone_storage_mismatch(value, query):
+    generation = re.search(r"\biphone\s*(15|16|17)\s*pro\s*max\b", _normalize(query))
+    if not generation:
+        return None
+    allowed = {256, 512, 1000, 1024}
+    if generation.group(1) == '17':
+        allowed |= {2000, 2048}
+    text = _normalize(value)
+    for match in re.finditer(r"\b(\d+(?:[.,]\d+)?)\s*(gb|gib|go|tb|tib)\b", text):
+        before, after = text[max(0, match.start()-30):match.start()], text[match.end():match.end()+35]
+        if re.search(r"\b(?:ram|arbeitsspeicher|frei|free|verfuegbar)\s*[:=]?\s*$", before) or re.match(r"\s*(?:ram|arbeitsspeicher|lpddr\d[x]?|frei|free|verfuegbar|available)\b", after):
+            continue
+        gb = float(match.group(1).replace(',', '.')) * (1024 if match.group(2) in ('tb', 'tib') else 1)
+        if gb not in allowed:
+            return match.group()
+    return None
+
+
 def _phone_specifications_match(title, description, query):
     q = _normalize(query)
     own_title = re.split(r"\b(?:mit|with|inkl(?:usive)?|incl(?:uded|uding)?|ink|bundle)\b", _normalize(title), maxsplit=1)[0]
@@ -1944,14 +1962,12 @@ def _phone_specifications_match(title, description, query):
                 continue
             if not _phone_chipset_matches(chip.group(),q):
                 return False
-    generation = re.search(r"\biphone\s*(15|16|17)\s*pro\s*max\b", _normalize(query))
-    if not generation:
-        return True
-    generation = generation.group(1)
     own_title = re.split(r"\b(?:mit|with|inkl(?:usive)?|incl(?:uded|uding)?|ink|bundle)\b", _normalize(title), maxsplit=1)[0]
-    allowed = {256, 512, 1024, 2000, 2048} if generation == "17" else {256, 512, 1024}
-    for gb, tb in re.findall(r"\b(64|128|256|512|1024|2000|2048)\s*gb\b|\b([12])\s*tb\b", own_title):
-        if (int(gb) if gb else int(tb) * 1024) not in allowed:
+    if _phone_storage_mismatch(own_title, query):
+        return False
+    for line in _clean_description(description).splitlines():
+        declared = re.match(r"\s*(?:speicher(?:kapazitaet|platz|groesse)?|storage(?:\s+capacity)?|internal\s+storage|interner\s+speicher|rom)\s*:\s*(.+)", _normalize(line))
+        if declared and _phone_storage_mismatch(declared.group(1), query):
             return False
     return True
 
@@ -5076,21 +5092,54 @@ def _fetch_item_details_browser(item_id):
                 if _is_challenge_html(page.content(), page.url):
                     _details_event(item_id,'browser_challenge')
                     return None
-                # Wait only for the seller's own iframe, excluding reviews/recs.
-                page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=MonitorPassBudget.milliseconds(6000))
-                frame = page.frame_locator("#desc_ifr")
-                frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
-                desc = frame.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
+                own_page = page.content()
+                linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
+                if not page.locator("#desc_ifr").count() and linked:
+                    page.goto(linked, wait_until="domcontentloaded", timeout=MonitorPassBudget.milliseconds(10000))
+                    if _is_challenge_html(page.content(), page.url):
+                        _details_event(item_id,'browser_description_challenge')
+                        return None
+                    desc = page.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
+                else:
+                    # Wait only for the seller's own iframe, excluding reviews/recs.
+                    page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=MonitorPassBudget.milliseconds(6000))
+                    frame = page.frame_locator("#desc_ifr")
+                    frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
+                    desc = frame.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
                 if not _clean_description(desc).strip():
                     _details_event(item_id,'browser_description_missing')
                     return None
-                return _parse_item_details_html(page.content(), description=desc,item_id=item_id)
+                return _parse_item_details_html(own_page, description=desc,item_id=item_id)
             finally:
                 browser.close()
     except Exception as exc:
         logger.warning("HTML browser details unavailable for %s: %s", item_id, type(exc).__name__)
         _details_event(item_id,'browser_'+type(exc).__name__)
         return None
+
+
+def _linked_seller_description_url(soup, item_id):
+    """Own full-description link used by eBay pages which omit desc_ifr."""
+    if not str(item_id or '').isdigit():
+        return None
+    for link in soup.select('a[href]'):
+        raw = link.get('href', '').strip()
+        try:
+            parsed = urllib.parse.urlsplit(urllib.parse.urljoin('https://www.ebay.de/', raw))
+            host = (parsed.hostname or '').lower()
+            trusted = host == 'ebaydesc.com' or host.endswith('.ebaydesc.com') or host == 'ebay.de' or host.endswith('.ebay.de')
+            if not trusted or parsed.scheme.lower() not in ('http', 'https') or parsed.username or parsed.password or parsed.port not in (None, 80 if parsed.scheme.lower() == 'http' else 443):
+                continue
+            own_path = parsed.path.rstrip('/') == '/itmdesc/' + str(item_id)
+            query = urllib.parse.parse_qs(parsed.query)
+            own_legacy = parsed.path.lower().endswith('/ebayisapi.dll') and 'ViewItemDescV4' in parsed.query and query.get('item') == [str(item_id)]
+            if own_path or own_legacy:
+                # eBay itself still emits http links. Fetch its known seller
+                # endpoint over HTTPS, retaining query syntax without re-encoding.
+                return urllib.parse.urlunsplit(('https', host, parsed.path, parsed.query, ''))
+        except (ValueError, TypeError):
+            continue
+    return None
 
 
 def _parse_item_details_html(html, description=None, session=None, host="ebay.de",item_id=None):
@@ -5188,10 +5237,14 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
                 desc_ifr = iframe
                 break
 
+    desc_src = ((desc_ifr.get("src") or desc_ifr.get("data-src") or "") if desc_ifr else "").strip()
+    if not desc_src:
+        desc_src = _linked_seller_description_url(soup, item_id) or ""
+        if desc_src:
+            _details_event(item_id, 'seller_description_link_found')
     if description is not None:
         desc_html = description
-    elif desc_ifr:
-        desc_src = desc_ifr.get("src") or ""
+    elif desc_ifr or desc_src:
         if desc_src and MonitorPassBudget.exhausted():
             _details_event(item_id,'seller_description_deadline')
         elif desc_src:
@@ -5199,7 +5252,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
                 desc_src = "https:" + desc_src
             elif desc_src.startswith("/"):
                 desc_src = f"https://www.{host}" + desc_src
-            logger.info("Fetching description HTML from iframe: %s", desc_src)
+            logger.info("Fetching own seller description HTML: %s", desc_src)
             try:
                 desc_headers = {
                     "User-Agent": headers["User-Agent"] if "User-Agent" in headers else "Mozilla/5.0",
@@ -6432,6 +6485,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             if name in ("ram", "arbeitsspeicher", "memory") and re.search(r"\bs24\s*ultra\b|\bs25\s*edge\b", query):
                 if not _phone_ram_matches(value):
                     return False
+            if name.replace(' ', '') in ('speicherkapazitaet', 'speicher', 'speicherplatz', 'speichergroesse', 'storagecapacity', 'internalstorage', 'rom') and _phone_storage_mismatch(value, query):
+                return False
             if "iphone" in query and name in ("betriebssystem", "operating system") and "android" in value:
                 return False
     return not (
