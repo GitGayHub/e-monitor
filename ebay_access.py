@@ -178,9 +178,34 @@ class BrowseAccess:
     def normal_queue(self, searches, market):
         """Resume the next active search after a checkpoint or forced shutdown."""
         rows = [s for s in searches if s.get('enabled', True)]
-        next_id = self.state().get('normal_next_search', {}).get(market)
+        state = self.state()
+        next_id = state.get('normal_next_search', {}).get(market)
         offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
-        return rows[offset:] + rows[:offset]
+        rotated = rows[offset:] + rows[:offset]
+        # A page received just before the runner deadline must not wait for a
+        # whole catalogue rotation before its first description is checked.
+        # Only search IDs are retained: the next attempt fetches fresh data.
+        pending = state.get('normal_validation_resume', {})
+        priority = sorted((s for s in rows if str(s['id'])+'|'+market in pending),
+                          key=lambda s: pending[str(s['id'])+'|'+market])
+        urgent = {s['id'] for s in priority}
+        return priority + [s for s in rotated if s['id'] not in urgent]
+
+    def defer_normal_validation(self, search_id, market):
+        with self.lock:
+            state = self.state(); now = time.time()
+            pending = {key:stamp for key,stamp in state.get('normal_validation_resume', {}).items()
+                       if now-stamp < 86400}
+            pending.setdefault(str(search_id)+'|'+market, now)
+            state['normal_validation_resume'] = dict(sorted(pending.items(),key=lambda x:x[1])[-128:])
+            self.save(state)
+
+    def finish_normal_validation(self, search_id, market):
+        with self.lock:
+            state = self.state(); pending = state.get('normal_validation_resume', {})
+            if pending.pop(str(search_id)+'|'+market, None) is not None:
+                state['normal_validation_resume'] = pending
+                self.save(state)
 
     def search_coverage(self, searches, market, now=None):
         """Freshness of attempts, never a claim of successful search/delivery."""

@@ -8582,7 +8582,7 @@ def _history_price_sides(candidate, search):
     return sides
 
 
-async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix="", population_complete=True):
+async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix="", population_complete=True, on_budget_deferred=None):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
     verified, unavailable, deferred, description_deferred = [], 0, 0, 0
@@ -8607,6 +8607,8 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
             deferred = len(candidates) - index
             fair_slice_exhausted = max_candidates is not None and index >= max_candidates
+            if not fair_slice_exhausted and on_budget_deferred is not None:
+                on_budget_deferred(candidates[index:])
             break
         if resumable:
             at = ids.index(str(candidate['item_id']))
@@ -10064,6 +10066,10 @@ async def _process_searches_in_pass(bot, once=False):
             if fetch_err == "api_deferred":
                 logger.debug("%s: waiting for next quota-aware refresh", search["query"])
                 continue
+            # Pacing/quota deferral above must retain the priority for the next
+            # due pass. A real attempt consumes it; a description deadline can
+            # put it back below without storing an old price or seller text.
+            browse_access.finish_normal_validation(search['id'], EBAY_MARKETPLACE_ID)
             if fetch_err:
                 if fetch_err in ("blocked", "rate_limit", "cooldown"):
                     blocked_searches.append(search)
@@ -10099,11 +10105,25 @@ async def _process_searches_in_pass(bot, once=False):
                             _runtime_progress['notificationsConfirmed'] += 1
                     await asyncio.sleep(0.5)
 
+            resume_validation = False
+            def defer_notification_candidates(rows):
+                nonlocal resume_validation
+                if search.get('notify', True) and any(
+                    _notify_candidates_from_filtered(filter_results([row], search, config))
+                    for row in rows
+                ):
+                    browse_access.defer_normal_validation(search['id'], EBAY_MARKETPLACE_ID)
+                    resume_validation = True
+                    logger.info("%s: description deadline; resume fresh candidate validation before next catalogue rotation", search['id'])
+
             # Two descriptions per page: an old catalogue of hundreds
             # must not hold every other product for an entire runner budget.
             # The persistent candidate cursor resumes the rest with fresh prices.
-            verified = await _verified_history(results, search, on_verified=notify_verified, max_candidates=2,population_complete=not fetch_err)
+            verified = await _verified_history(results, search, on_verified=notify_verified, max_candidates=2,population_complete=not fetch_err,on_budget_deferred=defer_notification_candidates)
             logger.info("  %s: %d results, %d verified in fair live slice", search['query'],len(results),len(verified))
+            if resume_validation:
+                report_yield()
+                break
 
             fresh_ids = {str(row["item_id"]) for row in results}
             # A full page means the newest sort truncated the market: ending
@@ -10160,7 +10180,10 @@ async def _process_searches_in_pass(bot, once=False):
             ending_rows = [row for row in results if str(row["item_id"]) not in fresh_ids]
             if ending_rows:
                 browse_access.note_normal_discovery(ending_rows,search["id"],EBAY_MARKETPLACE_ID)
-                await _verified_history(ending_rows,search,on_verified=notify_verified,max_candidates=2,cursor_suffix="__ending")
+                await _verified_history(ending_rows,search,on_verified=notify_verified,max_candidates=2,cursor_suffix="__ending",on_budget_deferred=defer_notification_candidates)
+                if resume_validation:
+                    report_yield()
+                    break
 
             if not once:
                 await asyncio.sleep(random.uniform(2, 5))
