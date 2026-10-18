@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 22  # Currency quotes are normalized before price comparison.
+HISTORY_VERSION = 23  # Complete accessory packages and exchange-exclusion policies.
 _DB_LOCK = threading.Lock()
 
 
