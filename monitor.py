@@ -1857,9 +1857,10 @@ def _phone_implicit_bundle_title(title):
         return title
     part = re.search(r"\b(?:stylus|s[ -]?pen)\b|\b(?:huelle|case|cover)\s*$", title)
     separator = re.search(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)[+&](?=\s)", title)
-    if part and separator and separator.start() < part.start():
+    if separator and ((part and separator.start() < part.start()) or re.search(r"\bzubehoer(?:paket|bundle)\s*$",title)):
         return title
-    candidate = re.sub(r"\b(?:huelle|case|cover)\s*$", " ", title)
+    candidate = re.sub(r"\bzubehoer(?:paket|bundle)\s*$", " ", title)
+    candidate = re.sub(r"\b(?:huelle|case|cover)\s*$", " ", candidate)
     candidate = re.sub(r"\b(?:stylus|s[ -]?pen)\b", " ", candidate)
     return candidate
 
@@ -1880,7 +1881,7 @@ def _phone_implicit_bundle_confirmed(title, description):
             and not any(_has_accessory_term(first, word) for word in PHONE_HARD_PART_WORDS + PHONE_HARD_ACCESSORY_WORDS)):
         return True
     phone = r"(?:smartphone|handy|telefon|phone|iphone|(?:samsung\s+)?(?:galaxy\s+)?s\d{2}|(?:google\s+)?pixel\s+\d)"
-    return bool(re.search(rf"\b(?:verkaufe|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|complete|gebraucht\w*|used)\s+){{0,6}}{phone}\b", own))
+    return bool(re.search(rf"\b(?:verkaufe|versteigere|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|komplett\w*|complete|gebraucht\w*|used|nahezu|neuwertig\w*|apple|samsung|google)\s+){{0,8}}{phone}\b", own))
 
 
 def _phone_description_purpose_confirmed(description):
@@ -2593,7 +2594,7 @@ def _normalized_bad_condition_words():
 @functools.lru_cache(maxsize=1)
 def _negated_condition_pattern():
     words = set(_normalized_bad_condition_words())
-    words.update(('kratzer','gebrauchsspuren','scratches','signs of wear','dead pixels','burn ins','burnins'))
+    words.update(('kratzer','gebrauchsspuren','beschaedigung','beschaedigungen','schaeden','dellen','risse','scratches','signs of wear','dead pixels','burn ins','burnins'))
     atom = '(?:' + '|'.join(re.escape(w) for w in sorted(words,key=len,reverse=True)) + r')\b'
     neg = r'(?:kein|keine|keinen|ohne|nicht|nichts|no|without|not)'
     adjective = r'(?:(?:sichtbar\w*|bekannt\w*|visible|known|sonst|sonstige\w*|andere\w*|any|other)\s+){0,2}'
@@ -2604,6 +2605,9 @@ def _negated_condition_pattern():
 
 
 def _strip_negated_condition_terms(text_norm):
+    # "not without damage" affirms a defect; its two negators must not
+    # suppress the part/damage check that follows coordinated-list removal.
+    text_norm = re.sub(r"\b(?:nicht\s+ohne|not\s+without)\s+(?=(?:beschaedig\w*|schaden|schaeden|kratzer|risse|damage|scratches|cracks)\b)", "", text_norm)
     # 236643373203 offers a working laptop for sale OR an optional swap.
     # Remove just the optional trade word, never faults or trade-only clauses.
     optional = r"\b(?:verkaufen|verkaufe|verkauf)\b[^.!?\n]{0,100}?\b(?:oder|alternativ)\b[^.!?\n]{0,180}?\b(?:tauschen|tausche|tausch)\b|\b(?:tauschen|tausche|tausch)\b[^.!?\n]{0,180}?\b(?:oder|alternativ)\b[^.!?\n]{0,100}?\b(?:verkaufen|verkaufe|verkauf)\b"
@@ -3040,6 +3044,49 @@ def _build_url_with_host(host, search, sub="www"):
             params["LH_PrefLoc"] = "2"
     qstr = "&".join(f"{k}={requests.utils.quote(str(v))}" for k, v in params.items())
     return f"{base}?{qstr}"
+
+
+def _safe_public_search_url(url):
+    """Only public eBay search links; never an API, login or redirect URL."""
+    try:
+        parsed=urllib.parse.urlsplit(str(url or ''))
+        hosts={f'{sub}.ebay.{country}' for sub in ('www','m') for country in ('de','com','co.uk','fr','it','es','at','nl','ca','com.au')}
+        if parsed.scheme!='https' or parsed.hostname not in hosts or parsed.username or parsed.password or parsed.port is not None or parsed.path!='/sch/i.html':
+            return None
+        allowed={'_nkw','_sacat','_dcat','Modell','_sop','_ipg','_udlo','_udhi','LH_BIN','LH_Auction','LH_BO','LH_ItemCondition','LH_SellerType','LH_PrefLoc','_stpos','_fcid','_pgn','rt'}
+        pairs=urllib.parse.parse_qsl(parsed.query,keep_blank_values=True)
+        if not pairs or any(key not in allowed for key,_ in pairs) or not any(key=='_nkw' and value for key,value in pairs):
+            return None
+        return urllib.parse.urlunsplit((parsed.scheme,parsed.netloc,parsed.path,parsed.query,''))
+    except (TypeError,ValueError):
+        return None
+
+
+def _stamp_search_origin(items, source, url, query):
+    public_url=_safe_public_search_url(url)
+    actual_query=dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(public_url).query)).get('_nkw',query) if public_url else query
+    for item in items:
+        item['source']=source
+        item['_search_query']=actual_query
+        if public_url:item['_search_url']=public_url
+    return items
+
+
+def _api_public_search_url(search, market, params):
+    """Open the public site with the actual API alias and supported filters."""
+    host={'EBAY_GB':'ebay.co.uk','EBAY_US':'ebay.com','EBAY_FR':'ebay.fr','EBAY_IT':'ebay.it','EBAY_ES':'ebay.es','EBAY_AU':'ebay.com.au','EBAY_CA':'ebay.ca'}.get(market,'ebay.de')
+    public=urllib.parse.urlsplit(_build_url_with_host(host,search))
+    values=dict(urllib.parse.parse_qsl(public.query,keep_blank_values=True))
+    values['_nkw']=params['q']
+    # These HTML-only refinements were not applied by the Browse request.
+    for key in ('Modell','_dcat','_sacat','LH_ItemCondition','LH_BO'):values.pop(key,None)
+    if params.get('category_ids'):values['_sacat']=params['category_ids']
+    condition=search.get('filters',{}).get('condition','any')
+    if condition in ('new','used'):values['LH_ItemCondition']='1000|1500' if condition=='new' else '3000'
+    if search.get('filters',{}).get('listing_type')=='offer':values['LH_BO']='1'
+    if search.get('filters',{}).get('seller_type')=='commercial':values['LH_SellerType']='2'
+    values['_sop']={'newlyListed':'10','endingSoonest':'1'}.get(params.get('sort'),'15')
+    return urllib.parse.urlunsplit((public.scheme,public.netloc,public.path,urllib.parse.urlencode(values),''))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s", stream=sys.stdout, force=True)
 logger = logging.getLogger()
@@ -4774,6 +4821,7 @@ def fetch_ebay_api_ex(search, force=False):
             return [], "api_filters_ignored"
         record_search_run(search.get("id", ""), market)
         items = parse_ebay_api_results(data)
+        _stamp_search_origin(items,'api',_api_public_search_url(search,market,params),params['q'])
         logger.info("  %s -> %d items via eBay Browse API (%s)", search.get("query"), len(items), market)
         return items, "parse" if len(items)<len(data.get("itemSummaries") or []) else None
     except urllib.error.HTTPError as e:
@@ -5785,7 +5833,9 @@ def _is_description_blocked(desc_html, category):
     # A private-sale exclusion of exchange is not an offer to swap the device.
     # Independently read on Sony ULT Wear auction 168749410138.
     policy = r"(?:ruecknahme|wandlung|tausch|preisminderung)"
-    desc_norm = re.sub(rf"\b{policy}(?:\s*(?:,|oder|und|/)\s*{policy})*\s+(?:ist|sind|wird|werden)\s+ausgeschlossen\b", " ", desc_norm)
+    article = r"(?:(?:ein(?:e|en)?|der|die|das)\s+)?"
+    subjects = rf"{article}{policy}(?:\s*(?:,|oder|und|/|bzw\.?)\s*{article}{policy})*"
+    desc_norm = re.sub(rf"\b{subjects}\s+(?:(?:ist|sind|wird|werden)\s+ausgeschlossen|ausgeschlossen(?:\s+(?:ist|sind|wird|werden))?)\b", " ", desc_norm)
     # 168745903984 describes the failed PREVIOUS phone replaced by Apple.
     # Keep every statement about the device now being sold.
     desc_norm = re.sub(r"\b(?:da|weil)\s+mein\s+(?:vorheriges|altes)\s+(?:iphone|handy|smartphone|geraet)\b[^.!?\n]{0,180}\b(?:defekt|kaputt|beschaedig\w*)\b[^.!?\n]{0,100}\b(?:ersetzt|ausgetauscht)\b[^.!?\n]*[.!?]?", " ", desc_norm)
@@ -7294,6 +7344,7 @@ def _do_fetch_playwright(url, query=""):
                 logger.warning("Playwright still got challenge for '%s'", query)
                 return [], "blocked"
             items, err = _parse_search_body(body, "playwright", query)
+            _stamp_search_origin(items,'html',plan['url'],query)
             if items:
                 logger.info("  %s -> %d items via Playwright HTML", query, len(items))
             return items, err
@@ -7395,6 +7446,7 @@ def _do_fetch_one(host, search, referer=None):
                 continue
 
             items, err = _parse_search_body(body, host, query)
+            _stamp_search_origin(items,'html',try_url,query)
             if items:
                 logger.info(
                     "  %s -> %d items via %s body_len=%d",
@@ -7428,6 +7480,7 @@ def _do_fetch_one(host, search, referer=None):
                             if sc2 >= 400 or _is_challenge_html(body2, final2):
                                 continue
                             extra, _ = _parse_search_body(body2, host, query)
+                            _stamp_search_origin(extra or [],'html',sample_url,query)
                             merged = _merge_items_by_id(items, extra or [])
                             if len(merged) > len(items):
                                 logger.info(
@@ -7966,6 +8019,13 @@ def get_category_emoji(cat_name):
     return mapping.get(cat_name, "📦")
 
 
+def _notification_search_keyboard(item, search):
+    url=_safe_public_search_url(item.get('_search_url')) or _safe_public_search_url(build_ebay_url(search))
+    if not url:return None
+    source={'html':'eBay HTML','api':'eBay API'}.get(item.get('source'),'eBay')
+    return InlineKeyboardMarkup([[InlineKeyboardButton(f'🔎 Поиск · {source}',url=url)]])
+
+
 async def send_notification(bot, item, search, stats_7d=None, notify_stage="initial"):
     if _hybrid_selected_price_missing(item):
         return False
@@ -8171,7 +8231,7 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
             TELEGRAM_CHAT_ID,
             caption,
             img=img,
-            keyboard=None,
+            keyboard=_notification_search_keyboard(item,search),
             parse_mode="HTML"
         )
         if sent:

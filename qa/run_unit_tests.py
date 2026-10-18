@@ -52,6 +52,8 @@ def main():
         modules.append("test_telegram_delivery_uncertain")
         modules.append("test_phone_conversion")
         modules.append("test_euro_money")
+        modules.append("test_accessory_package")
+        modules.append("test_notification_search_link")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
