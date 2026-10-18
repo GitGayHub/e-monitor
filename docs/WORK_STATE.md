@@ -1,3 +1,17 @@
+<!-- stage106 -->
+# Продолжение0.106 — 18 октября2026
+
+ЦельACTIVE,26товаров/104корзиныPARTIAL. ФинальнаяAPK0.106/code106 установлена,SHAc81842b51296c3eef3dbe2cdfd60963f5bcfdffee07409ff10d54647a88bd122,правила1792338792,History24.437Python/370Androidunit/buildPASS. Все50строк/столбцов сохранены,48active,ce6/dirtyfalse,normal/получатель/баны/seen не менялись. Телефон толькоAPK,TelegramтолькоПКвфоне;не активировать окна,USBdeviceнеперезапускать.
+
+РЕАЛЬНЫЙ ложныйдопуск105:287656325672/107GB/86.19€/primary120081. Chrome:собственныеtitle+Speicherkapazitaet107GB,короткое«sehr gutes Handy noy Name Handy sehr gut». Apple108044 подтверждает допустимые256/512/1TB/2TB для17PM.106 проверяет произвольные цифрыGB/TB вtitle/aspects/подписанномownbody,не RAM/свободноеместо;правило15/16/17PM,20 общихконтролей×4. ИсправленаPython+Kotlin,History24,3970оригиналов не менялись.120081captionEDIT подтверждён,кнопка сохранена,НОвизуальноПКещёнеперепроверен;НЕпересылать/не повторятьcorrect_storage106.py. Нетновой106автоотправки/ACKна моментзаписи.
+
+106 также читает own полное описание по ссылке безiframe(Chrome147635764543),HTTPS+толькоownID,без BrowseдлядоступногоHTML. Pythonheadless иAndroid WebView metadata поддерживаютновыйпуть.6Python/2Android регрессии. ЖивойHTML147635764543HTTP200/отказпоdamage прочитан,нотамiframe,неclaimноваяветкасработалаliveHTTP. ChromefullLinkреальнопрочитан. ПредварительныйAPK106 e0e5…/History23 НЕ финальный;последнийc818…/History24.
+
+НоваяручнаяпроверкаS24:19 own полнотелыхописанийChrome+предыдущий257794983463=20уникальных,НЕ40–50. ДанныеBROWSER_S24_106. Freshфиз105S24четырекорзины489/458/257.19bid/415bid,17:31local,PHONE_S24_105.489/458 own проверены;дешевлеестьдефекты,wrongS23,дальнийpickup,но RAM8каталога vs12own противоречиеНЕ доказательствоfake,оставитьUNVERIFIED. Аукционные минимумы ещёпрочитать. ReaderCua s24Own105=19, s24Cards105=BINserp701сортцена+доставка,Chrome3/tab214035126сейчасна287656325672. S24bidtab214035182. Fullsellerreader s24PdpReader105 поддерживает и ссылки,иiframe;сохраняетполныйownтексттольковCua,впубличномотчётефакты. НеclaimпаритетпоодномуChrome,нуженпрогонобоихязыков/физическийотказ.
+
+СЛЕДОМ:опубликовать106код+этотMD вsource/обеroads,ACK/CI(105AndroidCIbillingblocked,monitorреальнопродолжается),проверитьфизический107GBотказ/свежийотчёт/сохранение50,ПКкоррекция120081;продолжитьS24до40–50включаяAuktion/+/sold/алиасы,затемвеськаталог,каденс15,CRUD/гонки/сеть/медианы. Ссылки105кнопкиужеverified120079/120080,непересылать. Неblindpull/reset/clean/force,секреты/productionstateнепубликовать. Последнийcloudcheckpoint105botc4c229d58178ae40598a0eed82256b8271902341/Android6af7f24959c5ffc1ada82c57b2f54bdb407b6d22,0files/0conflicts. Исходники106ещёсверитьпоpublicationrecordsпослепубликации.
+<!-- /stage106 -->
+
 <!-- stage105 -->
 # Актуальное продолжение 0.105 — 18 октября 2026
 
