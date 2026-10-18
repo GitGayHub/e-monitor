@@ -1,3 +1,17 @@
+<!-- final106 -->
+# Продолжение после проверки 0.106 — 18 октября 2026
+
+Цель ACTIVE, общая приёмка26товаров/104корзины PARTIAL. Финальная APK0.106/code106/rules1792338792/History24/SHA c81842b51296c3eef3dbe2cdfd60963f5bcfdffee07409ff10d54647a88bd122 установлена.437Python/370Androidunit/buildPASS, после чистого checkpoint437PASS/AndroidUP-TO-DATE. Все50строк/столбцов равны before→verified,48active/ce6d8944-34df-441a-8cd5-483e0b5a9542/dirtyfalse/normal/LG430. Не менятьполучателя/лимиты/seen/баны. Телефон толькоAPK черезphone_adb.py;PCфон,неактивироватьокна. Healthydeviceнеперезапускать.
+
+106 СЕРВЕРACK подтверждён strictfingerprint/ревизией. ФизическийОбзор обеrules17:53. Автоматические120082–120088/rules106/primary8303538057 подтвержденыfeed+nativePCAX,безновыхтестов. Nativeкоррекция120081/107GBпрочитана,НЕповторятьedit/send. Снимокфоновогоокна18Oct19:57показалперекрывающийChrome:неclaim106визуальныеbuttons.105кнопкиужеproof120079/120080. Feed106verified→confirmed0.367–2.076s;PS5/920051592519/120087discovered→confirmed19m06s,причинуразобрать,неclaimэтоотпубликации.
+
+Свежийфизический17PMотчёт106251188ms1049/986.19/7.19bidwait/794.19bid.72Sofort+viewer,57reject15expensive,миниатюрывидны,диапазон80–100пустой. Реальный107GB287656325672ужеSOLD,ввыдачеотсутствует:физическийотказИМЕННОэтоголотаНЕдоказан,неинжектитьstaleвprod. Python/Kotlin20storageконтролей×4PASS. Full-descriptionlink147635764543Chromeпрочитан,liveHTTPэтоголотаiframe200,несмешиватьветки. REPORT_106/PHONE_106/PHONE_REPORT_106.
+
+S24Chrome47новыхown+предыдущий257794983463=48уникальных. BROWSER_S24_106подробныефакты,неclaimвесьрынок/всеалиасы/паритет. Все4физ105S24кандидата489/458/257.19bid/415bidownпрочитаны.5soldoriginalнедоступны,неcount. Новый860054269745/120086own прочитанчерезOriginalangebotansehen→owniframe,позжепродавецснял/перевыставил. Противоречия8RAMaspectvs12bodyUNVERIFIED,неfake. Следомполныйreplay48вдвухязыках+всеалиасы/минимумы,потомостальнойкаталог. Не считать48описанийзакрытиемвсех104корзин.
+
+Последнийruntime19:54:27UTC21/21/1578/32/0,охват43/48за15,oldest1053сек,15минSLAНЕТ. AndroidCI10639142717486/39142788294/39142788302failedДОrunner billingaccount,неперезапускать/неправитьплатежи. Source106bot1586de110011e0e8f1cff596dec524d00a617430/Androide184a643913b43bb72e5f99158096e40eeba05ec;roads106bota29a2ab02461501eef862048021e0c0a0571d1a7/Androidb9fae52eed348ed00357c666396c92ef4942fe2c. Cloud--applyэтойпары0files/0conflictsвыполнен. Далееdocs-onlyпубликацииcheck/applyобновятheads. Неblindpull/reset/clean/force,непубликоватьproddata/секреты. record106.pyНЕперезапускать:сброситновыеACK/доказательства. finalize106.pyобновляетдокументыпослеasserts. rootappend_s24_106.pyсодержитфактыизbrowserинструментов;старыйCuaконтекстпотерянпослепаузы. ПоследнийChrome3/usertab214035494. ПоследнийтелефонОбзорscrolledrules. Продолжатькаденс,UICRUD/гонки/сеть,полныемедианыи26/104,неостанавливатьсянаоднихтестах.
+<!-- /final106 -->
+
 <!-- stage106 -->
 # Продолжение0.106 — 18 октября2026
 
