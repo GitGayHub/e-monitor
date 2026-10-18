@@ -56,6 +56,7 @@ def main():
         modules.append("test_notification_search_link")
         modules.append("test_linked_seller_description")
         modules.append("test_phone_storage")
+        modules.append("test_validation_resume")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
