@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 24  # Unsupported declared phone storage cannot seed price medians.
+HISTORY_VERSION = 25  # Completed manufacturer repair cannot seed device medians.
 _DB_LOCK = threading.Lock()
 
 
