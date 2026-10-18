@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "scope": "Two independently browser-read seller clauses and synthetic boundaries. Not full listing/price replay.",
+  "cases": [
+    {
+      "id": "800799315029",
+      "source": "https://www.ebay.de/itm/800799315029",
+      "description": "Das Smartphone wurde zwar genutzt. Es sind keinerlei Gebrauchsspuren, Kratzer, Flecken oder sonstige Mängel auf dem Display oder Gehäuse zu sehen.",
+      "blocked": false,
+      "repair": false,
+      "title": "Samsung Galaxy S24 Ultra 5G 256GB grau 12GB RAM 6,8 Zoll 200MP Stylus"
+    },
+    {
+      "id": "940006240716",
+      "source": "https://www.ebay.de/itm/940006240716",
+      "description": "Frisch aus der Samsung Smart Repair, inkl. Reparaturbericht.",
+      "blocked": true,
+      "repair": true
+    },
+    {
+      "id": "synthetic-denied-list-visible",
+      "description": "Keine sichtbaren Kratzer, Flecken oder Schäden am Display.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-denied-followed-defect",
+      "description": "Keinerlei Kratzer oder Flecken am Gehäuse. Das Display ist gebrochen.",
+      "blocked": true,
+      "repair": false
+    },
+    {
+      "id": "synthetic-denied-list-then-asserted-spot",
+      "description": "Keine Kratzer, aber das Display hat Flecken.",
+      "blocked": true,
+      "repair": false
+    },
+    {
+      "id": "synthetic-double-negative",
+      "description": "Das Display ist nicht ohne Flecken.",
+      "blocked": true,
+      "repair": false
+    },
+    {
+      "id": "synthetic-explicit-spot",
+      "description": "Das Display hat Flecken und Kratzer.",
+      "blocked": true,
+      "repair": false
+    },
+    {
+      "id": "synthetic-simple-negation",
+      "description": "Ohne Flecken und Kratzer am Display.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-maker-service",
+      "description": "Frisch aus Samsung Repair zurück. Mit Reparaturbericht.",
+      "blocked": true,
+      "repair": true
+    },
+    {
+      "id": "synthetic-maker-other",
+      "description": "Frisch aus der Apple Repair, mit Servicebericht.",
+      "blocked": true,
+      "repair": true
+    },
+    {
+      "id": "synthetic-maker-repaired-device",
+      "description": "Frisch repariertes Gerät von Samsung Repair, neuer Akku.",
+      "blocked": true,
+      "repair": true
+    },
+    {
+      "id": "synthetic-maker-future",
+      "description": "Das Handy kann bei Samsung Smart Repair repariert werden.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-maker-denied",
+      "description": "Das Handy ist nicht frisch aus der Samsung Smart Repair.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-maker-previous",
+      "description": "Mein altes Handy ist frisch aus der Samsung Smart Repair. Dieses S24 Ultra ist unbenutzt.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-service-advert",
+      "description": "Samsung Smart Repair bietet Reparaturen an. Dieses Gerät ist neu und unbenutzt.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-screen-original",
+      "description": "Das Samsung Galaxy S24 Ultra hat ein neues werksseitig eingebautes Originaldisplay.",
+      "blocked": false,
+      "repair": false
+    },
+    {
+      "id": "synthetic-stylus-only-remains-rejected",
+      "title": "Samsung Galaxy S24 Ultra 256GB Stylus",
+      "description": "Das Smartphone wurde zwar genutzt. Nur Stylus enthalten, kein Telefon.",
+      "blocked": false,
+      "repair": false,
+      "contractAccepted": false
+    }
+  ]
+}

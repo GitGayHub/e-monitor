@@ -1881,6 +1881,10 @@ def _phone_implicit_bundle_confirmed(title, description):
             and not any(_has_accessory_term(first, word) for word in PHONE_HARD_PART_WORDS + PHONE_HARD_ACCESSORY_WORDS)):
         return True
     phone = r"(?:smartphone|handy|telefon|phone|iphone|(?:samsung\s+)?(?:galaxy\s+)?s\d{2}|(?:google\s+)?pixel\s+\d)"
+    # A later condition sentence may explicitly describe the offered handset;
+    # it need not start the body with "I sell" (800799315029, Stylus feature).
+    if re.search(rf"\b(?:das|dieses|mein)\s+{phone}\s+wurde\s+(?:zwar\s+)?(?:genutzt|benutzt)\b", own):
+        return True
     return bool(re.search(rf"\b(?:verkaufe|versteigere|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|komplett\w*|complete|gebraucht\w*|used|nahezu|neuwertig\w*|apple|samsung|google)\s+){{0,8}}{phone}\b", own))
 
 
@@ -2635,6 +2639,10 @@ def _strip_negated_condition_terms(text_norm):
     text_norm = re.sub(optional,optional_trade,text_norm)
     denied = r"(?:scratches|dents|marks|cracks|(?:cosmetic\s+)?damage)"
     text_norm = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", text_norm)
+    # 800799315029: a German coordinated denial must cover every noun,
+    # without swallowing an asserted defect after "aber" or a new sentence.
+    denied_de = r"(?:(?:sonstige[nr]?|sichtbare[nr]?|erkennbare[nr]?|leichte[nr]?)\s+)?(?:gebrauchsspuren|kratzer|flecken|dellen|risse|maengel|schaeden|beschaedigungen)"
+    text_norm = re.sub(rf"(?<!nicht )(?<!not )\b(?:kein(?:e|en|er)?|keinerlei|ohne)\s+{denied_de}(?:\s*(?:,\s*(?:(?:und|oder)\s+)?|(?:und|oder)\s+){denied_de})*\b(?!\s*(?:,|und\b|oder\b))", " ", text_norm)
     text = _negated_condition_pattern().sub(' ',text_norm)
     # Samsung's cooling feature prevents burn-in; it does not admit an existing
     # fault. Remove only that exact prevention statement, keeping later defects.
@@ -5856,7 +5864,8 @@ def _phone_repair_label(description):
             before=before_clause(m.start(),80)
             if not re.search(r"\b(?:nicht|nie|kein\w*|not|never|no)\b",m.group()) and not re.search(r"\b(?:can|could|will|would|may|might|kann|koennen|soll)\b",m.group()) and not re.search(factory,before+m.group()) and not re.search(previous,before):
                 return "замена дисплея в описании"
-    maker = r"\b(?:vom|von\s+dem)\s+(?:hersteller|google|apple|samsung)\s+repariert\b|\brepaired\s+by\s+(?:(?:the|an?\s+official)\s+)?(?:manufacturer|google|apple|samsung)\b"
+    maker = (r"\b(?:vom|von\s+dem)\s+(?:hersteller|google|apple|samsung)\s+repariert\b|\brepaired\s+by\s+(?:(?:the|an?\s+official)\s+)?(?:manufacturer|google|apple|samsung)\b"
+             r"|\bfrisch\s+(?:(?:aus|von)\s+(?:der\s+)?|repariert(?:es|er|e|en)?\s+(?:geraet|handy|smartphone|iphone|phone)\s+(?:aus|von)\s+)(?:samsung|apple|google)\s+(?:smart\s+)?repair\b")
     for m in re.finditer(maker,text):
         before=before_clause(m.start(),45)
         if not re.search(r"\b(?:nicht(?:\s+mehr)?|nie|not(?:\s+ever)?|never)\s+$",before) and not re.search(r"\b(?:kann|koennen|wird|werden|can|could|will|would)\b[^.!?]{0,30}$",before) and not re.search(previous,before):

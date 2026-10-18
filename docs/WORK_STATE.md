@@ -1,3 +1,19 @@
+<!-- stage108 -->
+# Продолжение 0.108 — 18 октября2026
+
+ACTIVE, общаяприёмка26/104PARTIAL. APK0.108/code108/rules1792356222/History25/SHA6c4d858faf6306aee1b4cde2701b8fb96ea293c2d6652e7c60fef891d568ae33 физическиустановлена.443Python/372Android/buildPASS; first108guardregressionисправлен, старыеожиданиянепереписаны.50строк/столбцов равны107before→108before→108installed,48active/ce6d8944-34df-441a-8cd5-483e0b5a9542/dirtyfalse,normal/recipient/seen/баны/лимиты сохранены. Новый108ACKещёпроверитьпослепубликации. PHONE_108/REPORT_108.
+
+Два реальныхлота:800799315029ложноотклонялся из-за отрицанияGermanсписка«keinerlei…Flecken», плюсStylusтребовалцелыйphoneвпервойстроке; подтверждение«DasSmartphonewurde…genutzt»позднее теперьучтено, толькоaccessoryосталсяотказ.940006240716явныйSamsungSmartRepairраньшепроходил:теперьправильныйrepairlabel,неfalsefuture/negation/previousphone. ОбаPython/Kotlin,17sharedcases(2real15synthetic)×4. Историюперенеслив25безудаления. Новыйcode108публиковатьвыбраннымифайлами.
+
+50S24ownручных,HTTPimplementationrecapture46/50,4live_price_missing;30определённыхвводов полноеownbody/title/aspects одинаковоPython/Kotlin30PASS,PRIVATEcaptureSHAвKotlinXML. Это relevanceonly:availability/end удаленынамеренно,неprice/notify/full50acceptance. Пересмотрены2ошибочныеmanualоценки:137839581581MPN928/938conflictUNVERIFIED,407294845483явныйRefurbishedотказправильный. BROWSER_S24_108/REPLAY_S24_108/HTTP_CAPTURE_S24_108,rawprivate-s24-input107/private-s24-replay107.jsonНЕпубликовать. ПовторныйChrome940006240716теперькаталогчужого197630546841,НЕclaimоригиналсвежим.800полныйownповторнопрочитан,никакихдефектов.
+
+107runtimeACKtrue. Priority4050реальноconsumed:checkpoint5fb5fd7f...перваяattempt20:27:25послестарта20:27:18,IDcleared,DBGitblobSHAпроверен. RESUME_107. SLA15НЕдоказан(33/48последнийсрез107).120089/206627275667/561.19bid107primaryподтверждёнfeed,1.262secпослеowncheck,Chrome16PM256/89%battery/Hamburg6.19прочитан. PCAXпоказываеттолькодо120088,120089nativeНЕclaim. НЕповторять120079–120089/коррекции120041/120081. КнопкиSearch105доказаныLINKS_105.
+
+Физ107templatecopy17PM910/2500/1форматпроверен,отмена,безсоздания.108CRUDsaveэтимНЕдоказан. ПоследнийтелефонОбзор108top;Chrome3/usertab214035494на940каталог. Source107docs b956cff0133c321946f844622b570e9363e32d3f/e13958d4b923c6e36de4602b222e9c79ab180f29;roads bbd1fd6e6a5155e4db42a834f657c261aa6a5456/f3cc494fb3484029363a66a3f4358addae622f83,cloudapply0files0conflicts.108публикацииещёпроверить. record108.pyпредварительныйНЕrerunпослеACKиначесброситfalse.
+
+СЛЕДОМ:108publishsource/roads,ACK/CI/phonebothrules/fullS24report,полнаяцена/алиасы/минимумыS24иостальные26/104/40–50ownлибофактическое число,CRUD/гонки/сеть/медианы/15m. Неblindpull/reset/clean/force. HealthyUSBчерезphone_adb.pyнеперезапускать,PCнеактивировать/некликать,телефонтолькоAPK. Конфиг/секреты/DB/privatecapturesнепубликовать. ЦельНЕcomplete.
+<!-- /stage108 -->
+
 <!-- final107 -->
 # Продолжение 0.107 — актуальный проверенный этап
 

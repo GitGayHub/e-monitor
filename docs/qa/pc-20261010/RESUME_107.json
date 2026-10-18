@@ -2,12 +2,53 @@
   "head": "d71b0aa764eea7c657fd851fbd8eed7645d09aa4",
   "appliedSourceLogic": "1792354114",
   "deadlinePriorityEnqueuedObserved": true,
-  "priorityConsumedNextPassNotYetVerified": true,
+  "priorityConsumedNextPassNotYetVerified": false,
   "selectedLogLines": [
     "2026-10-18 20:20:44,633 -   4050 oled -> 8 items via m.ebay.de body_len=763795",
     "2026-10-18 20:20:44,633 -   4050 oled -> 8 items via ebay.de",
     "2026-10-18 20:20:45,052 - 4050_oled_buy: description deadline; resume fresh candidate validation before next catalogue rotation",
     "2026-10-18 20:20:45,052 -   4050 oled: 140 results, 0 verified in fair live slice",
     "2026-10-18 20:20:45,052 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
-  ]
+  ],
+  "consumedCheckpoint": "5fb5fd7fdf17dcd68bd44eaf8ad3f05f04af3e70",
+  "checkpointDbBlobSha": "417aba3bdcb20f66a85ec28bb5dfc1e8722b7b9f",
+  "priorityFirstFreshAttemptVerified": true,
+  "priorityRemovedAfterRealAttempt": true,
+  "sameAsSuccessfulDescriptionOrDelivery": false,
+  "passStartedAt": "2026-10-18T20:27:18+00:00",
+  "firstAttempts": [
+    {
+      "searchKey": "4050_oled_buy|EBAY_DE",
+      "at": "2026-10-18T20:27:25.363289+00:00"
+    },
+    {
+      "searchKey": "pixel_9_pro_xl|EBAY_DE",
+      "at": "2026-10-18T20:27:48.753399+00:00"
+    },
+    {
+      "searchKey": "ray_ban_meta_gen_2|EBAY_DE",
+      "at": "2026-10-18T20:29:14.173537+00:00"
+    },
+    {
+      "searchKey": "samsung_galaxy_s25_edge|EBAY_DE",
+      "at": "2026-10-18T20:30:17.465373+00:00"
+    },
+    {
+      "searchKey": "iphone_17_pro_max|EBAY_DE",
+      "at": "2026-10-18T20:31:10.417045+00:00"
+    },
+    {
+      "searchKey": "redmagic_11_pro_buy|EBAY_DE",
+      "at": "2026-10-18T20:31:43.708203+00:00"
+    },
+    {
+      "searchKey": "redmagic_11_pro_auc|EBAY_DE",
+      "at": "2026-10-18T20:31:53.141258+00:00"
+    },
+    {
+      "searchKey": "redmagic_11s_pro_buy|EBAY_DE",
+      "at": "2026-10-18T20:32:04.190666+00:00"
+    }
+  ],
+  "scope": "Pending4050 search was attempted first in next eligible pass and pending state cleared. This proves scheduling, not a successful description, notification or15minute SLA."
 }
