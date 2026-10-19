@@ -1,3 +1,37 @@
+<!-- stage115 -->
+## Актуальный этап: 0.115 на эмуляторе
+
+Последнее указание пользователя — продолжать на эмуляторе. Физический телефон не использовать. emulator-5580 установлен 0.115; SHA 4587449297a262439eb570cc4ef67a278b852072402d6bbeacee0543ee54c6a4, rules1792399157/History27 прежние114. Все49строк/столбцов сохранены114report→115before→installed→report→verified→UI. QA47active/notify0/workerfalse/autosyncfalse/qa-local/isolated/no secrets; не переноситьQA49вproduction50.
+
+Исправлен LocalStatsEngine: partialitems+error не отбрасываются в verify/build/refill, requestError остаётся; новый основной fetch с общей ошибкой не запускает автоматические повторные refills. StatsViewModel сохраняет ошибки в кэше/переключении и не ставит100% при ошибке. Настоящие фильтры/ownописания обязательны. 374JVM/buildPASS; baseline на установленной114:4теста/3FAIL после успешного parsed-card precondition;115:5instrumentedPASS1.948s, in-memory Room + actual transport/parser/engine + allHTTPintercepted. Ранний malformedfixture безspan ошибочен, не считать baseline. Архив115неперезаписывать.
+
+Живой Ray115 черезUI завершён122334ms: Sofort281.05/Sofort+306.19 дороже225; аукционы403, неzero. 54/59rejections сохранены; фактически видна фотография винтов, диапазон200:54→10, лимит225 неизменён, диапазон сброшен. Новыйreport побайтно сохранён после5instrumented/перезапуска/UI. Прежний114report сохранён при установке. Chrome sameauctionURL доступен,5primary; автокоррекцияmeta→metal, не считать accountnotifications/recommendations за выдачу. 287647964599 own прочитан отдельнойiframeURL:whole Gen2 0RW4012/аксессуары,101bid+6/11bids/5d6h, неBIN/неmedian/неhardwareproof; APKliveinclusion и минимум НЕдоказаны. BROWSER_SEARCH_115/EMULATOR_115/REPORT_115.
+
+Runtime114 ACKtrue strictfingerprint/ce6/normal50/48/LG430; LIVE_LATENCY_114 реальный earlychallengebranch;40/48/oldest1040с в сохранённом срезе, SLA15 не достигнут. НовыхTelegramнет, старые120079–120092/коррекцииНЕдублировать. ПКфонбезактивации. Сначала завершить publication115 source+обеroads/checkpoint и CI новыхHEAD; затем Androidown/аукционы/дешёвыйRay820253, явнаякнопкаотсева, независимыйкаталог26/104/40–50ownлибовесьstock/алиасы/минимумы/CRUDсетьсинхронизация. ОбщаяцельACTIVE/PARTIAL. Не blindpull/reset/clean/force и не publishprivate/config/DB/secrets. Исторические этапы ниже не отменяют этот блок.
+<!-- /stage115 -->
+
+<!-- live114 -->
+## Подтверждение рабочего сервера 0.114
+
+Сервер действительно применил правила 1792399157. Проверка ревизии и полного отпечатка конфигурации прошла; сохранены normal, 50 поисков / 48 включённых и действующие лимиты.
+
+В рабочем журнале подтверждена новая ранняя проверка капчи: `challenge before result wait`. Это подтверждает выполнение исправленного кода, но ещё не доказывает доставку каждого нового объявления за 15 минут. В последнем сохранённом срезе охват — 40 из 48 поисков за 15 минут, самый старый запрос — 1040 секунд. Таймауты загрузки полных описаний по-прежнему замедляют обход. Доказательства — LIVE_LATENCY_114.json и RUNTIME_114.json.
+
+Пользователь снова выбрал эмулятор. Физический телефон не использовать. Общая приёмка остаётся незавершённой. Следующий воспроизводимый дефект APK: последующая ошибка алиаса скрывает уже полученные карточки; сначала проверить тестовый транспорт, затем сохранить карточки вместе с явной ошибкой неполноты. Первая попытка нового теста имела неполный HTML fixture (без обязательного span заголовка); её нельзя считать доказательством ошибки продукта.
+<!-- /live114 -->
+
+<!-- verified114 -->
+## Актуальная проверенная публикация114
+
+Sourcebotc359b819e59f259ea95e0f115d83133276d2cdcd/Android60f28fc53bd34626310e20371f8b48ce3f59c775, roads640622c40b45f02a4b870f1e18adb0db834cc38e/5dff08d748e283833b99c1d7d85eab5c6162e7ba. Cloudapply0/0backup20261019T084832331614Z,после20focusedPASS1.2s/assembleDebugUPTODATEPASS14sс768MB/1worker/SerialGC. ПерваяcheckpointJVM4GBнестартизь-заWindowscommit1455,неcodefailure,логandroid114-checkpoint.log;низкопамятныйповторandroid114-checkpoint-low-memory.logPASS. Не менятьpagefile/неубиватьпроцессыпользователя. Full465PASS78.661s/374/buildPASS71s/32pairedSHAe78363d37603ae5fb972b1416e3d4b8216978f8ee4727f38e69d094a349aeabe сохранены.
+
+СвежийRay114reportFINISHED73899msвсе4site_error/nullprice,неzero/не минимум/неproofнового820253193560liveinclusion. ОдинтоварзапущенчерезUIкарточку. Все49строк/столбцовравны113verified→114before→installed→report. Интернетairplane0/Wifi1/GMT,поэтому08:47вUIUTCправильно. НовыхTelegramнет. ChromeотдельныйPDP820253доступен,НЕsameSERPURL. REPORT_EMULATOR_114/снимокimages114/ray-report. Не повторятьсканыбесконечно.
+
+ACK114=True;последнийruntime1792399157/2026-10-19T10:02:38+00:00,охват40/48/oldest1040втомсрезе. Скоростьпослефиксаещёнепринята. Job39224786792/job117969041760подтверждёнin_progressmonitorloopиз114source,started08:45:51UTC,передожиданиемсверитьactualstate,неcancel/restart. CI1143billingfailureдоrunner,неpay/нерерun. СледомACK1792399157+реальныйлог«challenge before result wait»+первый/последующийохват;pendingruntimeневыдаватьзаACK.
+
+APK114SHA72040af60e754aa6ddfe07c5326f7298f028fc629fe5e0f4667edbb2009a0b78/emulator-5580,rules1792399157/History27;физтелефонНЕчитать/НЕуправлять. Record114.pyНЕrerunповерхсвежегоRayreport:вернётпредварительныефакты. finalize114обновляетMDпослепроверенныхфактов,послеACKневыдаватьстарыецифрызановые. Новыеdocs-onlyheadsполучитьизpublicationrecordsиобновитьcheckpoint. ОбщаяцельACTIVE/PARTIAL26/104,дальшенезависимыйкаталог/алиасы/минимумы/40–50ownлибовесьдоступный,CRUDгонки/синхронизация/сеть/медианы. ПКфонбезактивации,здоровыйADBнеперезапускать,неblindpull/reset/clean/force,неpublishprivate/config/DB/секреты,неповторять120079–120092/коррекции.
+<!-- /verified114 -->
+
 <!-- stage114 -->
 # Продолжение0.114 — быстрее распознавать капчу, только эмулятор
 
