@@ -1,3 +1,15 @@
+<!-- stage111 -->
+# Продолжение 0.111 — очередь алиасов, только эмулятор
+
+ОбщаяцельACTIVE/PARTIAL26товаров/104корзины. ФизическийтелефонНЕчитать/НЕуправлять,остаётся108. Скрытыйemulator-5580APK111/code111/rules1792380843/History27установленссохранениемвсех49исходныхстрок/столбцов,QA14946775-244a-4a7b-adbe-617e8c81a8b7/dirtytrue,notify0/worker=false/auto-sync=false/qa-local/isolated/no secrets. SHA ff9f942c5ca8d498bd49703e47ca7ae8eee307e3b8f0b997fac619abf78e5cdd,архивapp-0.111-debug.apk;неподменятьследующейпересборкой.457Python/374Android/buildPASS,31тотжеfullownrelevanceSHA9074119cfa9d3122c53721ef88ff0fc9cda6bf3a0378e41818371f561d2450f2PythonKotlinPASS;default5входятв374.Pythonfull64.846s/JVMbuild32s. Wakeтолькоэмуляторkey224послеsleep,ADBсервернеперезапускали.
+
+Fix111server:нормальный_discoveryставит_live_alias_rotation,HTMLbatchсохраняетnormal_aliasesдоI/O. ContextSHAtasks/filters/include/exclude/sellers,рынок+searchIDscope,suffixendingотдельно. Nextindex/timeтолько,неrawquery/цены/описания. При«all»interleaveBUY/AUCодногоaliasпередследующим,чтобыаукционынеждаливсехпокупок. Послеошибкиживойbatchостанавливается(небольшеобращений),следующийпейсинг180с;бюджеты20/12+8/квоты/ownописания/стадии/дедупсохранены. Истекшийбюджетнепродвигаетнесделанныйзапрос. Статистикаexplicitpop_liveflagсохраняетполныйunion/порядок. Частичныйunionнеполный/неzero/немедиана. History27небампался:семантикафильтровнеизменна.
+
+12целевыхтестовдоfix1105FAIL+1ERROR(budget-before-I/O),послеPASS,full457PASS.Исходные3970нетронуты. Интеграцияactualnormal_loopпроверяетownописаниеобъявленияизвторогоaliasпередmocksend;никакихвнешнихзапросовилиTelegram. ALIAS_111контролируемое3процесса20секfakeprovider:alias0таймаут,alias1/2stock,все3достигнуты;неpasscomplete. ALIAS_110старый3разаalias0. ЭтоНЕживойSLA/доставка.
+
+СЛЕДОМ:publish111source/обеroads+MD(ещёнеподтверждён),runtimeACK1792380843/cursorреальныйcheckpoint/логиlive alias task/CI. Затемполноценноеускорениекаденсабезпотериалиасов/аукционов;S24правильный1TB121bid+6.19включениеliveНЕдоказано(110UIsite_error),52S24алиасы/минимумы/цены/остальные26/104/40–50ownлибофактчисло,CRUDгонки/сеть/медианы. Непересылать120079–120089/коррекции120041/120081,кнопкаSearchLINKS_105доказана,новых111сообщенийнет. 110ACKtruece6/fingerprint/normal50/48/LG430;111ACKнепроверен. 1105instrumentedPASSнепереноситьавтоматическина111. CI110billingдоrunner,неплатить/неrerun. Живойmonitorнеcancel/restart. ПКфон/никакойактивацииокон. rawprivate/config/secret/DBнеpublish. Никакихblindpull/reset/clean/force. Предварительныйrecord111послеfinalACKНЕrerun. Последний110docsroads984e16167880beca48a014b03b5867b1880c63ff/366b3e2030bf1a3e5bf3c8a6e481f5542855ccad,cloudcheck0/0.
+<!-- /stage111 -->
+
 <!-- final110 -->
 # Актуальный этап 0.110: эмулятор, без телефона
 
