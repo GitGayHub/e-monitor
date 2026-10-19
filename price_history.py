@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 28  # Included spare accessories are not a device swap or repair.
+HISTORY_VERSION = 29  # Model-led cover bundles and explicitly denied display-fault lists.
 _DB_LOCK = threading.Lock()
 
 

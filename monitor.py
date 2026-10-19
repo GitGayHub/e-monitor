@@ -2652,7 +2652,7 @@ def _strip_negated_condition_terms(text_norm):
     text_norm = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", text_norm)
     # 800799315029: a German coordinated denial must cover every noun,
     # without swallowing an asserted defect after "aber" or a new sentence.
-    denied_de = r"(?:(?:sonstige[nr]?|sichtbare[nr]?|erkennbare[nr]?|leichte[nr]?)\s+)?(?:gebrauchsspuren|kratzer|flecken|dellen|risse|maengel|schaeden|beschaedigungen)"
+    denied_de = r"(?:(?:sonstige[nr]?|sichtbare[nr]?|erkennbare[nr]?|leichte[nr]?|auffaellige[nr]?)\s+)?(?:gebrauchsspuren|kratzer|flecken|dellen|risse|maengel|schaeden|beschaedigungen|displayfehler|bildschirmfehler|pixelfehler)"
     text_norm = re.sub(rf"(?<!nicht )(?<!not )\b(?:kein(?:e|en|er)?|keinerlei|ohne)\s+{denied_de}(?:\s*(?:,\s*(?:(?:und|oder)\s+)?|(?:und|oder)\s+){denied_de})*\b(?!\s*(?:,|und\b|oder\b))", " ", text_norm)
     text = _negated_condition_pattern().sub(' ',text_norm)
     # Samsung's cooling feature prevents burn-in; it does not admit an existing
@@ -2720,8 +2720,17 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
             "schutzglas", "displayfolie", "panzerfolie", "hardcover",
             "sto?fest", "stossfest", "shockproof", "bumper",
         )
+        bundle_separator = re.search(
+            r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|with|bundle)\b|(?<=\s)[+&](?=\s)", title_norm)
+        model_bundle = (_title_leads_with_phone_model(title_norm) and bundle_separator
+                        and not any(_has_accessory_term(title_norm[:bundle_separator.start()], w)
+                                    for w in protective_acc_words))
         strong_phone_hint = (
             _has_phone_storage(title_norm)
+            # A model-led phone with an explicit bundle needs no storage in
+            # its title. Keep cover-first and damaged-encoding accessory terms
+            # before the separator blocked (287642147329 / RedMagic regression).
+            or model_bundle
             or any(_has_term(title_norm, w) for w in (
                 "smartphone", "handy", "phone", "5g", "gaming phone",
                 "ohne simlock", "dual sim", "single sim", "global version",

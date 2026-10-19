@@ -63,6 +63,7 @@ def main():
         modules.append("test_browser_challenge_wait")
         modules.append("test_spare_accessory_exchange")
         modules.append("test_html_seller_type")
+        modules.append("test_phone_cover_negation")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
