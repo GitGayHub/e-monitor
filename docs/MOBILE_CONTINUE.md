@@ -1,3 +1,19 @@
+<!-- stage114 -->
+# Продолжение0.114 — быстрее распознавать капчу, только эмулятор
+
+Физический телефон НЕчитать/НЕуправлять, остаётся108. Скрытыйemulator-5580 EMonitor_QA_API36 Android16 установлен0.114/code114/rules1792399157/History27/SHA72040af60e754aa6ddfe07c5326f7298f028fc629fe5e0f4667edbb2009a0b78. Все49исходныхстрок/столбцов и прежнийживойreport сохранены113verified→114before→114installed. QA14946775-244a-4a7b-adbe-617e8c81a8b7/dirtytrue,notify0/worker=false/autoSync=false/qa-local/isolated/no secrets. Не переноситьQA49вproduction50.
+
+Утромпослепаузыэмуляторбылвыключен: процесса/qemuнет,ADBdaemonнеработал,обычнаякомандаавтозапустилаdaemon,emulatorнеfound. Не«offlineтелефон»! ЗапущенофициальныйSDKEMonitor_QA_API36-no-window/noaudio/nosnapshot/gpuswiftshader/2GB/2cores/BelowNormal,PID36844,boot1,данныесохранены. Новый114beforeкорректныйпослебута(раннийнеудачныйbackupпапкусоздал,потомполныйbackupперезаписал). ЗдоровыйADBнеперезапускали,только-semulator-5580.
+
+114serverfix: _do_fetch_playwright проверяетchallengeсразупослеgotoдоселекторовcookies/settling/cardwait8s,закрываетbrowser/blocked;обычныйLoadingждёт,позднийchallengeловится. Cookiesis_visibleпередclick,breakпослепринятия. Никакихглобальныхпауза/срезовописания/снятияквоты/потериалias. Внастоящемстаромлогедокапчи3интервала12.053/12.052/12.052с,этоtask→classification,НЕlisting→delivery.8новыхтестов,20focusedPASS,full465PythonPASS;374Android/buildPASS71s,32samefullownSHAe78363d37603ae5fb972b1416e3d4b8216978f8ee4727f38e69d094a349aeabePythonKotlinPASS. Старые3970нетронуты,History27небампался(фильтры/ценыпрежние). Неrerunversion114.py:поменяетstampпослесборки.
+
+Ray820253193560свежийChrome19Oct08:31:17UTC:219.93+4.90=224.83/Sofort+,0reviews,Kiel,двефотоцелыхочков+футляр. Полныйowniframe/отдельнаяownURL63символа=название+точка. Никакоговыдуманногодефекта/гарантииисправности/подлинности. НормализованныйDOMвводprivate-paired-browser113.json добавленк31неизменнымS24,32/32PythonKotlinPASS;этоНЕliveHTTP/parser/price/notification/minimumproof.41Rayстраница/40ownсуммарно10+19Oct,не40свежихсегодня. BROWSER_RAY_113. Chrome3/user214035830наэтомPDP,каталожныйbrowserhandlecatalogueBrowser113/tabcatalogueTab113. Физтелефоннетрогать.
+
+СЛЕДОМ: publish114source/обеroads+MD,cloudapply/изолированныеchecks;runtimeACK1792399157/логи«challenge before result wait»/CIдляновыхHEAD. Последнийпроверенныйстарыйruntime11108:26UTC42/48oldest1027с,job39221460923/job117959021389 былin_progressmonitorloop08:31. Старыеjob39195…исторические. Неcancel/restart;передожиданиемперепроверитьactualjob. НоваяскоростьпокаНЕизмерена,15минНЕclaim. Record114послефинальногоACKНЕrerun. ДальшеживойRayreportна114/повторпослевосстановлениясети,весьнезависимыйкаталог26/104/алиасы/минимумы/40–50ownлибовесьдоступный,CRUDгонки/синхронизация/медианы/сеть. ОбщаяцельACTIVE/PARTIAL.
+
+НовыхTelegramнет,НЕдублировать120079–120092/коррекции120041/120081. NativeПК4старых107/108пруфесть,новых114неclaim. PCтолькофонбезактивацииокон. CI113billingдоrunner,неpay/нерерun. Source113bcd6c83c…/924168fd…,roadsфинал8baf829c0400fae75407e950d1ecc6447415a281/995777f388e179ddfda9b523d1f0d1ec3f022ab0;последнийcloudapply0/0backup20261019T040658535816Z/12focused+buildUPTODATEPASS. Неblindpull/reset/clean/force,неpublishproductionconfig/DB/privatebodies/секреты.
+<!-- /stage114 -->
+
 <!-- published113 -->
 ## Подтверждённая публикация0.113
 
