@@ -1880,12 +1880,16 @@ def _phone_implicit_bundle_confirmed(title, description):
     if (_title_leads_with_phone_model(first) and _has_phone_storage(first)
             and not any(_has_accessory_term(first, word) for word in PHONE_HARD_PART_WORDS + PHONE_HARD_ACCESSORY_WORDS)):
         return True
-    phone = r"(?:smartphone|handy|telefon|phone|iphone|(?:samsung\s+)?(?:galaxy\s+)?s\d{2}|(?:google\s+)?pixel\s+\d)"
+    phone = r"(?:smartphone|handy|telefon|phone|(?:apple\s+)?iphone(?:\s*\d{1,2})?|(?:samsung\s+)?(?:galaxy\s+)?s\d{2}|(?:google\s+)?pixel\s+\d|(?:zte\s+)?nubia\s+z\d{2}s?|(?:(?:zte|nubia)\s+)?red\s*magic\s*\d{1,2}s?|(?:oneplus|xiaomi)\s*\d{1,2})"
     # A later condition sentence may explicitly describe the offered handset;
     # it need not start the body with "I sell" (800799315029, Stylus feature).
     if re.search(rf"\b(?:das|dieses|mein)\s+{phone}\s+wurde\s+(?:zwar\s+)?(?:genutzt|benutzt)\b", own):
         return True
-    return bool(re.search(rf"\b(?:verkaufe|versteigere|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|komplett\w*|complete|gebraucht\w*|used|nahezu|neuwertig\w*|apple|samsung|google)\s+){{0,8}}{phone}\b", own))
+    adjective = r"(?:top|topzustand|sehr|gut(?:e|en|er|es)?|perfekt(?:e|en|er|es)?|gepflegt(?:e|en|er|es)?|original(?:e|en|er|es)?|funktionierend(?:e|en|er|es)?|excellent|great|fully|working|very|good)"
+    # The sold object is still the handset. Do not read a case/box noun as a
+    # condition adjective or an accessory after the model as the whole device.
+    tail_part = r"(?!\s+(?:(?:ultra|edge|pro|max|plus|xl|mini|[0-9]{1,4}\s*(?:gb|tb)?)\s+)*(?:case|cover|huelle|schutzhuelle|stylus|s[ -]?pen|ersatzteile?|display|bildschirm)\b)"
+    return bool(re.search(rf"\b(?:verkaufe|versteigere|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|komplett\w*|complete|gebraucht\w*|used|nahezu|neuwertig\w*|apple|samsung|google|{adjective})\s+){{0,8}}{phone}\b{tail_part}", own))
 
 
 def _phone_description_purpose_confirmed(description):

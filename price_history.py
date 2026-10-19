@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 25  # Completed manufacturer repair cannot seed device medians.
+HISTORY_VERSION = 26  # Sales-object checks keep separate cases out of device medians.
 _DB_LOCK = threading.Lock()
 
 
@@ -215,7 +215,7 @@ def is_outlier(price, search_id, filter_signature=None):
     """Detect suspiciously low prices that are likely errors or scams.
     
     Uses a dynamic threshold based on the 7-day median:
-    - If price < 40% of median в†’ outlier (likely scam/error/wrong item)
+    - If price < 40% of median РІвЂ вЂ™ outlier (likely scam/error/wrong item)
     - Requires at least 3 snapshots to have confidence in the median
     """
     median = get_median_7d(search_id, filter_signature)
