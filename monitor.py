@@ -1855,6 +1855,13 @@ def _phone_implicit_bundle_title(title):
     # do not turn that established path into this new ambiguous bare suffix.
     if re.search(r"\b(?:neu|new|sealed|versiegelt|ovp)\s+(?:(?:original|originales)\s+)?(?:google|samsung|apple|oneplus)\s+(?:case|huelle)\s*$", title):
         return title
+    # A model-led handset can advertise maximum battery health. Only remove
+    # that qualified phrase, never another battery/part in the title. As with
+    # an implicit case bundle, the seller must explicitly confirm the handset.
+    # "Pro Max Batterie" names the model of a spare battery, not its health.
+    health = re.sub(r"(?<!pro )\bmax(?:imal(?:e|er|en|es)?)?\s*\.?\s*(?:akku|batterie|battery)\b", " ", title)
+    if health != title:
+        return health
     part = re.search(r"\b(?:stylus|s[ -]?pen)\b|\b(?:huelle|case|cover)\s*$", title)
     separator = re.search(r"\b(?:mit|und|and|inkl(?:usive)?|incl(?:uded|uding)?|ink|with|bundle)\b|(?<=\s)[+&](?=\s)", title)
     if separator and ((part and separator.start() < part.start()) or re.search(r"\bzubehoer(?:paket|bundle)\s*$",title)):
@@ -1888,8 +1895,8 @@ def _phone_implicit_bundle_confirmed(title, description):
     adjective = r"(?:top|topzustand|sehr|gut(?:e|en|er|es)?|perfekt(?:e|en|er|es)?|gepflegt(?:e|en|er|es)?|original(?:e|en|er|es)?|funktionierend(?:e|en|er|es)?|excellent|great|fully|working|very|good)"
     # The sold object is still the handset. Do not read a case/box noun as a
     # condition adjective or an accessory after the model as the whole device.
-    tail_part = r"(?!\s+(?:(?:ultra|edge|pro|max|plus|xl|mini|[0-9]{1,4}\s*(?:gb|tb)?)\s+)*(?:case|cover|huelle|schutzhuelle|stylus|s[ -]?pen|ersatzteile?|display|bildschirm)\b)"
-    return bool(re.search(rf"\b(?:verkaufe|versteigere|verkauft\s+wird|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|komplett\w*|complete|gebraucht\w*|used|nahezu|neuwertig\w*|apple|samsung|google|{adjective})\s+){{0,8}}{phone}\b{tail_part}", own))
+    tail_part = r"(?!\s+(?:(?:ultra|edge|pro|max|plus|xl|mini|[0-9]{1,4}\s*(?:gb|tb)?)\s+)*(?:case|cover|huelle|schutzhuelle|stylus|s[ -]?pen|ersatzteile?|display|bildschirm|akku|batterie|battery|ladekabel|kabel)\b)"
+    return bool(re.search(rf"\b(?:verkaufe|versteigere|verkauft\s+wird|biete|selling|sell)\s+(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|my|a|the|das|dieses|vollstaendig\w*|komplett\w*|complete|gebraucht\w*|used|nahezu|neuwertig\w*|apple|samsung|google|{adjective})\s+){{0,8}}{phone}\b{tail_part}", own))
 
 
 def _phone_description_purpose_confirmed(description):
