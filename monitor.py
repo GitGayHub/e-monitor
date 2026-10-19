@@ -7392,6 +7392,14 @@ def _do_fetch_playwright(url, query=""):
                 if MonitorPassBudget.exhausted():
                     return [], "pass_deferred"
                 page.goto(plan["url"], wait_until=plan["wait_until"], timeout=MonitorPassBudget.milliseconds(35000))
+                # A recognised challenge cannot render result cards. Stop before
+                # consent clicks, settling and the eight-second selector wait.
+                # Ordinary loading pages still follow the full rendering path.
+                if _is_challenge_html(page.content(), page.url):
+                    logger.warning("Playwright challenge before result wait for '%s'", query)
+                    browser.close()
+                    browser = None
+                    return [], "blocked"
                 page.wait_for_timeout(MonitorPassBudget.milliseconds(plan["settle"]))
                 # dismiss cookie banner if present
                 for sel in (
@@ -7400,8 +7408,12 @@ def _do_fetch_playwright(url, query=""):
                     "#consent-page .btn-primary",
                 ):
                     try:
-                        page.locator(sel).first.click(timeout=MonitorPassBudget.milliseconds(1200))
+                        button = page.locator(sel).first
+                        if not button.is_visible():
+                            continue
+                        button.click(timeout=MonitorPassBudget.milliseconds(1200))
                         page.wait_for_timeout(MonitorPassBudget.milliseconds(400))
+                        break
                     except Exception:
                         pass
                 # Wait for result cards when SPA paints late (common on auction SERP).
