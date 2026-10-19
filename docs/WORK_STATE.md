@@ -1,3 +1,17 @@
+<!-- stage117 -->
+## Текущий этап: 0.117 на эмуляторе
+
+Последнее указание — эмулятор; физический телефон НЕчитать/НЕиспользовать. emulator-5580 установлен0.117/SHAa15dcce13605b61dc57aafd2f9cc329181c22d6b1d0410409f187825ef52bc13/rules1792406732/History28. Все49строк/столбцов неизменны115UI→116before→installed→report→117before→installed→verified;47active/notify0/workerfalse/autosyncfalse/qa-local/isolated/no secrets. Старый116report75480msпобайтносохранён, неclaimlive117. Архивы116SHA9be6b85621b5806f3b977a64f94f9f0767756b760b0b29ee933115d7d28bbb34и117раздельные;неперезаписывать.
+
+116fixWebView:monotonicdeadline,settlemin(nominal,remaining-1200),прежние6сек/полноеownобязательны. ActualWebViewbaseline1152tests/1FAIL;1162PASS;1172PASS10.437s. Динамическийownсохраняется. ЯвнаякнопкаотсевапроверенаactualUI/Composeошибкаостаётся. Живой116Ray820253 теперь224.83вSofort+,owniframeпрочитанactualAndroidparser+Pythonaccepted;ошибкаpartialиauc403остаются. НеmatchedA/Bspeedclaim.
+
+Новаяручнаяошибка327406280485wholeGen2+3sparelenses:обаязыкаотказывали«дефект/ремонт»из-заTauschen. 117исправляеттолькоявныйincludedspareaccessorycontext;defekt/deviceexchange/displayrepairнеослаблены. Shared10cases,2testметода;baselinePython8subFAIL/Kotlin2FAIL+private33oneactualdisagreement. После467PythonPASS65.465s/376JVM+buildPASS58s/33samefullownSHA cc87d1e8e52926ef8462e8a721925a14091698859945d62bfd27d8e08eb345ca PASSобеими;32старыхunchanged. 9instrumented117PASS:Web2/Partial5/explicitbutton1/ARTspares1. Исходные3970неизменны. Историюобязательно28обоим(semanticschanged),ничегонеудалятьизDB.
+
+ChromeпятьprimaryRayaucownпрочитаны:287647964599101+6;820231639258251+6.19;327406280485300+4.9;227570442261299+6.19;407295185379399+0refurbishedstockphotos/brandplaceholder123456789. НеBIN/немедиана/неhardwareproof. 46distinct/45ownкумулятивно10+19Oct,невсёсегодня. Только327новыйпарныйinput,остальныеmanualnotfullpaired. REPORT_117/BROWSER_RAY_117/EMULATOR_117/REPLAY_117/TIMING_116.
+
+СЛЕДОМ завершитьpublication117source+обеroads/checkpoint/CI/runtimeACK1792406732,неrerunversion117.py. Новыйlive117неclaim. ЗатемAndroidauc403иsameURLChrome,весьнезависимыйкаталог26/104/алиасы/минимумы/40–50ownлибовесьstock/CRUDсетьсинхронизация/latencyдо15мин. ОбщаяцельACTIVE/PARTIAL. Рабочие50/48/normal/revisionce6/LG430/recipient/seen/bansсохранить;QA49несинкать. НовыхTelegramнет,120079–120092/коррекцииНЕдублировать. ПКфонбезактивации. CIbillingдоrunnerнеpay/нерерun. ЗдоровыйADBнерестартовать. Неblindpull/reset/clean/force,неpublishprivate/config/DB/secrets.
+<!-- /stage117 -->
+
 <!-- published115 -->
 ## Проверенная публикация 0.115
 
