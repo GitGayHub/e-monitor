@@ -1,3 +1,17 @@
+<!-- final110 -->
+# Актуальный этап 0.110: эмулятор, без телефона
+
+Общая цельACTIVE/PARTIAL,26товаров/104корзины не завершены. Код110source `36fb0875f0ddfc2bee469358ccb546037cc55577` / `6e8e50041b3270cc8749ee8ba6648877d6d62885`, roads `cb6941b06ca5f8e3faed9cfaa0a79af68eeabbcb` / `8ad3179ce58eff2753f4d1bd1d179d8944106ec5`. Послеcleanapply0/0Pythonfocused2/defaultAndroid5/buildPASS.445Python/374AndroidJVM+31pairedownPASS, **ещё5instrumentedAndroid16PASS12.872с**. ТестовыйAPK SHA99042d87fd82efa4a048e66644d08530ccdba8c861c037325a0236ff4c1647dbсверенсdevice; mainAPK SHA69a647199352cb8004b3a5b9175349cf2074866298198f18bf1bd7252ab9d969 не пересобирался/не переустанавливался послеосновнойустановки. Phys остаётся108, НЕчитать/НЕуправлять.
+
+Свежий110S24report98347msвсе4site_error/nullprice,НЕempty,НЕминимум. Репортсохранён и побайтнонеизменёнпосле5instrumented; все49исходныхстрок/столбцов равны before→110installed→report→instrumented, QA14946775-244a-4a7b-adbe-617e8c81a8b7/dirtytrue/notify0/worker=false/auto-sync=false/qa-local/isolated/no secrets. Не переноситьQA49вproduction50. UIнаОбзоре110, старыйcachedruntime/404 толькоизQAизоляции.
+
+ВыключеннаяпараLogitech:copy2disabled/65→66обеимстрокам/IDflagsостальноесохранены/cleanupчерезUIдоказаныUI_DISABLED_110. Полныйproductionprice→Telegramне проверенэтим. Fix110900022389178:max.Batterieцелыйphone,109wrongaccessoryвоспроизведён,110требуетownhandset;RAM8 всёещёотказmodel/spec.24sharedcases1real23synthetic×4,History27,3970не менялись. ПовторноеChromeчтение900не увеличивает52. ПовторноChrome860058477668 полныйown:целый1TB12RAM/OVP,стараяHülleдляпересылки,**121bid+6.19/21bids/6d13h**вместопрежних117;изменениецены,нерасхождение,liveinclusionэмуляторомНЕподтверждён. Точныевремячтенияне записаны,не выдумывать.
+
+110runtimeACK=True,фактическиеrules1792379571/2026-10-19T03:21:18+00:00,normal50/48/ce6/LG430 сохранены. 110ACKподтверждён strict fingerprint. НовогоTelegram110нет; старые120079–120089/коррекции120041/120081НЕдублировать. КнопкиSearchLINKS_105 ужедоказаны;native120089покаНЕ. CI1103billingfailureдоrunner,неплатить/неrerun. Исторический39190286278success03:08:12,текущий39192618762/job117870335111былподтверждёнin_progressmonitorloop;неотменять/нерестартовать. Старыйruntimeсрез не равен текущейwallclockfreshness,host~114секвпередиGitHub.
+
+Дальше: латентность—20секдопendingsoonзапросы/очередь иполноевыполнениеалиасов. Голоданиепозднихалиасов ВОСПРОИЗВЕДЕНО контролируемымnormal_discovery+realaliasexpansion+HTMLbatch: первыйalias20secdeadline,3новыхпроходавсеобращаютсятолькокнему,2/3невызываются; sourceproviderподменён,этоНЕживыезадержки,ALIAS_110/probe_alias110.py. Нуженсправедливыйpersistentaliascursorсконтекстомsettings/queries/market/format+внешнимпейсингом180с; идеяещёНЕреализована. Не выдаватьчастичнообойдённыеалиасы/форматызаполнуюпопуляциюистории/zero. Статистикуполногообъединениянеурезать. Не лечитьскоростьвыдуманнымуспехом/снятиемописаний/удвоениемнагрузки. Затемвсе52S24алиасы/минимумы/цены,остальные26/104/40–50ownлибофактическое число,CRUDгонки/сеть/медианы. REPORT_110/UI_DISABLED_110/EMULATOR_110/RUNTIME_110/CI_110/INSTRUMENTED_110/PUBLICATION_110/ALIAS_110. Приватныеbackups/raw/dbтолькоauditclosure094,неpublish. Предварительныйrecord110НЕrerunпослеfinalACK. Финализаторподдерживаетактуальноеstatus110нонеперетиратьбудущиеновыепроверкистарымтекстом. ПКтолькофон,неactivate;cloudсверять/3wayбезblindpull/reset/clean/force.
+<!-- /final110 -->
+
 <!-- stage110 -->
 # Продолжение 0.110 — 19 октября, только эмулятор
 
