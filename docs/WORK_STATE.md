@@ -1,3 +1,21 @@
+<!-- final112 -->
+# Текущее продолжение: 0.112, только эмулятор
+
+Общая приёмка26товаров/104корзин PARTIAL, цель active. Физический телефон НЕ читать/НЕ управлять, остаётся108. Скрытыйemulator-5580 установлен0.112/code112/SHAc60d8823d419f0954f9675949d217a721cf45005ca6dcabe5624426f1183ef5c; правила1792380843/History27 прежние111. Все49исходныхстрок/столбцов и старыйживойreport сохранены. QA14946775-244a-4a7b-adbe-617e8c81a8b7/dirtytrue,notify0/worker=false/auto-sync=false/qa-local/isolated/no secrets. Не переноситьQA49вproduction50.
+
+111 исправляет голодание алиасов: persisted normal_aliases доI/O, контекстусловий, interleavebuy/auction, pacing180с, бюджеты20/12+8/обязательныеown/stages/dedupсохранены; частичныйunion неzero/неполнаямедиана. 12целевых/457Python/374JVM/buildPASS,31samefullownPythonKotlinPASS;3970нетронуты. Ещё5реальныхinstrumentedAndroid16PASS13.019s111, SHAтестовогоAPKb2d0515a8f073f6283d0a74841cc2280b11c5d5471f2ec95f3cb20b84ee05df2. MAIN111SHAff9f942c5ca8d498bd49703e47ca7ae8eee307e3b8f0b997fac619abf78e5cdd. Не приписывать эти5/31верcии112.
+
+111 runtimeACK TRUE strictconfigfingerprint/revisionce6/normal50/48/LG430, updatedAt2026-10-19T03:47:15+00:00. DBimmutableblobSHA/LIVE_ALIAS_111 подтверждает реальныеcursor/logs; движениеодногоcursorвдвухпрогонах ещёпроверить. Охват41/48,oldest1042сек втомсрезе; SLA15НЕ выполнен. Текущийjob39195012534/job117876662733 былin_progressmonitorloop; неcancel/restart, свежийстатусперепроверять.
+
+112: реальныйofflineallformats в111 ошибочно показывалчастьвыдачи; исправленприоритетобщейошибки. На112тотжесценарий«Нет сети»,falsezeroнет,374JVM/buildPASS44s. Airplane0/Wifi1 восстановлены. Получениеживыхкарточекпослевосстановления ещёнепроверено. Уведомленийнепосылали. APKархивы111/112раздельные, не подменятьSHAпересборкой.
+
+NativeПКAX120089–120092 теперьподтвержденыстрогосfeed/title/price/shipping/total/seller,это107/108,не111/112. НЕдублировать120079–120092/коррекции120041/120081. КнопкаSearchLINKS_105 доказана;новыхкнопок112неclaim. CI1113billingfailдоrunner,неплатить/нерерun. СтарыйQAОбзор404/cached9Oct—изоляция,неproduction.
+
+111published sourcebot00780ad7c27327310b5fd6fd2394ac94f15613f7/android8159fa5916a12a70398bf80a91e66287aac01e59,roads524ad2316ea7457f09dcd493c8d477738b5565fe/4987dd9bd3b0afd2c7eec273cfc5bf2cd61cf7a9. Cloudapply0/0,посленего12focused/default5/buildPASS.112иfinal111docs ЕЩЁопубликовать/обновитьcheckpoint, получитьновыекоммитыизpublicationrecords. Предварительныеrecord111/110НЕrerun:сбросятACK. Неblindpull/reset/clean/force,rawprivate/DB/config/секретынепубликовать. ПКфон,неактивироватьокна. ADBофициальныйwrapperс -semulator-5580,здоровыйсервернерестартовать.
+
+Следом: живойcursorследующийcheckpoint икаденс безпотериалias/endingauctions; offline→onlineперепроверкасменазапроса; независимыйeBayкаталог/алиасы/минимумы(52S24ownнеполнаяприёмка),остальные26/104/40–50ownлибофактическоечисло,CRUDгонки/синхронизация/медианы. S24correct1TB121bid+6.19liveinclusionНЕдоказан,последний110reportsite_error. REPORT_111/112,INSTRUMENTED_111,TELEGRAM_NATIVE_111,LIVE_ALIAS_111,EMULATOR_112.
+<!-- /final112 -->
+
 <!-- stage111 -->
 # Продолжение 0.111 — очередь алиасов, только эмулятор
 
