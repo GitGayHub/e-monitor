@@ -1,3 +1,15 @@
+<!-- published119 -->
+## Проверенная публикация 0.119
+
+Код опубликован: [Python](https://github.com/GitGayHub/e-monitor/commit/8ccc7be7aef3c5687da05c353aa1f3010adba0d8) и [Android](https://github.com/GitGayHub/e-monitor-android/commit/e9d06dd89d1aa90f3ea9783f96e06029ea1ff452). Дорожные ветки: `c061e7394865a4a39271a359ab21390c9eb3535f` / `baf9873fd96d5e66db0262b8530d72592eb60aff`. Синхронизация0изменений/0конфликтов, backup`20261019T174054649982Z`. После неё21изолированный Pythonтест и12целевых Androidтестов+assembleDebug UP-TO-DATE прошли; APKосталсяSHA`5e2c3e9319635a7cac28b6d41fa0a4ee6ea130ffd79bed2b950fd04cc3c657de`.
+
+Дополнительно вручную прочитаны все3описания аукционов одного точного GooglePixel9ProXLзапроса вChrome. Ставки+доставка118.19/376.19/506.19€, это не цены покупки. Три одинаковых подготовленных нормализованных полных текста прошли Python/Kotlin, SHA`9abdbb1db20740236978e43f781e36637ee159a7141a4d8902ae594316135422`. Это не rawAPIcaptures, не транспортная проверка и не право на уведомление; actualAndroidliveinclusionне доказан. Вкупе сSofort336845753191вэтойфазе4собственныхописания, не полная приёмка Pixel/всехалиасов/минимумов. BROWSER_PIXEL_119/PIXEL_AUCTIONS_REPLAY_119.
+
+Применение сервером правил1792430979: **подтверждено**. Фактический срез2026-10-19T17:39:47+00:00, runtimeправила1792430979; охват39/48за15мин, самый старый1152с. Это не задержка объявления доTelegram. Последнийживойjob39292530713 прочитан без перезапуска. Runtime119ACKпроверять заново при обновлении, metadata119не является ACK.
+
+ТриCIдляsource/road119не получилиrunnerиз-за billing/spending limit; тесты GitHubне запускались. CI_119содержит ссылки и аннотации; не rerun/не менять оплату. Локальные469Python/379JVM/11Android/33старыхprepared+3новыхprepared подтверждены отдельно. Общая цельACTIVE/PARTIAL; телефон не использовался, новыхTelegramнет. Затем Androidаукционы/устойчивыйHTMLдоступ, весь независимыйкаталог26/104/алиасы/минимумы/синхронизация/реальнаядоставкадо15мин.
+<!-- /published119 -->
+
 <!-- stage119 -->
 ## Продолжение на эмуляторе: 0.119
 
@@ -7,7 +19,7 @@
 
 Промежуточная118 не sourcepublished:377JVM/468Python/11ART, живойPixel131368ms/Sofort439.99/Sofort+416.19/auc403. Этотreport сохранён через119установку/11тестов. Живой119Pixelпрогон37548ms:4корзиныSiteUnavailable/nullprice. ПодлинныйWebViewsnapshotSORRY/Somethingwentwrong;actualURLсProXLподтверждён. Неzero/неminimum. Все50строк/все столбцы и119reportсохраненычерезforce-stop/restart; reportоткрытчерезhistory. Независимо Chrome336845753191 fullown243chars/410+6.19=416.19/87%battery/wholedevice/no disclosedrepair/above310, совпало сAndroid118. Не hardwaretest/не fullpaired newinput/не minimumproof.
 
-СЛЕДОМ: публикация119source+обеroads/MD, cloudcheckapply и isolatedchecks; runtimeACK1792430979 и фактический status/jobs. Затем Androidаукционы/sameURLChrome, весь каталог26/104/алиасы/40–50ownлибофактическийstock/минимумы/синхронизация/доставкадо15мин. Общая цель ACTIVE/PARTIAL. Серверnormal/50/48/revisionce6/LG430/recipient/seen/bans сохранить. НовогоTelegramнет,120079–120092и коррекции не дублировать. CIbillingизвестен, не pay/неrerun. ПК скрыто/без активации окон. ЗдоровыйADBне рестартовать. Не blindpull/reset/clean/force, не publishprivate/DB/config/secrets. version119.py и record119.py НЕперезапускать поверх завершающих новых фактов.
+Публикация иcheckpoint завершены вблокевыше; runtimeACK1792430979 подтверждён; далее независимая приёмка. ТриChromeauctionownи3preparedрелевантностиPASSдобавлены; actualliveinclusionне доказан. Затем Androidаукционы/sameURLChrome, весь каталог26/104/алиасы/40–50ownлибофактическийstock/минимумы/синхронизация/доставкадо15мин. Общая цель ACTIVE/PARTIAL. Серверnormal/50/48/revisionce6/LG430/recipient/seen/bans сохранить. НовогоTelegramнет,120079–120092и коррекции не дублировать. CIbillingизвестен, не pay/неrerun. ПК скрыто/без активации окон. ЗдоровыйADBне рестартовать. Не blindpull/reset/clean/force, не publishprivate/DB/config/secrets. version119.py и record119.py НЕперезапускать поверх завершающих новых фактов.
 <!-- /stage119 -->
 
 <!-- published117 -->
