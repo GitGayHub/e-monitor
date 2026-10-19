@@ -1,3 +1,23 @@
+<!-- final109 -->
+# Актуальное продолжение 0.109 — только эмулятор
+
+Пользователь просит продолжать на эмуляторе. Физический телефон не читать и не использовать до нового разрешения. Скрытый Android16 EMonitor_QA_API36 / emulator-5580, APK0.109/code109/rules1792377485/History26, SHA a06ad8ef8c14ea742390cbef0d44dc8b650f606ed61324114093a70fd96c1785. Финальный физический телефон остаётся0.108; его не трогали.
+
+109 код опубликован source bot84b1455c5ecc56b2fdf6e01b7ba43033772ce971 / Android6c19f3ba4560476b27e1342fae3a0ae50ae9ce48, roads3575e61249e5e94d92ff4ef51c435af553aad800 / feae594eb568dc882a28326b94fc17b835f76d5e. Cloud apply 0files/0conflicts, checkpoint Python focused1/default Android5/buildPASS. Основной набор444Python/373Android/buildPASS, одинаковые31полныхown input вPython/Kotlin PASS; default5 входят в373, не378. 3970 не менялись.
+
+Исправлен реальный S24Ultra1TB+case860058477668: «Verkaufe hier ein Top Samsung…» ошибочно считалось аксессуаром. Правило объекта продажи обобщено, case-only/parts остаются отказом. 28коротких случаев×4, History26. Собственное описание независимо прочитано вChrome; прежние117+6.19—bid, не покупка и не свежая цена. Ручной S24счёт52own, не весь каталог.
+
+Эмуляторный S24 отчёт194368мс ЗАВЕРШИЛСЯ С HTTP403 во всех4корзинах. Цены489/458/262.19bid/415bid не подтверждают минимум. Live inclusion исправленного1TB НЕдоказано. Не повторять бесконечные запросы, не превращать403вzero. Старый cachedRuntime9Oct/404 вQA Обзоре относится кqa-local/isolated, а неproduction.
+
+Через UI доказаны copy17PM→QA18PM (алиасы/920/2500), сохранение после restart, delete/restore, edit920→921; copyRedmagic2формата (Sofort+/Auktion, разные min50/null) и common420→421обеихстрок, IDs/остальное сохранены. ОбеQAкопии удалены черезUI, все49исходных строк/столбцов равны before. Последняя QA revision3a339110-8393-4b56-a68e-dd83a48b90f2/dirtytrue; notify0/worker=false/auto-sync=false/no secrets. Price viewer thumbnails визуально есть; окно19→13(>=500)→6(500..540)→19reset совпало с report, лимиты не изменились. Выключенныеварианты/productionpricepath этим НЕдоказаны. QAлогично не отправилась:tokenmissing.
+
+109 СЕРВЕРACK TRUE strict fingerprint/revisionce6d8944-34df-441a-8cd5-483e0b5a9542/normal50/48/LG430. Срез02:55:19UTC15attempt/3full/814cards/20own/0send; 39/48 попыток за15мин, oldest1083с: SLA15НЕдостигнут. НовыйTelegramнеотправлялся. Не дублировать120079–120089/коррекции120041/120081; кнопкаSearch ужеLINKS_105, native120089 покаНЕдоказан. CI109триjob billingfailure доrunner; не менятьbilling/неrerun. Живойmonitor не отменять.
+
+REPORT_109/EMULATOR_109/UI_109/RUNTIME_109/CI_109/PUBLICATION_109 содержат факты; rootclosure094 приватныеbackup/архивAPK/логи/проверяющийverify_emulator109.py. Предварительныеrecord108/record109 НЕзапускать: сбросят финальныеSHA/ACK. Финализацияfinalize109.py требуетактуальныепроверенныеартефакты; после дальнейшихпроверок не перетирать новые факты старым текстом. Последние docs-only публикации получить изpublicationrecords, checkpointпосле них обновить.
+
+СЛЕДОМ: живойS24correctlot после доступа, всеалиасы/минимумы/цены, остальные26товаров/104корзины/40–50ownлибофактическийобъём, выключенныеварианты/CRUDгонки/сеть/медианы/15мин. Общаяцель ACTIVE/PARTIAL. ПКфон; неactivate/windows/Telegramclick, неblindpull/reset/clean/force. Productionconfig/секреты/DB/privatecaptures не публиковать. Использовать android/tools/phone_adb.py только -s emulator-5580; здоровыйADBсервер не перезапускать.
+<!-- /final109 -->
+
 <!-- stage109 -->
 # Продолжение0.109 —19октября2026, ТОЛЬКО ЭМУЛЯТОР
 
