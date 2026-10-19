@@ -1,3 +1,15 @@
+<!-- stage115 -->
+## Актуальный этап: 0.115 на эмуляторе
+
+Последнее указание пользователя — продолжать на эмуляторе. Физический телефон не использовать. emulator-5580 установлен 0.115; SHA 4587449297a262439eb570cc4ef67a278b852072402d6bbeacee0543ee54c6a4, rules1792399157/History27 прежние114. Все49строк/столбцов сохранены114report→115before→installed→report→verified→UI. QA47active/notify0/workerfalse/autosyncfalse/qa-local/isolated/no secrets; не переноситьQA49вproduction50.
+
+Исправлен LocalStatsEngine: partialitems+error не отбрасываются в verify/build/refill, requestError остаётся; новый основной fetch с общей ошибкой не запускает автоматические повторные refills. StatsViewModel сохраняет ошибки в кэше/переключении и не ставит100% при ошибке. Настоящие фильтры/ownописания обязательны. 374JVM/buildPASS; baseline на установленной114:4теста/3FAIL после успешного parsed-card precondition;115:5instrumentedPASS1.948s, in-memory Room + actual transport/parser/engine + allHTTPintercepted. Ранний malformedfixture безspan ошибочен, не считать baseline. Архив115неперезаписывать.
+
+Живой Ray115 черезUI завершён122334ms: Sofort281.05/Sofort+306.19 дороже225; аукционы403, неzero. 54/59rejections сохранены; фактически видна фотография винтов, диапазон200:54→10, лимит225 неизменён, диапазон сброшен. Новыйreport побайтно сохранён после5instrumented/перезапуска/UI. Прежний114report сохранён при установке. Chrome sameauctionURL доступен,5primary; автокоррекцияmeta→metal, не считать accountnotifications/recommendations за выдачу. 287647964599 own прочитан отдельнойiframeURL:whole Gen2 0RW4012/аксессуары,101bid+6/11bids/5d6h, неBIN/неmedian/неhardwareproof; APKliveinclusion и минимум НЕдоказаны. BROWSER_SEARCH_115/EMULATOR_115/REPORT_115.
+
+Runtime114 ACKtrue strictfingerprint/ce6/normal50/48/LG430; LIVE_LATENCY_114 реальный earlychallengebranch;40/48/oldest1040с в сохранённом срезе, SLA15 не достигнут. НовыхTelegramнет, старые120079–120092/коррекцииНЕдублировать. ПКфонбезактивации. Сначала завершить publication115 source+обеroads/checkpoint и CI новыхHEAD; затем Androidown/аукционы/дешёвыйRay820253, явнаякнопкаотсева, независимыйкаталог26/104/40–50ownлибовесьstock/алиасы/минимумы/CRUDсетьсинхронизация. ОбщаяцельACTIVE/PARTIAL. Не blindpull/reset/clean/force и не publishprivate/config/DB/secrets. Исторические этапы ниже не отменяют этот блок.
+<!-- /stage115 -->
+
 <!-- live114 -->
 ## Подтверждение рабочего сервера 0.114
 
