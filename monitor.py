@@ -5694,7 +5694,9 @@ def _clean_description(html_text):
         # legitimise a body containing only N/a or prefix a model declaration.
         if soup.head is not None:
             soup.head.decompose()
-        for el in soup.select("script,style,noscript,.product_crosssell"):
+        # Captured iframe fragments can omit <head> while retaining its title.
+        # Browser-visible seller text excludes it, including for a body of N/a.
+        for el in soup.select("script,style,noscript,title,.product_crosssell"):
             el.decompose()
         # 406218242948: merchant's decorative scale lists ALL grades, including
         # Defekt, while the actual product is graded Sehr gut. It is not a fault.

@@ -6,6 +6,16 @@ import monitor
 
 
 class SellerDescriptionScopeTest(unittest.TestCase):
+    def test_document_and_head_fragment_keep_only_the_visible_seller_body(self):
+        # Actual Android capture 168801151829 retains a head fragment around
+        # the own seller text. Browser innerText excludes its eBay page title.
+        for fragment in (False,True):
+            for body,expected in [('Complete handset with case. Works correctly.','Complete handset with case. Works correctly.'),('N/a',''),('Complete handset. Das Display ist defekt.','Complete handset. Das Display ist defekt.')]:
+                with self.subTest(fragment=fragment,body=body):
+                    raw=("<!-- eBay seller document --><meta charset='UTF-8'><title>eBay</title><div>"+body+'</div>') if fragment else ("<html><head><meta charset='UTF-8'><title>eBay</title></head><body><p>"+body+'</p></body></html>')
+                    self.assertEqual(expected,' '.join(monitor._clean_description(raw).split()))
+                    if 'defekt' in body:
+                        self.assertTrue(monitor._is_description_blocked(raw,'phones'))
     def test_actual_samsung_negation_legal_tab_and_ips_model(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/samsung_manual_details.json').read_text(encoding='utf-8'))
         search={'query':'samsung odyssey oled g6 500hz','filters':{'category':'monitors'}}
