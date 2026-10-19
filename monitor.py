@@ -5936,6 +5936,13 @@ def _is_description_blocked(desc_html, category):
     # Mclean-Surplus return-policy promise is hypothetical, not a device fault.
     desc_norm = re.sub(r"\bif the item is not working as described,\s*we will work with you on the issue,\s*please contact us to resolve[.!?]?", " ", desc_norm)
     desc_norm = _strip_negated_condition_terms(desc_norm)
+    # Included consumable accessories can be swapped without a repair of the
+    # device being sold (own listing 327406280485: spare pairs of lenses).
+    # Remove only the exchange verb in an explicit inclusion clause. Damage,
+    # device-for-device swaps and core components such as displays stay checked.
+    spare_accessories = r"(?:ersatz)?(?:glaeser|linsen|ohrpolster|earpads|mausfuesse|gleitpads|skates)"
+    included_exchange = rf"\b{spare_accessories}\s+(?:(?:sind|ist)\s+)?(?:noch\s+)?(?:mit\s+)?dabei\s+zum\s+(?:tauschen|tausch)\b"
+    desc_norm = re.sub(included_exchange, lambda match: re.sub(r"\b(?:tauschen|tausch)\b", " ", match.group()), desc_norm)
     if _has_display_blemish(desc_norm):
         return True
     if _has_damage_in_description(desc_norm):
