@@ -1,3 +1,13 @@
+<!-- published115 -->
+## Проверенная публикация 0.115
+
+Код Android: `894e198b256186c29c5d6d0f0cb8c24d13952fe4`; связанная metadata/отчёт Python: `60d7e28bbdb111ffc64f5dbbdd974ba9fcea05fb`. Дорожные ветки: `b3815214c86c51e2756419dc83248d57bfde2860` / `13a0b1c758f742f80d90c18bb080bd51fd2cce51`. Облачная синхронизация: 0 изменений, 0 конфликтов, backup `20261019T102552703549Z`. После неё 20 изолированных Python-проверок прошли, Android assembleDebug UP-TO-DATE прошёл за 9 секунд; SHA установленного/архивного APK не изменился. 374 JVM и 5 instrumented PASS подтверждены до checkpoint. Последующие публикации только документации проверять по publication records.
+
+Серверная metadata теперь указывает APK 0.115; исполняемые правила по-прежнему 1792399157. Их применение подтверждено полным fingerprint, ревизией ce6 и normal/50/48/LG430. Срез runtime 2026-10-19T10:22:11+00:00: 41/48 поисков за 15 минут, самый старый 1057 секунд; требование скорости ещё не достигнуто. Нового Telegram-теста не отправляли.
+
+CI для нового кода 0.115 не стартовал: GitHub сообщил ограничение оплаты/расходов, runner не выдан. Это не зелёный CI и не падение тестов кода. CI_115.json содержит ссылки на три запуска. Не повторять их и не менять оплату. Эмулятор 0.115 разрешён, физический телефон не использовать. Полная приёмка остаётся PARTIAL. Новые факты и продолжение — REPORT_115.md / EMULATOR_115.json / BROWSER_SEARCH_115.json.
+<!-- /published115 -->
+
 <!-- stage115 -->
 ## Актуальный этап: 0.115 на эмуляторе
 
@@ -7,7 +17,7 @@
 
 Живой Ray115 черезUI завершён122334ms: Sofort281.05/Sofort+306.19 дороже225; аукционы403, неzero. 54/59rejections сохранены; фактически видна фотография винтов, диапазон200:54→10, лимит225 неизменён, диапазон сброшен. Новыйreport побайтно сохранён после5instrumented/перезапуска/UI. Прежний114report сохранён при установке. Chrome sameauctionURL доступен,5primary; автокоррекцияmeta→metal, не считать accountnotifications/recommendations за выдачу. 287647964599 own прочитан отдельнойiframeURL:whole Gen2 0RW4012/аксессуары,101bid+6/11bids/5d6h, неBIN/неmedian/неhardwareproof; APKliveinclusion и минимум НЕдоказаны. BROWSER_SEARCH_115/EMULATOR_115/REPORT_115.
 
-Runtime114 ACKtrue strictfingerprint/ce6/normal50/48/LG430; LIVE_LATENCY_114 реальный earlychallengebranch;40/48/oldest1040с в сохранённом срезе, SLA15 не достигнут. НовыхTelegramнет, старые120079–120092/коррекцииНЕдублировать. ПКфонбезактивации. Сначала завершить publication115 source+обеroads/checkpoint и CI новыхHEAD; затем Androidown/аукционы/дешёвыйRay820253, явнаякнопкаотсева, независимыйкаталог26/104/40–50ownлибовесьstock/алиасы/минимумы/CRUDсетьсинхронизация. ОбщаяцельACTIVE/PARTIAL. Не blindpull/reset/clean/force и не publishprivate/config/DB/secrets. Исторические этапы ниже не отменяют этот блок.
+Runtime114 ACKtrue strictfingerprint/ce6/normal50/48/LG430; LIVE_LATENCY_114 реальный earlychallengebranch;40/48/oldest1040с в сохранённом срезе, SLA15 не достигнут. НовыхTelegramнет, старые120079–120092/коррекцииНЕдублировать. ПКфонбезактивации. Публикация и checkpoint подтверждены блоком выше; следом Androidown/аукционы/дешёвыйRay820253, явнаякнопкаотсева, независимыйкаталог26/104/40–50ownлибовесьstock/алиасы/минимумы/CRUDсетьсинхронизация. ОбщаяцельACTIVE/PARTIAL. Не blindpull/reset/clean/force и не publishprivate/config/DB/secrets. Исторические этапы ниже не отменяют этот блок.
 <!-- /stage115 -->
 
 <!-- live114 -->
