@@ -248,6 +248,26 @@ class BrowseAccess:
             state.setdefault('normal_next_search', {})[market] = next_id
             self.save(state)
 
+    def normal_alias_offset(self, search_id, context, market, count):
+        """Resume query/format attempts, never cached listings or seller text."""
+        saved = self.state().get('normal_aliases', {}).get(str(search_id)+'|'+market, {})
+        value = saved.get('next')
+        if saved.get('context') != context or isinstance(value, bool) or not isinstance(value, int):
+            return 0
+        return value if 0 <= value < count else 0
+
+    def start_normal_alias(self, search_id, context, market, next_index):
+        """Checkpoint before I/O so a failed first spelling cannot starve others."""
+        with self.lock:
+            state = self.state(); now = time.time()
+            entries = {key:value for key,value in state.get('normal_aliases', {}).items()
+                       if now-value.get('updated', 0) < 86400}
+            entries[str(search_id)+'|'+market] = {'context':context,'next':next_index,'updated':now}
+            # IDs, a context hash, and an index only. Do not persist queries,
+            # prices or an old success as proof of a complete current union.
+            state['normal_aliases'] = dict(sorted(entries.items(),key=lambda row:row[1]['updated'])[-256:])
+            self.save(state)
+
     def normal_candidate_order(self, search_id, context, market, item_ids):
         """Only reorder fresh IDs; no old price, description or verdict is reused."""
         ids = list(dict.fromkeys(str(value) for value in item_ids))

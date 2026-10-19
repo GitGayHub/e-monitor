@@ -6918,12 +6918,14 @@ def _normal_discovery_search(search):
     prepared = _prepare_monitor_fetch_search(search)
     prepared["filters"]["sort"] = "newest"
     prepared["filters"].pop("sort_code", None)
+    prepared['_live_alias_rotation'] = True
     return prepared
 
 
 def _statistics_search_variant(search, listing_type, min_price=None, best_offer=False):
     # Same base fetch profile as normal monitoring (price_asc + large page).
     variant = _prepare_monitor_fetch_search(search)
+    variant.pop('_live_alias_rotation', None)
     filters = variant.setdefault("filters", {})
     filters["_stats_category"] = filters.get("category", "all")
     # Use intent query (clean eBay _nkw), not raw config query with parentheses.
@@ -7653,31 +7655,57 @@ def _fetch_html_primary(search, force=False, allow_api=False):
     batches = _search_query_variants(search)
     collected, errors = [], []
     formats = ["buy_now", "auction"] if (search.get("filters") or {}).get("listing_type","all") == "all" else [None]
-    for listing in formats:
-        for query in batches or [_intent_query(search)]:
-            variant = copy.deepcopy(child)
-            variant.update(_query_override=query, _variant_child=True)
-            if listing:
-                variant.setdefault("filters",{})["listing_type"] = listing
-                if listing == "auction":
-                    variant["filters"].pop("min_price", None)
-            # Normal live searches have a20s parent slice. Keep time for the
-            # authorized API reserve instead of exhausting it all inside HTML.
-            reserve_available=allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open
-            with MonitorPassBudget.slice(12 if reserve_available else 20):
-                found, error = fetch_ebay_ex(variant, force=force)
-            if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse", "pass_deferred") and not MonitorPassBudget.exhausted() and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
-                reserve = copy.deepcopy(variant)
-                reserve.pop("_html_fallback", None)
-                api_rows, api_error = fetch_ebay_api_ex(reserve, force=True)
-                # API coverage differs; zero after an HTML failure cannot prove no listings.
-                if api_error is None and api_rows:
-                    found, error = api_rows, None
-                    _runtime_api_fallback = True
-            collected.extend(found)
-            if error:
-                errors.append(error)
-                break
+    tasks = [(listing, query) for listing in formats for query in batches or [_intent_query(search)]]
+    live_rotation = bool(search.get('_live_alias_rotation')) and len(tasks) > 1
+    if live_rotation:
+        # Alternate purchase/auction for one spelling before the next spelling.
+        # A blocked purchase page must not postpone every auction alias behind
+        # all purchase aliases. Diagnostics retain their original full order.
+        tasks = [(listing, query) for query in batches or [_intent_query(search)] for listing in formats]
+    context = None
+    order = list(range(len(tasks)))
+    if live_rotation:
+        context = hashlib.sha256(json.dumps(dict(tasks=tasks,filters=search.get('filters'),
+            words={key:search.get(key,[]) for key in ('include_words','exclude_words','exclude_sellers')}),
+            sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+        offset = browse_access.normal_alias_offset(search['id'],context,EBAY_MARKETPLACE_ID,len(tasks))
+        order = order[offset:]+order[:offset]
+    failed_formats = set()
+    for task_index in order:
+        listing, query = tasks[task_index]
+        if listing in failed_formats:
+            continue  # Statistics still tries the other format after an error.
+        if MonitorPassBudget.exhausted():
+            errors.append('pass_deferred')
+            break
+        if live_rotation:
+            browse_access.start_normal_alias(search['id'],context,EBAY_MARKETPLACE_ID,(task_index+1)%len(tasks))
+            logger.info('%s: live alias task %d/%d format=%s query=%s',search['id'],task_index+1,len(tasks),listing or (search.get('filters') or {}).get('listing_type','all'),query)
+        variant = copy.deepcopy(child)
+        variant.update(_query_override=query, _variant_child=True)
+        if listing:
+            variant.setdefault("filters",{})["listing_type"] = listing
+            if listing == "auction":
+                variant["filters"].pop("min_price", None)
+        # Normal live searches have a20s parent slice. Keep time for the
+        # authorized API reserve instead of exhausting it all inside HTML.
+        reserve_available=allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open
+        with MonitorPassBudget.slice(12 if reserve_available else 20):
+            found, error = fetch_ebay_ex(variant, force=force)
+        if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse", "pass_deferred") and not MonitorPassBudget.exhausted() and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
+            reserve = copy.deepcopy(variant)
+            reserve.pop("_html_fallback", None)
+            api_rows, api_error = fetch_ebay_api_ex(reserve, force=True)
+            # API coverage differs; zero after an HTML failure cannot prove no listings.
+            if api_error is None and api_rows:
+                found, error = api_rows, None
+                _runtime_api_fallback = True
+        collected.extend(found)
+        if error:
+            errors.append(error)
+            if live_rotation:
+                break  # Resume the next task at the next paced live attempt.
+            failed_formats.add(listing)
     rows, error = _merge_items_by_id(collected), errors[0] if errors else None
     if error is None:
         record_search_run(search.get("id", ""), EBAY_MARKETPLACE_ID)
