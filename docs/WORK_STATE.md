@@ -1,3 +1,13 @@
+<!-- published113 -->
+## Подтверждённая публикация0.113
+
+Sourcebot `bcd6c83cddc2ce25d85bf30e8e0a5bc4222d6848`, Android `924168fd4cb1e7d9ef602062aa4a9c1982a85904`; roads `6491df116fd1269c5f0095486f0f22bbe6cd53ed` / `e13ab709fa8a8fad29d485e3a3273849b11cfb87`. Cloudapply0files/0conflictsbackup20261019T040249742419Z, после12PythonfocusedPASS и AndroidassembleDebugUP-TO-DATEPASS7s. Архив113SHA18a1d376ca7a35050381f19fc116191f870ba69d5323bb3972ac74b32eff16ba сохранён. CI1133billingfailдоrunner, неpay/нерерun.
+
+RuntimeACKrules1792380843 strictfingerprint/ce6/normal50/48/LG430 и metadataAPK0.113. Срез2026-10-19T03:59:58+00:00, 42/48 within15, oldest993свтомсрезе, SLA15НЕвыполнен. LIVE_ALIAS_PROGRESS_111: first4a35c2d2…DBblobточныйSHAвJSON, SonyULTbuyконтекстsame/next4; fifth774b898d…scope53, реальныйновыйпроцесс03:59:35.654начал5/5sonyYY2981, затем1/5,next1. ВозобновлениекурсораДОКАЗАНО, неуспехполногоunion/доставка. Предыдущиефразы«ещёпубликовать113/проверитьдвижениеcursor»исторические,этотблокихзаменяет. Неrerunfinalize113/111_112поверхновыхфактов.
+
+Следом: ускорениеполногообходабезпотерипроверокописаний/аукционов, независимыйкаталог26/104/алиасы/минимумы/40–50ownлибовесьдоступный, живойretryпослевосстановлениясвязи, CRUD/синхронизация/сеть/медианы. ОбщаяприёмкаPARTIAL/goalactive. ФизтелефонНЕчитать/НЕиспользовать,толькоemulator-5580. ПКфонбезактивации. НовыхTelegramнет,120079–120092/коррекцииНЕдублировать. Finaldocs-onlyheadsполучитьизpublicationrecords,посленихобновитьcloudcheckpoint. Неblindpull/reset/clean/force,неpublishprivate/config/DB/secrets.
+<!-- /published113 -->
+
 <!-- final113 -->
 # Актуальная версия0.113 — только эмулятор
 
