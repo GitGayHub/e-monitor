@@ -1385,11 +1385,11 @@ def _category_id(value):
 def _phone_model_aspect_params(query_norm):
     """Return eBay phone model aspect params for obvious model searches."""
     model = None
-    pixel = re.search(r"\b(?:google\s+)?pixel\s+(\d+[a-z]?)(?:\s+(pro|xl|fold))?\b", query_norm)
+    pixel = re.search(r"\b(?:google\s+)?pixel\s+(\d+[a-z]?)(?:\s+(pro\s+xl|pro|xl|fold))?\b", query_norm)
     if pixel:
         parts = [pixel.group(1)]
         if pixel.group(2):
-            parts.append(pixel.group(2).upper() if pixel.group(2) == "xl" else pixel.group(2).title())
+            parts.append(" ".join(p.upper() if p == "xl" else p.title() for p in pixel.group(2).split()))
         model = "Google Pixel " + " ".join(p.upper() if p == "xl" else p for p in parts)
 
     iphone = re.search(
@@ -3062,6 +3062,8 @@ def _build_url_with_host(host, search, sub="www"):
     st = filters.get("seller_type", "any")
     if st == "private":
         params["LH_SellerType"] = "1"
+    elif st == "commercial":
+        params["LH_SellerType"] = "2"
     loc = filters.get("location", "de")
     if host == "ebay.de":
         # Verified in the live ebay.de location controls on 2026-10-05:
@@ -3899,6 +3901,8 @@ def build_ebay_url(search):
     st = filters.get("seller_type", "any")
     if st == "private":
         params["LH_SellerType"] = "1"
+    elif st == "commercial":
+        params["LH_SellerType"] = "2"
     loc = filters.get("location", "de")
     if loc == "de":
         params["LH_PrefLoc"] = "1"

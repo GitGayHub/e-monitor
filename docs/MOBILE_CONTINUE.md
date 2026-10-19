@@ -1,3 +1,15 @@
+<!-- stage119 -->
+## Продолжение на эмуляторе: 0.119
+
+Последнее указание — только эмулятор. Физический телефон НЕ использовать. emulator-5580 установлен0.119/code119/rules1792430979/History28/SHA5e2c3e9319635a7cac28b6d41fa0a4ee6ea130ffd79bed2b950fd04cc3c657de. 469Python/379JVM/11Android PASS; один и тот же33input SHAcc87d1e8e52926ef8462e8a721925a14091698859945d62bfd27d8e08eb345ca прошёл Python/Kotlin. Исходные3970не изменены. Все50строк/все столбцы одинаковы118final→report→119before→installed→verified. QA48active/50saved/notify0/workerfalse/autosyncfalse/no secrets; НЕ синкать вproduction.
+
+Новые исправления: commercial LH_SellerType=2 в реальных HTMLзапросах обоих языков; Androidкэш включаетsellerType; PixelProXLне обрезается доPro в modelaspect обоих языков. Все3регрессии воспроизведены доfix. ChromeстарыйточныйPixelURL0exact→безневерногоPro122→правильныйProXL120; не ручная приёмка120лотов. Новые UIпереключатели региона и продавца проверены через создание/повторное открытие/редактирование. Pixel9добавлен ТОЛЬКО вQAчерезшаблонS25Edge: min50/limit310/hard2500/all/DE/any/phones/emptywords/notify0. Все49прежних строк неизменны. ВременныеEU/commercial восстановлены. История28прежняя: критерии отбора не менялись, только транспорт/кэш/UI.
+
+Промежуточная118 не sourcepublished:377JVM/468Python/11ART, живойPixel131368ms/Sofort439.99/Sofort+416.19/auc403. Этотreport сохранён через119установку/11тестов. Живой119Pixelпрогон37548ms:4корзиныSiteUnavailable/nullprice. ПодлинныйWebViewsnapshotSORRY/Somethingwentwrong;actualURLсProXLподтверждён. Неzero/неminimum. Все50строк/все столбцы и119reportсохраненычерезforce-stop/restart; reportоткрытчерезhistory. Независимо Chrome336845753191 fullown243chars/410+6.19=416.19/87%battery/wholedevice/no disclosedrepair/above310, совпало сAndroid118. Не hardwaretest/не fullpaired newinput/не minimumproof.
+
+СЛЕДОМ: публикация119source+обеroads/MD, cloudcheckapply и isolatedchecks; runtimeACK1792430979 и фактический status/jobs. Затем Androidаукционы/sameURLChrome, весь каталог26/104/алиасы/40–50ownлибофактическийstock/минимумы/синхронизация/доставкадо15мин. Общая цель ACTIVE/PARTIAL. Серверnormal/50/48/revisionce6/LG430/recipient/seen/bans сохранить. НовогоTelegramнет,120079–120092и коррекции не дублировать. CIbillingизвестен, не pay/неrerun. ПК скрыто/без активации окон. ЗдоровыйADBне рестартовать. Не blindpull/reset/clean/force, не publishprivate/DB/config/secrets. version119.py и record119.py НЕперезапускать поверх завершающих новых фактов.
+<!-- /stage119 -->
+
 <!-- published117 -->
 ## Проверенная публикация 0.117
 
