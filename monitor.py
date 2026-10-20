@@ -1991,12 +1991,79 @@ def _phone_storage_mismatch(value, query):
     return None
 
 
+def _phone_own_model_conflict(description, query):
+    """Only own sale/identity declarations, not every model mentioned by a seller."""
+    text = _phone_model_spacing(_normalize(_clean_description(description or '')))
+    text = re.sub(r'\biphone\s*(\d{1,2})\s*pm\b', r'iphone \1 pro max', text)
+    q = _phone_model_spacing(_normalize(query))
+    wanted = next(((i, re.search(p, q)) for i, p in enumerate(_PHONE_MODEL_PATTERNS) if re.search(p, q)), None)
+    if not wanted or not text:
+        return None
+    glue = r'(?:(?:hier|hiermit|nun|jetzt|euch|ihnen|an|mein\w*|ein\w*|das|dieses|gebraucht\w*|neu\w*|alt\w*|my|a|an|the|this|complete|working)\s+)*'
+    brand = r'(?:(?:apple|samsung|google|galaxy)\s+)*'
+    sale = (r'\b(?:(?:(?:ich|wir)\s+)?(?:verkaufe[n]?|biete[n]?)(?:\s+ich)?|'
+            r'(?:i(?:\s+am)?|we)\s+(?:selling|sell|offer)|zum\s+verkauf\s+steht|angeboten\s+wird|verkauft\s+wird|'
+            r'(?:das|dieses|mein|the|this|my)\s+(?:angebotene\s+)?(?:smartphone|telefon|handy|geraet|phone|device|handset)\s+(?:ist|is))\s+')
+    def own_claim(before, after):
+        clause = re.search(r'[^.!?;]*$', before).group()
+        if re.search(r'\b(?:beispiel|example|angenommen|hypothetisch|falls|wenn|suppose|if)\b', clause):
+            return False
+        if re.search(r'\b(?:alt\w*|vorherig\w*|vorgaenger\w*|old|previous)\s+(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*'+brand+r'$', before):
+            return False
+        if re.search(r'\b(?:(?:huelle|case|cover|zubehoer|accessories)\s+(?:(?:fuer|for)\s+)?|(?:passend\s+fuer|compatible\s+with)\s+)(?:modell|model)\s*:\s*'+brand+r'$', before):
+            return False
+        if re.match(r'\s*(?:huelle|case|cover|schutzfolie|ladekabel|zubehoer|accessories)\b', after):
+            return False
+        if re.match(r'\s*(?:(?:war|was|ist|is)\s+)?(?:(?:mein|my|der|das|the)\s+)?(?:vorgaenger|previous|vorherig\w*|altes|old|nur\s+zum\s+vergleich|used\s+for\s+photos)\b', after):
+            return False
+        leading = r'\s*(?:(?:artikelbeschreibung|produktbeschreibung|description)\s*:?\s*)?(?:(?:das|dieses|mein|the|this|my)\s+)?(?:(?:neue?s?|gebrauchte?s?|new|used)\s+)?'+brand
+        if re.fullmatch(leading, before):
+            return True
+        if re.search(sale+glue+brand+r'$', before) or re.search(r'\b(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*'+brand+r'$', before):
+            return True
+        return bool(re.search(r'\b(?:sondern|but|instead)\s+'+glue+brand+r'$', before) and
+                    re.search(r'\b(?:kein\w*|nicht|not|no)\b[^.!?;]{0,100}$', before) and
+                    not re.search(r'\b(?:not\s+only|nicht\s+nur)\b[^.!?;]*$', before))
+    for i, pattern in enumerate(_PHONE_MODEL_PATTERNS):
+        for actual in re.finditer(pattern, text):
+            before, after = text[:actual.start()], text[actual.end():]
+            if not own_claim(before, after):
+                continue
+            compatible = i == wanted[0] and all(not a or a.replace(' ','') == (b or '').replace(' ','') for a,b in zip(actual.groups(), wanted[1].groups()))
+            if not compatible:
+                return actual.group()
+    # Explicit model-number fields can contain a recognized manufacturer code.
+    for field in re.finditer(r'\b(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*([^.!?\r\n]{1,100})', text):
+        if own_claim(text[:field.start(1)], text[field.end(1):]) and not _phone_model_number_matches(field.group(1), q):
+            return field.group(1).strip()
+    return None
+
+
+def _phone_identity_text(description, query):
+    """A denied alternate model followed by the correct one is not a replica claim."""
+    text = _phone_model_spacing(_normalize(_clean_description(description or '')))
+    model = _PHONE_MODEL_PATTERNS[0]
+    wanted = re.search(model, _normalize(query))
+    if not wanted:
+        return text
+    def signature(m): return tuple((x or '').replace(' ','') for x in m.groups())
+    denial = r'\b(?:kein\w*|nicht|not|no)\s+(?:(?:ein\w*|a|an)\s+)?(?:apple\s+)?('+model+r')'
+    def replace(match):
+        denied = re.search(model, match.group())
+        positive = re.match(r'\s*[,;:]?\s*(?:sondern|but|instead)\s+(?:(?:mein\w*|ein\w*|das|a|an|the|my)\s+)*(?:apple\s+)?('+model+r')', text[match.end():])
+        actual = re.search(model, positive.group()) if positive else None
+        return ' ' if denied and actual and signature(denied) != signature(wanted) and signature(actual) == signature(wanted) else match.group()
+    return re.sub(denial, replace, text)
+
+
 def _phone_specifications_match(title, description, query):
     q = _normalize(query)
     own_title = re.split(r"\b(?:mit|with|inkl(?:usive)?|incl(?:uded|uding)?|ink|bundle)\b", _normalize(title), maxsplit=1)[0]
     if not _samsung_phone_code_matches(own_title, q):
         return False
     own_description = _normalize(_clean_description(description))
+    if _phone_own_model_conflict(description, query) is not None:
+        return False
     for field in re.finditer(r"(?im)^\s*(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*([^\r\n]{1,160})", _clean_description(description)):
         if not _samsung_phone_code_matches(field.group(1), q):
             return False
@@ -6611,7 +6678,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
         if _phone_description_declares_fake(details.get("description") or ""):
             return False
-        if "iphone" in query and re.search(r"\b(?:nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b|\b(?:nicht|kein)\s+(?:um\s+)?(?:ein\s+)?(?:original(?:es|er|en)?\s+)?(?:apple\s+)?iphone\b", _normalize(_clean_description(details.get("description") or ""))):
+        if "iphone" in query and re.search(r"\b(?:nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b|\b(?:nicht|kein)\s+(?:um\s+)?(?:ein\s+)?(?:original(?:es|er|en)?\s+)?(?:apple\s+)?iphone\b", _phone_identity_text(details.get("description") or "",query)):
             return False
         for aspect in details.get("localizedAspects") or []:
             name = _normalize(aspect.get("name") or "")
