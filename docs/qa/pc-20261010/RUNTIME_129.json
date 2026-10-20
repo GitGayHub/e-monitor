@@ -1,0 +1,158 @@
+{
+  "at": "2026-10-20T19:03:00.748513+00:00",
+  "head": "56d82f9e50c7e65737f6c93e44d928e79d437dc8",
+  "runtime": {
+    "schema": 1,
+    "settingsRevision": "ce6d8944-34df-441a-8cd5-483e0b5a9542",
+    "appliedAt": "2026-10-15T22:15:20+00:00",
+    "logicVersion": 1792506986,
+    "lastSuccessfulRun": "2026-10-16T10:08:38+00:00",
+    "updatedAt": "2026-10-20T19:00:22+00:00",
+    "state": "partial",
+    "error": null,
+    "pendingCount": 19,
+    "pendingChecks": [
+      "redmagic_11_pro_buy: search_deferred",
+      "redmagic_11_pro_auc: search_deferred",
+      "redmagic_11s_pro_buy: search_deferred",
+      "redmagic_11s_pro_buy: очередь проверки, переход к следующему товару (1 описаний); очередь продолжится",
+      "redmagic_11s_pro_auc: search_deferred",
+      "nubia_z80_ultra_buy: search_deferred",
+      "nubia_z80_ultra_buy: очередь проверки, переход к следующему товару (1 описаний); очередь продолжится",
+      "nubia_z80_ultra_leading_auc: search_deferred",
+      "nubia_z70_ultra_buy: search_deferred",
+      "nubia_z70s_ultra_buy: search_deferred",
+      "nubia_z70s_ultra_auc: search_deferred",
+      "pixel_5_buy: search_deferred",
+      "pixel_5_auc: ending soon search_deferred",
+      "sony_wh_1000xm6_buy: search_deferred",
+      "sony_wh_1000xm6_buy: очередь проверки, переход к следующему товару (69 описаний); очередь продолжится",
+      "sony_wh_1000xm6_auc: очередь проверки, переход к следующему товару (2 описаний); очередь продолжится",
+      "5070_ti_pc_buy: search_deferred",
+      "5070_ti_pc_buy: очередь проверки, переход к следующему товару (71 описаний); очередь продолжится",
+      "Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
+    ],
+    "searchIssueCount": 2,
+    "searchIssues": [
+      {
+        "searchId": "iphone_17_pro_max",
+        "searchName": "iphone 17 pro max",
+        "code": "site_error",
+        "message": "eBay вернул страницу временной ошибки"
+      },
+      {
+        "searchId": "nubia_z80_ultra_leading_buy",
+        "searchName": "Nubia Z80 Ultra Leading",
+        "code": "blocked",
+        "message": "eBay ограничил доступ к выдаче"
+      }
+    ],
+    "lastPass": {
+      "startedAt": "2026-10-20T18:54:15+00:00",
+      "finishedAt": "2026-10-20T19:00:22+00:00",
+      "searchesAttempted": 19,
+      "searchesSucceeded": 4,
+      "candidatesReceived": 894,
+      "descriptionsVerified": 16,
+      "notificationsConfirmed": 0
+    },
+    "searchCoverage": {
+      "activeSearches": 48,
+      "attemptedSearches": 48,
+      "within15Minutes": 42,
+      "neverAttempted": 0,
+      "oldestAttemptAt": "2026-10-20T18:43:22+00:00",
+      "oldestAttemptAgeSeconds": 1020
+    },
+    "dataSource": "html+api",
+    "sourcePolicy": "html_first",
+    "warning": "Описание проверяется через сайт eBay",
+    "activeSearches": 48,
+    "configFingerprint": "9c448cc704360eac9dcd14e8502cd977a43ab12c49a376e157bb0dd4b6242987",
+    "lastTelegramConfirmedAt": "2026-10-20T18:02:34+00:00",
+    "lastTelegramBotUsername": "eBaySearcherBOT",
+    "lastTelegramDeliveryRoute": "primary"
+  },
+  "meta": {
+    "schema": 1,
+    "versionName": "0.129",
+    "versionCode": 129,
+    "logicVersion": 1792509816
+  },
+  "runtimeAcknowledged": false,
+  "mode": "normal",
+  "saved": 50,
+  "active": 48,
+  "runs": [
+    {
+      "id": 39479733425,
+      "name": "E Monitor",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "56d82f9e50c7e65737f6c93e44d928e79d437dc8"
+    },
+    {
+      "id": 39479098287,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "627d8056510b224f895050b764f7c42fa93fda81"
+    },
+    {
+      "id": 39479089529,
+      "name": "E Monitor",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "627d8056510b224f895050b764f7c42fa93fda81"
+    },
+    {
+      "id": 39479089282,
+      "name": "Android App Sync",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "627d8056510b224f895050b764f7c42fa93fda81"
+    },
+    {
+      "id": 39477510658,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "8fcbb3f5c0e9ac00528428fd405d47f6016ad717"
+    },
+    {
+      "id": 39475339346,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "8cc87b19699006919afc600f3ff10f2905fa8118"
+    },
+    {
+      "id": 39473141453,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "2257ee8441571113468ed7f9f5e2ef729f61363e"
+    },
+    {
+      "id": 39471006346,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "b9a7411df037b74527526cc2caa93fa0e80b05cf"
+    },
+    {
+      "id": 39468823473,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "head_sha": "9c7a86a1f4e79a865d507af6e6075401dadb7a65"
+    },
+    {
+      "id": 39466676480,
+      "name": "E Monitor",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "92dafcaeab9ee5dc9b5f605dbdf6353d87bbf646"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-20T18:57:25.727887+00:00",
+  "updatedAt": "2026-10-20T19:03:39.690193+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
   "apkVersion": "0.129",
@@ -3424,7 +3424,7 @@
   },
   "runtimeAcknowledged128": true,
   "pcStage129": {
-    "checkedAtUtc": "2026-10-20T18:57:25.727887+00:00",
+    "checkedAtUtc": "2026-10-20T19:03:39.690193+00:00",
     "version": "0.129",
     "logicVersion": 1792509816,
     "historyVersion": 35,
@@ -3443,6 +3443,97 @@
     "fullCatalogueComplete": false,
     "globalMinimaProven": false,
     "deliveryLatencyUnder15MinutesProven": false,
-    "report": "docs/qa/pc-20261010/REPORT_129.md"
+    "report": "docs/qa/pc-20261010/REPORT_129.md",
+    "runtimeAcknowledged": false,
+    "runtimeAt": "2026-10-20T19:00:22+00:00",
+    "phoneLive": {
+      "version": "0.129",
+      "serial": "324652776507",
+      "reportId": "1792522692359",
+      "finishedAtMs": 1792522692359,
+      "elapsedMs": 243299,
+      "startedFrom": "Real phone Searches product-card tap, no database injection",
+      "products": 1,
+      "searchIds": [
+        "iphone_17_pro_max"
+      ],
+      "buckets": [
+        {
+          "label": "Sofort",
+          "listingType": "buy_now",
+          "bestOffer": false,
+          "price": 1049.0,
+          "url": "https://www.ebay.de/itm/920013137592",
+          "verdict": "🟣 Дорого",
+          "title": "Apple iPhone 17 Pro Max 256GB tiefblau Smartphone 6,9 Zoll 48MPX - AKZEPTABEL",
+          "rejectedCount": 49,
+          "estimatedImportCharges": null
+        },
+        {
+          "label": "Sofort+",
+          "listingType": "buy_now",
+          "bestOffer": true,
+          "price": 406.19,
+          "url": "https://www.ebay.de/itm/237133957801",
+          "verdict": "🟢 Подходит по фильтрам",
+          "title": "Dumm iPhone‼️‼️Apple iPhone 17 Pro Max Smartphone 2 TB Blau",
+          "rejectedCount": 45,
+          "estimatedImportCharges": null
+        },
+        {
+          "label": "Auktion",
+          "listingType": "auction",
+          "bestOffer": false,
+          "price": 209.19,
+          "url": "https://www.ebay.de/itm/206634225427",
+          "verdict": "🟡 Ожидает времени аукциона · 4д 18ч · 7 ставок",
+          "title": "iPhone 17 Pro Max, 512 GB, Silber",
+          "rejectedCount": 47,
+          "estimatedImportCharges": null
+        },
+        {
+          "label": "Auktion+",
+          "listingType": "auction",
+          "bestOffer": true,
+          "price": 794.19,
+          "url": "https://www.ebay.de/itm/198717501299",
+          "verdict": "🟢 Auktion+ · 1д 21ч · 0 ставок",
+          "title": "Apple iPhone 17 Pro Max in orange",
+          "rejectedCount": 8,
+          "estimatedImportCharges": null
+        }
+      ],
+      "modelRejection": {
+        "itemId": "147637622122",
+        "title": "iPhone 17 Pro Max 256 GB in Silber",
+        "url": "https://www.ebay.de/itm/147637622122",
+        "seller": "shiny3381",
+        "totalPrice": 906.19,
+        "reason": "модель в описании не соответствует поиску: «iphone 7 pro max»",
+        "estimatedImportCharges": null,
+        "imageUrl": "https://i.ebayimg.com/images/g/FaAAAeSwAHBq0TVf/s-l300.webp"
+      },
+      "priceViewer": {
+        "fromEur": 900,
+        "toEur": 910,
+        "rejectedSaved": 49,
+        "inRange": 1,
+        "thumbnailVisuallyConfirmed": true,
+        "limitNotChanged": true,
+        "screenshot": "images129/phone129-rejection-confirmed.png"
+      },
+      "phoneAll50RowsAllColumnsPreserved": true,
+      "emulatorAll50RowsAllColumnsPreserved": true,
+      "reportSha256": "0ca246519f887bb1a72ead3fc9db955019ffffa1915836b2f0e3551d4032072f",
+      "unresolvedCandidate": {
+        "itemId": "237133957801",
+        "price": 406.19,
+        "issue": "Own repeats ambiguous Dumm/Dumbb identity; no independent hardware/working confirmation. Accepted by129; unresolved, not claimed counterfeit."
+      },
+      "fullCatalogueComplete": false,
+      "globalMinimumProven": false,
+      "notificationOrLatencyProven": false,
+      "newTelegramMessagesSent": false
+    }
   }
 }

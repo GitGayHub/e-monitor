@@ -17,3 +17,16 @@
 
 Productionnormal50/48/ce6d8944-34df-441a-8cd5-483e0b5a9542/LG430/recipient/seen/bans сохранять. QAэмулятор50/48,notify0,workerfalse/autosyncfalse,59a71baf;НЕсинкатьproduction. ПользовательразрешилПКбезнакопителя,pickupБерлинлибо≤80км09648;NubiaZ80LeadingNoResultsтолькопослеуспешнойвыдачи.
 Checkoutгрязные/старыйHEAD: никакихblindpull/reset/clean/force. ЧитатьWORK_STATE+MOBILE_CONTINUE, android/tools/cloud_sync.py--check/совместимыйapply. APIpublisher audit/2026-10-04/publish_integrated_oct9.py сохраняетconcurrent/production. Официальныйphone_adb37.0.1/ADB_USB_LEGACY1безLIBUSB,healthyнеперезапускать. Артефактыclosure094;privateown/DB/секретынепубликовать. Старыеrecord128/consolidate127НЕrerun.
+
+Последний runtime129: False; время 2026-10-20T19:00:22+00:00. Полный JSON RUNTIME_129.
+
+## Публикация 129 и актуальный следующий шаг
+
+- [bot](https://github.com/GitGayHub/e-monitor/commit/627d8056510b224f895050b764f7c42fa93fda81)
+- [bot-cloud](https://github.com/GitGayHub/e-monitor/commit/ccf5c99f97e32f1c9a39f53832f109e56c988c67)
+- [android](https://github.com/GitGayHub/e-monitor-android/commit/b542da1f01552474c829fa7fb06ad6489e6e8628)
+- [android-cloud](https://github.com/GitGayHub/e-monitor-android/commit/1f8cb50f4f68d7575c284e13cb83935c897b5dd7)
+
+Исходники и обе дорожные ветки129 опубликованы. CI не стартует из-за billing; не платить/не rerun. На19:00:22UTC runtime всё ещё128:129ACK ожидается от следующего естественного процесса. Живой монитор не отменять. Frozenpublication129/ci129 больше не перезаписывать.
+Телефонный прогон iPhone17 завершён243,299с;147637622122 реально отсеян. Диапазон900–910/миниатюра/сброс проверены на телефоне. Все50строк/все столбцы сохранены через перезапуск. LIVE_129.json. Новый приоритет:237133957801 Dumm/Dumbb,принят129,own54знака повторяет название; аппарат/макет не установлен. Не считать минимум проверенным и не вводить банпоID/продавцу. Затем весь каталог26/104,алиасы/минимумы/≤15мин.
+После конечных docs129: cloud_sync --check/совместимый --apply, изолированные target checks+build, checkpoint129. Не оставлять смешанные версии.
