@@ -1,45 +1,32 @@
-# Продолжение eMonitor: 0.130, 20 октября 2026
+# Продолжение eMonitor: 0.131, 20 октября 2026
 
-Работать на **физическом телефоне324652776507**, только с eMonitor. Это последнее разрешение пользователя. Telegram — на ПК, фоновое чтение; окна ПК не активировать. Эмулятор5580 разрешён, но сейчас не запущен. На телефоне Telegram не открывать.
+Работать на **физическом телефоне324652776507**,толькоeMonitor. TelegramнаПК—фоновоечтение,окнанеактивировать. ChromeDOMразрешён. Эмулятор5580разрешён,сейчаснезапущен.
 
-## Текущая версия и состояние
+Установлены0.131/code131/rules1792531355/History36,APK SHA6690590451bfb636aad0e4c1b1e6866fe0a786b33d0c9594356b15e6bc39644b. Применение131 сервером пока не подтверждено. Последнее подтверждение130:20:50:46UTC.
 
-Телефон0.130/code130/rules1792528491/History36. APK SHA0331cd42336ae61d558f6a4cffa58a7f83402e864bfe0109f53f9172a0b1ed9e. Применение130 сервером подтверждено в 2026-10-20T20:50:46+00:00;rules1792528491,полный fingerprint/revisionce6/normal50/48/LG430.
+Общаяцель **ACTIVE/PARTIAL**:26активныхтоваров/104корзины;27сохранённыхпрофилей/108включая2C. Всеалиасы/минимумы,40–50независимыхownлибоstockнакаждыйтовар,CRUD/сеть/синхронизацияиправильнаяреальнаядоставка≤15минещёнеприняты. Unit/parity/попыткизапросовнедоказываютприёмку. [REPORT_131](qa/pc-20261010/REPORT_131.md),[VERIFIED_131](qa/pc-20261010/VERIFIED_131.json),[состояние130](history/WORK_STATE_130_2026-10-20.md).
 
-Общая цель **ACTIVE/PARTIAL**:26активныхтоваров/104корзины,27сохранённыхпрофилей/108включаяотключённую2C. Ещё не приняты все алиасы, независимые минимумы и40–50полныхсобственныхописанийлибофактическийкаталогнакаждыйтовар,CRUD/сеть/синхронизацияиправильнаядоставкаlisting→Telegram≤15мин. Тесты/паритет/попытки запроса не доказывают приёмку. [REPORT_130](qa/pc-20261010/REPORT_130.md),[VERIFIED_130](qa/pc-20261010/VERIFIED_130.json),[LIVE_130](qa/pc-20261010/LIVE_130.json),[предыдущее состояние](history/WORK_STATE_129_2026-10-20.md).
+## Исправлено и проверено
 
-485Python PASS92,531с /401JVM+build PASS1м26с. **2новыхARTнафизическомтелефоне PASS8,636с**,12общихслучаев×4формата+HTTPпричина/точнаяцитата. Не30ART:28старых относятся к129эмулятора. Базовый9input/9unique (5старыхactual+4preparedbrowser) оба9/9, SHA975309abba6f8c7f15c4845905f43cac4b44930a667527ad72cf5804d1b930d3. Старые3970неправились. Новых Telegram-тестов нет. Все столбцы всех50поисков сохранены через установку, обаGUIпрогона и перезапуск.
+131:реальныйSamsungmobilezeroтерялсяизcompactWebViewиз-за2promo123456и новогоh1.result-count__count-heading. Sameordinarybodyиcompactсохраненыprivate-capture131-body/a2;нольподтверждёнвтомжеответе. НовыйselectorвPython/Kotlin,сохраняетсяnull-heading,сервискарточкинеучитываются,текстнастоящихошибоксохранён. НикакогоblindParse→NoResults. История36неизменна,нетmodel/defect/priceизменений.
 
-## Что исправлено и проверено на телефоне
+Baseline130:1PythonFAIL/1JVMFAIL/3ART2FAIL+1negativecontrolPASS. Final131:486Python/402JVM+build/7физическихARTPASS.5sharedstatuscases,SHAaff3aec8a4c7b5d286f14e017bf1d23c912dae31d1e7bfe65b1c3cf9a60f9c65. Прежний9inputpair9/9,SHA975309abba6f8c7f15c4845905f43cac4b44930a667527ad72cf5804d1b930d3;не9новыхлотов. Старые3970неправились.
 
-- 129:147637622122,title17ProMax/own7ProMax — реальныйGUIотказ с причиной модели, а не выдуманная подделка. Цена950вownпри900вкарточке — отдельный ещё не проверенный ценовой контракт.
-- 130:237133957801,Dumm/Dumbb — неоднозначность собственного назначения, причина «назначение товара неясно». Не считать аппарат доказанным макетом/подделкой; банов по ID/продавцу нет. Узкое правило начала собственного описания; отрицания, прежние предметы, исправление формулировки и никнеймы проверены.
-- Обычный iPhone17GUIпрогон завершён за245,732с; оба лота реально отсеяны. Sofort1049€,Sofort+956,19€ (обаДорого),аукционы209,19€/794,19€ — текущие ставки,неценыкупли. Это не независимые глобальные минимумы. Миниатюра/диапазон400–410/сброс/перезапуск проверены. LIVE_130.json.
+PostfixA3:3обычныхSamsungauctionaliasуспешныснулём;6nativeHTTP403. ПоздниеОТДЕЛЬНЫЕWebViewдля2алиасовSORRY→SiteUnavailable,неNoResults. CaptureметодOKнеозначаетсайтвсегдадоступен. Private-capture131-fixed/files/qa131-search-capture-a3-fixed;публичныйLIVE_SEARCH_CAPTURE_131.json. НикакихDBизменений/Telegram. Все50строк/всестолбцычерезустановкусохранены.
 
-## Следующий приоритет: Samsung OLED G6 500Hz
+Обычный телефонный прогон Samsung: 110610мс. Итоги четырёх корзин в LIVE_MONITOR_131.json. Все столбцы всех50поисков сохранены.
 
-Обычный телефонный прогон Samsung130 уже завершён, **не повторять без причины**. LIVE_MONITOR_130.json: Sofort469,95€,Sofort+523,99€,обаДорого при400€. Auktion/Auktion+ — ошибка чтения/parse,6отказов; все50строк сохранены.
+## Далее
 
-В Chrome основной аукционный запрос Worldwide/09648 показал «0 Ergebnisse»/«Keine exakten Treffer gefunden» (BROWSER_MONITOR_AUCTION_130.json). **Два дополнительных реальных ответа APK не captured**. Причина ещё НЕустановлена: это может быть другой ответ/ошибка одного алиаса. Не подменять неизвестность слепым NoResults.
+1. Завершить/проверитьобычныйGUI131Samsung4корзины;еслиLIVE_MONITOR_131ужесохранён,неперезапускатьбезпричины. Подтвердить50строк/всестолбцыиснимки. Ошибкасайтавозможна—неперекрашиватьеёвNoResults.
+2. Опубликовать131исходники+обеroads;freezepublication131/ci131одинраздоконечныхdocs. StrictactualruntimeACK131,неотменятьживоймонитор. CIbillingнеплатить/неrerun. Послеcloudcheck/applyизолированныеtargetchecks/build/checkpoint.
+3. ПродолжитьнезависимыйSamsungкаталог/остальные26/104:60soldSERPкарточек≠60прочитанных. Прочитан1own407216707533(199chars),правильныйOLEDG6500Hz27,проданacceptedoffer350—ценасделкинеизвестна. MONITOR_130.json/11replayinputs10IDsPASS(2контроляодногоID). Всеалиасы/реальныеминимумы/полныйstockещёнеприняты.
+4. Собственнаяцена950в147637622122против900вкарточке—непроверенныйконтракт.129отсекаетtitle17/own7,130неоднозначныйDumm/Dumbb237133957801(нетдоказательствподделки). ИхGUIпроверкивLIVE_130;неповторятьбезпричины. Скорость≤15миннеподтверждена,firstSeenнеравенвременипригодности.
 
-1. Сохранить реальныеURL,сырыеHTMLответы,HTTP/parseстатусы каждого из3SamsungAPKалиасов;сравнить с Chrome/нулевыми маркерами и дополнительными рекомендациями. Использовать отдельный диагностический capture без изменения production-настроек/seen. Исправлять только воспроизведённую причину в обоих языках.
-2. Продолжить независимые описания Samsung/остального каталога. Private-monitor130-sold-serp.json содержит60ID/URL/видимыйтекст,но **это не60проверенныхлотов**:основнойsoldзапрос3exact+recommendations. Полностью прочитано **1own407216707533,199chars**:OLEDG6QHD500Hz27дюймов с коробкой и хорошим состоянием. Продан,Sofort+,показано350+10.49,acceptedoffer—реальнаясуммасделкинеподтверждена. MONITOR_130.json.
-3. ДополнительныйPython/Kotlinreplay11input/10IDsPASS, SHA70052573f14d6bec8cc6b4787d6ee764f0f65fe01ec9c01b1f423362e6e7a112. Два контроля **одного** нового монитора: ended→нетуведомления;синтетическоеудалениеendedтолькопроверяетмодель/назначение. Невыдаватьза11новыхлотов/текущийминимум/ценусделки.
-4. После фикса и этого товара — оставшаяся очередь26/104,не застревать на iPhone/двухмышах. HTMLосновной/APIрезервприживойквоте;SORRY/403/капча≠NoResults. Скорость≤15минпоканедоказана.
+## Инварианты и сохранение
 
-## Сохранение и инструменты
+Productionnormal50/48/ce6d8944-34df-441a-8cd5-483e0b5a9542/LG430/recipient/seen/bansсохранить. QAэмулятор50/48notify0workerfalse/autosyncfalse59a71bafНЕсинкатьproduction. ПКбезнакопителяразрешён;pickupБерлинлибо≤80км09648;NubiaZ80LeadingNoResultsтолькопослеуспешногозапроса.
 
-Productionnormal50/48/revisionce6d8944-34df-441a-8cd5-483e0b5a9542/LG430/recipient/seen/bans сохранить. QAэмулятор50/48,notify0,workerfalse/autosyncfalse,59a71baf,НЕсинкатьproduction. ПКбезнакопителя разрешён;pickupБерлинлибо≤80км09648;NubiaZ80LeadingNoResultsтолькопослеуспешногополучения.
+Обаcheckoutгрязные/старыйHEAD:никакихblindpull/reset/clean/force. ПрипродолжениичитатьWORK_STATE/MOBILE_CONTINUE,затемandroid/tools/cloud_sync.py--check/совместимыйapply. Последнийcheck0/0roads20179c86/76e6532e;apply0/0backup20261020T210232047449Z+4Python/4JVM+buildPASS. ВыборочныйAPIpublisheraudit/2026-10-04/publish_integrated_oct9.pyсохраняетproduction/concurrent. WinGetADB37.0.1черезphone_adb.py/ADB_USB_LEGACY1безLIBUSB;healthyнеперезапускать. Privateown/DB/секретынепубликовать. Frozenpublication130/ci130непереписывать. Старыеrecord130/monitor130/finaldocs130переписываюттекущийстейт—неrerun.
 
-Обаcheckoutгрязные/старыйHEAD:никакихblindpull/reset/clean/force. СначалачитатьWORK_STATE/MOBILE_CONTINUE, затемandroid/tools/cloud_sync.py--check,совместимый--applyиизолированныеchecks. APIpublisheraudit/2026-10-04/publish_integrated_oct9.pyвыборочный,сохраняетproduction/concurrent. WinGetADB37.0.1черезphone_adb.py/ADB_USB_LEGACY1безLIBUSB;healthyнеперезапускать. Privateown/DB/секретынепубликовать.
-
-129checkpoint:cloudapply0/0backup20261020T190529887105Z+5Python/4JVM+buildPASS,APKнеизменен,ACKtrue;CHECKPOINT_129.json.130source+обеroadsопубликованы,послеконечныхdocs—финальныйcloudcheck/apply+targetchecks/build/checkpoint130. Frozenpublication130/ci130НЕrerun послеdocs. CI130не стартовализ-заbilling(39494674495/39494674454/39494267540);неплатить/неrerun. Живойmonitor39494204147на130неотменять. Старыеrecord129/finaldocs129/record130/monitor130-recordнеrerunпослеэтихконечныхMD:перепишутактуальныефакты.
-
-- [bot](https://github.com/GitGayHub/e-monitor/commit/49a33b00c1fb50700aa4a445c91c98ded229b816)
-- [bot-cloud](https://github.com/GitGayHub/e-monitor/commit/b12e92ccfa734893fcb565d74386d7c7758753ef)
-- [android](https://github.com/GitGayHub/e-monitor-android/commit/9ab6c0d41825eff8649da31c1ade3daa86452122)
-- [android-cloud](https://github.com/GitGayHub/e-monitor-android/commit/2ef369ccfd62222012d3655ea0d79c31f3eadc45)
-
-## Контрольная точка130 завершена
-
-Оба исходных и дорожных репозитория обновлены. Cloud check/apply:0файлов/0конфликтов,резервнаякопия20261020T205929703772Z. После этого4изолированныхPython/4JVM+buildPASS;APKбайт-в-байтнеизменен. CHECKPOINT_130.json. СерверныйACK130подтверждён. Это завершение данного исправления, а не общей приёмки26/104. Далее сбор реальных ответов трёх Samsung-аукционных запросов; не повторять телефонные iPhone/SamsungGUIпрогоны без причины.
+Код131 ещё не опубликован.
