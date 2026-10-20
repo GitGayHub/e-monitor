@@ -12,8 +12,8 @@
     "pendingChecks": 0,
     "blockedChecks": 99,
     "acceptanceIncompleteChecks": 104,
-    "inProgressChecks": 4,
-    "failedChecks": 1
+    "inProgressChecks": 5,
+    "failedChecks": 0
   },
   "statuses": [
     "PENDING",
@@ -201,10 +201,10 @@
       ],
       "baskets": {
         "Sofort": {
-          "status": "FAIL",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
-          "checkedAtUtc": "2026-10-20T14:57:43.414289+00:00",
+          "checkedAtUtc": "2026-10-20T18:57:25.727887+00:00",
           "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
           "directBucketAcceptancePerformed": false,
           "latestDiscovery20261008": {
@@ -228,6 +228,15 @@
             "catalogueComplete": false,
             "globalMinimumVerified": false,
             "report": "docs/qa/pc-20261010/REPORT_128.md"
+          },
+          "regression129": {
+            "itemId": "147637622122",
+            "expected": false,
+            "python": false,
+            "kotlin": false,
+            "preparedBrowserInput": true,
+            "fullCatalogueComplete": false,
+            "report": "docs/qa/pc-20261010/REPORT_129.md"
           }
         },
         "Sofort+": {
@@ -291,7 +300,7 @@
           }
         }
       },
-      "progress": "MANUAL_RELEVANCE_REGRESSION_OPEN",
+      "progress": "MANUAL_RELEVANCE_REGRESSION_FIXED_CATALOGUE_INCOMPLETE",
       "discoveryProgress": {
         "source": "ebay.com browser-live + HTTP-live",
         "requestCount": 2,
@@ -3555,5 +3564,27 @@
     "runtimeAcknowledged": true,
     "runtimeAt": "2026-10-20T14:53:29+00:00",
     "report": "docs/qa/pc-20261010/REPORT_128.md"
+  },
+  "latestStage129": {
+    "checkedAtUtc": "2026-10-20T18:57:25.727887+00:00",
+    "version": "0.129",
+    "logicVersion": 1792509816,
+    "historyVersion": 35,
+    "pythonTests": 483,
+    "jvmTests": 399,
+    "androidTests": 28,
+    "regularTestsPassed": true,
+    "independentEightInputSha": "b287d1ec4e291df7b613465f326fa36a30cf0665fbc0951ef630b3d5e0d42a54",
+    "independentEightInputPassed": true,
+    "independentPreparedInputs": 3,
+    "actualHistoricalInputs": 5,
+    "physicalPhoneUsed": true,
+    "physicalPhoneAuthorized": true,
+    "phoneSearchRowsAllColumnsPreserved": true,
+    "newTelegramMessagesSent": false,
+    "fullCatalogueComplete": false,
+    "globalMinimaProven": false,
+    "deliveryLatencyUnder15MinutesProven": false,
+    "report": "docs/qa/pc-20261010/REPORT_129.md"
   }
 }
