@@ -902,7 +902,7 @@ def _matches_lg_ultragear_oled_480(text_norm):
     return bool(has_ug and has_480 and has_oled)
 
 
-def _mouse_part_number_matches(details, requested_model):
+def _mouse_part_number_models(details):
     # Logitech's original 2c datasheet, pp1–2:
     # https://www.littlebit-tech.nl/media/productattach/l/o/log_l1138349.pdf
     # Only own manufacturer-number fields are authoritative here. A reference
@@ -924,7 +924,35 @@ def _mouse_part_number_matches(details, requested_model):
     values = [str(details.get('mpn') or '')]
     values += [str(a.get('value') or '') for a in details.get('localizedAspects') or [] if _normalize(a.get('name') or '') in names]
     declared = [family for value in values for number in re.findall(r'\b910[\s-]*(\d{6})\b', value) for family,numbers in families.items() if number in numbers]
-    return all(family == requested_model for family in declared)
+    return set(declared)
+
+
+def _mouse_part_number_matches(details, requested_model):
+    return all(family == requested_model for family in _mouse_part_number_models(details))
+
+
+def _requested_mouse_model(search):
+    intent = _search_intent(search)
+    if not intent or intent['kind'] not in ('superlight_2', 'superlight_2_dex'):
+        return None
+    return 'superlight 2' + ('c' if intent.get('compact') else '') + (' dex' if intent['kind'] == 'superlight_2_dex' else '') + (' se' if intent.get('se') else '')
+
+
+def _mouse_title_needs_model_details(title, requested):
+    t = _normalize(title)
+    return (requested in ('superlight 2c', 'superlight 2 se', 'superlight 2 dex')
+            and _matches_superlight_2_mouse(t)
+            and not re.search(r'\b(?:dex|se|s[.]e[.]|compact|standard\s+edition)\b', t)
+            and not _is_for_accessory_title(t, 'logitech '+requested, 'mice')
+            and not _is_category_blocked_title(t, 'mice', 'logitech '+requested))
+
+
+def _mouse_title_with_evidence(title, requested, evidence=(), *, pending=False):
+    """Internal model interpretation; never rewrite the seller's displayed title."""
+    t = _normalize(title)
+    if _mouse_title_needs_model_details(t, requested) and (pending or set(evidence) == {requested}):
+        return re.sub(r'\b(?:superlight|gpx)\s*(?:2|ii)\b', requested, t, count=1)
+    return t
 
 
 def _matches_superlight_2_mouse(title_norm, require_dex=False, require_se=False, require_compact=False):
@@ -1178,6 +1206,9 @@ def _intent_details_match(search, item=None, details=None):
     text_norm = _intent_text_from_item_and_details(item, details)
     kind = intent["kind"]
     title_only = _normalize((item or {}).get("title") or "")
+    if kind in ('superlight_2', 'superlight_2_dex'):
+        evidence = _mouse_part_number_models(details) if details else {(item or {}).get('_model_evidence')}
+        title_only = _mouse_title_with_evidence(title_only, _requested_mouse_model(search), evidence)
     if kind == "rayban_meta_gen2":
         models = " ".join(str(a.get("value") or "") for a in (details or {}).get("localizedAspects", []) if _normalize(a.get("name") or "") in ("modell", "model", "modellnummer", "model number"))
         own = _normalize(_clean_description((details or {}).get("description") or ""))
@@ -6532,11 +6563,15 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         requested_model = 'superlight 2' + ('c' if mouse_intent.get('compact') else '') + (' dex' if mouse_intent['kind'] == 'superlight_2_dex' else '') + (' se' if mouse_intent.get('se') else '')
         if not _mouse_part_number_matches(details, requested_model):
             return False
-        title = _normalize(details.get("title") or item.get("title") or "")
+        evidence = _mouse_part_number_models(details)
+        title = _mouse_title_with_evidence(details.get("title") or item.get("title") or "", requested_model, evidence)
         if not _matches_superlight_2_mouse(title, mouse_intent["kind"] == "superlight_2_dex", mouse_intent.get("se",False), mouse_intent.get("compact",False)):
             return False
         own_description = _normalize(_clean_description(details.get("description") or ""))
         described_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", own_description)
+        if described_model:
+            interpreted = _mouse_title_with_evidence(described_model.group(0), requested_model, evidence)
+            described_model = re.search(r"\b(?:superlight|gpx)\s*(?:2|ii)(c)?\b(?:[\s-]+(dex)\b)?(?:[\s-]+(se)\b)?", interpreted)
         if described_model and (bool(described_model.group(1)) != mouse_intent.get("compact",False) or
                                 (described_model.group(2) == "dex") != (mouse_intent["kind"] == "superlight_2_dex") or
                                 (described_model.group(3) == "se") != mouse_intent.get("se",False)):
@@ -6546,7 +6581,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         for aspect in details.get("localizedAspects") or []:
             if _normalize(aspect.get("name") or "") not in ("modell", "model"):
                 continue
-            value = _normalize(aspect.get("value") or "")
+            value = _mouse_title_with_evidence(aspect.get("value") or "", requested_model, evidence)
             if ("superlight" in value and not _matches_superlight_2_mouse(value, mouse_intent["kind"] == "superlight_2_dex", mouse_intent.get("se",False), mouse_intent.get("compact",False))) or re.search(r"\bpro\s*2\s+lightspeed\b", value):
                 return False
     if _effective_category(category, query) == "consoles" and re.search(r"\b(?:ps5|playstation\s*5)\b", query):
@@ -6660,7 +6695,7 @@ def _include_word_in_title(title_norm, word_norm):
     return False
 
 
-def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False, defer_pickup_location=False):
+def filter_results(items, search, config_obj, skip_seen=False, is_statistics=False, defer_pickup_location=False, defer_mouse_model=False):
     global_banned = config_obj.get_global_banned_sellers()
     global_banned_norm = {_normalize(s) for s in global_banned}
     banned_ids = config_obj.get_banned_item_ids() | KNOWN_BAD_ITEM_IDS
@@ -6809,11 +6844,13 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
                 continue
             if _effective_category(category, _normalize(query_text)) == "phones" and any(_has_term(cond_norm, w) for w in REFURBISHED_CONDITION_WORDS):
                 continue
-        if not _intent_prelim_matches_title(title_norm, search):
+        model_title = _mouse_title_with_evidence(title_norm, _requested_mouse_model(search),
+            {item.get('_model_evidence')}, pending=defer_mouse_model and not item.get('_details_loaded'))
+        if not _intent_prelim_matches_title(model_title, search):
             continue
         query_norm = _normalize(query_text)
         effective_category = _effective_category(category, query_norm)
-        if not _matches_category_query(title_norm, effective_category, query_norm):
+        if not _matches_category_query(model_title, effective_category, query_norm):
             continue
         if _is_category_blocked_title(title_norm, effective_category, query_norm):
             continue
@@ -6847,7 +6884,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # Controllers: Stickdrift / abgenutzte Sticks (even without per-search exclude)
         if _has_stickdrift_problem(title_norm):
             continue
-        if include_words and not any(_include_word_in_title(title_norm, w) for w in include_words):
+        if include_words and not any(_include_word_in_title(model_title, w) for w in include_words):
             continue
         if not skip_seen:
             h = _item_hash(item["seller_name"], item["title"], item["price"])
@@ -8633,6 +8670,9 @@ async def _validate_candidate(item, search):
         if not _provider_details_complete(details):
             item["_details_status"] = "unavailable_price"
             return False, details
+        models = _mouse_part_number_models(details)
+        if models == {_requested_mouse_model(search)}:
+            item['_model_evidence'] = next(iter(models))
         _refresh_candidate_details(item, details, config.get_settings(), search)
         # Price limits are represented by the statistics verdict; all structural
         # filters still apply to the actual country, condition and radius.
@@ -8701,7 +8741,7 @@ def _history_filter_signature(search, config_obj=None):
 
 
 def _history_candidates(items, search):
-    rows = filter_results(items, search, config, skip_seen=True, is_statistics=True, defer_pickup_location=True)
+    rows = filter_results(items, search, config, skip_seen=True, is_statistics=True, defer_pickup_location=True, defer_mouse_model=True)
     maximum = search.get("filters", {}).get("max_price")
     def below_ceiling(row):
         if maximum is None:
