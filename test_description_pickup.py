@@ -17,8 +17,11 @@ class DescriptionPickupTest(unittest.TestCase):
                 monitor._refresh_candidate_details(item,d,{'warn_non_eu':False})
                 with self.subTest(id=case['id'],auction=auction,offer=offer):
                     self.assertEqual(case['pickupOnly'],item['is_pickup_only'])
-                    self.assertAlmostEqual(0 if case['pickupOnly'] else 8.99,item['shipping_cost'])
-                    self.assertAlmostEqual(732 if case['pickupOnly'] else 740.99,item['total_price'])
+                    # An explicit own delivery quote refreshes the stale SERP fee;
+                    # an unpriced destination warning must keep the known fee.
+                    expected = 0 if case['pickupOnly'] else case.get('shippingCost',8.99)
+                    self.assertAlmostEqual(expected,item['shipping_cost'])
+                    self.assertAlmostEqual(732+expected,item['total_price'])
 
     def test_own_seller_delivery_overrides_header_in_all_baskets(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/description_pickup_oct15.json').read_text(encoding='utf8'))['cases']

@@ -1,3 +1,18 @@
+<!-- stage127 -->
+## Актуальный этап: 0.127, только эмулятор
+
+Последнее указание: «продролжай на эмуляторе». Телефон НЕчитать/НЕиспользовать, он остаётся125. ПКскрыто,ChromeDOM,TelegramПКтолькофон. Общая цельACTIVE/PARTIAL:26товаров/104корзины/всеалиасы/минимумы/40–50ownлибоstock/CRUDсетьсинхронизация/правильнаяреальнаядоставка≤15мин.
+
+Наemulator-5580установлена127/code127/rules1792505221/History33/SHA633b460f3425319ad6c1e8e0c6072b48682d861df5e5c461e3dcfda674a510c0. 478Python/395JVM/build/24ART PASS. Все50строк/столбцов равны126before→installed→tested→reportfinal→127before→installed→tested. QA48active/notify0/workerfalse/autosyncfalse/revision59a71baf,НЕсинкатьвproduction. Сохранённый126report130850msпобайтнонеизменён;этоНЕживой127report. 126промежуточнаянепубликовалась,архивы126/127неперезаписывать.
+
+126fixlegacy2Cintent/отдельнаякарточка,SEMPN555,ownshippingEUR14.42/import3.57scoped;127SEMPN556/646/651поofficialLogitech,новыеbaselinePython1FAIL/JVM1FAIL,затемвсепрошли. ПодробноREPORT_127/VERIFIED_127. Actualnormal5inputSHA53e9337d7f5c99e59155c65fee405b26e3cb448119a95105f2d50673a93d0cc0обаPASS. ДваcompactChromeownпрочитаны:36660300081177.95/MPN007531whole;406708476081114.90/007539wholeминskateцарапины. Первыйownexactпосленормализации,второйrawмногоязычныйнеexactвидимомуDE;ключевыесобственныефактысовпали,неутверждатьполноеравенство. Historicalauc168799119063закончился,replayclock=cacheWrittenAtMs. 126basketsbothBINlaterSORRY/aucs403:неполно/неминимумы/неzero. Исходные3970неизменны.
+
+Публикация кода и ACK127 ещё не подтверждены.
+Применение127 сервером ещё не подтверждено; metadata не равна ACK.
+
+Следом: actualruntimeACKеслинет/CI127безrerunbilling/cloudcheck+compatibleapply+isolatedchecks/finaldocscheckpoint;затемHTMLдоступность/полныйкаталог/скорость. Важныйнепочиненныйпункт:modifieromittedtitlebutownMPNcandidateenrichment. Необъявлятьполнуюприёмку. НовыхTelegramнет,старые120079–120092/коррекциинедублировать. Productionnormal50/48/ce6/LG430/recipient/seen/bansсохранить. ЗдоровыйADBнерестартовать. Никакихblindpull/reset/clean/force/privateuploads. Frozenpublication125.jsonнеперезаписывать,ci125послеdocsНЕrerun. 127publicationзаписыватьодинраздоконечныхdocs. Артефактыaudit/2026-10-04/closure094.
+<!-- /stage127 -->
+
 <!-- stage125 -->
 ## Актуально: проверенная0.125 на телефоне и эмуляторе
 
