@@ -4188,7 +4188,7 @@ def parse_ebay_results(html):
     soup = BeautifulSoup(html, "html.parser")
     # eBay renders unrelated recommendation cards below an explicit zero.
     # They are not results of the requested query or sale format.
-    heading=soup.select_one('#srp-results-heading,.srp-controls__count-heading')
+    heading=soup.select_one('#srp-results-heading,.srp-controls__count-heading,.result-count__count-heading')
     if heading and re.match(r'^\s*0\s+(?:ergebnisse|results)\b',heading.get_text(' ',strip=True),re.I):
         return []
     items = []
