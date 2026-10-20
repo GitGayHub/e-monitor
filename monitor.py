@@ -736,6 +736,11 @@ def _search_intent(search_or_query):
         compact = bool(mouse_model.group(1))
         dex = mouse_model.group(2) == "dex"
         se = mouse_model.group(3) == "se"
+        required = {_normalize(w) for w in search_or_query.get('include_words', [])} if isinstance(search_or_query, dict) else set()
+        # Legacy compact searches stored the broad query plus OR alternatives.
+        # Infer only when EVERY required alternative explicitly means 2C.
+        if not compact and not dex and not se and required and required <= {'2c', '2 c', 'compact'}:
+            compact = True
         model = "superlight 2" + ("c" if compact else "") + (" dex" if dex else "") + (" se" if se else "")
         return {"kind": "superlight_2_dex" if dex else "superlight_2", "query": "logitech " + model,
                 "display_name": "logitech " + model, "category": "mice", "compact": compact, "se": se}
@@ -903,6 +908,9 @@ def _mouse_part_number_matches(details, requested_model):
     # Only own manufacturer-number fields are authoritative here. A reference
     # to another mouse in compatibility, reviews or recommendations is not.
     families = {
+        # Official SE product pages: en-gb 007555, de-de 007556,
+        # en-us 007646 and 007651 (pro-x-superlight-2-se.910-<number>).
+        'superlight 2 se': {'007555', '007556', '007646', '007651'},
         'superlight 2c': {'007531', '007532', '007538', '007539', '007545', '007546'},
         # Manufacturer's DEX page, Japanese release and original BR datasheet:
         # logitechg.com/en-gb/shop/p/pro-x-superlight-2-dex.910-007358
@@ -4518,7 +4526,7 @@ def _money_obj_eur(value):
 def _parse_labeled_money(lines, label_patterns):
     labels = tuple(re.compile(p, re.IGNORECASE) for p in label_patterns)
     stop = re.compile(
-        r"^(?:lieferung|delivery|zahlungen|payments|r[üu]ckgabe|returns|standort|item location|artikelzustand|condition)\b",
+        r"^(?:lieferung|delivery|zahlungen|payments|r[üu]ckgabe|returns|standort|item location|artikelzustand|condition|versand|shipping|einfuhrabgaben|einfuhrgeb[üu]hren|import charges|import fees)\b",
         re.IGNORECASE,
     )
     for idx, line in enumerate(lines):
@@ -4529,9 +4537,14 @@ def _parse_labeled_money(lines, label_patterns):
         if after_label and after_label != line:
             candidates.append(after_label)
         for nxt in lines[idx + 1: idx + 5]:
-            if stop.search(nxt) and not re.search(r"(?:eur|€|gbp|£|usd|\$|\d+[,.]\d+)", nxt, re.IGNORECASE):
+            if stop.search(nxt):
                 break
             candidates.append(nxt)
+        # The EUR conversion can be in a separate child after the GBP amount.
+        # Search within this field before estimating with our fallback rate.
+        for candidate in candidates:
+            if re.search(r"(?:EUR|€)\s*\d|\d\s*(?:EUR|€)",candidate,re.I):
+                return _parse_price(candidate)
         for candidate in candidates:
             if re.search(r"(?:EUR|€)\s*\d|\d\s*(?:EUR|€)",candidate,re.I):
                 return _parse_price(candidate)
@@ -5356,7 +5369,17 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     location_text = ""
     page_lines = [line.strip() for line in soup.get_text("\n", strip=True).splitlines() if line.strip()]
     shipping_cost = _parse_labeled_money(page_lines, (r"^versand\b", r"^shipping\b"))
-    import_charges = _parse_labeled_money(page_lines, (r"^einfuhrabgaben\b", r"^import charges\b", r"^import fees\b"))
+    import_charges = _parse_labeled_money(page_lines, (r"^einfuhr(?:abgaben|geb[üu]hren)\b", r"^import charges\b", r"^import fees\b"))
+    own_costs = {}
+    for key, selector in (('shipping', '.ux-labels-values--shipping'), ('imports', '.ux-labels-values--importCharges')):
+        module = soup.select_one(selector)
+        if module is not None:
+            text = module.get_text(' ', strip=True)
+            own_costs[key] = 0.0 if _description_pickup_only(text) or (not re.search(r'EUR|€',text,re.I) and any(w in text.lower() for w in ('kostenlos','free','gratis'))) else _parse_price(text)
+    if 'shipping' in own_costs:
+        shipping_cost = own_costs['shipping']
+    if 'imports' in own_costs:
+        import_charges = own_costs['imports']
     for idx, line in enumerate(page_lines):
         m = re.match(r"^(?:Standort|Artikelstandort|Item location|Located in)\s*:?\s*(.+)$", line, re.IGNORECASE)
         if m and m.group(1).strip():
@@ -5436,6 +5459,9 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         text=module.get_text(' ',strip=True)
         if re.search(r'\d',text) and _detect_price_currency(text)!='EUR' and _parse_price(text) is None:
             result['htmlMoneyIncomplete']=True
+    if ('shipping' in own_costs and own_costs['shipping'] is None
+            and re.search(r'\b(?:kostenpflichtig|preis beim|calculated shipping|paid shipping|cost on request)\b', shipping_module.get_text(' ',strip=True), re.I)):
+        result['htmlMoneyIncomplete'] = True
     if shipping_cost is not None:
         result["htmlShippingCost"] = _money_obj_eur(shipping_cost)
     if import_charges is not None:

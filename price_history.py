@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 31  # Decorative parts and explicit mouse faults cannot establish device prices.
+HISTORY_VERSION = 33  # Resolve legacy compact intent, SE manufacturer numbers and own shipping quotes.
 _DB_LOCK = threading.Lock()
 
 
