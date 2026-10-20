@@ -1,240 +1,240 @@
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 636, in wrap_api_call
-    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
-playwright._impl._errors.TimeoutError: Page.goto: Timeout 748ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20desktop&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/events.py", line 84, in _run
-    self._context.run(self._callback, *self._args)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py", line 68, in resume
-    g_self.switch()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 470, in _handler
-    self.handler(route, route.request)  # type: ignore
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 140, in wrapper_func
-    return handler(
-           ^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7355, in _pw_block_heavy
-    route.abort()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 22430, in abort
-    self._sync(self._impl_obj.abort(errorCode=error_code))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 408, in abort
-    await self._handle_route(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 504, in _handle_route
-    await callback()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 599, in _race_with_page_close
-    await asyncio.wait(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/tasks.py", line 428, in wait
-    return await _wait(fs, timeout, return_when, loop)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/tasks.py", line 535, in _wait
-    await waiter
-asyncio.exceptions.CancelledError
-2026-10-20 14:19:02,115 - Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:546
-handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:546>
-Traceback (most recent call last):
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7481, in _do_fetch_playwright
-    page.goto(plan["url"], wait_until=plan["wait_until"], timeout=MonitorPassBudget.milliseconds(35000))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 18528, in goto
-    self._sync(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_page.py", line 564, in goto
-    return await self._main_frame.goto(**locals_to_params(locals()))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_frame.py", line 157, in goto
-    await self._channel.send(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 78, in send
-    return await self._connection.wrap_api_call(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 636, in wrap_api_call
-    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
-playwright._impl._errors.TimeoutError: Page.goto: Timeout 748ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20desktop&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/events.py", line 84, in _run
-    self._context.run(self._callback, *self._args)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 547, in _done_callback
-    exc = future.exception()
-          ^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_browser_context.py", line 267, in _on_route
-    handled = await route_handler.handle(route)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 443, in handle
-    return await self._handle_internal(route)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 479, in _handle_internal
-    await handler_finished_future
-asyncio.exceptions.CancelledError
-2026-10-20 14:19:02,116 - Playwright HTML fetch failed for '4080 (pc, rechner, computer, desktop, gaming pc)' (try 1/3): Page.goto: Timeout 748ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20desktop&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-2026-10-20 14:19:02,128 -   4080 (pc, rechner, computer, desktop, gaming pc): fetch error search_deferred
-2026-10-20 14:19:02,136 - Task was destroyed but it is pending!
-task: <Task cancelling name='Task-406' coro=<Channel.send() done, defined at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:70> wait_for=<Future finished result=None>>
-2026-10-20 14:19:02,137 - Future exception was never retrieved
-future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
-playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
-2026-10-20 14:19:02,180 -   4080 (pc, rechner, computer, desktop, gaming pc): 7 results, 0 verified in fair live slice
-2026-10-20 14:19:02,233 - Checking samsung s24 ultra through primary HTML
-2026-10-20 14:19:02,265 - samsung_s24_ultra_buy: live alias task 1/4 format=buy_now_offer query=samsung galaxy s24 ultra
-2026-10-20 14:19:02,273 - Fetching: samsung s24 ultra
-2026-10-20 14:19:02,274 - eBay session ready (impersonate=chrome131)
-2026-10-20 14:19:02,934 - eBay session ready (impersonate=chrome124)
-2026-10-20 14:19:04,688 -   samsung s24 ultra -> 60 items via www.ebay.de body_len=1852764
-2026-10-20 14:19:04,688 -   samsung s24 ultra -> 60 items via ebay.de
-2026-10-20 14:19:04,711 - samsung_s24_ultra_buy: live alias task 2/4 format=buy_now_offer query=samsung s24 ultra
-2026-10-20 14:19:04,717 - Fetching: samsung s24 ultra
-2026-10-20 14:19:06,450 -   samsung s24 ultra -> 60 items via www.ebay.de body_len=1846476
-2026-10-20 14:19:06,450 -   samsung s24 ultra -> 60 items via ebay.de
-2026-10-20 14:19:06,471 - samsung_s24_ultra_buy: live alias task 3/4 format=buy_now_offer query=galaxy s24 ultra
-2026-10-20 14:19:06,477 - Fetching: samsung s24 ultra
-2026-10-20 14:19:07,978 -   samsung s24 ultra -> 60 items via m.ebay.de body_len=1828236
-2026-10-20 14:19:07,978 -   samsung s24 ultra -> 60 items via ebay.de
-2026-10-20 14:19:08,001 - samsung_s24_ultra_buy: live alias task 4/4 format=buy_now_offer query=s24ultra
-2026-10-20 14:19:08,009 - Fetching: samsung s24 ultra
-2026-10-20 14:19:09,742 -   samsung s24 ultra -> 60 items via m.ebay.de body_len=1841689
-2026-10-20 14:19:09,742 -   samsung s24 ultra -> 60 items via ebay.de
-2026-10-20 14:19:10,162 - Scraping item page details for item 840041138963 via HTML
-2026-10-20 14:19:11,168 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/840041138963?t=1792501262000&category=9355&seller=%24chevy-fan%24&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:19:11,973 - Scraping item page details for item 168805250015 via HTML
-2026-10-20 14:19:13,125 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/168805250015?t=0&category=9355&seller=m.brandy_89&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:19:13,951 -   samsung s24 ultra: 63 results, 1 verified in fair live slice
-2026-10-20 14:19:14,114 - Checking samsung s24 ultra through primary HTML
-2026-10-20 14:19:14,146 - samsung_s24_ultra_auc: live alias task 1/4 format=auction query=samsung galaxy s24 ultra
-2026-10-20 14:19:14,153 - Fetching: samsung s24 ultra
-2026-10-20 14:19:14,677 - eBay session ready (impersonate=chrome120)
-2026-10-20 14:19:16,505 -   samsung s24 ultra -> 31 items via www.ebay.de body_len=1252175
-2026-10-20 14:19:16,505 -   samsung s24 ultra -> 31 items via ebay.de
-2026-10-20 14:19:16,529 - samsung_s24_ultra_auc: live alias task 2/4 format=auction query=samsung s24 ultra
-2026-10-20 14:19:16,534 - Fetching: samsung s24 ultra
-2026-10-20 14:19:18,971 -   samsung s24 ultra -> 62 items via m.ebay.de body_len=1657848
-2026-10-20 14:19:18,971 -   samsung s24 ultra -> 62 items via ebay.de
-2026-10-20 14:19:18,993 - samsung_s24_ultra_auc: live alias task 3/4 format=auction query=galaxy s24 ultra
-2026-10-20 14:19:18,999 - Fetching: samsung s24 ultra
-2026-10-20 14:19:20,485 -   samsung s24 ultra -> 28 items via m.ebay.de body_len=1163128
-2026-10-20 14:19:20,485 -   samsung s24 ultra -> 28 items via ebay.de
-2026-10-20 14:19:20,508 - samsung_s24_ultra_auc: live alias task 4/4 format=auction query=s24ultra
-2026-10-20 14:19:20,514 - Fetching: samsung s24 ultra
-2026-10-20 14:19:22,805 -   samsung s24 ultra -> 64 items via m.ebay.de body_len=1687356
-2026-10-20 14:19:22,805 -   samsung s24 ultra -> 64 items via ebay.de
-2026-10-20 14:19:23,312 - Scraping item page details for item 327414098697 via HTML
-2026-10-20 14:19:24,439 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/327414098697?t=0&category=9355&seller=kleinerengel20&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:19:25,092 - Scraping item page details for item 267818047577 via HTML
-2026-10-20 14:19:26,352 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/267818047577?t=0&category=9355&seller=astor113&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:19:26,772 -   samsung s24 ultra: 76 results, 1 verified in fair live slice
-2026-10-20 14:19:26,779 - Checking samsung s24 ultra through primary HTML
-2026-10-20 14:19:26,811 - samsung_s24_ultra_auc__ending_soon: live alias task 2/4 format=auction query=samsung s24 ultra
-2026-10-20 14:19:26,817 - Fetching: samsung s24 ultra
-2026-10-20 14:19:29,044 -   samsung s24 ultra -> 63 items via m.ebay.de body_len=1763597
-2026-10-20 14:19:29,045 -   samsung s24 ultra -> 63 items via ebay.de
-2026-10-20 14:19:29,066 - samsung_s24_ultra_auc__ending_soon: live alias task 3/4 format=auction query=galaxy s24 ultra
-2026-10-20 14:19:29,072 - Fetching: samsung s24 ultra
-2026-10-20 14:19:29,603 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-20 14:19:32,872 -   samsung s24 ultra -> 25 items via www.ebay.de body_len=826165
-2026-10-20 14:19:32,873 -   samsung s24 ultra -> 25 items via ebay.de
-2026-10-20 14:19:32,998 - samsung_s24_ultra_auc__ending_soon: live alias task 4/4 format=auction query=s24ultra
-2026-10-20 14:19:33,005 - Fetching: samsung s24 ultra
-2026-10-20 14:19:34,384 -   samsung s24 ultra -> 25 items via m.ebay.de body_len=827051
-2026-10-20 14:19:34,385 -   samsung s24 ultra -> 25 items via ebay.de
-2026-10-20 14:19:34,411 - samsung_s24_ultra_auc__ending_soon: live alias task 1/4 format=auction query=samsung galaxy s24 ultra
-2026-10-20 14:19:34,418 - Fetching: samsung s24 ultra
-2026-10-20 14:19:35,707 -   samsung s24 ultra -> 25 items via m.ebay.de body_len=842591
-2026-10-20 14:19:35,707 -   samsung s24 ultra -> 25 items via ebay.de
-2026-10-20 14:19:35,713 -   samsung s24 ultra: ending soon sweep added 9 item(s)
-2026-10-20 14:19:35,810 - Checking 4050 oled through primary HTML
-2026-10-20 14:19:35,843 - 4050_oled_buy: live alias task 5/5 format=buy_now_offer query=rtx 4050 (aero,vivobook,spectre,yoga,xps,legion,proart)
-2026-10-20 14:19:35,850 - Fetching: 4050 oled
-2026-10-20 14:19:37,076 -   4050 oled -> 8 items via www.ebay.de body_len=525569
-2026-10-20 14:19:37,076 -   4050 oled -> 8 items via ebay.de
-2026-10-20 14:19:37,105 - 4050_oled_buy: live alias task 1/5 format=buy_now_offer query=rtx 4050 oled laptop
-2026-10-20 14:19:37,113 - Fetching: 4050 oled
-2026-10-20 14:19:37,646 - eBay session ready (impersonate=safari17_0)
-2026-10-20 14:19:38,710 - eBay session ready (impersonate=chrome131)
-2026-10-20 14:19:40,472 -   4050 oled -> 60 items via www.ebay.de body_len=1459124
-2026-10-20 14:19:40,472 -   4050 oled -> 60 items via ebay.de
-2026-10-20 14:19:40,495 - 4050_oled_buy: live alias task 2/5 format=buy_now_offer query=rtx 4050 oled notebook
-2026-10-20 14:19:40,501 - Fetching: 4050 oled
-2026-10-20 14:19:42,312 -   4050 oled -> 60 items via www.ebay.de body_len=1462300
-2026-10-20 14:19:42,312 -   4050 oled -> 60 items via ebay.de
-2026-10-20 14:19:42,336 - 4050_oled_buy: live alias task 3/5 format=buy_now_offer query=laptop 4050 oled
-2026-10-20 14:19:42,342 - Fetching: 4050 oled
-2026-10-20 14:19:44,390 -   4050 oled -> 60 items via m.ebay.de body_len=1471399
-2026-10-20 14:19:44,390 -   4050 oled -> 60 items via ebay.de
-2026-10-20 14:19:44,413 - 4050_oled_buy: live alias task 4/5 format=buy_now_offer query=4050 oled
-2026-10-20 14:19:44,419 - Fetching: 4050 oled
-2026-10-20 14:19:45,673 -   4050 oled -> 9 items via m.ebay.de body_len=737415
-2026-10-20 14:19:45,674 -   4050 oled -> 9 items via ebay.de
-2026-10-20 14:19:46,275 - Scraping item page details for item 407284222665 via HTML
-2026-10-20 14:19:47,376 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/407284222665?t=0&category=177&seller=imperikoff&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:19:47,758 - Scraping item page details for item 860044358399 via HTML
-2026-10-20 14:19:48,873 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/860044358399?t=0&category=177&seller=kauf_direkt&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:19:49,208 -   4050 oled: 146 results, 0 verified in fair live slice
-2026-10-20 14:19:49,354 - Checking 4050 oled through primary HTML
-2026-10-20 14:19:49,386 - 4050_oled_auc: live alias task 4/5 format=auction query=4050 oled
-2026-10-20 14:19:49,393 - Fetching: 4050 oled
-2026-10-20 14:19:50,538 - eBay ebay.de genuine no-results marker for '4050 oled'
-2026-10-20 14:19:50,667 - eBay session ready (impersonate=chrome124)
-2026-10-20 14:19:51,220 - eBay session ready (impersonate=chrome120)
-2026-10-20 14:19:56,613 - eBay playwright genuine no-results marker for '4050 oled'
-2026-10-20 14:19:56,637 - 4050_oled_auc: live alias task 5/5 format=auction query=rtx 4050 (aero,vivobook,spectre,yoga,xps,legion,proart)
-2026-10-20 14:19:56,644 - Fetching: 4050 oled
-2026-10-20 14:19:56,645 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-20 14:19:57,380 - eBay challenge on ebay.de for '4050 oled' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-20 14:19:57,383 - eBay session ready (impersonate=safari17_0)
-2026-10-20 14:19:58,082 - eBay challenge on ebay.de for '4050 oled' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-20 14:19:58,085 - eBay session ready (impersonate=chrome131)
-2026-10-20 14:20:00,404 - Playwright challenge before result wait for '4050 oled'
-2026-10-20 14:20:08,698 - eBay fetch fail #1 (site_error) for '4050 oled' on GH — no cooldown, next product retries
-2026-10-20 14:20:09,280 -   4050 oled -> 3 items via eBay Browse API (EBAY_DE)
-2026-10-20 14:20:09,287 -   4050 oled: fetch error search_deferred
-2026-10-20 14:20:09,476 - eBay session ready (impersonate=chrome124)
-2026-10-20 14:20:09,477 - Scraping item page details for item 377583163555 via HTML
-2026-10-20 14:20:10,253 - _fetch_item_details_html: challenge page hit for item 377583163555
-2026-10-20 14:20:12,283 - Scraping item page details for item 920046466292 via HTML
-2026-10-20 14:20:13,494 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/920046466292?t=0&category=177&seller=rakicomputers&excSoj=1&ver=1&excTrk=1&lsite=0&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
-2026-10-20 14:20:15,776 -   4050 oled: 3 results, 2 verified in fair live slice
-2026-10-20 14:20:15,855 - Checking 4060 oled through primary HTML
-2026-10-20 14:20:15,894 - 4060_oled_buy: live alias task 1/5 format=buy_now_offer query=rtx 4060 oled laptop
-2026-10-20 14:20:15,903 - Fetching: 4060 oled
-2026-10-20 14:20:17,745 -   4060 oled -> 60 items via www.ebay.de body_len=1464143
-2026-10-20 14:20:17,745 -   4060 oled -> 60 items via ebay.de
-2026-10-20 14:20:17,770 - 4060_oled_buy: live alias task 2/5 format=buy_now_offer query=rtx 4060 oled notebook
-2026-10-20 14:20:17,777 - Fetching: 4060 oled
-2026-10-20 14:20:19,565 -   4060 oled -> 62 items via www.ebay.de body_len=1491015
-2026-10-20 14:20:19,565 -   4060 oled -> 62 items via ebay.de
-2026-10-20 14:20:19,587 - 4060_oled_buy: live alias task 3/5 format=buy_now_offer query=laptop 4060 oled
-2026-10-20 14:20:19,594 - Fetching: 4060 oled
-2026-10-20 14:20:20,000 - eBay session ready (impersonate=chrome120)
-2026-10-20 14:20:21,177 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-20 14:20:21,180 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-20 14:20:23,410 - Playwright challenge before result wait for '4060 oled'
-2026-10-20 14:20:25,484 - Playwright challenge before result wait for '4060 oled'
-2026-10-20 14:20:25,553 - eBay fetch fail #1 (blocked) for '4060 oled' on GH — no cooldown, next product retries
-2026-10-20 14:20:26,214 -   4060 oled -> 5 items via eBay Browse API (EBAY_DE)
-2026-10-20 14:20:26,236 - 4060_oled_buy: live alias task 4/5 format=buy_now_offer query=4060 oled
-2026-10-20 14:20:26,242 - Fetching: 4060 oled
-2026-10-20 14:20:26,242 - eBay session ready (impersonate=safari17_0)
-2026-10-20 14:20:26,803 - eBay session ready (impersonate=chrome131)
-2026-10-20 14:20:27,596 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-20 14:20:27,599 - eBay session ready (impersonate=chrome124)
-2026-10-20 14:20:28,265 - eBay challenge on ebay.de for '4060 oled' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-20 14:20:35,867 -   4060 oled: fetch error search_deferred
-2026-10-20 14:20:36,301 - 4060_oled_buy: description deadline; resume fresh candidate validation before next catalogue rotation
-2026-10-20 14:20:36,301 -   4060 oled: 98 results, 0 verified in fair live slice
-2026-10-20 14:20:36,301 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
-2026-10-20 14:20:36,330 - === Done ===
+2026-10-20 14:22:53,002 -   logitech superlight 2: 215 results, 1 verified in fair live slice
+2026-10-20 14:22:53,052 - Checking logitech superlight 2 through primary HTML
+2026-10-20 14:22:53,078 - logitech_superlight_2_std_auc: live alias task 1/2 format=auction query=logitech g pro x superlight 2
+2026-10-20 14:22:53,085 - Fetching: logitech superlight 2
+2026-10-20 14:22:54,060 -   logitech superlight 2 -> 7 items via m.ebay.de body_len=525497
+2026-10-20 14:22:54,060 -   logitech superlight 2 -> 7 items via ebay.de
+2026-10-20 14:22:54,084 - logitech_superlight_2_std_auc: live alias task 2/2 format=auction query=logitech superlight 2
+2026-10-20 14:22:54,091 - Fetching: logitech superlight 2
+2026-10-20 14:22:55,229 -   logitech superlight 2 -> 8 items via m.ebay.de body_len=534164
+2026-10-20 14:22:55,229 -   logitech superlight 2 -> 8 items via ebay.de
+2026-10-20 14:22:55,278 -   logitech superlight 2: 9 results, 0 verified in fair live slice
+2026-10-20 14:22:55,328 - Checking logitech superlight 2 dex through primary HTML
+2026-10-20 14:22:55,406 - logitech_superlight_2_dex_buy: live alias task 1/2 format=buy_now_offer query=logitech superlight 2 dex
+2026-10-20 14:22:55,412 - Fetching: logitech superlight 2 dex
+2026-10-20 14:22:56,969 -   logitech superlight 2 dex -> 75 items via m.ebay.de body_len=1306702
+2026-10-20 14:22:56,969 -   logitech superlight 2 dex -> 75 items via ebay.de
+2026-10-20 14:22:56,992 - logitech_superlight_2_dex_buy: live alias task 2/2 format=buy_now_offer query=g pro x superlight 2 dex
+2026-10-20 14:22:56,998 - Fetching: logitech superlight 2 dex
+2026-10-20 14:22:58,727 -   logitech superlight 2 dex -> 78 items via m.ebay.de body_len=1335779
+2026-10-20 14:22:58,727 -   logitech superlight 2 dex -> 78 items via ebay.de
+2026-10-20 14:22:59,044 - Scraping item page details for item 960091449742 via HTML
+2026-10-20 14:23:07,064 - HTML browser details unavailable for 960091449742: TimeoutError
+2026-10-20 14:23:07,747 - Scraping item page details for item 880030863472 via HTML
+2026-10-20 14:23:16,061 - HTML browser details unavailable for 880030863472: TimeoutError
+2026-10-20 14:23:17,316 -   logitech superlight 2 dex: 88 results, 2 verified in fair live slice
+2026-10-20 14:23:17,370 - Checking logitech superlight 2 dex through primary HTML
+2026-10-20 14:23:17,400 - logitech_superlight_2_dex_auc: live alias task 2/2 format=auction query=g pro x superlight 2 dex
+2026-10-20 14:23:17,407 - Fetching: logitech superlight 2 dex
+2026-10-20 14:23:18,454 -   logitech superlight 2 dex -> 3 items via m.ebay.de body_len=438737
+2026-10-20 14:23:20,503 -   logitech superlight 2 dex -> 3 items via ebay.de
+2026-10-20 14:23:20,528 - logitech_superlight_2_dex_auc: live alias task 1/2 format=auction query=logitech superlight 2 dex
+2026-10-20 14:23:20,535 - Fetching: logitech superlight 2 dex
+2026-10-20 14:23:21,882 -   logitech superlight 2 dex -> 8 items via m.ebay.de body_len=491712
+2026-10-20 14:23:21,882 -   logitech superlight 2 dex -> 8 items via ebay.de
+2026-10-20 14:23:21,928 -   logitech superlight 2 dex: 8 results, 0 verified in fair live slice
+2026-10-20 14:23:21,973 - Checking sony ult wear through primary HTML
+2026-10-20 14:23:21,998 - sony_ult_wear_buy: live alias task 5/5 format=buy_now_offer query=sony YY2981
+2026-10-20 14:23:22,004 - Fetching: sony ult wear
+2026-10-20 14:23:23,609 -   sony ult wear -> 50 items via m.ebay.de body_len=952878
+2026-10-20 14:23:23,609 -   sony ult wear -> 50 items via ebay.de
+2026-10-20 14:23:23,634 - sony_ult_wear_buy: live alias task 1/5 format=buy_now_offer query=sony ult wear
+2026-10-20 14:23:23,640 - Fetching: sony ult wear
+2026-10-20 14:23:25,094 -   sony ult wear -> 50 items via m.ebay.de body_len=1005799
+2026-10-20 14:23:25,094 -   sony ult wear -> 50 items via ebay.de
+2026-10-20 14:23:25,115 - sony_ult_wear_buy: live alias task 2/5 format=buy_now_offer query=sony ultwear
+2026-10-20 14:23:25,122 - Fetching: sony ult wear
+2026-10-20 14:23:26,514 -   sony ult wear -> 55 items via www.ebay.de body_len=1086416
+2026-10-20 14:23:26,514 -   sony ult wear -> 55 items via ebay.de
+2026-10-20 14:23:26,536 - sony_ult_wear_buy: live alias task 3/5 format=buy_now_offer query=WH-ULT900N
+2026-10-20 14:23:26,543 - Fetching: sony ult wear
+2026-10-20 14:23:27,819 -   sony ult wear -> 50 items via www.ebay.de body_len=994858
+2026-10-20 14:23:27,819 -   sony ult wear -> 50 items via ebay.de
+2026-10-20 14:23:27,845 - sony_ult_wear_buy: live alias task 4/5 format=buy_now_offer query=WHULT900N
+2026-10-20 14:23:27,851 - Fetching: sony ult wear
+2026-10-20 14:23:29,450 -   sony ult wear -> 77 items via m.ebay.de body_len=1252155
+2026-10-20 14:23:29,450 -   sony ult wear -> 77 items via ebay.de
+2026-10-20 14:23:29,861 - Scraping item page details for item 307213647253 via HTML
+2026-10-20 14:23:38,229 - HTML browser details unavailable for 307213647253: TimeoutError
+2026-10-20 14:23:38,751 - Scraping item page details for item 117295151983 via HTML
+2026-10-20 14:23:47,115 - HTML browser details unavailable for 117295151983: TimeoutError
+2026-10-20 14:23:48,535 -   sony ult wear: 240 results, 2 verified in fair live slice
+2026-10-20 14:23:48,596 - Checking sony ult wear through primary HTML
+2026-10-20 14:23:48,626 - sony_ult_wear_auc: live alias task 1/5 format=auction query=sony ult wear
+2026-10-20 14:23:48,633 - Fetching: sony ult wear
+2026-10-20 14:23:49,050 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:23:49,658 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:24:01,357 -   sony ult wear -> 3 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:24:01,381 - sony_ult_wear_auc: live alias task 2/5 format=auction query=sony ultwear
+2026-10-20 14:24:01,388 - Fetching: sony ult wear
+2026-10-20 14:24:01,389 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:24:02,441 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:24:03,168 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:24:08,621 -   sony ult wear: fetch error search_deferred
+2026-10-20 14:24:08,694 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:24:08,694 - Scraping item page details for item 117469753595 via HTML
+2026-10-20 14:24:09,907 - _fetch_item_details_html: challenge page hit for item 117469753595
+2026-10-20 14:24:10,491 - Scraping item page details for item 168794330469 via HTML
+2026-10-20 14:24:11,726 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/168794330469?t=0&category=112529&seller=mcdani&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-20 14:24:12,177 -   sony ult wear: 3 results, 2 verified in fair live slice
+2026-10-20 14:24:12,233 - Checking samsung odyssey oled g6 500hz through primary HTML
+2026-10-20 14:24:12,265 - samsung_odyssey_oled_g6_500hz_buy: live alias task 1/3 format=buy_now_offer query=samsung odyssey oled g6 500hz
+2026-10-20 14:24:12,272 - Fetching: samsung odyssey oled g6 500hz
+2026-10-20 14:24:13,134 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:24:14,058 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:14,061 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:24:24,874 -   samsung odyssey oled g6 500hz -> 4 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:24:24,896 - samsung_odyssey_oled_g6_500hz_buy: live alias task 2/3 format=buy_now_offer query=G60SF LS27FG602
+2026-10-20 14:24:24,903 - Fetching: samsung odyssey oled g6 500hz
+2026-10-20 14:24:24,903 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:24:25,940 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:25,943 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:24:27,112 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:24:27,904 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:29,692 - Playwright challenge before result wait for 'samsung odyssey oled g6 500hz'
+2026-10-20 14:24:32,045 - Playwright challenge before result wait for 'samsung odyssey oled g6 500hz'
+2026-10-20 14:24:32,114 - eBay fetch fail #1 (blocked) for 'samsung odyssey oled g6 500hz' on GH — no cooldown, next product retries
+2026-10-20 14:24:32,280 - eBay Browse search failed for samsung odyssey oled g6 500hz: The read operation timed out
+2026-10-20 14:24:32,289 -   samsung odyssey oled g6 500hz: fetch error blocked
+2026-10-20 14:24:32,420 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:24:32,420 - Scraping item page details for item 307187709157 via HTML
+2026-10-20 14:24:33,132 - _fetch_item_details_html: challenge page hit for item 307187709157
+2026-10-20 14:24:33,717 - Scraping item page details for item 307167578900 via HTML
+2026-10-20 14:24:35,000 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/307167578900?t=1792080492000&category=80053&seller=hot-electronics&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-20 14:24:36,264 -   samsung odyssey oled g6 500hz: 4 results, 2 verified in fair live slice
+2026-10-20 14:24:36,321 - Checking samsung odyssey oled g6 500hz through primary HTML
+2026-10-20 14:24:36,350 - samsung_odyssey_oled_g6_500hz_auc: live alias task 1/3 format=auction query=samsung odyssey oled g6 500hz
+2026-10-20 14:24:36,357 - Fetching: samsung odyssey oled g6 500hz
+2026-10-20 14:24:36,908 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:24:37,803 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:37,805 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:24:38,560 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:48,887 -   samsung odyssey oled g6 500hz -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:24:48,894 -   samsung odyssey oled g6 500hz: fetch error search_deferred
+2026-10-20 14:24:48,947 - Checking (playstation 5 pro, ps5 pro) through primary HTML
+2026-10-20 14:24:48,979 - ps5_pro_buy: live alias task 1/2 format=buy_now_offer query=playstation 5 pro
+2026-10-20 14:24:48,987 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-20 14:24:48,987 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:24:50,250 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:50,252 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:24:50,915 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:24:50,918 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:24:51,991 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:01,919 -   (playstation 5 pro, ps5 pro) -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:25:01,944 - ps5_pro_buy: live alias task 2/2 format=buy_now_offer query=ps5 pro
+2026-10-20 14:25:01,950 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-20 14:25:01,951 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:25:02,567 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:25:03,021 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:25:03,866 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:08,977 -   (playstation 5 pro, ps5 pro): fetch error search_deferred
+2026-10-20 14:25:10,216 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:25:10,216 - Scraping item page details for item 137859967444 via HTML
+2026-10-20 14:25:11,449 - _fetch_item_details_html: challenge page hit for item 137859967444
+2026-10-20 14:25:12,058 - Scraping item page details for item 880034652246 via HTML
+2026-10-20 14:25:13,214 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/880034652246?t=0&category=139971&seller=jannikarl-0&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-20 14:25:13,890 -   (playstation 5 pro, ps5 pro): 200 results, 2 verified in fair live slice
+2026-10-20 14:25:13,942 - Checking (playstation 5 pro, ps5 pro) through primary HTML
+2026-10-20 14:25:13,969 - ps5_pro_auc: live alias task 1/2 format=auction query=playstation 5 pro
+2026-10-20 14:25:13,975 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-20 14:25:15,710 -   (playstation 5 pro, ps5 pro) -> 71 items via m.ebay.de body_len=1693952
+2026-10-20 14:25:15,711 -   (playstation 5 pro, ps5 pro) -> 71 items via ebay.de
+2026-10-20 14:25:15,733 - ps5_pro_auc: live alias task 2/2 format=auction query=ps5 pro
+2026-10-20 14:25:15,741 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-20 14:25:17,617 -   (playstation 5 pro, ps5 pro) -> 73 items via m.ebay.de body_len=1715650
+2026-10-20 14:25:17,617 -   (playstation 5 pro, ps5 pro) -> 73 items via ebay.de
+2026-10-20 14:25:18,052 - Scraping item page details for item 267818746941 via HTML
+2026-10-20 14:25:19,263 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/267818746941?t=0&category=139971&seller=gankstar5&excSoj=1&ver=1&excTrk=1&lsite=15&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=0
+2026-10-20 14:25:19,775 - Scraping item page details for item 267818739071 via HTML
+2026-10-20 14:25:20,711 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/267818739071?t=0&category=139971&seller=gankstar5&excSoj=1&ver=1&excTrk=1&lsite=15&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-20 14:25:21,365 -   (playstation 5 pro, ps5 pro): 80 results, 2 verified in fair live slice
+2026-10-20 14:25:21,372 - Checking (playstation 5 pro, ps5 pro) through primary HTML
+2026-10-20 14:25:21,403 - ps5_pro_auc__ending_soon: live alias task 1/2 format=auction query=playstation 5 pro
+2026-10-20 14:25:21,410 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-20 14:25:22,266 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:25:23,144 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:23,147 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:25:34,225 -   (playstation 5 pro, ps5 pro) -> 48 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:25:34,247 - ps5_pro_auc__ending_soon: live alias task 2/2 format=auction query=ps5 pro
+2026-10-20 14:25:34,253 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-20 14:25:34,253 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:25:35,201 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:35,204 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:25:35,813 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:25:41,416 -   (playstation 5 pro, ps5 pro): ending soon sweep error search_deferred
+2026-10-20 14:25:41,472 - Checking iPhone 16 Pro Max through primary HTML
+2026-10-20 14:25:41,506 - iphone_16_pro_max_buy: live alias task 4/4 format=buy_now_offer query=iphone16promax
+2026-10-20 14:25:41,514 - Fetching: iPhone 16 Pro Max
+2026-10-20 14:25:41,516 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:25:42,284 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:25:43,637 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:25:44,728 - eBay challenge on ebay.de for 'iPhone 16 Pro Max' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:54,126 -   iPhone 16 Pro Max -> 5 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:25:54,149 - iphone_16_pro_max_buy: live alias task 1/4 format=buy_now_offer query=iphone 16 pro max
+2026-10-20 14:25:54,156 - Fetching: iPhone 16 Pro Max
+2026-10-20 14:25:54,156 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:25:55,224 - eBay challenge on ebay.de for 'iPhone 16 Pro Max' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:55,226 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:25:56,016 - eBay challenge on ebay.de for 'iPhone 16 Pro Max' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:25:56,019 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:26:01,503 -   iPhone 16 Pro Max: fetch error search_deferred
+2026-10-20 14:26:01,553 -   iPhone 16 Pro Max: 5 results, 0 verified in fair live slice
+2026-10-20 14:26:01,611 - Checking iPhone 16 Pro Max through primary HTML
+2026-10-20 14:26:01,644 - iphone_16_pro_max_auc: live alias task 4/4 format=auction query=iphone16promax
+2026-10-20 14:26:01,652 - Fetching: iPhone 16 Pro Max
+2026-10-20 14:26:01,652 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:26:02,306 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:26:03,201 - eBay challenge on ebay.de for 'iPhone 16 Pro Max' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:03,204 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:26:14,374 -   iPhone 16 Pro Max -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:26:14,381 -   iPhone 16 Pro Max: fetch error search_deferred
+2026-10-20 14:26:14,474 - Checking lg ultragear oled 480hz through primary HTML
+2026-10-20 14:26:14,509 - lg_ultragear_oled_480hz_buy: live alias task 1/3 format=buy_now_offer query=lg ultragear oled 480hz
+2026-10-20 14:26:14,518 - Fetching: lg ultragear oled 480hz
+2026-10-20 14:26:14,518 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:26:15,450 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:15,453 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:26:16,058 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:16,061 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:26:16,788 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:27,201 -   lg ultragear oled 480hz -> 11 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:26:27,222 - lg_ultragear_oled_480hz_buy: live alias task 2/3 format=buy_now_offer query=27GX790A
+2026-10-20 14:26:27,229 - Fetching: lg ultragear oled 480hz
+2026-10-20 14:26:27,229 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:26:28,429 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:28,431 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:26:28,799 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:26:29,542 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:31,269 - Playwright challenge before result wait for 'lg ultragear oled 480hz'
+2026-10-20 14:26:33,321 - Playwright challenge before result wait for 'lg ultragear oled 480hz'
+2026-10-20 14:26:33,385 - eBay fetch fail #1 (blocked) for 'lg ultragear oled 480hz' on GH — no cooldown, next product retries
+2026-10-20 14:26:34,017 -   lg ultragear oled 480hz -> 9 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:26:34,040 - lg_ultragear_oled_480hz_buy: live alias task 3/3 format=buy_now_offer query=32GS95UE OLED
+2026-10-20 14:26:34,047 - Fetching: lg ultragear oled 480hz
+2026-10-20 14:26:34,047 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:26:34,414 -   lg ultragear oled 480hz: fetch error search_deferred
+2026-10-20 14:26:34,517 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:26:34,517 - Scraping item page details for item 278435824228 via HTML
+2026-10-20 14:26:35,596 - _fetch_item_details_html: challenge page hit for item 278435824228
+2026-10-20 14:26:36,474 - Scraping item page details for item 800461000257 via HTML
+2026-10-20 14:26:37,810 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/800461000257?t=1791982433000&category=80053&seller=lg-electronics-deutschland&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-20 14:26:38,966 -   lg ultragear oled 480hz: 15 results, 1 verified in fair live slice
+2026-10-20 14:26:39,019 - Checking lg ultragear oled 480hz through primary HTML
+2026-10-20 14:26:39,053 - lg_ultragear_oled_480hz_auc: live alias task 3/3 format=auction query=32GS95UE OLED
+2026-10-20 14:26:39,061 - Fetching: lg ultragear oled 480hz
+2026-10-20 14:26:40,278 - eBay ebay.de genuine no-results marker for 'lg ultragear oled 480hz'
+2026-10-20 14:26:40,371 - eBay session ready (impersonate=chrome120)
+2026-10-20 14:26:41,135 - eBay challenge on ebay.de for 'lg ultragear oled 480hz' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:41,137 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-20 14:26:51,518 -   lg ultragear oled 480hz -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-20 14:26:51,525 -   lg ultragear oled 480hz: fetch error search_deferred
+2026-10-20 14:26:51,643 - Checking Pixel 9 pro xl through primary HTML
+2026-10-20 14:26:51,669 - pixel_9_pro_xl: live alias task 2/6 format=auction query=google pixel 9 pro xl
+2026-10-20 14:26:51,676 - Fetching: Pixel 9 pro xl
+2026-10-20 14:26:51,676 - eBay session ready (impersonate=safari17_0)
+2026-10-20 14:26:52,428 - eBay challenge on ebay.de for 'Pixel 9 pro xl' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:26:52,431 - eBay session ready (impersonate=chrome131)
+2026-10-20 14:26:53,009 - eBay session ready (impersonate=chrome124)
+2026-10-20 14:26:53,672 - eBay challenge on ebay.de for 'Pixel 9 pro xl' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-20 14:27:02,061 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
+2026-10-20 14:27:02,089 - === Done ===
