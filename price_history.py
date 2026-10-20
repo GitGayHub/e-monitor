@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 33  # Resolve legacy compact intent, SE manufacturer numbers and own shipping quotes.
+HISTORY_VERSION = 34  # Resolve omitted mouse variants only after own model evidence.
 _DB_LOCK = threading.Lock()
 
 
