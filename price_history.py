@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 35  # Reject contradictory own handset model declarations.
+HISTORY_VERSION = 36  # Unresolved own handset purpose is not a verified price.
 _DB_LOCK = threading.Lock()
 
 
