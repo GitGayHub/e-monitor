@@ -10,9 +10,10 @@
     "enabled": 48,
     "disabled": 2,
     "pendingChecks": 0,
-    "blockedChecks": 100,
+    "blockedChecks": 99,
     "acceptanceIncompleteChecks": 104,
-    "inProgressChecks": 4
+    "inProgressChecks": 4,
+    "failedChecks": 1
   },
   "statuses": [
     "PENDING",
@@ -200,10 +201,10 @@
       ],
       "baskets": {
         "Sofort": {
-          "status": "BLOCKED",
+          "status": "FAIL",
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
-          "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
+          "checkedAtUtc": "2026-10-20T14:57:43.414289+00:00",
           "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
           "directBucketAcceptancePerformed": false,
           "latestDiscovery20261008": {
@@ -217,6 +218,16 @@
             "catalogueComplete": false,
             "germanyDeliveryVerified": false,
             "minimumVerified": false
+          },
+          "latestManualRegression128": {
+            "itemId": "147637622122",
+            "manualExpected": false,
+            "python": true,
+            "kotlin": true,
+            "scope": "Prepared own current seller text and visible specifics; historical Telegram feed120105 exists but raw server details at send time unavailable",
+            "catalogueComplete": false,
+            "globalMinimumVerified": false,
+            "report": "docs/qa/pc-20261010/REPORT_128.md"
           }
         },
         "Sofort+": {
@@ -280,7 +291,7 @@
           }
         }
       },
-      "progress": "DISCOVERY_PARTIAL_BLOCKED",
+      "progress": "MANUAL_RELEVANCE_REGRESSION_OPEN",
       "discoveryProgress": {
         "source": "ebay.com browser-live + HTTP-live",
         "requestCount": 2,
@@ -3508,5 +3519,41 @@
     },
     "note": "Historical 8 October inventory and discovery, not current catalogue acceptance."
   },
-  "scopeWarning": "Current inventory is 26 active product groups /104 baskets, all incomplete. Historical group discovery remains dated8October; updating settings is not a new live catalogue check. Disabled Superlight2C searches are excluded from active baskets."
+  "scopeWarning": "Current inventory is 26 active product groups /104 baskets, all incomplete. Historical group discovery remains dated8October; updating settings is not a new live catalogue check. Disabled Superlight2C searches are excluded from active baskets.",
+  "latestStage128": {
+    "checkedAtUtc": "2026-10-20T14:57:43.414289+00:00",
+    "version": "0.128",
+    "logicVersion": 1792506986,
+    "historyVersion": 34,
+    "pythonTests": 481,
+    "jvmTests": 397,
+    "androidTests": 26,
+    "regularTestsPassed": true,
+    "independentNewEvidencePassed": false,
+    "independentEightInputSha": "b287d1ec4e291df7b613465f326fa36a30cf0665fbc0951ef630b3d5e0d42a54",
+    "independentPreparedInputs": 3,
+    "actualHistoricalInputs": 5,
+    "manualDisagreement": {
+      "itemId": "147637622122",
+      "expected": false,
+      "python": true,
+      "kotlin": true,
+      "issue": "Contradictory own declared phone model ignored; hardware identity is unverified",
+      "rawProviderCapture": false
+    },
+    "ownReadBatchIds": [
+      "147637622122",
+      "327399492289",
+      "920057523906"
+    ],
+    "globalUniqueOwnCountsRecomputed": false,
+    "fullCatalogueComplete": false,
+    "globalMinimaProven": false,
+    "deliveryLatencyUnder15MinutesProven": false,
+    "newTelegramMessagesSent": false,
+    "physicalPhoneUsed": false,
+    "runtimeAcknowledged": true,
+    "runtimeAt": "2026-10-20T14:53:29+00:00",
+    "report": "docs/qa/pc-20261010/REPORT_128.md"
+  }
 }
