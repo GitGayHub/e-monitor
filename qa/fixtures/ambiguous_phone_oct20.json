@@ -1,0 +1,86 @@
+[
+  {
+    "id": "ambiguous_short",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Dumm iPhone 17 Pro Max Smartphone 2 TB Blau",
+    "expected": false
+  },
+  {
+    "id": "independent_spelling",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Dumbb iPhone 17 Pro Max Smartphone 2 TB Blau",
+    "expected": false
+  },
+  {
+    "id": "ambiguous_with_working_claim",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Dumm iPhone 17 Pro Max, voll funktionsfaehig.",
+    "expected": false
+  },
+  {
+    "id": "description_heading",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Artikelbeschreibung: Dumbb iPhone 17 Pro Max.",
+    "expected": false
+  },
+  {
+    "id": "samsung_ambiguous",
+    "query": "samsung s25 edge",
+    "title": "Samsung Galaxy S25 Edge",
+    "description": "Dumm Samsung Galaxy S25 Edge",
+    "expected": false
+  },
+  {
+    "id": "ordinary_title",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Apple iPhone 17 Pro Max 2 TB Blau.",
+    "expected": true
+  },
+  {
+    "id": "negated_dummy",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Kein Dummy, originales iPhone 17 Pro Max, voll funktionsfaehig.",
+    "expected": true
+  },
+  {
+    "id": "explained_typo",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Im Titel ist ein Tippfehler. Ich verkaufe ein voll funktionsfaehiges Apple iPhone 17 Pro Max.",
+    "expected": true
+  },
+  {
+    "id": "previous",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Mein altes Telefon war ein Dumbb iPhone. Verkaufe mein iPhone 17 Pro Max.",
+    "expected": true
+  },
+  {
+    "id": "opinion",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Die Verpackung ist dumm gemacht. Das iPhone 17 Pro Max funktioniert.",
+    "expected": true
+  },
+  {
+    "id": "nickname",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "iPhone 17 Pro Max, verkauft von Dumm.",
+    "expected": true
+  },
+  {
+    "id": "accessory_history",
+    "query": "iphone 17 pro max",
+    "title": "Apple iPhone 17 Pro Max",
+    "description": "Eine Dumm iPhone Attrappe wurde nur als Fotorequisite benutzt. Mein iPhone 17 Pro Max ist voll funktionsfaehig.",
+    "expected": true
+  }
+]

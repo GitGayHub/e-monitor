@@ -10,9 +10,9 @@
     "enabled": 48,
     "disabled": 2,
     "pendingChecks": 0,
-    "blockedChecks": 99,
+    "blockedChecks": 98,
     "acceptanceIncompleteChecks": 104,
-    "inProgressChecks": 5,
+    "inProgressChecks": 6,
     "failedChecks": 0
   },
   "statuses": [
@@ -240,7 +240,7 @@
           }
         },
         "Sofort+": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
           "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
@@ -257,6 +257,12 @@
             "catalogueComplete": false,
             "germanyDeliveryVerified": false,
             "minimumVerified": false
+          },
+          "regression130": {
+            "itemId": "237133957801",
+            "eligibilityFalse": true,
+            "hardwareIdentityUnresolved": true,
+            "report": "docs/qa/pc-20261010/REPORT_130.md"
           }
         },
         "Auktion": {
@@ -300,7 +306,7 @@
           }
         }
       },
-      "progress": "MANUAL_RELEVANCE_REGRESSION_FIXED_CATALOGUE_INCOMPLETE",
+      "progress": "OWN_MODEL_AND_PURPOSE_REGRESSIONS_FIXED_CATALOGUE_INCOMPLETE",
       "discoveryProgress": {
         "source": "ebay.com browser-live + HTTP-live",
         "requestCount": 2,
@@ -3676,6 +3682,126 @@
       "globalMinimumProven": false,
       "notificationOrLatencyProven": false,
       "newTelegramMessagesSent": false
+    }
+  },
+  "latestStage130": {
+    "version": "0.130",
+    "at": "2026-10-20T20:43:27.424906+00:00",
+    "logicVersion": 1792528491,
+    "historyVersion": 36,
+    "phoneInstalled": true,
+    "phoneSearchRowsAllColumnsPreserved": true,
+    "pythonTests": 485,
+    "jvmTests": 401,
+    "currentArtTests": 2,
+    "artDevice": "324652776507",
+    "previous28ArtTestsVersion": "0.129",
+    "independentInputs": 9,
+    "actualHistoricalInputs": 5,
+    "preparedBrowserInputs": 4,
+    "inputSha256": "975309abba6f8c7f15c4845905f43cac4b44930a667527ad72cf5804d1b930d3",
+    "independentAllPassed": true,
+    "fixtureCases": 12,
+    "fixtureFormats": 4,
+    "fullCatalogueComplete": false,
+    "globalMinimumProven": false,
+    "latencyUnder15MinutesProven": false,
+    "telegramMessagesSent": false,
+    "report": "docs/qa/pc-20261010/REPORT_130.md",
+    "phoneLive": {
+      "version": "0.130",
+      "serial": "324652776507",
+      "reportId": "1792528807893",
+      "finishedAtMs": 1792528807893,
+      "elapsedMs": 245732,
+      "startedFrom": "Phone Searches product-card tap, ordinary network pipeline, no fixture injection",
+      "products": 1,
+      "searchIds": [
+        "iphone_17_pro_max"
+      ],
+      "buckets": [
+        {
+          "label": "Sofort",
+          "listingType": "buy_now",
+          "bestOffer": false,
+          "price": 1049.0,
+          "url": "https://www.ebay.de/itm/920013137592",
+          "verdict": "🟣 Дорого",
+          "title": "Apple iPhone 17 Pro Max 256GB tiefblau Smartphone 6,9 Zoll 48MPX - AKZEPTABEL",
+          "rejectedCount": 46,
+          "estimatedImportCharges": null
+        },
+        {
+          "label": "Sofort+",
+          "listingType": "buy_now",
+          "bestOffer": true,
+          "price": 956.19,
+          "url": "https://www.ebay.de/itm/168805913699",
+          "verdict": "🟣 Дорого",
+          "title": "Apple iPhone 17 Pro Max 256 GB Blau 6,9 Zoll Smartphone Slate",
+          "rejectedCount": 48,
+          "estimatedImportCharges": null
+        },
+        {
+          "label": "Auktion",
+          "listingType": "auction",
+          "bestOffer": false,
+          "price": 209.19,
+          "url": "https://www.ebay.de/itm/206634225427",
+          "verdict": "🟡 Ожидает времени аукциона · 4д 16ч · 7 ставок",
+          "title": "iPhone 17 Pro Max, 512 GB, Silber",
+          "rejectedCount": 45,
+          "estimatedImportCharges": null
+        },
+        {
+          "label": "Auktion+",
+          "listingType": "auction",
+          "bestOffer": true,
+          "price": 794.19,
+          "url": "https://www.ebay.de/itm/198717501299",
+          "verdict": "🟢 Auktion+ · 1д 20ч · 0 ставок",
+          "title": "Apple iPhone 17 Pro Max in orange",
+          "rejectedCount": 7,
+          "estimatedImportCharges": null
+        }
+      ],
+      "ambiguousPurposeRejection": {
+        "itemId": "237133957801",
+        "title": "Dumm iPhone‼️‼️Apple iPhone 17 Pro Max Smartphone 2 TB Blau",
+        "url": "https://www.ebay.de/itm/237133957801",
+        "seller": "d3avintage10",
+        "totalPrice": 406.19,
+        "reason": "назначение товара неясно: «dumbb» в описании",
+        "estimatedImportCharges": null,
+        "imageUrl": "https://i.ebayimg.com/images/g/ktoAAeSwqkBq11gq/s-l300.webp"
+      },
+      "modelRejection": {
+        "itemId": "147637622122",
+        "title": "iPhone 17 Pro Max 256 GB in Silber",
+        "url": "https://www.ebay.de/itm/147637622122",
+        "seller": "shiny3381",
+        "totalPrice": 906.19,
+        "reason": "модель в описании не соответствует поиску: «iphone 7 pro max»",
+        "estimatedImportCharges": null,
+        "imageUrl": "https://i.ebayimg.com/images/g/FaAAAeSwAHBq0TVf/s-l300.webp"
+      },
+      "phoneAll50RowsAllColumnsPreserved": true,
+      "reportSha256": "a84c3f6d4a2ad5c740a971da3e07eea7187a81fc0d235f58d4af4fc2f9a0e71b",
+      "fullCatalogueComplete": false,
+      "globalMinimumProven": false,
+      "notificationOrLatencyProven": false,
+      "newTelegramMessagesSent": false,
+      "priceViewer": {
+        "fromEur": 400,
+        "toEur": 410,
+        "savedRejected": 48,
+        "inRange": 1,
+        "thumbnailVisuallyConfirmed": true,
+        "rangeReset": true,
+        "notificationLimitUnchanged": true,
+        "screenshot": "images130/phone130-rejection-confirmed.png"
+      },
+      "phoneAll50RowsAllColumnsPreservedThroughRestart": true
     }
   }
 }

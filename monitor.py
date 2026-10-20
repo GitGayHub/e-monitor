@@ -1838,6 +1838,19 @@ def _phone_model_number_matches(value, query):
     return _phone_model_aspect_matches(value,query)
 
 
+def _phone_ambiguous_purpose(description):
+    """Own leading Dumm/Dumbb designation is unresolved, not proof of a fake.
+
+    Do not fuzzy-match the rest of the description or seller names. Negations,
+    previous props and an explicit correction are not this sale designation.
+    """
+    own = _normalize(_clean_description(description or ''))
+    heading = r'(?:(?:artikelbeschreibung|produktbeschreibung|description)\s*:?\s*)?'
+    handset = r'(?:(?:apple|samsung|google|zte)\s+)?(?:i\s*phone|smartphone|handy|telefon|phone|galaxy|pixel|nubia|red\s*magic|oneplus)\b'
+    match = re.match(r'\s*'+heading+r'(dumm|dumbb)\b[^\w]{1,12}'+handset, own)
+    return match.group(1) if match else None
+
+
 def _phone_description_declares_fake(description):
     """Own positive identity/sale declaration, including 820206597250's F A K E."""
     text = _normalize(_clean_description(description or ""))
@@ -6666,6 +6679,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
     if _effective_category(category, query) == "phones":
         title = _normalize(details.get("title") or item.get("title") or "")
+        if _phone_ambiguous_purpose(details.get("description") or ""):
+            return False
         if _phone_description_refurbished(details.get("description") or ""):
             return False
         if not _matches_phone_query_model(title, query):
