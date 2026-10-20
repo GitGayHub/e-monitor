@@ -1,3 +1,22 @@
+<!-- stage125 -->
+## Актуально: проверенная0.125 на телефоне и эмуляторе
+
+Новое разрешение: пользователь «продоложай на телефоне». Физический телефон использовать ТОЛЬКО eMonitor; TelegramПКчитатьвфоне/неактивироватьокна. 0.125/code125/rules1792452137/History31/SHA3eb6bd3a3d866367b7a1fae4ee1f5b3e3fc85139242cf742e3d7c2a318e1fb55 установленаповерхтелефон108иэмулятор124. Все50строк/столбцов телефона before→installed→opened→report равны,ce6/48active/normal/LG430/recipient/seen/bansсохранены. ЭмуляторQA50/48/notify0/workerfalse/autosyncfalse/59a71bafнепереноситьвproduction.
+
+474Python/391JVM/build/21ART PASS;34preparedsameinputSHA2419abe96c70f9456569ac8a2d39528a69e521236872c60177d0a6ae89af4b52оба;33старыхнеизменны;3970неизменны. 318888171957actualAndroiddirectCOMPLETE443own/relevancefalse/accessoryreason;ownсChromeсовпал;actualraw1SHAffcf9bdac8474d3b0342b0f33e88f6d6afaf727da0e1737e5fcfdf8c9f0b4389оба. Этонеnormalinclusion/minimum/delivery. BackgroundPCmessage120104/APK122реальноневерныйCustomTagsдлягарнитуры. НовыхTelegramнет,старые120079–120092/коррекцииНЕповторять. REPORT_125/VERIFIED_125.
+
+ЧерезGUIтелефонаSuperlight2check4baskets77,491с:72,95/76,51/67,19/nullwronggeneration1. ТриactualnormalJSONtimestampboundSHA55f70627e272246da9177cb6e4a54dbdf22b5d468a14557d5ad4c8eba730a94e,ещёнеполныйpairedbrowserreplay. Все4ownChromeпрочитаны. КРИТИЧНО:36671772924272,95MPN910-007555настоящаяSEпоofficialLogitech,125ошибочнопринимаетstd! 36664021119670,32+6,19fullownлишьназвание/нетdisclosedfault;16879911906361bid+6,19целая2соskates;96007974017916bid+2,90первоепоколениеправильноотказано. Это4own+tag1,не40–50/неминимумы. Новая126должнаисправитьSEMPNвобоихязыках/бампHistory32,сначалаbaselineactualphoneinput. Такжеshippingactualtag14,35parserпротивapproxEUR14,42сайта:полныйshippingmoduleсEURнеиспользуется,аlinefallbackберётGBPконверсию. EuroMoney.textужепредпочитаетEUR;чинитьscope/приоритетполей,невалютныйкурс. ПроверьPythonтотжеHTML/границыimport/неподменятьдоставкупочтовыминдексомилиследующимиимпортнымирасходами.
+
+Legacy2C rawquery='logitech superlight 2',includeWordsJson=[2c,2 c,compact],IDs_cbuy/cauc. UIдваждыпоказываетSuperlight2(45и65). Прежде UI-labelfix изучить _search_intent/SearchRequestRules.intentQuery/MonitorFilters:earlyreturnпоrawstdможетпотерятьcompactнамерение. Неизменятьproductionrawquery/settings;вывестиизexplicitincludeWordsиотразитьвпередаваемомзапросе/фильтрах/UIсобщимтестомобоихязыков. Ещёнепочинено.
+
+USB:официальныйwrapper37.0.1/ADB_USB_LEGACY1. Первыйinputtap20stimeout→actualoffline. --recoverвызвалboundedtimeout,потомповторноеdevicesпоказалоdeviceбезперетыкания;serverнеперезапускатьпокаdevice. WinPnpZTESingleADBOK/старыйANR11OctнеEMonitor,неclaimappANR. Послеenumerationphone_cmd_input.pyиспользуетcmdinput/guardfocus/coordsиуспешнооткрылПоиски/ввёлfilter/запустилкарточку. Не трогать другие приложения телефона; приуходепользователявChatGPTнечитатьихконтент.
+
+Публикация125 и подтверждение применения сервером пока ожидаются.
+Применение125 сервером ещё не подтверждено; публикацияmetadata не является подтверждением исполнения.
+
+Следом сохранить125source+roadеслиещёнеопубликовано,ACK/CI/checkpoint;затемописанныеподтверждённые126ошибки/HTMLсервер. Runtime124последний03:17UTC24attempt/0complete/65cards/0own/0confirm;48/48within15/oldest860снеSLA. Job39360625315/job118429235329былin_progressmonitorloop20Oct03:25UTC;сначаларевалидироватьнеcancel/restart. ОбщаяцельACTIVE/PARTIAL26/104/всеалиасы/минимумы/40–50ownиливесьstock/CRUDсетьсинхронизация/реальнаядоставка≤15мин. Неblindpull/reset/clean/force/непубликоватьprivate/config/DB/secrets. CI1243billingдоrunnerнеpay/нерерun. Неrerunreport124после125сборки.
+<!-- /stage125 -->
+
 <!-- stage124 -->
 ## Актуально: проверенная локальная 0.124
 
@@ -14,13 +33,13 @@ QA50/48/notify0/workerfalse/autosyncfalse/no secrets/revision59a71baf/Pixel9limi
 У Sofort479€+6,99€ доставка, целый S25Edge вOVP, лёгкие следы использования; это повторно прочитанный лот из прежних40. У Sofort+419€+7,69€, целый S25Edge, заявлено отсутствие вскрытия/ремонта, аккумулятор98% и комплект; это один новый уникальный лот. Всего дляS25Edge прочитано41уникальное собственное описание, а не42; четыре аукциона и второй Sofort являются повторными проверками.
 
 
-Код пока локальный; публикация следует после проверок.
+Код опубликован: [bot](https://github.com/GitGayHub/e-monitor/commit/3409ef2e8f832733859a87a8860643e66da3cc5b), [bot-cloud](https://github.com/GitGayHub/e-monitor/commit/6c4c267d2bcee8e411b885790890333aef3347e5), [android](https://github.com/GitGayHub/e-monitor-android/commit/5c71d4a6ded2fdcb6db64a083935b2788bdcf193), [android-cloud](https://github.com/GitGayHub/e-monitor-android/commit/87fd60d3be839d336f70be5f87b2fd422ffda549).
 
-Применение правил 0.124 рабочим сервером ещё не подтверждено. Metadata версии не считается подтверждением исполнения.
+Сервер применил правила 1792450171: 2026-10-19T23:11:14+00:00; проверены ревизия ce6 и полный отпечаток конфигурации, normal/50/48/LG430. Охват 44/48 за15мин, самый старый 964с; это не задержка объявления до Telegram.
 
 Обычный GUI-прогон 0.124 завершён за 101.998 с. Результат корзин: Sofort: 485.99 € — ⚠️ Запрос не выполнен: eBay вернул страницу временной ошибки; повторите проверку; Sofort+: 426.69 € — ⚠️ Запрос не выполнен: eBay вернул страницу временной ошибки; повторите проверку; Auktion: 236.19 € — ⚠️ Запрос не выполнен: eBay вернул страницу временной ошибки; повторите проверку; Auktion+: None € — ⚠️ Запрос не выполнен: eBay вернул страницу временной ошибки; повторите проверку. Минимум и полнота принимаются только при успешной выдаче и проверке всех необходимых кандидатов.
 
-Следом: публикацияобоихsource+road, cloudcheck/apply+изолированныеchecks, ACKrules1792450171поfullfingerprint/ce6/normal50/48/LG430. ОбновитьMDпослефактов;stage122нижеисторический. Сначалаinspectliveprocesshandle, непререзапускатьздоровыйADBилиjob. CIbillingнеpay/нерерun. ПослеэтогоcontinueHTMLSERPдоступность/независимыйкаталог26/104/алиасы/минимумы/доставка≤15мин. НовыхTelegramнет,старые120079–120092/коррекцииНЕповторять. Userfullscopeнеуменьшатьдоскрытогодиагностического1item.
+Публикации124source+road выполнены, cloudcheck/apply0изменений/0конфликтов20Oct00:17Berlin. ACK124подтверждён по fullfingerprint/ce6/normal50/48/LG430. CI3billingдоrunner,неpay/нерерun. TelegramПКпрочитанвфоне:настоящее120104/APK122/318888171957ошибочносчитаетCustomTagsмышью;Chromeownявноspeakerplatesдлягарнитуры. Это подтверждение транспорта,неправильноготовара/новой124доставки/latency. Следующий0.125:регрессия+исправлениедекоративныхнакладокобоимязыкамссохранениемцелыхdevicebundles. ЗатемHTMLдоступность/независимыйкаталог26/104/алиасы/минимумы/доставка≤15мин. НовыхTelegramнет,старые120079–120092/коррекцииНЕповторять.
 
 Production normal50/48/revisionce6d8944-34df-441a-8cd5-483e0b5a9542/LG430/recipient/seen/bansсохранить. Неblindpull/reset/clean/force,неpublishprivate/config/DB/secrets. ОбщаяцельACTIVE/PARTIAL. Неreruncheckpoint_wip124.pyповерхфинальныхфактов. Приватнаяподробностьaudit/2026-10-04/closure094.
 <!-- /stage124 -->

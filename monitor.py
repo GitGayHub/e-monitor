@@ -2515,6 +2515,8 @@ def _has_damage_word(text_norm):
 
 
 def _is_accessory_product(title_norm, category):
+    if _decorative_parts_offer(title_norm, category):
+        return True
     if category == "consoles" and re.search(r"\b(?:nur|only)\s+(?:kabel|cables?|controller|gamepad|laufwerk|disc drive)\b", title_norm):
         return True
     noun_and_part = {
@@ -2527,6 +2529,37 @@ def _is_accessory_product(title_norm, category):
         "vr_headsets": r"(?:vr\s+headset|vr\s+brille)\s+(?:headstrap|strap|kopfband|linsenschutz)",
     }.get(category)
     return bool(noun_and_part and re.search(rf"\b{noun_and_part}\b", title_norm))
+
+
+def _decorative_parts_offer(text, category):
+    """Speaker cosmetics are not a mouse, even if catalogue specs say so.
+
+    Only explicit part phrases; never substring 'tags' in German 'werktags'.
+    Inclusion clauses keep a complete device's supplied accessories valid.
+    """
+    if category not in ('mice', 'headphones'):
+        return False
+    part = r"\b(?:(?:custom|speaker)\s*tags?|(?:magnetic\s+)?speaker\s*plates?|headsetblenden|ohrmuschelblenden)\b"
+    device = r"\b(?:maus|mouse|headset|headphones|kopfhoerer|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?)\b"
+    if not re.search(part, text):
+        return False
+    if re.search(device+r"\s+(?:(?:is|are|ist|sind)\s+)?(?:not\s+included|nicht\s+enthalten)\b", text):
+        return True
+    complete = bool(re.search(r"\b(?:complete|fully\s+functional|working|funktionsfaehig|vollstaendig)\b[^.!?;]{0,100}"+device, text))
+    for clause in re.split(r"[.!?\n;]", text):
+        for match in re.finditer(part, clause):
+            before, after = clause[:match.start()], clause[match.end():]
+            if re.search(r"\b(?:without|ohne|no|keine?)\s*$", before) or re.match(r"\s+(?:not\s+included|nicht\s+enthalten)\b", after):
+                continue
+            if complete and re.search(r"\b(?:includes?|including|enthalten|lieferumfang|contents)\s*:?\s*$", before):
+                continue
+            if complete and re.match(r"\s+(?:included|enthalten|dabei)\b", after):
+                continue
+            if (re.search(device+r".*(?:\b(?:with|mit|and|und|inkl(?:usive)?)\b|[+&])[^.!?;]*$", before)
+                    and not re.search(r"\b(?:for|fuer|compatible|kompatibel|fits|nur|only)\b", before)):
+                continue
+            return True
+    return False
 
 
 def _has_battery_swelling(text):
@@ -5794,6 +5827,10 @@ def _has_damage_in_description(desc_norm):
     denied = r"(?:scratches|dents|marks|cracks|(?:cosmetic\s+)?damage)"
     cleaned = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", cleaned)
     # Require part + defect proximity only (not bare 'damaged'/'defekt').
+    for clause in re.split(r"[.!?;]", cleaned):
+        if (not re.search(r"\b(?:if|when|falls|wenn)\b", clause)
+                and re.search(r"\b(?:mouse|maus|headset|headphones|kopfhoerer)\s+(?:is|are|ist|sind)\s+(?:broken|defective|defekt|kaputt)\b", clause)):
+            return True
     part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|halterung|scharnier|gelenk|kopfbuegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
     defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|broken|snapped)\b", re.IGNORECASE)
     neg_tokens = (
@@ -6437,6 +6474,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
     query = _normalize(_intent_query(search))
     category = _effective_category(search.get("filters", {}).get("category", "all"), query)
+    if _decorative_parts_offer(_normalize(details.get('title') or item.get('title') or ''), category) or _decorative_parts_offer(_normalize(_clean_description(details.get('description') or '')), category):
+        return False
     allowed = ALLOWED_SUBCATEGORIES.get(category)
     cat_id = str(details.get("categoryId") or "")
     path = str(details.get("categoryIdPath") or "").split("|")
