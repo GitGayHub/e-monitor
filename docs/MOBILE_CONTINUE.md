@@ -2,7 +2,7 @@
 
 Последнее указание: **толькоemulator-5580**. Физический телефон НЕчитать/НЕиспользовать, последняяизвестная0.125. ПКскрыто/безактивации,ChromeDOMразрешён,TelegramПКтолькофоновоечтение. НовыхTelegramнет.
 
-Общаяцель**ACTIVE/PARTIAL**:26товаров/104корзины,всеалиасы/минимумы,40–50независимыхownлибоstockнатовар,CRUD/сеть/синхронизация/правильнаяреальнаядоставкаlisting→Telegram≤15мин. Unitтесты/паритет/охватпопыток/приёмнеправильногоуведомлениянеравныприёмке. [ТекущийREPORT_128](qa/pc-20261010/REPORT_128.md),[VERIFIED_128](qa/pc-20261010/VERIFIED_128.json),[предыдущийcheckpoint127](history/WORK_STATE_127_2026-10-20.md),[полнаяранняяистория](history/WORK_STATE_THROUGH_125_2026-10-20.md).
+Общаяцель**ACTIVE/PARTIAL**:26активныхтоваров/104корзины;вместесотключённой2C—27сохранённыхпрофилей/108корзин. Всеалиасы/минимумы,40–50независимыхownлибоstockнатовар,CRUD/сеть/синхронизация/правильнаяреальнаядоставкаlisting→Telegram≤15мин. Unitтесты/паритет/охватпопыток/приёмнеправильногоуведомлениянеравныприёмке. [ТекущийREPORT_128](qa/pc-20261010/REPORT_128.md),[VERIFIED_128](qa/pc-20261010/VERIFIED_128.json),[предыдущийcheckpoint127](history/WORK_STATE_127_2026-10-20.md),[полнаяранняяистория](history/WORK_STATE_THROUGH_125_2026-10-20.md). Центральныйacceptance-current.jsonобновлён119→128/emulator-only;очередь1FAIL(iPhoneSofortpreparedownmodel),99BLOCKED/4IN_PROGRESS/все104активныхнеприняты. ИзменениестатусаFAILдоказываеткомпонентныйотказ,неполнуюисторическуюреконструкциюпрошлогосообщения.
 
 ## Проверено
 
@@ -12,7 +12,7 @@
 
 Проверенный код128: [bot](https://github.com/GitGayHub/e-monitor/commit/9c0fb9875b5fe6eb5d9f210d2f81258e1ef8b720), [bot-cloud](https://github.com/GitGayHub/e-monitor/commit/856933d965e86363dd2f00f9f8fa2aab9fca372f), [android](https://github.com/GitGayHub/e-monitor-android/commit/b9759c825a0bf165c223c71efd7ccd8a1c1b3e7e), [android-cloud](https://github.com/GitGayHub/e-monitor-android/commit/78e5c90296985c8d40f559d6ecd12b44c7fcb2aa).
 
-Применение128 сервером пока не подтверждено; метаданные не являются ACK.
+Применение128 сервером подтверждено в2026-10-20T14:53:29+00:00:rules1792506986,полный fingerprint/ce6/normal50/48/LG430. Охват попыток не доказывает listing→Telegram≤15мин.
 
 ## Приоритет продолжения
 

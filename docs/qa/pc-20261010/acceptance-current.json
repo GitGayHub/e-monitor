@@ -1,10 +1,10 @@
 {
   "schema": 1,
-  "updatedAt": "2026-10-19T17:43:47.971685+00:00",
+  "updatedAt": "2026-10-20T14:57:43.414289+00:00",
   "overall": "PARTIAL",
   "acceptanceComplete": false,
-  "apkVersion": "0.119",
-  "logicVersion": 1792430979,
+  "apkVersion": "0.128",
+  "logicVersion": 1792506986,
   "inventorySource": "PhysicalAPK0.106 all50saved rows/columns preserved before install through report/viewer/overview",
   "savedSearches": 50,
   "activeSearches": 48,
@@ -2067,8 +2067,8 @@
   ],
   "unreconciledHistoricalProof": "Other previous manual batches (iPhone/PC/XM6/S25/LG/Nubia/Redmagic) remain in private audit; missing reconciled count is not zero checked and is not PASS.",
   "currentAccess": {
-    "target": "pc",
-    "physicalPhoneAllowed": true,
+    "target": "emulator-5580",
+    "physicalPhoneAllowed": false,
     "telegram": "pc-background-readonly"
   },
   "newOpenFindings": [
@@ -2364,7 +2364,7 @@
     },
     "botCodeCommit": "7389ce7c9eec6773665376b1dc36d79dba05e53e",
     "androidCodeCommit": "af24acd324a772fe8f8d171cb05112cd5f85a003",
-    "ciObservedAtUtc": "2026-10-15T19:08:42.502047+00:00"
+    "ciObservedAtUtc": "2026-10-15T19:08:42.550478+00:00"
   },
   "pcReturn093": {
     "phoneInstalled": true,
@@ -2377,7 +2377,7 @@
     "report": "../pc-20261015/REPORT_093.md"
   },
   "physicalApkVersion": "0.108",
-  "emulatorApkVersion": "0.114",
+  "emulatorApkVersion": "0.128",
   "pcStage096": {
     "schema": 1,
     "appVersion": "0.096",
@@ -3286,8 +3286,8 @@
     ]
   },
   "runtimeAcknowledged115": true,
-  "historyVersion": 28,
-  "physicalLastVerifiedApkVersion": "0.108",
+  "historyVersion": 34,
+  "physicalLastVerifiedApkVersion": "0.125",
   "verificationDevice": "emulator-5580",
   "pcStage117": {
     "version": "0.117",
@@ -3385,5 +3385,42 @@
     "report119SurvivedProcessRestart": true,
     "runtime119Acknowledged": true
   },
-  "runtimeAcknowledged119": true
+  "runtimeAcknowledged119": true,
+  "pcStage128": {
+    "checkedAtUtc": "2026-10-20T14:57:43.414289+00:00",
+    "version": "0.128",
+    "logicVersion": 1792506986,
+    "historyVersion": 34,
+    "pythonTests": 481,
+    "jvmTests": 397,
+    "androidTests": 26,
+    "regularTestsPassed": true,
+    "independentNewEvidencePassed": false,
+    "independentEightInputSha": "b287d1ec4e291df7b613465f326fa36a30cf0665fbc0951ef630b3d5e0d42a54",
+    "independentPreparedInputs": 3,
+    "actualHistoricalInputs": 5,
+    "manualDisagreement": {
+      "itemId": "147637622122",
+      "expected": false,
+      "python": true,
+      "kotlin": true,
+      "issue": "Contradictory own declared phone model ignored; hardware identity is unverified",
+      "rawProviderCapture": false
+    },
+    "ownReadBatchIds": [
+      "147637622122",
+      "327399492289",
+      "920057523906"
+    ],
+    "globalUniqueOwnCountsRecomputed": false,
+    "fullCatalogueComplete": false,
+    "globalMinimaProven": false,
+    "deliveryLatencyUnder15MinutesProven": false,
+    "newTelegramMessagesSent": false,
+    "physicalPhoneUsed": false,
+    "runtimeAcknowledged": true,
+    "runtimeAt": "2026-10-20T14:53:29+00:00",
+    "report": "docs/qa/pc-20261010/REPORT_128.md"
+  },
+  "runtimeAcknowledged128": true
 }
