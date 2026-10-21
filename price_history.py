@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 38  # Concrete GPU specification overrides family marketing.
+HISTORY_VERSION = 39  # Complete PS5 Pro contents are not standalone SSDs/stands.
 _DB_LOCK = threading.Lock()
 
 
