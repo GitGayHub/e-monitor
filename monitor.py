@@ -3418,6 +3418,29 @@ COUNTRY_INFO = {
     "NO": ("\U0001f1f3\U0001f1f4", "\u041d\u043e\u0440\u0432\u0435\u0433\u0438\u044f", False),
     "CA": ("\U0001f1e8\U0001f1e6", "\u041a\u0430\u043d\u0430\u0434\u0430", False),
     "AU": ("\U0001f1e6\U0001f1fa", "\u0410\u0432\u0441\u0442\u0440\u0430\u043b\u0438\u044f", False),
+    # A known item location must not be shown as \u00ab\u041d\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043e\u00bb (issue #2).
+    "BG": ("\U0001f1e7\U0001f1ec", "\u0411\u043e\u043b\u0433\u0430\u0440\u0438\u044f", True),
+    "RO": ("\U0001f1f7\U0001f1f4", "\u0420\u0443\u043c\u044b\u043d\u0438\u044f", True),
+    "GR": ("\U0001f1ec\U0001f1f7", "\u0413\u0440\u0435\u0446\u0438\u044f", True),
+    "HU": ("\U0001f1ed\U0001f1fa", "\u0412\u0435\u043d\u0433\u0440\u0438\u044f", True),
+    "LT": ("\U0001f1f1\U0001f1f9", "\u041b\u0438\u0442\u0432\u0430", True),
+    "LV": ("\U0001f1f1\U0001f1fb", "\u041b\u0430\u0442\u0432\u0438\u044f", True),
+    "EE": ("\U0001f1ea\U0001f1ea", "\u042d\u0441\u0442\u043e\u043d\u0438\u044f", True),
+    "SK": ("\U0001f1f8\U0001f1f0", "\u0421\u043b\u043e\u0432\u0430\u043a\u0438\u044f", True),
+    "SI": ("\U0001f1f8\U0001f1ee", "\u0421\u043b\u043e\u0432\u0435\u043d\u0438\u044f", True),
+    "HR": ("\U0001f1ed\U0001f1f7", "\u0425\u043e\u0440\u0432\u0430\u0442\u0438\u044f", True),
+    "LU": ("\U0001f1f1\U0001f1fa", "\u041b\u044e\u043a\u0441\u0435\u043c\u0431\u0443\u0440\u0433", True),
+    "MT": ("\U0001f1f2\U0001f1f9", "\u041c\u0430\u043b\u044c\u0442\u0430", True),
+    "CY": ("\U0001f1e8\U0001f1fe", "\u041a\u0438\u043f\u0440", True),
+    "HK": ("\U0001f1ed\U0001f1f0", "\u0413\u043e\u043d\u043a\u043e\u043d\u0433", False),
+    "TW": ("\U0001f1f9\U0001f1fc", "\u0422\u0430\u0439\u0432\u0430\u043d\u044c", False),
+    "KR": ("\U0001f1f0\U0001f1f7", "\u042e\u0436\u043d\u0430\u044f \u041a\u043e\u0440\u0435\u044f", False),
+    "TR": ("\U0001f1f9\U0001f1f7", "\u0422\u0443\u0440\u0446\u0438\u044f", False),
+    "IN": ("\U0001f1ee\U0001f1f3", "\u0418\u043d\u0434\u0438\u044f", False),
+    "IL": ("\U0001f1ee\U0001f1f1", "\u0418\u0437\u0440\u0430\u0438\u043b\u044c", False),
+    "UA": ("\U0001f1fa\U0001f1e6", "\u0423\u043a\u0440\u0430\u0438\u043d\u0430", False),
+    "SG": ("\U0001f1f8\U0001f1ec", "\u0421\u0438\u043d\u0433\u0430\u043f\u0443\u0440", False),
+    "RS": ("\U0001f1f7\U0001f1f8", "\u0421\u0435\u0440\u0431\u0438\u044f", False),
 }
 
 COUNTRY_ALIASES = {
@@ -3436,6 +3459,17 @@ COUNTRY_ALIASES = {
     "tschechien": "CZ", "czech": "CZ", "schweiz": "CH", "switzerland": "CH",
     "norwegen": "NO", "norway": "NO", "kanada": "CA", "canada": "CA",
     "australien": "AU", "australia": "AU",
+    "bulgarien": "BG", "bulgaria": "BG", "rumaenien": "RO", "rumanien": "RO", "romania": "RO",
+    "griechenland": "GR", "greece": "GR", "ungarn": "HU", "hungary": "HU",
+    "litauen": "LT", "lithuania": "LT", "lettland": "LV", "latvia": "LV",
+    "estland": "EE", "estonia": "EE", "slowakei": "SK", "slovakia": "SK",
+    "slowenien": "SI", "slovenia": "SI", "kroatien": "HR", "croatia": "HR",
+    "luxemburg": "LU", "luxembourg": "LU", "malta": "MT", "zypern": "CY", "cyprus": "CY",
+    "hongkong": "HK", "hong kong": "HK", "taiwan": "TW",
+    "suedkorea": "KR", "sudkorea": "KR", "south korea": "KR",
+    "tuerkei": "TR", "turkei": "TR", "turkey": "TR", "turkiye": "TR",
+    "indien": "IN", "india": "IN", "israel": "IL", "ukraine": "UA",
+    "singapur": "SG", "singapore": "SG", "serbien": "RS", "serbia": "RS",
 }
 
 
