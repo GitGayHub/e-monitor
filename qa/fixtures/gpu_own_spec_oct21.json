@@ -1,0 +1,114 @@
+[
+  {
+    "id": "own4050-marketing4060-accept",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "own4050-marketing4060-reject",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "own4060-marketing4050-accept",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4060</li></ul><p>Die bis zu NVIDIA GeForce RTX 4050 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": true
+  },
+  {
+    "id": "own4060-marketing4050-reject",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4060</li></ul><p>Die bis zu NVIDIA GeForce RTX 4050 Grafik der Modellreihe.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "german-space-label",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten Modell NVIDIA GeForce RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "german-joined-label",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkartenmodell: NVIDIA GeForce RTX4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "english-model-label",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Graphics card model: NVIDIA GeForce RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "gpu-model-label",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>GPU model: RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "gpu-table-split-cells",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<p>OLED Notebook, voll funktionsfähig. Modellreihe bis zu RTX 4060.</p><table><tr><th>Grafikkarten-Modell</th><td>RTX 4050</td></tr></table>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "nearby-second-model-does-not-override",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4050</li><li>Modellreihe bis zu RTX 4060</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  },
+  {
+    "id": "crosssell-is-not-own-gpu",
+    "title": "ASUS OLED Notebook RTX 4060",
+    "description": "<h1>ASUS OLED Notebook RTX 4060</h1><p>Voll funktionsfähig.</p><div class=\"product_crosssell\"><ul><li>Grafikkarten-Modell RTX 4050</li></ul></div>",
+    "query": "4060 oled",
+    "expected": true
+  },
+  {
+    "id": "script-is-not-own-gpu",
+    "title": "ASUS OLED Notebook RTX 4060",
+    "description": "<p>OLED Notebook RTX 4060, voll funktionsfähig.</p><script>Grafikkarten-Modell RTX 4050</script>",
+    "query": "4060 oled",
+    "expected": true
+  },
+  {
+    "id": "fault-is-still-visible",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p><p>Display defekt.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "wrong-panel-still-rejected",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p><p>Panel: IPS.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "ti-is-not-plain-4050",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikkarten-Modell RTX 4060 Ti</li></ul><p>Die bis zu NVIDIA GeForce RTX 4050 Grafik der Modellreihe.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "ordinary-colon-label-kept",
+    "title": "ASUS Vivobook Pro 16 OLED Notebook",
+    "description": "<h1>ASUS Vivobook Pro 16 OLED Notebook</h1><p>Voll funktionsfähig. OLED Display.</p><ul><li>Grafikprozessor: NVIDIA GeForce RTX 4050</li></ul><p>Die bis zu NVIDIA GeForce RTX 4060 Grafik der Modellreihe.</p>",
+    "query": "4060 oled",
+    "expected": false
+  }
+]

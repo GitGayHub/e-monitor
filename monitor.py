@@ -1105,6 +1105,27 @@ def _has_pc_hint(text_norm):
     return any(w in text_norm for w in PC_DEVICE_HINTS)
 
 
+def _gpu_description_declarations(description):
+    """An explicit GPU specification must not borrow a later family advert's GPU."""
+    text = _normalize(_clean_description(description))
+    rtx = r"(?:(?:nvidia|geforce)\s+)*rtx[\s®™]*\d{4}(?:\s*(?:ti|super))?\b"
+    values = re.findall(r"\b(?:grafikkarte|graphics card|grafikprozessor|graphics processor|gpu)\s*:\s*([^.!?]{1,80})", text)
+    # 206416001145: seller technical list says 'Grafikkarten-Modell RTX 4050',
+    # while the subsequent family marketing says 'bis zu RTX 4060'.
+    values += re.findall(r"\b(?:grafikkarten\s*modell|graphics card model|gpu model)\s*:?\s*(" + rtx + r")", text)
+    return [(re.match(rtx, value).group(0) if re.match(rtx, value) else value) for value in values]
+
+
+def _laptop_battery_unverified(description):
+    text = _normalize(_clean_description(description))
+    pattern = r"\b(?:battery|akku|batterie)\s+(?:(?:is|ist|wurde|has)\s+)?(?:(?:included|enthalten)\s+(?:but|aber)\s+)?(?:not\s+(?:been\s+)?tested|untested|nicht\s+getestet|ungetestet)\b"
+    for match in re.finditer(pattern, text):
+        before = text[max(0, match.start()-30):match.start()]
+        if not re.search(r"\b(?:if|when|falls|sofern)\s+(?:(?:the|die|der)\s+)?$", before):
+            return True
+    return False
+
+
 def _declared_rtx_matches(text_norm, gpu):
     declared = re.findall(r"\brtx[\s®™]*(\d{4})(?:\s*(ti|super))?\b", text_norm)
     expected = re.fullmatch(r"(\d{4})(ti|super)?", str(gpu))
@@ -6634,6 +6655,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
     query = _normalize(_intent_query(search))
     category = _effective_category(search.get("filters", {}).get("category", "all"), query)
+    if category == 'laptops' and _laptop_battery_unverified(details.get('description') or ''):
+        return False
     if _decorative_parts_offer(_normalize(details.get('title') or item.get('title') or ''), category) or _decorative_parts_offer(_normalize(_clean_description(details.get('description') or '')), category):
         return False
     allowed = ALLOWED_SUBCATEGORIES.get(category)
@@ -6646,7 +6669,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         gpu = gpu_intent.get('gpu') or '3050'
         values = [aspect.get('value') or '' for aspect in details.get('localizedAspects') or []
                   if _normalize(aspect.get('name') or '') in ('grafikkarte','grafikprozessor','graphics card','graphics processor','gpu')]
-        values += re.findall(r"\b(?:grafikkarte|graphics card|grafikprozessor|graphics processor|gpu)\s*:\s*([^.!?]{1,80})",_normalize(_clean_description(details.get('description') or '')))
+        values += _gpu_description_declarations(details.get('description') or '')
         if any(not _declared_rtx_matches(_normalize(value),gpu) for value in values):
             return False
     if _effective_category(category, query) == 'headphones' and not _headphone_details_match(

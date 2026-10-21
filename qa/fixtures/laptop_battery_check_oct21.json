@@ -1,0 +1,86 @@
+[
+  {
+    "id": "actual-included-but-not-tested",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Battery is Included But Not Tested to Hold Charge</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "battery-untested",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Battery untested.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "battery-has-not-been-tested",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>The battery has not been tested to hold charge.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "akku-ungetestet",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Akku ist ungetestet.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "akku-nicht-getestet",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Der Akku wurde nicht getestet.</p>",
+    "query": "4050 oled",
+    "expected": false
+  },
+  {
+    "id": "battery-tested",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Battery tested to hold charge.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "capacity-only",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Akku-Kapazität 80%.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "negative-untested",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>The battery is not untested. It works.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "unrelated-component",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Battery works. Camera not tested.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "conditional-english",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>If the battery is not tested, contact our service.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "conditional-german",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p>Falls der Akku nicht getestet wurde, kontaktieren Sie den Service.</p>",
+    "query": "4050 oled",
+    "expected": true
+  },
+  {
+    "id": "crosssell-not-own",
+    "title": "Dell XPS 14 9440 OLED RTX 4050 Laptop",
+    "description": "<p>Dell XPS 14 9440 OLED Notebook RTX 4050.</p><p><div class=\"product_crosssell\">Battery untested.</div></p>",
+    "query": "4050 oled",
+    "expected": true
+  }
+]
