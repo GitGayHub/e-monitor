@@ -1,240 +1,240 @@
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 636, in wrap_api_call
-    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
-playwright._impl._errors.TimeoutError: Page.goto: Timeout 1466ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20computer&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/events.py", line 84, in _run
-    self._context.run(self._callback, *self._args)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 547, in _done_callback
-    exc = future.exception()
-          ^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_browser_context.py", line 267, in _on_route
-    handled = await route_handler.handle(route)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 443, in handle
-    return await self._handle_internal(route)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 479, in _handle_internal
-    await handler_finished_future
-asyncio.exceptions.CancelledError
-2026-10-21 15:09:32,603 - Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:407>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py:67
-handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:407>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py:67>
-Traceback (most recent call last):
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7666, in _do_fetch_playwright
-    page.goto(plan["url"], wait_until=plan["wait_until"], timeout=MonitorPassBudget.milliseconds(35000))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 18528, in goto
-    self._sync(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_page.py", line 564, in goto
-    return await self._main_frame.goto(**locals_to_params(locals()))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_frame.py", line 157, in goto
-    await self._channel.send(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 78, in send
-    return await self._connection.wrap_api_call(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 636, in wrap_api_call
-    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
-playwright._impl._errors.TimeoutError: Page.goto: Timeout 1466ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20computer&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/events.py", line 84, in _run
-    self._context.run(self._callback, *self._args)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py", line 68, in resume
-    g_self.switch()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 470, in _handler
-    self.handler(route, route.request)  # type: ignore
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 140, in wrapper_func
-    return handler(
-           ^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7540, in _pw_block_heavy
-    route.abort()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 22430, in abort
-    self._sync(self._impl_obj.abort(errorCode=error_code))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 408, in abort
-    await self._handle_route(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 504, in _handle_route
-    await callback()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 599, in _race_with_page_close
-    await asyncio.wait(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/tasks.py", line 428, in wait
-    return await _wait(fs, timeout, return_when, loop)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/tasks.py", line 535, in _wait
-    await waiter
-asyncio.exceptions.CancelledError
-2026-10-21 15:09:32,633 - Exception in callback wait_for_future.<locals>.resume(<Task cancell...twork.py:407>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py:67
-handle: <Handle wait_for_future.<locals>.resume(<Task cancell...twork.py:407>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py:67>
-Traceback (most recent call last):
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7666, in _do_fetch_playwright
-    page.goto(plan["url"], wait_until=plan["wait_until"], timeout=MonitorPassBudget.milliseconds(35000))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 18528, in goto
-    self._sync(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_page.py", line 564, in goto
-    return await self._main_frame.goto(**locals_to_params(locals()))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_frame.py", line 157, in goto
-    await self._channel.send(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 78, in send
-    return await self._connection.wrap_api_call(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 636, in wrap_api_call
-    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
-playwright._impl._errors.TimeoutError: Page.goto: Timeout 1466ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20computer&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/events.py", line 84, in _run
-    self._context.run(self._callback, *self._args)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_greenlets.py", line 68, in resume
-    g_self.switch()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 470, in _handler
-    self.handler(route, route.request)  # type: ignore
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_impl_to_api_mapping.py", line 140, in wrapper_func
-    return handler(
-           ^^^^^^^^
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7540, in _pw_block_heavy
-    route.abort()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 22430, in abort
-    self._sync(self._impl_obj.abort(errorCode=error_code))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 408, in abort
-    await self._handle_route(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 504, in _handle_route
-    await callback()
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_network.py", line 599, in _race_with_page_close
-    await asyncio.wait(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/tasks.py", line 428, in wait
-    return await _wait(fs, timeout, return_when, loop)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/tasks.py", line 535, in _wait
-    await waiter
-asyncio.exceptions.CancelledError
-2026-10-21 15:09:32,635 - Exception in callback Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:546
-handle: <Handle Connection.dispatch.<locals>._done_callback(<Task cancell...ntext.py:252>>) at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:546>
-Traceback (most recent call last):
-  File "/home/runner/work/e-monitor/e-monitor/monitor.py", line 7666, in _do_fetch_playwright
-    page.goto(plan["url"], wait_until=plan["wait_until"], timeout=MonitorPassBudget.milliseconds(35000))
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/sync_api/_generated.py", line 18528, in goto
-    self._sync(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_sync_base.py", line 111, in _sync
-    return task.result()
-           ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_page.py", line 564, in goto
-    return await self._main_frame.goto(**locals_to_params(locals()))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_frame.py", line 157, in goto
-    await self._channel.send(
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 78, in send
-    return await self._connection.wrap_api_call(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 636, in wrap_api_call
-    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
-playwright._impl._errors.TimeoutError: Page.goto: Timeout 1466ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20computer&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/asyncio/events.py", line 84, in _run
-    self._context.run(self._callback, *self._args)
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py", line 547, in _done_callback
-    exc = future.exception()
-          ^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_browser_context.py", line 267, in _on_route
-    handled = await route_handler.handle(route)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 443, in handle
-    return await self._handle_internal(route)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_helper.py", line 479, in _handle_internal
-    await handler_finished_future
-asyncio.exceptions.CancelledError
-2026-10-21 15:09:32,635 - Playwright HTML fetch failed for '4080 (pc, rechner, computer, desktop, gaming pc)' (try 1/3): Page.goto: Timeout 1466ms exceeded.
-Call log:
-  - navigating to "https://www.ebay.de/sch/i.html?_nkw=4080%20computer&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-2026-10-21 15:09:33,453 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 0 items via eBay Browse API (EBAY_DE)
-2026-10-21 15:09:33,459 -   4080 (pc, rechner, computer, desktop, gaming pc): fetch error search_deferred
-2026-10-21 15:09:33,466 - Task was destroyed but it is pending!
-task: <Task cancelling name='Task-903' coro=<Channel.send() done, defined at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:70> wait_for=<Future finished result=None>>
-2026-10-21 15:09:33,466 - Future exception was never retrieved
-future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
-playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
-2026-10-21 15:09:33,466 - Task was destroyed but it is pending!
-task: <Task cancelling name='Task-906' coro=<Channel.send() done, defined at /opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/playwright/_impl/_connection.py:70> wait_for=<Future finished result=None>>
-2026-10-21 15:09:33,466 - Future exception was never retrieved
-future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
-playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
-2026-10-21 15:09:33,567 - Checking samsung s24 ultra through primary HTML
-2026-10-21 15:09:33,592 - samsung_s24_ultra_buy: live alias task 1/4 format=buy_now_offer query=samsung galaxy s24 ultra
-2026-10-21 15:09:33,598 - Fetching: samsung s24 ultra
-2026-10-21 15:09:33,598 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-21 15:09:35,665 - eBay session ready (impersonate=safari17_0)
-2026-10-21 15:09:40,888 - eBay challenge on ebay.de for 'samsung s24 ultra' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-21 15:09:40,891 - eBay session ready (impersonate=chrome131)
-2026-10-21 15:09:47,370 -   samsung s24 ultra -> 200 items via eBay Browse API (EBAY_DE)
-2026-10-21 15:09:47,391 - samsung_s24_ultra_buy: live alias task 2/4 format=buy_now_offer query=samsung s24 ultra
-2026-10-21 15:09:47,396 - Fetching: samsung s24 ultra
-2026-10-21 15:09:47,397 - eBay session ready (impersonate=chrome124)
-2026-10-21 15:09:51,717 - eBay challenge on ebay.de for 'samsung s24 ultra' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-21 15:09:51,719 - eBay session ready (impersonate=chrome120)
-2026-10-21 15:09:53,552 -   samsung s24 ultra: fetch error search_deferred
-2026-10-21 15:09:54,748 - eBay session ready (impersonate=safari17_2_ios)
-2026-10-21 15:09:54,748 - Scraping item page details for item 327416313382 via HTML
-2026-10-21 15:09:58,850 - _fetch_item_details_html: challenge page hit for item 327416313382
-2026-10-21 15:09:59,415 - Scraping item page details for item 960096764801 via HTML
-2026-10-21 15:10:09,742 - HTML browser details unavailable for 960096764801: TimeoutError
-2026-10-21 15:10:10,184 - Description blocked due to damage check (part + defect words)
-2026-10-21 15:10:10,186 -   samsung s24 ultra: 200 results, 0 verified in fair live slice
-2026-10-21 15:10:10,231 - Checking samsung s24 ultra through primary HTML
-2026-10-21 15:10:10,255 - samsung_s24_ultra_auc: live alias task 3/4 format=auction query=galaxy s24 ultra
-2026-10-21 15:10:10,261 - Fetching: samsung s24 ultra
-2026-10-21 15:10:14,681 -   samsung s24 ultra -> 27 items via m.ebay.de body_len=820801
-2026-10-21 15:10:14,681 -   samsung s24 ultra -> 27 items via ebay.de
-2026-10-21 15:10:14,703 - samsung_s24_ultra_auc: live alias task 4/4 format=auction query=s24ultra
-2026-10-21 15:10:14,709 - Fetching: samsung s24 ultra
-2026-10-21 15:10:19,491 -   samsung s24 ultra -> 57 items via m.ebay.de body_len=1148782
-2026-10-21 15:10:19,491 -   samsung s24 ultra -> 57 items via ebay.de
-2026-10-21 15:10:19,567 - samsung_s24_ultra_auc: live alias task 1/4 format=auction query=samsung galaxy s24 ultra
-2026-10-21 15:10:19,573 - Fetching: samsung s24 ultra
-2026-10-21 15:10:23,835 - eBay session ready (impersonate=safari17_0)
-2026-10-21 15:10:30,216 -   samsung s24 ultra: fetch error search_deferred
-2026-10-21 15:10:30,490 -   samsung s24 ultra: 60 results, 0 verified in fair live slice
-2026-10-21 15:10:30,496 - Checking samsung s24 ultra through primary HTML
-2026-10-21 15:10:30,521 - samsung_s24_ultra_auc__ending_soon: live alias task 4/4 format=auction query=s24ultra
-2026-10-21 15:10:30,527 - Fetching: samsung s24 ultra
-2026-10-21 15:10:30,527 - eBay session ready (impersonate=chrome131)
-2026-10-21 15:10:33,177 - eBay challenge on ebay.de for 'samsung s24 ultra' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-10-21 15:10:33,179 - eBay session ready (impersonate=chrome124)
-2026-10-21 15:10:36,665 -   samsung s24 ultra: ending soon sweep error pass_deferred
-2026-10-21 15:10:36,665 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
-2026-10-21 15:10:36,692 - === Done ===
+2026-10-21 15:12:53,536 - eBay challenge on ebay.de for 'asus vivobook 14x oled' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:12:55,119 - Playwright challenge before result wait for 'asus vivobook 14x oled'
+2026-10-21 15:12:56,810 - Playwright challenge before result wait for 'asus vivobook 14x oled'
+2026-10-21 15:12:56,874 - eBay fetch fail #1 (blocked) for 'asus vivobook 14x oled' on GH — no cooldown, next product retries
+2026-10-21 15:12:57,225 -   asus vivobook 14x oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:12:57,231 -   asus vivobook 14x oled: fetch error blocked
+2026-10-21 15:12:57,276 - Checking logitech superstrike through primary HTML
+2026-10-21 15:12:57,300 - logitech_superstrike_buy: live alias task 1/5 format=buy_now_offer query=logitech superstrike
+2026-10-21 15:12:57,306 - Fetching: logitech superstrike
+2026-10-21 15:12:57,306 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:12:57,685 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:12:57,687 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:12:57,994 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:13:09,832 -   logitech superstrike -> 71 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:13:09,872 - logitech_superstrike_buy: live alias task 2/5 format=buy_now_offer query=logitech g pro x 2 superstrike
+2026-10-21 15:13:09,878 - Fetching: logitech superstrike
+2026-10-21 15:13:09,878 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:13:10,161 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:13:10,436 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:13:10,859 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:13:17,306 -   logitech superstrike: fetch error search_deferred
+2026-10-21 15:13:17,702 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:13:17,702 - Scraping item page details for item 206631743696 via HTML
+2026-10-21 15:13:18,276 - _fetch_item_details_html: challenge page hit for item 206631743696
+2026-10-21 15:13:18,826 - Scraping item page details for item 206631722323 via HTML
+2026-10-21 15:13:19,923 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/206631722323?t=0&category=23160&seller=store_sakaguchi&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-21 15:13:20,559 -   logitech superstrike: 71 results, 2 verified in fair live slice
+2026-10-21 15:13:20,606 - Checking logitech superstrike through primary HTML
+2026-10-21 15:13:20,630 - logitech_superstrike_auc: live alias task 5/5 format=auction query=pro x 2 superstrike lunar eclipse
+2026-10-21 15:13:20,635 - Fetching: logitech superstrike
+2026-10-21 15:13:21,637 -   logitech superstrike -> 13 items via m.ebay.de body_len=634846
+2026-10-21 15:13:21,637 -   logitech superstrike -> 13 items via ebay.de
+2026-10-21 15:13:21,657 - logitech_superstrike_auc: live alias task 1/5 format=auction query=logitech superstrike
+2026-10-21 15:13:21,663 - Fetching: logitech superstrike
+2026-10-21 15:13:22,549 -   logitech superstrike -> 10 items via m.ebay.de body_len=684856
+2026-10-21 15:13:22,549 -   logitech superstrike -> 10 items via ebay.de
+2026-10-21 15:13:22,613 - logitech_superstrike_auc: live alias task 2/5 format=auction query=logitech g pro x 2 superstrike
+2026-10-21 15:13:22,619 - Fetching: logitech superstrike
+2026-10-21 15:13:23,563 -   logitech superstrike -> 6 items via m.ebay.de body_len=564886
+2026-10-21 15:13:23,563 -   logitech superstrike -> 6 items via ebay.de
+2026-10-21 15:13:23,583 - logitech_superstrike_auc: live alias task 3/5 format=auction query=logitech pro x2 superstrike
+2026-10-21 15:13:23,589 - Fetching: logitech superstrike
+2026-10-21 15:13:24,495 -   logitech superstrike -> 10 items via m.ebay.de body_len=680046
+2026-10-21 15:13:24,495 -   logitech superstrike -> 10 items via ebay.de
+2026-10-21 15:13:24,515 - logitech_superstrike_auc: live alias task 4/5 format=auction query=superstrike lunar eclipse
+2026-10-21 15:13:24,520 - Fetching: logitech superstrike
+2026-10-21 15:13:24,755 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:13:25,610 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:13:25,611 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:13:26,056 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:13:27,508 - Playwright challenge before result wait for 'logitech superstrike'
+2026-10-21 15:13:36,566 - eBay fetch fail #1 (site_error) for 'logitech superstrike' on GH — no cooldown, next product retries
+2026-10-21 15:13:37,051 -   logitech superstrike -> 1 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:13:37,152 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:13:37,152 - Scraping item page details for item 800815389861 via HTML
+2026-10-21 15:13:37,548 - _fetch_item_details_html: challenge page hit for item 800815389861
+2026-10-21 15:13:38,110 - Scraping item page details for item 377579095161 via HTML
+2026-10-21 15:13:39,658 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/377579095161?t=1791640609000&category=23160&seller=kehen_4364&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-21 15:13:40,580 -   logitech superstrike: 15 results, 2 verified in fair live slice
+2026-10-21 15:13:40,629 - Checking logitech superlight 2 through primary HTML
+2026-10-21 15:13:40,653 - logitech_superlight_2_std_buy: live alias task 1/2 format=buy_now_offer query=logitech g pro x superlight 2
+2026-10-21 15:13:40,658 - Fetching: logitech superlight 2
+2026-10-21 15:13:41,191 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:13:41,723 - eBay challenge on ebay.de for 'logitech superlight 2' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:13:41,725 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:13:42,315 - eBay challenge on ebay.de for 'logitech superlight 2' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:13:43,853 - Playwright challenge before result wait for 'logitech superlight 2'
+2026-10-21 15:13:45,801 - Playwright challenge before result wait for 'logitech superlight 2'
+2026-10-21 15:13:45,857 - eBay fetch fail #2 (blocked) for 'logitech superlight 2' on GH — no cooldown, next product retries
+2026-10-21 15:13:46,551 -   logitech superlight 2 -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:13:46,570 - logitech_superlight_2_std_buy: live alias task 2/2 format=buy_now_offer query=logitech superlight 2
+2026-10-21 15:13:46,576 - Fetching: logitech superlight 2
+2026-10-21 15:13:46,576 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:13:47,960 - eBay challenge on ebay.de for 'logitech superlight 2' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:13:47,962 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:13:48,739 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:13:51,016 - Playwright challenge before result wait for 'logitech superlight 2'
+2026-10-21 15:13:58,626 - eBay fetch fail #3 (site_error) for 'logitech superlight 2' on GH — no cooldown, next product retries
+2026-10-21 15:13:59,276 -   logitech superlight 2 -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:13:59,891 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:13:59,891 - Scraping item page details for item 366640211196 via HTML
+2026-10-21 15:14:03,317 - _fetch_item_details_html: challenge page hit for item 366640211196
+2026-10-21 15:14:03,766 - Scraping item page details for item 800710808585 via HTML
+2026-10-21 15:14:12,795 - HTML browser details unavailable for 800710808585: TimeoutError
+2026-10-21 15:14:14,072 -   logitech superlight 2: 237 results, 2 verified in fair live slice
+2026-10-21 15:14:14,118 - Checking logitech superlight 2 through primary HTML
+2026-10-21 15:14:14,142 - logitech_superlight_2_std_auc: live alias task 2/2 format=auction query=logitech superlight 2
+2026-10-21 15:14:14,148 - Fetching: logitech superlight 2
+2026-10-21 15:14:18,467 -   logitech superlight 2 -> 10 items via m.ebay.de body_len=558952
+2026-10-21 15:14:18,467 -   logitech superlight 2 -> 10 items via ebay.de
+2026-10-21 15:14:18,488 - logitech_superlight_2_std_auc: live alias task 1/2 format=auction query=logitech g pro x superlight 2
+2026-10-21 15:14:18,494 - Fetching: logitech superlight 2
+2026-10-21 15:14:22,632 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:14:25,166 - eBay challenge on ebay.de for 'logitech superlight 2' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:14:25,168 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:14:27,865 - eBay challenge on ebay.de for 'logitech superlight 2' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:14:29,399 - Playwright challenge before result wait for 'logitech superlight 2'
+2026-10-21 15:14:30,865 -   logitech superlight 2 -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:14:30,871 -   logitech superlight 2: fetch error search_deferred
+2026-10-21 15:14:30,908 -   logitech superlight 2: 10 results, 0 verified in fair live slice
+2026-10-21 15:14:30,979 - Checking logitech superlight 2 dex through primary HTML
+2026-10-21 15:14:31,003 - logitech_superlight_2_dex_buy: live alias task 2/2 format=buy_now_offer query=g pro x superlight 2 dex
+2026-10-21 15:14:31,008 - Fetching: logitech superlight 2 dex
+2026-10-21 15:14:31,009 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:14:35,429 - eBay challenge on ebay.de for 'logitech superlight 2 dex' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:14:35,431 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:14:38,837 - eBay challenge on ebay.de for 'logitech superlight 2 dex' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:14:38,839 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:14:42,084 - eBay challenge on ebay.de for 'logitech superlight 2 dex' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:14:44,297 -   logitech superlight 2 dex -> 34 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:14:44,318 - logitech_superlight_2_dex_buy: live alias task 1/2 format=buy_now_offer query=logitech superlight 2 dex
+2026-10-21 15:14:44,323 - Fetching: logitech superlight 2 dex
+2026-10-21 15:14:44,324 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:14:44,723 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:14:45,069 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:14:51,005 -   logitech superlight 2 dex: fetch error search_deferred
+2026-10-21 15:14:51,169 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:14:51,169 - Scraping item page details for item 237126774150 via HTML
+2026-10-21 15:14:51,463 - _fetch_item_details_html: challenge page hit for item 237126774150
+2026-10-21 15:14:52,701 - Scraping item page details for item 940012942806 via HTML
+2026-10-21 15:14:54,142 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/940012942806?t=0&category=23160&seller=jb-vertrieb-gmbh&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=0
+2026-10-21 15:14:55,240 - Description blocked due to bad condition word/phrase: 'defekt'
+2026-10-21 15:14:55,448 -   logitech superlight 2 dex: 34 results, 1 verified in fair live slice
+2026-10-21 15:14:55,491 - Checking logitech superlight 2 dex through primary HTML
+2026-10-21 15:14:55,515 - logitech_superlight_2_dex_auc: live alias task 1/2 format=auction query=logitech superlight 2 dex
+2026-10-21 15:14:55,521 - Fetching: logitech superlight 2 dex
+2026-10-21 15:14:56,610 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-10-21 15:14:56,631 - logitech_superlight_2_dex_auc: live alias task 2/2 format=auction query=g pro x superlight 2 dex
+2026-10-21 15:14:56,637 - Fetching: logitech superlight 2 dex
+2026-10-21 15:14:57,738 - eBay ebay.de genuine no-results marker for 'logitech superlight 2 dex'
+2026-10-21 15:14:57,797 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:14:58,309 - eBay challenge on ebay.de for 'logitech superlight 2 dex' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:14:58,311 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:14:58,879 - eBay challenge on ebay.de for 'logitech superlight 2 dex' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:15:08,971 -   logitech superlight 2 dex -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:15:08,977 -   logitech superlight 2 dex: fetch error search_deferred
+2026-10-21 15:15:09,020 - Checking sony ult wear through primary HTML
+2026-10-21 15:15:09,044 - sony_ult_wear_buy: live alias task 3/5 format=buy_now_offer query=WH-ULT900N
+2026-10-21 15:15:09,050 - Fetching: sony ult wear
+2026-10-21 15:15:09,050 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:15:09,960 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:15:11,126 - eBay challenge on ebay.de for 'sony ult wear' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:15:11,128 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:15:21,790 -   sony ult wear -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:15:21,808 - sony_ult_wear_buy: live alias task 4/5 format=buy_now_offer query=WHULT900N
+2026-10-21 15:15:21,814 - Fetching: sony ult wear
+2026-10-21 15:15:21,814 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:15:29,003 -   sony ult wear: fetch error search_deferred
+2026-10-21 15:15:29,288 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:15:29,288 - Scraping item page details for item 336855362420 via HTML
+2026-10-21 15:15:35,613 - _fetch_item_details_html: challenge page hit for item 336855362420
+2026-10-21 15:15:36,170 - Scraping item page details for item 336844080657 via HTML
+2026-10-21 15:15:39,855 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/336844080657?t=0&category=112529&seller=eco-pc&excSoj=1&ver=1&excTrk=1&lsite=3&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-21 15:15:40,389 -   sony ult wear: 200 results, 2 verified in fair live slice
+2026-10-21 15:15:40,475 - Checking sony ult wear through primary HTML
+2026-10-21 15:15:40,500 - sony_ult_wear_auc: live alias task 3/5 format=auction query=WH-ULT900N
+2026-10-21 15:15:40,506 - Fetching: sony ult wear
+2026-10-21 15:15:43,262 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:15:43,873 - eBay challenge on ebay.de for 'sony ult wear' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:15:43,875 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:15:52,953 -   sony ult wear -> 2 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:15:52,974 - sony_ult_wear_auc: live alias task 4/5 format=auction query=WHULT900N
+2026-10-21 15:15:52,979 - Fetching: sony ult wear
+2026-10-21 15:15:52,980 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:15:53,442 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:15:53,788 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:15:54,327 - eBay challenge on ebay.de for 'sony ult wear' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:00,464 -   sony ult wear: fetch error search_deferred
+2026-10-21 15:16:00,526 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:16:00,526 - Scraping item page details for item 237132604106 via HTML
+2026-10-21 15:16:01,038 - _fetch_item_details_html: challenge page hit for item 237132604106
+2026-10-21 15:16:01,483 - Scraping item page details for item 168794330469 via HTML
+2026-10-21 15:16:02,486 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/168794330469?t=0&category=112529&seller=mcdani&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-21 15:16:03,328 -   sony ult wear: 2 results, 1 verified in fair live slice
+2026-10-21 15:16:03,373 - Checking samsung odyssey oled g6 500hz through primary HTML
+2026-10-21 15:16:03,397 - samsung_odyssey_oled_g6_500hz_buy: live alias task 2/3 format=buy_now_offer query=G60SF LS27FG602
+2026-10-21 15:16:03,402 - Fetching: samsung odyssey oled g6 500hz
+2026-10-21 15:16:05,120 -   samsung odyssey oled g6 500hz -> 67 items via www.ebay.de body_len=1725326
+2026-10-21 15:16:05,120 -   samsung odyssey oled g6 500hz -> 67 items via ebay.de
+2026-10-21 15:16:05,141 - samsung_odyssey_oled_g6_500hz_buy: live alias task 3/3 format=buy_now_offer query=LS27FG604 500Hz
+2026-10-21 15:16:05,147 - Fetching: samsung odyssey oled g6 500hz
+2026-10-21 15:16:06,973 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-10-21 15:16:06,994 - samsung_odyssey_oled_g6_500hz_buy: live alias task 1/3 format=buy_now_offer query=samsung odyssey oled g6 500hz
+2026-10-21 15:16:07,000 - Fetching: samsung odyssey oled g6 500hz
+2026-10-21 15:16:08,623 -   samsung odyssey oled g6 500hz -> 64 items via www.ebay.de body_len=1612492
+2026-10-21 15:16:08,623 -   samsung odyssey oled g6 500hz -> 64 items via ebay.de
+2026-10-21 15:16:08,736 - Scraping item page details for item 860067864009 via HTML
+2026-10-21 15:16:09,764 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/860067864009?t=0&category=80053&seller=yepponitalia&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-21 15:16:11,037 - Description blocked due to bad condition word/phrase: 'burn in'
+2026-10-21 15:16:11,110 - Scraping item page details for item 307167578900 via HTML
+2026-10-21 15:16:12,590 - Fetching own seller description HTML: https://itm.ebaydesc.com/itmdesc/307167578900?t=1792080492000&category=80053&seller=hot-electronics&excSoj=1&ver=1&excTrk=1&lsite=77&ittenable=false&domain=ebay.com&descgauge=1&cspheader=1&oneClk=2&secureDesc=1&lang=de
+2026-10-21 15:16:13,872 -   samsung odyssey oled g6 500hz: 98 results, 1 verified in fair live slice
+2026-10-21 15:16:13,921 - Checking samsung odyssey oled g6 500hz through primary HTML
+2026-10-21 15:16:13,946 - samsung_odyssey_oled_g6_500hz_auc: live alias task 3/3 format=auction query=LS27FG604 500Hz
+2026-10-21 15:16:13,952 - Fetching: samsung odyssey oled g6 500hz
+2026-10-21 15:16:15,000 - eBay ebay.de genuine no-results marker for 'samsung odyssey oled g6 500hz'
+2026-10-21 15:16:15,020 - samsung_odyssey_oled_g6_500hz_auc: live alias task 1/3 format=auction query=samsung odyssey oled g6 500hz
+2026-10-21 15:16:15,026 - Fetching: samsung odyssey oled g6 500hz
+2026-10-21 15:16:15,256 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:16:16,819 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:16:18,831 - eBay challenge on ebay.de for 'samsung odyssey oled g6 500hz' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:27,392 -   samsung odyssey oled g6 500hz -> 0 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:16:27,399 -   samsung odyssey oled g6 500hz: fetch error search_deferred
+2026-10-21 15:16:27,445 - Checking (playstation 5 pro, ps5 pro) through primary HTML
+2026-10-21 15:16:27,470 - ps5_pro_buy: live alias task 2/2 format=buy_now_offer query=ps5 pro
+2026-10-21 15:16:27,476 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-21 15:16:27,476 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:16:30,043 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:30,045 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:16:31,732 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:31,734 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:16:33,015 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:40,167 -   (playstation 5 pro, ps5 pro) -> 200 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:16:40,187 - ps5_pro_buy: live alias task 1/2 format=buy_now_offer query=playstation 5 pro
+2026-10-21 15:16:40,193 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-21 15:16:40,193 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:16:40,672 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:40,674 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:16:41,193 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:41,195 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:16:42,340 -   (playstation 5 pro, ps5 pro) -> 47 items via www.ebay.de body_len=1013363
+2026-10-21 15:16:42,340 -   (playstation 5 pro, ps5 pro) -> 47 items via ebay.de
+2026-10-21 15:16:43,538 -   (playstation 5 pro, ps5 pro): 200 results, 0 verified in fair live slice
+2026-10-21 15:16:43,618 - Checking (playstation 5 pro, ps5 pro) through primary HTML
+2026-10-21 15:16:43,644 - ps5_pro_auc: live alias task 2/2 format=auction query=ps5 pro
+2026-10-21 15:16:43,649 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-21 15:16:44,147 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:44,149 - eBay session ready (impersonate=safari17_0)
+2026-10-21 15:16:44,562 - eBay session ready (impersonate=chrome131)
+2026-10-21 15:16:45,004 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:56,439 -   (playstation 5 pro, ps5 pro) -> 49 items via eBay Browse API (EBAY_DE)
+2026-10-21 15:16:56,460 - ps5_pro_auc: live alias task 1/2 format=auction query=playstation 5 pro
+2026-10-21 15:16:56,466 - Fetching: (playstation 5 pro, ps5 pro)
+2026-10-21 15:16:56,467 - eBay session ready (impersonate=chrome124)
+2026-10-21 15:16:56,757 - eBay session ready (impersonate=chrome120)
+2026-10-21 15:16:57,310 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:57,313 - eBay session ready (impersonate=safari17_2_ios)
+2026-10-21 15:16:57,866 - eBay challenge on ebay.de for '(playstation 5 pro, ps5 pro)' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-10-21 15:16:58,513 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
+2026-10-21 15:16:58,540 - === Done ===
