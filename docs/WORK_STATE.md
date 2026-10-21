@@ -4,7 +4,7 @@ Cloud0.137 интегрирован без конфликтов, с резерв
 
 Поручения Claude опубликованы: https://github.com/GitGayHub/e-monitor/issues/2 (P1 очередь/скорость), https://github.com/GitGayHub/e-monitor-android/issues/2 (P2 HTML/API/страна). Детали и готовый текст: docs/CLAUDE_ASSIGNMENTS_2026-10-22.md. Claude автоматически не запущен. Codex оставляет телефон, Telegram, live-каталог, интеграцию и выпуск; реализацию областей Claude параллельно не менять. Общая приёмка PARTIAL.
 
-Локальные9cloud_sync+4phone_adb PASS. Полные497Python и Android JVM+assembleDebug запущены после интеграции; результат нужно прочитать из текущих процессов, а не переносить Cloud PASS на ПК.
+После интеграции на ПК: 497 изолированных Python PASS (85.311с), 9 cloud_sync + 4 phone_adb PASS; 421 JVM / 93 suites, 0 failures/errors/skips; assembleDebug PASS. Первый dex-build упёрся в Metaspace256MB; повтор с явно переданными JVM-лимитами heap1024MB/Metaspace768MB прошёл за17с, исходники не менялись. Предупреждение старого D8 об API36 остаётся; ART/GUI/установка137 этим не подтверждены.
 
 ---
 
