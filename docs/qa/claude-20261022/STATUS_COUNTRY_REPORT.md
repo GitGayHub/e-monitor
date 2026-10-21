@@ -28,7 +28,7 @@
 
 * Исходное поведение Python на новых fixtures (до правок): 24 места → «Не указано»; `http_403/429/500`, `api_auth` → `details_unavailable`; challenge/truncated/zero — уже верно.
 * `python qa/run_unit_tests.py` (изолированно): **501 tests OK** (+4 `test_status_country_oct22`). Базовая линия ветки до правок — 497.
-* Android: `StatusCountryOct22Test` (3), `CountryLocationTest` (1), `SearchResponseStatusTest` (2) — 6/6 PASS. Полный `testDebugUnitTest` + `assembleDebug` — результат в PR.
+* Android: `StatusCountryOct22Test` (3), `CountryLocationTest` (1), `SearchResponseStatusTest` (2) — 6/6 PASS. Полный `testDebugUnitTest`: **424 tests / 94 suites, 0 failures/errors/skips**; `assembleDebug` PASS (Windows, JDK 21). На исходном Kotlin-коде `StatusCountryOct22Test` — **3/3 FAIL**.
 
 ## Ограничения
 
