@@ -1,3 +1,13 @@
+# Возвращение на ПК и разделение с Claude — 22 октября 2026
+
+Cloud0.137 интегрирован без конфликтов, с резервной копией .cloud-sync-backups/20261021T223145701544Z. Исходные heads bot9e07e1c241c8e784ab663215faf343d157d446d5 / Android e323e342f12c8dcfcc312a8aff165645165f2ecd. Production state не менялся; установка137 и живое внедрение в этом этапе не выполнялись.
+
+Поручения Claude опубликованы: https://github.com/GitGayHub/e-monitor/issues/2 (P1 очередь/скорость), https://github.com/GitGayHub/e-monitor-android/issues/2 (P2 HTML/API/страна). Детали и готовый текст: docs/CLAUDE_ASSIGNMENTS_2026-10-22.md. Claude автоматически не запущен. Codex оставляет телефон, Telegram, live-каталог, интеграцию и выпуск; реализацию областей Claude параллельно не менять. Общая приёмка PARTIAL.
+
+Локальные9cloud_sync+4phone_adb PASS. Полные497Python и Android JVM+assembleDebug запущены после интеграции; результат нужно прочитать из текущих процессов, а не переносить Cloud PASS на ПК.
+
+---
+
 # Cloud 0.137 — актуальное продолжение, 21 октября 2026
 
 Проверенная source-пара 0.137: bot `d1a222dbf841b8647e009d428017b57f7212968a`, Android `bdb55f8374ea65a2accfd40da7c438bab3ad683b`. Последующие commits меняют только передачу и ссылки.
