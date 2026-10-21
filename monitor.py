@@ -2655,6 +2655,8 @@ def _has_damage_word(text_norm):
 
 
 def _is_accessory_product(title_norm, category):
+    if category == "consoles" and re.search(r"\b(?:ohne|without|no|keine?)\s+(?:konsole|console|ps5|playstation)\b", title_norm):
+        return True
     if _decorative_parts_offer(title_norm, category):
         return True
     if category == "consoles" and re.search(r"\b(?:nur|only)\s+(?:kabel|cables?|controller|gamepad|laufwerk|disc drive)\b", title_norm):
@@ -2742,11 +2744,29 @@ def _mouse_feature_title(title_norm):
     return prefix + features
 
 
+def _pro_console_contents(title_norm):
+    # Independently read full consoles: 287647758446,168804472379,
+    # 227572993091,287658054398. Final own-description validation still applies.
+    model = re.search(r"\b(?:ps5|playstation\s*5)\s+pro\b", title_norm)
+    if not model:
+        return False
+    if re.search(r"\b(?:ssd|controller|gamepad|laufwerk|standfuss|staender|netzteil|kabel|ersatz\w*|replacement|spare|nur|only)\b", title_norm[:model.start()]):
+        return False
+    if re.search(r"\b(?:ersatz\w*|replacement|spare|nur|only)\b|\b(?:ohne|without|no|keine?)\s+(?:konsole|console|ps5|playstation)\b", title_norm):
+        return False
+    if re.search(r"^\s+(?:controller|gamepad|standfuss|staender|ssd|laufwerk)\b", title_norm[model.end():]):
+        return False
+    return bool(re.search(r"\b(?:2\s*tb|cfi\s*[- ]?\s*7[01]\d{2})\b", title_norm)
+                and re.search(r"\b(?:dualsense|controller|aimcontroller|laufwerk|blu\s*ray|blue\s*ray)\b", title_norm))
+
+
 def _is_device_bundle(title_norm, category):
     if _is_accessory_product(title_norm,category):
         return False
     if re.search(r"\b(?:fuer|for|voor|para|pour|per|kompatibel|compatible|fits)\b|\bf\s*\.\s*", title_norm):
         return False
+    if category == "consoles" and _pro_console_contents(title_norm):
+        return True
     nouns = {
         "headphones": r"kopfhoerer|headphones|headset|(?:sony\s+)?wh[\s-]*1000[\s-]*xm\d+",
         "consoles": "konsole|spielkonsole|console|digital edition|disc edition",
