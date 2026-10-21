@@ -70,6 +70,7 @@ def main():
         modules.append("test_phone_own_model")
         modules.append("test_phone_ambiguous_purpose")
         modules.append("test_mobile_search_status")
+        modules.append("test_manufacturer_warranty")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)

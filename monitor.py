@@ -5868,6 +5868,29 @@ def _clean_description(html_text):
         # Browser-visible seller text excludes it, including for a body of N/a.
         for el in soup.select("script,style,noscript,title,.product_crosssell"):
             el.decompose()
+        # 127332124787: Samsung/Flix's service table describes hypothetical
+        # warranty repairs. Remove only the recognised policy entries; keep
+        # product faults before, after, or added inside the same table.
+        warranty_entries = {
+            'service innerhalb der garantiezeit': r'bei einem defekt steht dir unser send in service zur verfuegung\.',
+            'service ausserhalb der garantiezeit': r'bei einem defekt wende dich bitte an unsere service hotline fuer weiterfuehrende informationen\.',
+            'garantiezeit': r'\d{1,2} jahre? \(inkl\. burn in schaeden bei sachgemaesser verwendung\. schaeden durch missbrauch oder gewerbliche nutzung nicht abgedeckt\)',
+        }
+        def policy_text(value):
+            return _normalize(re.sub(r'[\u2010-\u2015]', ' ', value))
+        for panel in soup.select('div.inpage_spec-list'):
+            heading = panel.find('div', class_='inpage_h4', recursive=False)
+            if heading is None or re.sub(r'[\s0-9⁰¹²³⁴⁵⁶⁷⁸⁹]+$', '', policy_text(heading.get_text(' ',strip=True))) != 'service & garantie':
+                continue
+            for entry in panel.select('li > div.inpage_spec'):
+                labels, bodies = entry.select('.inpage_h5'), entry.select('.inpage_desc')
+                if len(labels) != 1 or len(bodies) != 1:
+                    continue
+                label, body = labels[0].get_text(' ',strip=True), bodies[0].get_text(' ',strip=True)
+                pattern = warranty_entries.get(policy_text(label))
+                if (pattern and re.fullmatch(pattern, policy_text(body))
+                        and policy_text(entry.get_text(' ',strip=True)) == policy_text(label+' '+body)):
+                    entry.decompose()
         # 406218242948: merchant's decorative scale lists ALL grades, including
         # Defekt, while the actual product is graded Sehr gut. It is not a fault.
         scales = {
