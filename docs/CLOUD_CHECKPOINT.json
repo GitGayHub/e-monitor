@@ -41,5 +41,35 @@
     "all26ProductsAccepted": false
   },
   "production": "normal; current recipient/searches/seen/bans unchanged",
-  "privateArtifactsNotPublished": true
+  "privateArtifactsNotPublished": true,
+  "cloudDevelopment": {
+    "versionName": "0.137",
+    "versionCode": 137,
+    "logicVersion": 1792609320,
+    "historyVersion": 40,
+    "report": "docs/qa/cloud-20261021/REPORT_137.md",
+    "checks": "docs/qa/cloud-20261021/CHECKS_137.json",
+    "branch": "codex/cloud-work",
+    "baseHeads": {
+      "bot": "fda60b812184352eb648af9a6053e0c7084df2b9",
+      "android": "c9e69dcbd323bc2c75a871f647b6562b4343de47"
+    },
+    "tests": {
+      "python": 497,
+      "jvm": 421,
+      "cloudSync": 9,
+      "phoneAdb": 4,
+      "assembleDebug": "PASS",
+      "assembleDebugAndroidTest": "PASS"
+    },
+    "apkSha256": "679c3d894ebd2eb69edcb675b930f95e71d6603d9826be67af6dadc65cc93d1c",
+    "physicalInstalledVersionStill": "0.136",
+    "deployedToMain": false,
+    "physicalOrEmulatorVerified": false,
+    "latencyUnder15MinutesProven": false,
+    "uniqueSonyOwnStill": 7,
+    "recheckedExistingSonyOwn": 2,
+    "acceptanceComplete": false,
+    "liveNetworkStatus": "BLOCKED_PARTIAL"
+  }
 }

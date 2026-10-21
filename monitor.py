@@ -5372,6 +5372,16 @@ def _linked_seller_description_url(soup, item_id):
     return None
 
 
+def _html_has_variation_controls(soup):
+    """Only DOM attributes prove a selector; shared CSS/JS names do not."""
+    markers = ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo")
+    selector = ",".join(f'[{attribute}*="{marker}"]'
+                        for attribute in ("class", "id", "name", "data-testid")
+                        for marker in markers)
+    return any(element.name not in ("script", "style", "link", "meta")
+               for element in soup.select(selector))
+
+
 def _parse_item_details_html(html, description=None, session=None, host="ebay.de",item_id=None):
     """Parse own listing fields. Characteristics cannot substitute seller text."""
     soup = BeautifulSoup(html, "html.parser")
@@ -5379,7 +5389,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     title_text = title_el.get_text(" ", strip=True) if title_el else ""
     headers = {}
 
-    is_mv = any(k in html for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo"))
+    is_mv = _html_has_variation_controls(soup)
     item_group_type = "SELLER_DEFINED_VARIATIONS" if is_mv else None
 
     price_val = None
@@ -8790,11 +8800,10 @@ def _is_item_page_multivariation(item_id):
         r = session.get(url, headers=headers, timeout=15)
         if r.status_code == 200:
             html_content = r.text
-            # 1. Check for standard Multi-SKU strings/classes in HTML
-            if any(k in html_content for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo")):
-                return True
-            # 2. Check for selecting drop-downs that are native listboxes but not feedback
             soup = BeautifulSoup(html_content, "html.parser")
+            if _html_has_variation_controls(soup):
+                return True
+            # Native listboxes may still prove variants without a module marker.
             selects = soup.find_all("select")
             for s in selects:
                 name = s.get("name", "") or ""
@@ -8936,7 +8945,23 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
     if on_verified is not None:
         # Do not spend the live slice on already notified or over-limit stock
         # while an unseen affordable listing waits in the same newest page.
-        candidates.sort(key=lambda row: not bool(_notify_candidates_from_filtered(filter_results([row],search,config))))
+        ready = {id(row): bool(_notify_candidates_from_filtered(filter_results([row],search,config))) for row in candidates}
+        candidates.sort(key=lambda row: not ready[id(row)])
+        # This is preliminary SERP evidence, never description acceptance.
+        # IDs and gate facts let a later audit distinguish a waiting auction,
+        # unknown clock/price, and a ready lot deferred by the two-item slice.
+        audit = []
+        for row in candidates[:80]:
+            _, gate = _notify_eligibility(row, search)
+            minutes = _parse_time_left_to_minutes(row.get("time_left", ""))
+            if gate == "wait_24h" and minutes is None:
+                gate = "auction_time_unknown"
+            audit.append({"id": str(row['item_id']), "ready": ready[id(row)],
+                          "gate": gate, "minutes": minutes,
+                          "source": row.get("source") if row.get("source") in ("html", "api") else "other"})
+        logger.info("Live validation queue search=%s candidates=%d omitted=%d rows=%s",
+                    queue_id, len(candidates), max(0, len(candidates)-len(audit)),
+                    json.dumps(audit, separators=(",", ":")))
     ids = list(dict.fromkeys(str(candidate['item_id']) for candidate in candidates))
     for index, candidate in enumerate(candidates):
         if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
@@ -8955,6 +8980,9 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         else:
             valid, details = await _validate_candidate(candidate, search)
             detail_expired = False
+        if on_verified is not None:
+            logger.info("Live validation result search=%s item=%s status=%s deadline_expired=%s",
+                        queue_id, candidate['item_id'], candidate.get('_details_status', 'unknown'), detail_expired)
         if details is None and detail_expired:
             description_deferred += 1
         elif details is None or candidate.get("_details_status") == "unavailable_price":

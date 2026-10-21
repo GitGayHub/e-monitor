@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "checkedAtUtc": "2026-10-21T19:10:27.754543+00:00",
+  "branch": "codex/cloud-work",
+  "baselineHeads": {
+    "bot": "fda60b812184352eb648af9a6053e0c7084df2b9",
+    "android": "c9e69dcbd323bc2c75a871f647b6562b4343de47"
+  },
+  "sourceVersion": {
+    "apk": "0.137",
+    "code": 137,
+    "logicVersion": 1792609320,
+    "pythonHistory": 40,
+    "androidHistory": 40
+  },
+  "baselinePython": {
+    "tests": 490,
+    "passed": true
+  },
+  "python": {
+    "tests": 497,
+    "failures": 0,
+    "errors": 0,
+    "networkForbidden": true,
+    "temporaryConfigHistorySeenOutbox": true,
+    "originalSonyHtmlCases": 2
+  },
+  "tools": {
+    "cloudSyncTests": 9,
+    "phoneAdbTests": 4,
+    "failures": 0
+  },
+  "android": {
+    "tests": 421,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suites": 93,
+    "originalSonyHtmlCases": 2,
+    "testDebugUnitTest": "PASS",
+    "assembleDebug": "PASS",
+    "assembleDebugAndroidTest": "PASS",
+    "buildConfigChecked": true,
+    "jdk": "21",
+    "sdk": 36,
+    "buildTools": "35.0.0",
+    "warning": "Existing D8 compiler warns API36 unsupported; JVM/build pass does not prove ART execution."
+  },
+  "sharedRegression": {
+    "domCases": 28,
+    "formatCasesPerEngine": 112,
+    "negativeControls": "Real selectors, missing own, broken hinge, wrong model; previous selected-phone binding tests also pass."
+  },
+  "privateReplay": "Original item HTML and own iframe parsed independently by Python and Kotlin; private manifest explicitly forwarded to Gradle, result cache disabled. Raw captures were not published.",
+  "debugApks": [
+    {
+      "name": "app-debug.apk",
+      "bytes": 69938609,
+      "sha256": "679c3d894ebd2eb69edcb675b930f95e71d6603d9826be67af6dadc65cc93d1c",
+      "cloudQaSignature": true,
+      "physicalUpdateCompatibilityVerified": false
+    },
+    {
+      "name": "app-debug-androidTest.apk",
+      "bytes": 2635365,
+      "sha256": "97a4dd0a8122e158cda4cd1c51dcc869b265e77a2ec9c1edd2d8400d988d7b60",
+      "cloudQaSignature": true,
+      "physicalUpdateCompatibilityVerified": false
+    }
+  ],
+  "physical": {
+    "installedVersionUnchanged": "0.136",
+    "gui136RepairReasonVerified": false,
+    "gui137Verified": false,
+    "apk137Installed": false,
+    "phoneArt137Run": false,
+    "localPcTelegram137Verified": false
+  },
+  "production": {
+    "mainWritten": false,
+    "modeRecipientSearchesSeenBansChanged": false,
+    "telegramMessagesSent": false,
+    "settingsRevisionReadOnly": "ce6d8944-34df-441a-8cd5-483e0b5a9542",
+    "storedSearches": 50,
+    "enabledSearches": 48,
+    "limits": {
+      "iPhone16ProMax": 610,
+      "iPhone17ProMax": 910,
+      "S25Edge": 325,
+      "RayBan": 225,
+      "LG": 430
+    }
+  },
+  "acceptanceComplete": false,
+  "liveCoverage": "PARTIAL/BLOCKED; Sony unique own count7, two existing IDs rechecked, no new unique IDs",
+  "ciDispatched": false,
+  "localEmulatorAvailable": false,
+  "latencyUnder15MinutesProven": false
+}

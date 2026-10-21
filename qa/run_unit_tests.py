@@ -74,6 +74,7 @@ def main():
         modules.append("test_gpu_own_spec")
         modules.append("test_laptop_battery_check")
         modules.append("test_ps5_contents")
+        modules.append("test_variation_dom_evidence")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
