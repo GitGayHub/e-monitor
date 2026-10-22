@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 42  # Android and Python share ULT Wear model-alias selection.
+HISTORY_VERSION = 43  # Split I Phone model names participate in the same verified cohort.
 _DB_LOCK = threading.Lock()
 
 
