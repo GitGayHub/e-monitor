@@ -58,11 +58,25 @@ jobs:
           cache: pip
 
       - name: Install dependencies
+        timeout-minutes: 4
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install playwright
+          python -m pip install --disable-pip-version-check --timeout 20 --retries 2 -r requirements.txt
+
+      # Browser downloads/system packages are optional retrieval support, not
+      # a reason to leave every search stopped for the whole45-minute job.
+      # HTML requests remain primary; Browse API remains the bounded reserve.
+      - name: Prepare optional HTML browser
+        id: html_browser
+        timeout-minutes: 4
+        continue-on-error: true
+        run: |
+          python -m pip install --disable-pip-version-check --timeout 20 --retries 1 playwright
           python -m playwright install --with-deps chromium
+          python -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); b=p.chromium.launch(headless=True); b.close(); p.stop()"
+
+      - name: Report browser fallback
+        if: steps.html_browser.outcome != 'success'
+        run: echo "::warning::HTML browser preparation failed or timed out. Continue with HTML requests and the quota-limited API fallback; access errors remain errors."
 
       - name: Decrypt config
         env:
@@ -84,7 +98,7 @@ jobs:
           EMOBILE_CONFIG: "1"
           # HTML is primary; Browse API is a bounded reserve respecting quota.
           EBAY_SOURCE: auto
-          EBAY_HTML_PLAYWRIGHT: "1"
+          EBAY_HTML_PLAYWRIGHT: ${{ steps.html_browser.outcome == 'success' && '1' || '0' }}
           EBAY_HTML_MOBILE_FIRST: "1"
           # GitHub's 5-min cron is best effort and regularly lands 10–40 min
           # late, which is what made alerts arrive an hour after the listing.
