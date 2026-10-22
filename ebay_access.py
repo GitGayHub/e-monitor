@@ -300,6 +300,34 @@ class BrowseAccess:
             state['normal_candidates'] = dict(sorted(entries.items(),key=lambda row:row[1]['updated'])[-128:])
             self.save(state)
 
+    def normal_candidate_facts(self, search_id, context, market):
+        """Per-ID timing facts for live ordering; never prices, sellers or text."""
+        saved = self.state().get('normal_candidate_facts', {}).get(str(search_id)+'|'+market, {})
+        return dict(saved.get('ids', {})) if saved.get('context') == context else {}
+
+    def note_normal_candidate_facts(self, search_id, context, market, updates, now):
+        """Merge ready/checked/end timestamps; a None value removes that fact.
+
+        Losing a fact only promotes an ID back to an unchecked tier, so the
+        bound can never starve a lot; it can only cost one extra description.
+        """
+        with self.lock:
+            state = self.state()
+            key = str(search_id)+'|'+market
+            entries = {k:v for k,v in state.get('normal_candidate_facts', {}).items()
+                       if now-v.get('updated', 0) < 2*86400}
+            entry = entries.get(key, {})
+            ids = dict(entry.get('ids', {})) if entry.get('context') == context else {}
+            for item_id, fact in updates.items():
+                merged = {k:v for k,v in {**ids.get(str(item_id), {}), **fact}.items() if v is not None}
+                merged['updated'] = now
+                ids[str(item_id)] = merged
+            ids = {k:v for k,v in ids.items() if now-v.get('updated', 0) < 2*86400}
+            entries[key] = {'context':context,'updated':now,
+                            'ids':dict(sorted(ids.items(),key=lambda row:row[1]['updated'])[-160:])}
+            state['normal_candidate_facts'] = dict(sorted(entries.items(),key=lambda row:row[1]['updated'])[-128:])
+            self.save(state)
+
     def finish_normal_candidates(self, search_id, context, market):
         with self.lock:
             state = self.state(); entries = state.get('normal_candidates', {})
