@@ -1596,7 +1596,7 @@ def _is_phone_device_title(title_norm):
         return True
     if re.search(r"\bnubia\s+(?:z\d+[a-z]?|focus|red\s*magic)\b.*\bultra\b", title_norm):
         return True
-    if re.search(r"\biphone\s+\d{2}\s+pro\s+max\b", title_norm):
+    if re.search(r"\biphone\s+\d{2}\s+pro\s*max\b", title_norm):
         return True
     if re.search(r"\b(?:samsung\s+)?(?:galaxy\s+)?s\d{2}\s+ultra\b", title_norm):
         return True
@@ -1783,6 +1783,8 @@ _IPHONE_PRO_MAX_CODES = {
 
 
 def _phone_model_spacing(text):
+    # 267813864215: "iphone 17 ProMax" is the same model as "17 Pro Max".
+    text = re.sub(r"\b(iphone\s*\d{1,2})\s*promax\b", r"\1 pro max", text)
     return re.sub(r"\bs\s+(\d{2})\b", r"s\1", text)
 
 
@@ -1882,6 +1884,16 @@ def _phone_description_declares_fake(description):
         if not re.search(r"\b(?:kein\w*|nicht|no|not|never)\s+(?:(?:ein|eine|a|an)\s+)?$", before):
             return True
     return False
+
+
+_OFF_PLATFORM_MESSENGER = r"(?:whats\s*app|whats?ap+|whasap+|whapp|wa\.me|telegram|viber)"
+_OFF_PLATFORM_NUMBER = r"\+?\d[\d ./-]{6,}\d"
+
+
+def _description_off_platform_contact(description):
+    """407301965180/407307707043: a messenger plus phone number moves the deal off eBay."""
+    text = _normalize(_clean_description(description or ""))
+    return bool(re.search(rf"\b{_OFF_PLATFORM_MESSENGER}\b[^\n]{{0,40}}?{_OFF_PLATFORM_NUMBER}|{_OFF_PLATFORM_NUMBER}[^\n]{{0,25}}?\b{_OFF_PLATFORM_MESSENGER}\b", text))
 
 
 def _phone_description_refurbished(description):
@@ -2015,13 +2027,18 @@ def _phone_storage_mismatch(value, query):
     if generation.group(1) == '17':
         allowed |= {2000, 2048}
     text = _normalize(value)
+    sizes = []
     for match in re.finditer(r"\b(\d+(?:[.,]\d+)?)\s*(gb|gib|go|tb|tib)\b", text):
         before, after = text[max(0, match.start()-30):match.start()], text[match.end():match.end()+35]
         if re.search(r"\b(?:ram|arbeitsspeicher|frei|free|verfuegbar)\s*[:=]?\s*$", before) or re.match(r"\s*(?:ram|arbeitsspeicher|lpddr\d[x]?|frei|free|verfuegbar|available)\b", after):
             continue
-        gb = float(match.group(1).replace(',', '.')) * (1024 if match.group(2) in ('tb', 'tib') else 1)
-        if gb not in allowed:
-            return match.group()
+        sizes.append((match.group(), float(match.group(1).replace(',', '.')) * (1024 if match.group(2) in ('tb', 'tib') else 1)))
+    # 377582903538: "256GB ... iOS 12GB" — the model's own RAM next to a valid storage size.
+    ram = 12 if generation.group(1) == '17' else 8
+    has_storage = any(gb in allowed for _, gb in sizes)
+    for raw, gb in sizes:
+        if gb not in allowed and not (has_storage and gb == ram):
+            return raw
     return None
 
 
@@ -2110,7 +2127,10 @@ def _phone_specifications_match(title, description, query):
     declared_chips += re.findall(r"\b(?:leistungsfaehig\w*|powerful)\s+((?:qualcomm\s+)?(?:exynos|snapdragon|dimensity|mediatek)[a-z0-9 +]*?)\s+(?:prozessor|processor)\b", own_description)
     if any(not _phone_chipset_matches(chip,q) for chip in declared_chips):
         return False
-    if re.search(r"\biphone\s*(15|16|17)\s*pro\b", q):
+    # 336857704578/820244939746: eBay's generated text names "A17 Pro" for a real
+    # 17 Pro Max. Only the 17 Pro generation has 12 GB RAM, so that declaration wins.
+    generated_chip = bool(re.search(r"\biphone\s*17\s*pro\b", q) and re.search(r"\b12\s*gb\s*(?:ram|arbeitsspeicher)\b", own_description))
+    if re.search(r"\biphone\s*(15|16|17)\s*pro\b", q) and not generated_chip:
         for chip in re.finditer(r"\b(?:apple\s+)?a\d{1,2}(?:\s*(?:pro|bionic))?\s*(?:chip(?:satz|set)?|processor|prozessor)\b", own_description):
             before = own_description[max(0,chip.start()-45):chip.start()]
             if re.search(r"\b(?:als|than|vs|versus|gegenueber|compared\s+to|vergleich\s+zu)\s+(?:(?:dem|the)\s+)?$", before):
@@ -2494,7 +2514,8 @@ def _is_phone_accessory_title(title_norm):
             m = sep_pattern.search(title_norm)
             if m:
                 before_sep = title_norm[:m.start()]
-                before_has_acc = any(_has_accessory_term(before_sep, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS + PHONE_HARD_PART_WORDS)
+                # 128150932603: "97 % Akku OVP + Zubehörpaket" — health, not a part before the bundle.
+                before_has_acc = any(_has_accessory_term(before_sep, w) for w in PHONE_HARD_ACCESSORY_WORDS + PHONE_SOFT_ACCESSORY_WORDS + tuple(hard_parts_to_check))
                 if before_has_acc:
                     return True
             return False
@@ -6728,6 +6749,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
     category = _effective_category(search.get("filters", {}).get("category", "all"), query)
     if category == 'laptops' and _laptop_battery_unverified(details.get('description') or ''):
         return False
+    if _description_off_platform_contact(details.get('description') or ''):
+        return False
     if _decorative_parts_offer(_normalize(details.get('title') or item.get('title') or ''), category) or _decorative_parts_offer(_normalize(_clean_description(details.get('description') or '')), category):
         return False
     allowed = ALLOWED_SUBCATEGORIES.get(category)
@@ -8997,6 +9020,10 @@ def _live_validation_tier(row, search, ready, fact, now):
     return (0 if ready else 1), ready_from
 
 
+# The checkpoint reserve stays; only the extra delivery window is given up.
+PRIORITY_VALIDATION_MIN_SECONDS = 30
+
+
 async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix="", population_complete=True, on_budget_deferred=None):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
@@ -9055,7 +9082,12 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
                     int(max(waits)) if waits else None)
     ids = list(dict.fromkeys(str(candidate['item_id']) for candidate in candidates))
     for index, candidate in enumerate(candidates):
-        if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
+        # 377573264218: a fresh ready lot at the end of a pass waited ~7 min
+        # for the next one. It may use the small delivery window; the
+        # checkpoint reserve and the runner's hard reserve are untouched.
+        fresh_ready = on_verified is not None and search.get('notify', True) and tier.get(id(candidate)) == 0
+        reserve = PRIORITY_VALIDATION_MIN_SECONDS if fresh_ready else (budget.validation_reserve if budget is not None else 30)
+        if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=reserve):
             deferred = len(candidates) - index
             fair_slice_exhausted = max_candidates is not None and index >= max_candidates
             if on_verified is not None:
@@ -9074,7 +9106,7 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
                 browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,
                                                           {str(candidate['item_id']): {'checked_at': time.time()}},time.time())
         if on_verified is not None:
-            with MonitorPassBudget.slice(20,reserve=30) as detail_budget:
+            with MonitorPassBudget.slice(20,reserve=15 if fresh_ready else 30) as detail_budget:
                 valid, details = await _validate_candidate(candidate, search)
                 detail_expired = detail_budget is not None and detail_budget.should_yield()
             seconds_left = _parse_end_date_to_seconds((details or {}).get("itemEndDate"))

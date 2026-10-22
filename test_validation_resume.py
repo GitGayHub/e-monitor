@@ -29,7 +29,9 @@ class ValidationResumeTests(unittest.TestCase):
         send=AsyncMock(return_value=True)
         try:
             self.clock[0]=85  # 35s left: discovery allowed, description reserve reached.
-            self.run_loop(fetch,Mock(side_effect=AssertionError('must not read after description deadline')),send)
+            # Fresh ready lots normally use this window; resume still covers overflow.
+            with patch.object(monitor,'PRIORITY_VALIDATION_MIN_SECONDS',45):
+                self.run_loop(fetch,Mock(side_effect=AssertionError('must not read after description deadline')),send)
             self.assertEqual(['a'],fetched);send.assert_not_awaited()
             self.assertIn('a|'+monitor.EBAY_MARKETPLACE_ID,self.access.state()['normal_validation_resume'])
             self.access=BrowseAccess()  # The priority survives a runner restart.
@@ -72,6 +74,20 @@ class ValidationResumeTests(unittest.TestCase):
             with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_fetch_item_details',side_effect=details),patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}):
                 verified=asyncio.run(monitor._verified_history(rows,self.search,on_verified=AsyncMock(),max_candidates=2,on_budget_deferred=deferred))
             self.assertEqual(2,len(verified));deferred.assert_not_called()
+            self.assertFalse(self.access.state().get('normal_validation_resume'))
+        finally:MonitorPassBudget.current.reset(token)
+
+    def test_fresh_ready_lot_found_near_deadline_is_sent_in_the_same_pass(self):
+        # 377573264218: ready at19:11 near the pass end, sent only at19:18.
+        searches,row,body=self.fixture();fetched=[]
+        token=MonitorPassBudget.current.set(MonitorPassBudget(120,clock=lambda:self.clock[0]))
+        def fetch(s,**kw):
+            fetched.append(s['id']);return ([copy.deepcopy(row)] if s['id']=='a' else []),None
+        send=AsyncMock(return_value=True)
+        try:
+            self.clock[0]=85  # 35s left: inside the old45s description reserve.
+            self.run_loop(fetch,lambda i:copy.deepcopy(body),send)
+            self.assertEqual('a',fetched[0]);send.assert_awaited_once()
             self.assertFalse(self.access.state().get('normal_validation_resume'))
         finally:MonitorPassBudget.current.reset(token)
 

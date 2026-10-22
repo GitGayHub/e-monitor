@@ -304,6 +304,20 @@ class MonitorPassBudgetTests(unittest.TestCase):
         self.assertTrue(all(r['_details_status']=='verified' for r in verified))
         self.assertNotIn('expensive',[r['item_id'] for r in verified])
 
+    def test_fresh_ready_lot_uses_soft_window_that_defers_other_reads(self):
+        # 377573264218 was ready at the end of a pass and waited ~7 min for the next one.
+        self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        rows=[r for r in rows if r['item_id'] in ('expensive','seen')]
+        # Normal pass reserve is 45s: 35s left now reads the ready lot; 25s left keeps the checkpoint reserve.
+        self.budget.validation_reserve=45
+        for now,expected in ((5,['seen']),(15,[])):
+            self.clock[0]=now;calls=[];sent=AsyncMock()
+            with self.subTest(now=now),patch.object(monitor,'_fetch_item_details',side_effect=lambda i:(calls.append(i),details[i])[1]),patch.object(monitor,'browse_access',self.access),patch.object(monitor,'seen_ids',set()),patch.object(monitor,'seen_state',{}):
+                asyncio.run(monitor._verified_history(copy.deepcopy(rows),self.search,on_verified=sent))
+                self.assertEqual(expected,calls)
+                self.assertEqual(expected,[c.args[0]['item_id'] for c in sent.await_args_list])
+
     def test_expired_transport_is_deferred_even_when_forced(self):
         self.clock[0]=40
         with patch.object(monitor,'_do_fetch_one') as request:
