@@ -1,0 +1,46 @@
+{
+  "observedAtUtc": "2026-10-22T21:10:28.384676+00:00",
+  "cancelRequested": true,
+  "oldRun": 39851890744,
+  "oldJob": 120080544036,
+  "stage": "Install dependencies",
+  "stageStartedAt": "2026-10-22T20:49:01Z",
+  "decryptHadNotStarted": true,
+  "monitorHadNotStarted": true,
+  "replacementRun": 39854749260,
+  "replacementWorkflowCommit": "a8902aff03586bf47b99313976cd2649e8a427fc",
+  "reason": "Startup stalled over20minutes before loading configuration; bounded replacement already queued. No active monitoring/send/checkpoint was interrupted.",
+  "replacementJob": 120090387969,
+  "replacementObservedSteps": [
+    {
+      "name": "Install dependencies",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-22T21:09:17Z",
+      "completed_at": "2026-10-22T21:09:20Z"
+    },
+    {
+      "name": "Prepare optional HTML browser",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-22T21:09:20Z",
+      "completed_at": "2026-10-22T21:09:45Z"
+    },
+    {
+      "name": "Decrypt config",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-22T21:09:45Z",
+      "completed_at": "2026-10-22T21:09:45Z"
+    },
+    {
+      "name": "Run monitor loop",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-10-22T21:09:45Z",
+      "completed_at": null
+    }
+  ],
+  "oldRunnerConclusion": "cancelled",
+  "cancelledBootstrapLogCause": "Ubuntu apt mirror package acquisition: last apt progress20:49:30Z, cancelled21:09:04Z; Python packages had installed by20:49:11Z."
+}
