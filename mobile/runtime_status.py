@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import re
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -30,10 +31,26 @@ def search_issues(active_config, errors):
     for text in errors or []:
         search_id,_,detail=str(text).partition(':')
         row=searches.get(search_id,{})
-        code=next((c for c in ('site_error','blocked','rate_limit','cooldown','network','parse') if c in detail),'details_unavailable')
-        message={'site_error':'eBay вернул страницу временной ошибки','blocked':'eBay ограничил доступ к выдаче','rate_limit':'eBay ограничил частоту запросов','cooldown':'Ожидается повторная проверка','network':'Не удалось получить ответ eBay','parse':'Не удалось прочитать ответ eBay','details_unavailable':'Не удалось полностью проверить описание или цену'}[code]
-        issues.append(dict(searchId=search_id,searchName=row.get('display_name') or row.get('query') or search_id,code=code,message=message))
+        issues.append(dict(searchId=search_id,searchName=row.get('display_name') or row.get('query') or search_id,**_issue(detail)))
     return issues
+
+
+def _issue(detail):
+    """HTTP/API refusals are search failures, never a description verdict."""
+    status=re.search(r'\bhttp_(\d{3})\b',detail)
+    if status and status.group(1)=='403':
+        return dict(code='blocked',message='eBay отклонил запрос (403)')
+    if status and status.group(1)=='429':
+        return dict(code='rate_limit',message='eBay ограничил частоту запросов (429)')
+    if status:
+        return dict(code='http',message=f'Ошибка сайта eBay ({status.group(1)})')
+    if 'api_auth' in detail:
+        return dict(code='api_auth',message='eBay API отклонил ключи; используется HTML')
+    code=next((c for c in ('site_error','blocked','rate_limit','cooldown','network','parse') if c in detail),None)
+    if code is None and 'описания или цены недоступны' in detail:
+        code='details_unavailable'
+    message={'site_error':'eBay вернул страницу временной ошибки','blocked':'eBay ограничил доступ к выдаче','rate_limit':'eBay ограничил частоту запросов','cooldown':'Ожидается повторная проверка','network':'Не удалось получить ответ eBay','parse':'Не удалось прочитать ответ eBay','details_unavailable':'Не удалось полностью проверить описание или цену'}.get(code)
+    return dict(code=code or 'unknown',message=message or 'Проверка поиска не завершена; повторится')
 
 
 def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None,search_errors=None,last_pass=None,coverage=None):
