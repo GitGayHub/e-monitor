@@ -7,8 +7,8 @@
   "sourceAndroid": "82a9964472566f8cd7964f3a0de18cde918e445d",
   "sourceBot": "a25772e501cf1db228c2825362bcf715068f26d8",
   "cloudCodeHeads": {
-    "android": "5e5794834f73cc2782f2142c9e9bdf26e1793034",
-    "bot": "d7d2e37b8aa8b6b304c0de53782c3b8bcf651f95"
+    "bot": "d1a222dbf841b8647e009d428017b57f7212968a",
+    "android": "bdb55f8374ea65a2accfd40da7c438bab3ad683b"
   },
   "apk": {
     "apkVersion": "0.136",
@@ -41,5 +41,107 @@
     "all26ProductsAccepted": false
   },
   "production": "normal; current recipient/searches/seen/bans unchanged",
-  "privateArtifactsNotPublished": true
+  "privateArtifactsNotPublished": true,
+  "cloudDevelopment": {
+    "versionName": "0.137",
+    "versionCode": 137,
+    "logicVersion": 1792609320,
+    "historyVersion": 40,
+    "report": "docs/qa/cloud-20261021/REPORT_137.md",
+    "checks": "docs/qa/cloud-20261021/CHECKS_137.json",
+    "branch": "codex/cloud-work",
+    "baseHeads": {
+      "bot": "fda60b812184352eb648af9a6053e0c7084df2b9",
+      "android": "c9e69dcbd323bc2c75a871f647b6562b4343de47"
+    },
+    "tests": {
+      "python": 497,
+      "jvm": 421,
+      "cloudSync": 9,
+      "phoneAdb": 4,
+      "assembleDebug": "PASS",
+      "assembleDebugAndroidTest": "PASS"
+    },
+    "apkSha256": "679c3d894ebd2eb69edcb675b930f95e71d6603d9826be67af6dadc65cc93d1c",
+    "physicalInstalledVersionStill": "0.136",
+    "deployedToMain": false,
+    "physicalOrEmulatorVerified": false,
+    "latencyUnder15MinutesProven": false,
+    "uniqueSonyOwnStill": 7,
+    "recheckedExistingSonyOwn": 2,
+    "acceptanceComplete": false,
+    "liveNetworkStatus": "BLOCKED_PARTIAL",
+    "sourceHeads": {
+      "bot": "d1a222dbf841b8647e009d428017b57f7212968a",
+      "android": "bdb55f8374ea65a2accfd40da7c438bab3ad683b"
+    },
+    "recordedAtUtc": "2026-10-21T19:12:16.631890+00:00"
+  },
+  "latestPcStage138": {
+    "atUtc": "2026-10-21T22:57:04.637239+00:00",
+    "report": "docs/qa/pc-20261022/REPORT_138.md",
+    "apkVersion": "0.138",
+    "versionCode": 138,
+    "sha256": "21d600ebecea87e9d98595e6b95a34f3eec237596f744d245a0faa023dc5263a",
+    "rulesVersion": 1792609320,
+    "historyVersion": 40,
+    "jvm": 424,
+    "native": 18,
+    "sonyUniqueFullOwn": 12,
+    "physicalPhoneVerified": false,
+    "productionDeployed": false,
+    "acceptanceComplete": false,
+    "codeHeads": {
+      "bot": "3e7566988188e7cf8bf8238dadd66d9179048de0",
+      "android": "8f617a6670f36700350319154b56f9c76529e267"
+    }
+  },
+  "latestPcStage139": {
+    "versionName": "0.139",
+    "versionCode": 139,
+    "logicVersion": 1792627390,
+    "historyVersion": 41,
+    "sourceHeads": {
+      "bot": "4449196dac0d2031fafd5de4d3dafc5f43316002",
+      "android": "f4fda027314f5700481731ccc144cbed4cbcbd4c"
+    },
+    "report": "docs/qa/pc-20261022/REPORT_139.md",
+    "pythonTests": 507,
+    "jvmTests": 427,
+    "jvmSuites": 95,
+    "physicalInstallConfirmed": true,
+    "physicalNativeGuiPass": false,
+    "physicalGuiLimitation": "Secure keyguard/screen off; 4of16 tests passed,12 could not see Compose",
+    "productionDeployed": false,
+    "telegram139Confirmed": false,
+    "sonyManualFullOwn": 40,
+    "sonyAllAliasesAndBasketsAccepted": false,
+    "all26ProductsAccepted": false,
+    "emulatorNativeTests": 16,
+    "emulatorNativePass": true
+  },
+  "latestPcStage140": {
+    "versionName": "0.140",
+    "versionCode": 140,
+    "logicVersion": 1792628895,
+    "historyVersion": 42,
+    "sourceHeads": {
+      "bot": "bed46c47f1d62b2f9c8b9c41497640b4e7a0f7e2",
+      "android": "172fbb192ccbe4d154873f1eed4c46460d16c0d1"
+    },
+    "report": "docs/qa/pc-20261022/SONY_ALIAS_FINDING_140.md",
+    "pythonTests": 507,
+    "jvmTests": 430,
+    "jvmSuites": 96,
+    "emulatorNativeTests": 19,
+    "emulatorInstallConfirmed": true,
+    "emulatorSha256": "5516955dec4ea8f6431cddaf0a6ddab2abf98b515401a1396b84f82cad2092e9",
+    "lastPhysicalVersion": "0.139",
+    "physicalUseCurrentlyAllowed": false,
+    "productionDeployed": false,
+    "telegram140Confirmed": false,
+    "sonyManualFullOwn": 41,
+    "sonyAllAliasesAndBasketsAccepted": false,
+    "all26ProductsAccepted": false
+  }
 }

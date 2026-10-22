@@ -9,6 +9,38 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_queue_audit_distinguishes_unknown_clock_wait_and_ready_without_seller_text(self):
+        self.search['filters']['listing_type']='auction'
+        self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        base=rows[0]
+        lots=[dict(copy.deepcopy(base),item_id=i,auction=True,buy_now=False,time_left=clock,
+                   seller_name='private-seller',source='html')
+              for i,clock in [('unknown',''),('waiting','2d 1h'),('ready','23h 59min')]]
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'seen_state',{}),patch.object(monitor,'seen_ids',set()),patch.object(monitor.logger,'info') as log:
+            asyncio.run(monitor._verified_history(lots,self.search,on_verified=AsyncMock(),max_candidates=0))
+        call=next(c for c in log.call_args_list if c.args[0].startswith('Live validation queue'))
+        audit=json.loads(call.args[-1])
+        self.assertEqual(['ready','unknown','waiting'],[row['id'] for row in audit])
+        self.assertEqual(['notify','auction_time_unknown','wait_24h'],[row['gate'] for row in audit])
+        self.assertEqual([True,False,False],[row['ready'] for row in audit])
+        self.assertNotIn('private-seller',call.args[-1])
+        self.assertNotIn(base['title'],call.args[-1])
+        self.assertEqual(['unknown','waiting','ready'],[row['item_id'] for row in lots])
+
+    def test_queue_audit_bounds_rows_and_records_actual_unavailable_validation(self):
+        self.config.get_item_hashes=lambda:set()
+        rows,details=history_fixtures.VerifiedHistoryTests.data(self)
+        lots=[dict(copy.deepcopy(rows[0]),item_id=str(n)) for n in range(90)]
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'seen_state',{}),patch.object(monitor,'seen_ids',set()),patch.object(monitor,'_fetch_item_details',return_value=None),patch.object(monitor.logger,'info') as log:
+            values=asyncio.run(monitor._verified_history(lots,self.search,on_verified=AsyncMock(),max_candidates=1))
+        queue=next(c for c in log.call_args_list if c.args[0].startswith('Live validation queue'))
+        self.assertEqual((90,10),queue.args[2:4])
+        self.assertEqual(80,len(json.loads(queue.args[-1])))
+        result=next(c for c in log.call_args_list if c.args[0].startswith('Live validation result'))
+        self.assertEqual(('qa','0','unavailable',False),result.args[1:])
+        self.assertEqual([],values)
+
     def test_real_budgeted_normal_loop_searches_all_forty_eight_when_they_fit(self):
         searches=[dict(copy.deepcopy(self.search),id=f'p{i:02d}',query=f'QA Device {i}',notify=False) for i in range(48)]
         self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:searches;self.config.save=Mock()

@@ -1,3 +1,7 @@
+## Cloud 0.137 — актуализация 21 октября 2026
+
+Сначала docs/WORK_STATE.md и docs/qa/cloud-20261021/REPORT_137.md. Source0.137/rules1792609320/History40, физически установленная0.136. Обеcodex/cloud-work; общаяприёмкаPARTIAL. SonyCSS-ложныйвариантисправлен;7уникальныхown,2перепроверены. Livechallenge/renderercrash:неповторятьпакетдообычногодоступа,приошибкенемедленноостанавливать. Main/normal/recipient/settings/seen/bansсохранить. НоваяAPKнепроверенанафизическомтелефоне.
+
 ## Актуальная передача в Cloud — 21 октября2026,0.136
 
 Пользователь сейчас просит продолжать вCodexCloud, затем вернуться наПК. **Сначала читать docs/CLOUD_CONTINUE_NOW.md, docs/WORK_STATE.md, docs/CLOUD_CHECKPOINT.json.** Вобоихрепозиториях использоватьcodex/cloud-work. Это новее исторических отменCloud/очередей ниже. НикакихQR/Remote. Сохранятькод+WORK_STATEвGitHub обоихрепозиториев;productionnormal/recipient/searches/seen/bansнеизменны. Общаяприёмканезавершена. Cloud не подтверждает физическийтелефон/локальныйTelegram. ВозвратнаПК:сначалаcloud_sync--check,совместимый--applyитестыбезreset/clean. НаПКподтверждениеустройстваиспользуетphone_adb.py;приdeviceADBнеперезапускать.

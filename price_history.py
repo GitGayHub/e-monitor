@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 39  # Complete PS5 Pro contents are not standalone SSDs/stands.
+HISTORY_VERSION = 42  # Android and Python share ULT Wear model-alias selection.
 _DB_LOCK = threading.Lock()
 
 

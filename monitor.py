@@ -3418,6 +3418,29 @@ COUNTRY_INFO = {
     "NO": ("\U0001f1f3\U0001f1f4", "\u041d\u043e\u0440\u0432\u0435\u0433\u0438\u044f", False),
     "CA": ("\U0001f1e8\U0001f1e6", "\u041a\u0430\u043d\u0430\u0434\u0430", False),
     "AU": ("\U0001f1e6\U0001f1fa", "\u0410\u0432\u0441\u0442\u0440\u0430\u043b\u0438\u044f", False),
+    # A known item location must not be shown as \u00ab\u041d\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043e\u00bb (issue #2).
+    "BG": ("\U0001f1e7\U0001f1ec", "\u0411\u043e\u043b\u0433\u0430\u0440\u0438\u044f", True),
+    "RO": ("\U0001f1f7\U0001f1f4", "\u0420\u0443\u043c\u044b\u043d\u0438\u044f", True),
+    "GR": ("\U0001f1ec\U0001f1f7", "\u0413\u0440\u0435\u0446\u0438\u044f", True),
+    "HU": ("\U0001f1ed\U0001f1fa", "\u0412\u0435\u043d\u0433\u0440\u0438\u044f", True),
+    "LT": ("\U0001f1f1\U0001f1f9", "\u041b\u0438\u0442\u0432\u0430", True),
+    "LV": ("\U0001f1f1\U0001f1fb", "\u041b\u0430\u0442\u0432\u0438\u044f", True),
+    "EE": ("\U0001f1ea\U0001f1ea", "\u042d\u0441\u0442\u043e\u043d\u0438\u044f", True),
+    "SK": ("\U0001f1f8\U0001f1f0", "\u0421\u043b\u043e\u0432\u0430\u043a\u0438\u044f", True),
+    "SI": ("\U0001f1f8\U0001f1ee", "\u0421\u043b\u043e\u0432\u0435\u043d\u0438\u044f", True),
+    "HR": ("\U0001f1ed\U0001f1f7", "\u0425\u043e\u0440\u0432\u0430\u0442\u0438\u044f", True),
+    "LU": ("\U0001f1f1\U0001f1fa", "\u041b\u044e\u043a\u0441\u0435\u043c\u0431\u0443\u0440\u0433", True),
+    "MT": ("\U0001f1f2\U0001f1f9", "\u041c\u0430\u043b\u044c\u0442\u0430", True),
+    "CY": ("\U0001f1e8\U0001f1fe", "\u041a\u0438\u043f\u0440", True),
+    "HK": ("\U0001f1ed\U0001f1f0", "\u0413\u043e\u043d\u043a\u043e\u043d\u0433", False),
+    "TW": ("\U0001f1f9\U0001f1fc", "\u0422\u0430\u0439\u0432\u0430\u043d\u044c", False),
+    "KR": ("\U0001f1f0\U0001f1f7", "\u042e\u0436\u043d\u0430\u044f \u041a\u043e\u0440\u0435\u044f", False),
+    "TR": ("\U0001f1f9\U0001f1f7", "\u0422\u0443\u0440\u0446\u0438\u044f", False),
+    "IN": ("\U0001f1ee\U0001f1f3", "\u0418\u043d\u0434\u0438\u044f", False),
+    "IL": ("\U0001f1ee\U0001f1f1", "\u0418\u0437\u0440\u0430\u0438\u043b\u044c", False),
+    "UA": ("\U0001f1fa\U0001f1e6", "\u0423\u043a\u0440\u0430\u0438\u043d\u0430", False),
+    "SG": ("\U0001f1f8\U0001f1ec", "\u0421\u0438\u043d\u0433\u0430\u043f\u0443\u0440", False),
+    "RS": ("\U0001f1f7\U0001f1f8", "\u0421\u0435\u0440\u0431\u0438\u044f", False),
 }
 
 COUNTRY_ALIASES = {
@@ -3436,6 +3459,17 @@ COUNTRY_ALIASES = {
     "tschechien": "CZ", "czech": "CZ", "schweiz": "CH", "switzerland": "CH",
     "norwegen": "NO", "norway": "NO", "kanada": "CA", "canada": "CA",
     "australien": "AU", "australia": "AU",
+    "bulgarien": "BG", "bulgaria": "BG", "rumaenien": "RO", "rumanien": "RO", "romania": "RO",
+    "griechenland": "GR", "greece": "GR", "ungarn": "HU", "hungary": "HU",
+    "litauen": "LT", "lithuania": "LT", "lettland": "LV", "latvia": "LV",
+    "estland": "EE", "estonia": "EE", "slowakei": "SK", "slovakia": "SK",
+    "slowenien": "SI", "slovenia": "SI", "kroatien": "HR", "croatia": "HR",
+    "luxemburg": "LU", "luxembourg": "LU", "malta": "MT", "zypern": "CY", "cyprus": "CY",
+    "hongkong": "HK", "hong kong": "HK", "taiwan": "TW",
+    "suedkorea": "KR", "sudkorea": "KR", "south korea": "KR",
+    "tuerkei": "TR", "turkei": "TR", "turkey": "TR", "turkiye": "TR",
+    "indien": "IN", "india": "IN", "israel": "IL", "ukraine": "UA",
+    "singapur": "SG", "singapore": "SG", "serbien": "RS", "serbia": "RS",
 }
 
 
@@ -5372,6 +5406,16 @@ def _linked_seller_description_url(soup, item_id):
     return None
 
 
+def _html_has_variation_controls(soup):
+    """Only DOM attributes prove a selector; shared CSS/JS names do not."""
+    markers = ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo")
+    selector = ",".join(f'[{attribute}*="{marker}"]'
+                        for attribute in ("class", "id", "name", "data-testid")
+                        for marker in markers)
+    return any(element.name not in ("script", "style", "link", "meta")
+               for element in soup.select(selector))
+
+
 def _parse_item_details_html(html, description=None, session=None, host="ebay.de",item_id=None):
     """Parse own listing fields. Characteristics cannot substitute seller text."""
     soup = BeautifulSoup(html, "html.parser")
@@ -5379,7 +5423,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     title_text = title_el.get_text(" ", strip=True) if title_el else ""
     headers = {}
 
-    is_mv = any(k in html for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo"))
+    is_mv = _html_has_variation_controls(soup)
     item_group_type = "SELLER_DEFINED_VARIATIONS" if is_mv else None
 
     price_val = None
@@ -8790,11 +8834,10 @@ def _is_item_page_multivariation(item_id):
         r = session.get(url, headers=headers, timeout=15)
         if r.status_code == 200:
             html_content = r.text
-            # 1. Check for standard Multi-SKU strings/classes in HTML
-            if any(k in html_content for k in ("x-msku", "vi-msku", "msku-select", "itm-variation", "x-msku-evo")):
-                return True
-            # 2. Check for selecting drop-downs that are native listboxes but not feedback
             soup = BeautifulSoup(html_content, "html.parser")
+            if _html_has_variation_controls(soup):
+                return True
+            # Native listboxes may still prove variants without a module marker.
             selects = soup.find_all("select")
             for s in selects:
                 name = s.get("name", "") or ""
@@ -8917,6 +8960,36 @@ def _history_price_sides(candidate, search):
     return sides
 
 
+def _live_validation_tier(row, search, ready, fact, now):
+    """Order live descriptions; never changes a notification rule.
+
+    0 ready by its card and not described since it became ready,
+    1 regular auction whose card lacks a clock but is otherwise ready,
+    2 a priority lot already described since then (incomplete data retries here),
+    3 everything else, including auctions known to end after 24 hours.
+    Returns (tier, ready_from). Without tiers a lot that crossed into its 24h
+    window waited behind every rejected ready lot, two descriptions per pass.
+    """
+    fact = fact or {}
+    end = fact.get('ends')
+    pure_auction = bool(row.get("auction") and not row.get("buy_now") and not row.get("best_offer"))
+    if not ready:
+        if not pure_auction or _parse_time_left_to_minutes(row.get("time_left", "")) is not None:
+            return 3, None
+        # The page clock read by an earlier description is used for order only.
+        minutes = 1380 if end is None else int((end-now)//60)
+        if minutes <= 0 or minutes > 1440:
+            return 3, None
+        probe = dict(row, time_left=f"{minutes} min")
+        if not _notify_candidates_from_filtered(filter_results([probe], search, config)):
+            return 3, None
+    ready_from = end-86400 if pure_auction and end is not None else fact.get('ready_at')
+    checked = fact.get('checked_at')
+    if checked is not None and ready_from is not None and checked >= ready_from:
+        return 2, ready_from
+    return (0 if ready else 1), ready_from
+
+
 async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix="", population_complete=True, on_budget_deferred=None):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
@@ -8933,28 +9006,82 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
             by_id.setdefault(str(candidate['item_id']), []).append(candidate)
         order = browse_access.normal_candidate_order(queue_id,resume_context,EBAY_MARKETPLACE_ID,by_id)
         candidates = [candidate for item_id in order for candidate in by_id[item_id]]
+    tier, ready_from, facts = {}, {}, {}
     if on_verified is not None:
         # Do not spend the live slice on already notified or over-limit stock
         # while an unseen affordable listing waits in the same newest page.
-        candidates.sort(key=lambda row: not bool(_notify_candidates_from_filtered(filter_results([row],search,config))))
+        ready = {id(row): bool(_notify_candidates_from_filtered(filter_results([row],search,config))) for row in candidates}
+        now = time.time()
+        facts = browse_access.normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID) if resumable else {}
+        for row in candidates:
+            tier[id(row)], ready_from[id(row)] = _live_validation_tier(row, search, ready[id(row)], facts.get(str(row['item_id'])), now)
+        # Stable sort keeps the persisted rotation inside every tier.
+        candidates.sort(key=lambda row: tier[id(row)])
+        if resumable:
+            updates = {}
+            for row in candidates:
+                item_id, fact = str(row['item_id']), facts.get(str(row['item_id']), {})
+                if tier[id(row)] < 3 and not fact.get('ready_at'):
+                    updates[item_id] = {'ready_at': now}
+                elif tier[id(row)] == 3 and fact.get('ready_at'):
+                    updates[item_id] = {'ready_at': None}
+            if updates:
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,updates,now)
+        # This is preliminary SERP evidence, never description acceptance.
+        # IDs and gate facts let a later audit distinguish a waiting auction,
+        # unknown clock/price, and a ready lot deferred by the two-item slice.
+        audit = []
+        for row in candidates[:80]:
+            _, gate = _notify_eligibility(row, search)
+            minutes = _parse_time_left_to_minutes(row.get("time_left", ""))
+            if gate == "wait_24h" and minutes is None:
+                gate = "auction_time_unknown"
+            audit.append({"id": str(row['item_id']), "ready": ready[id(row)],
+                          "gate": gate, "minutes": minutes, "tier": tier[id(row)],
+                          "source": row.get("source") if row.get("source") in ("html", "api") else "other"})
+        logger.info("Live validation queue search=%s candidates=%d omitted=%d rows=%s",
+                    queue_id, len(candidates), max(0, len(candidates)-len(audit)),
+                    json.dumps(audit, separators=(",", ":")))
+        waits = [now-ready_from[id(row)] for row in candidates if tier[id(row)] < 2 and ready_from[id(row)] is not None]
+        logger.info("Live validation fairness search=%s fresh_ready=%d clock_unknown=%d recheck=%d waiting=%d oldest_priority_wait_seconds=%s",
+                    queue_id, *(sum(1 for row in candidates if tier[id(row)] == t) for t in range(4)),
+                    int(max(waits)) if waits else None)
     ids = list(dict.fromkeys(str(candidate['item_id']) for candidate in candidates))
     for index, candidate in enumerate(candidates):
         if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
             deferred = len(candidates) - index
             fair_slice_exhausted = max_candidates is not None and index >= max_candidates
+            if on_verified is not None:
+                logger.info("Live validation deferred search=%s reason=%s priority_deferred=%d",
+                            queue_id, "fair_slice" if fair_slice_exhausted else "deadline",
+                            len({str(row['item_id']) for row in candidates[index:] if tier[id(row)] < 2}))
             if not fair_slice_exhausted and on_budget_deferred is not None:
                 on_budget_deferred(candidates[index:])
             break
         if resumable:
             at = ids.index(str(candidate['item_id']))
             browse_access.start_normal_candidate(queue_id,resume_context,EBAY_MARKETPLACE_ID,ids,ids[(at+1)%len(ids)])
+            if on_verified is not None:
+                # Before I/O: a hung or blocked description is still a turn,
+                # so it cannot keep a fresh ready lot behind it every pass.
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,
+                                                          {str(candidate['item_id']): {'checked_at': time.time()}},time.time())
         if on_verified is not None:
             with MonitorPassBudget.slice(20,reserve=30) as detail_budget:
                 valid, details = await _validate_candidate(candidate, search)
                 detail_expired = detail_budget is not None and detail_budget.should_yield()
+            seconds_left = _parse_end_date_to_seconds((details or {}).get("itemEndDate"))
+            if resumable and seconds_left is not None:
+                # Only the end clock is kept, for ordering; each later pass
+                # still re-reads the full page before any verdict or alert.
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,
+                                                          {str(candidate['item_id']): {'ends': time.time()+seconds_left}},time.time())
         else:
             valid, details = await _validate_candidate(candidate, search)
             detail_expired = False
+        if on_verified is not None:
+            logger.info("Live validation result search=%s item=%s status=%s deadline_expired=%s",
+                        queue_id, candidate['item_id'], candidate.get('_details_status', 'unknown'), detail_expired)
         if details is None and detail_expired:
             description_deferred += 1
         elif details is None or candidate.get("_details_status") == "unavailable_price":
