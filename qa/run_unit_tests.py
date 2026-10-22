@@ -78,6 +78,7 @@ def main():
         modules.append("test_live_validation_fairness")
         modules.append("test_status_country_oct22")
         modules.append("test_phone_spacing")
+        modules.append("test_sold_iphone_oct23")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
