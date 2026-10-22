@@ -2402,6 +2402,10 @@ def _is_phone_accessory_title(title_norm):
         # Purpose only: a model-led handset's damaged display is not a display
         # sold separately. Original title/description still reject the defect.
         title_norm = re.sub(
+            r"\b(?:ohne|kein(?:e|en)?|no|without)\s+(?:riss(?:e|en)?|cracks?)\s+(?:im|am|in(?:\s+the)?)\s+(?:display|bildschirm|screen|glas)\b",
+            " ", title_norm,
+        )
+        title_norm = re.sub(
             r"\b(?:displayschaden|displaybruch|bildschirmbruch|(?:display|bildschirm|screen)\s+(?:(?:kein\w*|ohne|no|without)\s+)?"
             r"(?:burn\s*ins?|eingebrannt|defekt|defect|broken|cracked|gesprungen|gebrochen|riss))\b",
             " ", title_norm,
@@ -3717,6 +3721,9 @@ def _normalize(text):
     t = re.sub(r"\bf\?{1,3}r\b", "fuer", t)
     t = re.sub(r"\bgeh\?rsch\?{1,3}tzer\b", "gehoerschuetzer", t)
     t = t.replace("-", " ")  # Treat hyphens as spaces
+    # Live960092888408: join the split brand only before a phone model.
+    # Normalize before both model and accessory/bundle checks.
+    t = re.sub(r"\bi\s+phone\s*(?=\d{1,2}\b|xs\b|xr\b|x\b|se\b)", "iphone ", t)
     t = re.sub(r"\bplaystation[\s®™]*(?=\d)", "playstation ", t)
     t = re.sub(r"\bps\s+5\b", "ps5", t)
     t = re.sub(r"\b(\d+)\s+(gb|go|tb)\b", r"\1\2", t)

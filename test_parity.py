@@ -60,7 +60,7 @@ def evaluate(case):
 class SharedParityTests(unittest.TestCase):
     def reviewed_expected(self, case):
         corrections = json.loads((Path(__file__).parent / "qa/fixtures/live_expectation_corrections.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(corrections), 33)
+        self.assertEqual(len(corrections), 34)
         expected = case["expected"]
         if case["name"] in corrections:
             reviewed = corrections[case["name"]]
