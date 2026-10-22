@@ -8960,6 +8960,36 @@ def _history_price_sides(candidate, search):
     return sides
 
 
+def _live_validation_tier(row, search, ready, fact, now):
+    """Order live descriptions; never changes a notification rule.
+
+    0 ready by its card and not described since it became ready,
+    1 regular auction whose card lacks a clock but is otherwise ready,
+    2 a priority lot already described since then (incomplete data retries here),
+    3 everything else, including auctions known to end after 24 hours.
+    Returns (tier, ready_from). Without tiers a lot that crossed into its 24h
+    window waited behind every rejected ready lot, two descriptions per pass.
+    """
+    fact = fact or {}
+    end = fact.get('ends')
+    pure_auction = bool(row.get("auction") and not row.get("buy_now") and not row.get("best_offer"))
+    if not ready:
+        if not pure_auction or _parse_time_left_to_minutes(row.get("time_left", "")) is not None:
+            return 3, None
+        # The page clock read by an earlier description is used for order only.
+        minutes = 1380 if end is None else int((end-now)//60)
+        if minutes <= 0 or minutes > 1440:
+            return 3, None
+        probe = dict(row, time_left=f"{minutes} min")
+        if not _notify_candidates_from_filtered(filter_results([probe], search, config)):
+            return 3, None
+    ready_from = end-86400 if pure_auction and end is not None else fact.get('ready_at')
+    checked = fact.get('checked_at')
+    if checked is not None and ready_from is not None and checked >= ready_from:
+        return 2, ready_from
+    return (0 if ready else 1), ready_from
+
+
 async def _verified_history(items, search, on_verified=None, max_candidates=None, cursor_suffix="", population_complete=True, on_budget_deferred=None):
     """Validate the whole fetched population; never fill a median with SERP shells."""
     signature = _history_filter_signature(search)
@@ -8976,11 +9006,27 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
             by_id.setdefault(str(candidate['item_id']), []).append(candidate)
         order = browse_access.normal_candidate_order(queue_id,resume_context,EBAY_MARKETPLACE_ID,by_id)
         candidates = [candidate for item_id in order for candidate in by_id[item_id]]
+    tier, ready_from, facts = {}, {}, {}
     if on_verified is not None:
         # Do not spend the live slice on already notified or over-limit stock
         # while an unseen affordable listing waits in the same newest page.
         ready = {id(row): bool(_notify_candidates_from_filtered(filter_results([row],search,config))) for row in candidates}
-        candidates.sort(key=lambda row: not ready[id(row)])
+        now = time.time()
+        facts = browse_access.normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID) if resumable else {}
+        for row in candidates:
+            tier[id(row)], ready_from[id(row)] = _live_validation_tier(row, search, ready[id(row)], facts.get(str(row['item_id'])), now)
+        # Stable sort keeps the persisted rotation inside every tier.
+        candidates.sort(key=lambda row: tier[id(row)])
+        if resumable:
+            updates = {}
+            for row in candidates:
+                item_id, fact = str(row['item_id']), facts.get(str(row['item_id']), {})
+                if tier[id(row)] < 3 and not fact.get('ready_at'):
+                    updates[item_id] = {'ready_at': now}
+                elif tier[id(row)] == 3 and fact.get('ready_at'):
+                    updates[item_id] = {'ready_at': None}
+            if updates:
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,updates,now)
         # This is preliminary SERP evidence, never description acceptance.
         # IDs and gate facts let a later audit distinguish a waiting auction,
         # unknown clock/price, and a ready lot deferred by the two-item slice.
@@ -8991,26 +9037,45 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
             if gate == "wait_24h" and minutes is None:
                 gate = "auction_time_unknown"
             audit.append({"id": str(row['item_id']), "ready": ready[id(row)],
-                          "gate": gate, "minutes": minutes,
+                          "gate": gate, "minutes": minutes, "tier": tier[id(row)],
                           "source": row.get("source") if row.get("source") in ("html", "api") else "other"})
         logger.info("Live validation queue search=%s candidates=%d omitted=%d rows=%s",
                     queue_id, len(candidates), max(0, len(candidates)-len(audit)),
                     json.dumps(audit, separators=(",", ":")))
+        waits = [now-ready_from[id(row)] for row in candidates if tier[id(row)] < 2 and ready_from[id(row)] is not None]
+        logger.info("Live validation fairness search=%s fresh_ready=%d clock_unknown=%d recheck=%d waiting=%d oldest_priority_wait_seconds=%s",
+                    queue_id, *(sum(1 for row in candidates if tier[id(row)] == t) for t in range(4)),
+                    int(max(waits)) if waits else None)
     ids = list(dict.fromkeys(str(candidate['item_id']) for candidate in candidates))
     for index, candidate in enumerate(candidates):
         if (max_candidates is not None and index >= max_candidates) or MonitorPassBudget.exhausted(reserve=budget.validation_reserve if budget is not None else 30):
             deferred = len(candidates) - index
             fair_slice_exhausted = max_candidates is not None and index >= max_candidates
+            if on_verified is not None:
+                logger.info("Live validation deferred search=%s reason=%s priority_deferred=%d",
+                            queue_id, "fair_slice" if fair_slice_exhausted else "deadline",
+                            len({str(row['item_id']) for row in candidates[index:] if tier[id(row)] < 2}))
             if not fair_slice_exhausted and on_budget_deferred is not None:
                 on_budget_deferred(candidates[index:])
             break
         if resumable:
             at = ids.index(str(candidate['item_id']))
             browse_access.start_normal_candidate(queue_id,resume_context,EBAY_MARKETPLACE_ID,ids,ids[(at+1)%len(ids)])
+            if on_verified is not None:
+                # Before I/O: a hung or blocked description is still a turn,
+                # so it cannot keep a fresh ready lot behind it every pass.
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,
+                                                          {str(candidate['item_id']): {'checked_at': time.time()}},time.time())
         if on_verified is not None:
             with MonitorPassBudget.slice(20,reserve=30) as detail_budget:
                 valid, details = await _validate_candidate(candidate, search)
                 detail_expired = detail_budget is not None and detail_budget.should_yield()
+            seconds_left = _parse_end_date_to_seconds((details or {}).get("itemEndDate"))
+            if resumable and seconds_left is not None:
+                # Only the end clock is kept, for ordering; each later pass
+                # still re-reads the full page before any verdict or alert.
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,
+                                                          {str(candidate['item_id']): {'ends': time.time()+seconds_left}},time.time())
         else:
             valid, details = await _validate_candidate(candidate, search)
             detail_expired = False
