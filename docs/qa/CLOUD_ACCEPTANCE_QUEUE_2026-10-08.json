@@ -10,9 +10,9 @@
     "enabled": 48,
     "disabled": 2,
     "pendingChecks": 0,
-    "blockedChecks": 94,
+    "blockedChecks": 88,
     "acceptanceIncompleteChecks": 104,
-    "inProgressChecks": 10,
+    "inProgressChecks": 16,
     "failedChecks": 0
   },
   "statuses": [
@@ -184,7 +184,7 @@
       "product": "iphone 17 pro max",
       "limitSnapshot": "910€",
       "category": "phones",
-      "priority": "P0",
+      "priority": "P0-user-20261022",
       "searches": [
         {
           "id": "iphone_17_pro_max",
@@ -205,7 +205,7 @@
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
           "checkedAtUtc": "2026-10-20T19:03:39.690193+00:00",
-          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
           "directBucketAcceptancePerformed": false,
           "latestDiscovery20261008": {
             "httpRequestPerformed": true,
@@ -244,7 +244,7 @@
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
           "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
-          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
           "directBucketAcceptancePerformed": false,
           "latestDiscovery20261008": {
             "httpRequestPerformed": true,
@@ -266,11 +266,11 @@
           }
         },
         "Auktion": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
           "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
-          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
           "directBucketAcceptancePerformed": false,
           "latestDiscovery20261008": {
             "httpRequestPerformed": true,
@@ -283,14 +283,15 @@
             "catalogueComplete": false,
             "germanyDeliveryVerified": false,
             "minimumVerified": false
-          }
+          },
+          "historicalBlocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance"
         },
         "Auktion+": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "evidencePath": "https://github.com/GitGayHub/e-monitor/blob/codex/cloud-work/qa/results/cloud-live-20261008/iphone_17_pro_max.json",
           "checkedAtUtc": "2026-10-08T08:54:26.439538+00:00",
-          "blocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance",
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
           "directBucketAcceptancePerformed": false,
           "latestDiscovery20261008": {
             "httpRequestPerformed": true,
@@ -303,7 +304,8 @@
             "catalogueComplete": false,
             "germanyDeliveryVerified": false,
             "minimumVerified": false
-          }
+          },
+          "historicalBlocker": "DE-profile catalogue and Germany delivery not independently verifiable; .com discovery cannot substitute four-bucket acceptance"
         }
       },
       "progress": "OWN_MODEL_AND_PURPOSE_REGRESSIONS_FIXED_CATALOGUE_INCOMPLETE",
@@ -316,7 +318,15 @@
         "reviewComplete": false
       },
       "settingsObservedAtUtc": "2026-10-15T18:00:24+00:00",
-      "manualEvidenceReference": "docs/qa/pc-20261010/acceptance-current.json#iphone_17_pro_max"
+      "manualEvidenceReference": "docs/qa/pc-20261010/acceptance-current.json#iphone_17_pro_max",
+      "pcStage141Evidence": {
+        "report": "docs/qa/pc-20261022/PHONE_PRIORITY_141.md",
+        "phone": "NX741J",
+        "app": "0.141",
+        "allFourBasketsFinished": true,
+        "allAliasesAndGlobalMinimaAccepted": false,
+        "manualOwnFresh": 7
+      }
     },
     {
       "number": 3,
@@ -4127,39 +4137,43 @@
       "number": 26,
       "slug": "pixel_9_pro_xl",
       "product": "Pixel 9 Pro XL",
-      "priority": "P1",
+      "priority": "P0-user-20261022",
       "baskets": {
         "Sofort": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "minimumVerified": false,
           "catalogueComplete": false,
-          "blocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified.",
-          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json"
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
+          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json",
+          "historicalBlocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified."
         },
         "Sofort+": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "minimumVerified": false,
           "catalogueComplete": false,
-          "blocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified.",
-          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json"
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
+          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json",
+          "historicalBlocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified."
         },
         "Auktion": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "minimumVerified": false,
           "catalogueComplete": false,
-          "blocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified.",
-          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json"
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
+          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json",
+          "historicalBlocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified."
         },
         "Auktion+": {
-          "status": "BLOCKED",
+          "status": "IN_PROGRESS",
           "verifiedUnique": 0,
           "minimumVerified": false,
           "catalogueComplete": false,
-          "blocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified.",
-          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json"
+          "blocker": "Fresh phone141 report and representative own reviewed; full independent alias/catalogue/minimum acceptance remains open.",
+          "evidencePath": "docs/qa/pc-20261010/acceptance-current.json",
+          "historicalBlocker": "New active group reconciled from current manifest; fresh independent four-basket catalogue not yet verified."
         }
       },
       "progress": "INDEPENDENT_ACCEPTANCE_INCOMPLETE",
@@ -4183,7 +4197,15 @@
       "settingsObservedAtUtc": "2026-10-15T18:00:24+00:00",
       "manualEvidenceReference": "docs/qa/pc-20261010/acceptance-current.json#pixel_9_pro_xl",
       "pcStage119Evidence": "docs/qa/pc-20261010/REPORT_119.md",
-      "pcStage119Status": "PARTIAL: wrong Pro aspect fixed after live Chrome reproduction; current Android auction requests403; one independent own PDP, not full catalogue or minimum acceptance."
+      "pcStage119Status": "PARTIAL: wrong Pro aspect fixed after live Chrome reproduction; current Android auction requests403; one independent own PDP, not full catalogue or minimum acceptance.",
+      "pcStage141Evidence": {
+        "report": "docs/qa/pc-20261022/PHONE_PRIORITY_141.md",
+        "phone": "NX741J",
+        "app": "0.141",
+        "allFourBasketsFinished": true,
+        "allAliasesAndGlobalMinimaAccepted": false,
+        "manualOwnFresh": 6
+      }
     }
   ],
   "updatedAtUtc": "2026-10-15T19:08:42.550478+00:00",
