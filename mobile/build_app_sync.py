@@ -55,6 +55,8 @@ def convert_search(search):
     }
     if search.get("display_name"):
         converted["displayName"] = search["display_name"]
+    if search.get("priority"):
+        converted["priority"] = int(search["priority"])
     return converted
 
 
