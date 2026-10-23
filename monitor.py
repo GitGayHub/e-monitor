@@ -5404,7 +5404,20 @@ def _html_auction_end(soup, now=None):
     clock=re.search(r"\b(\d{1,2}):(\d{2})\b",label)
     if not clock:return None
     now = now or datetime.now(timezone.utc)
-    local=now.astimezone(ZoneInfo("Europe/Berlin"))
+    zone_marker=soup.select_one('head > meta[name="emonitor-render-timezone"]')
+    try:
+        zone_name=zone_marker.get('content','') if zone_marker is not None else "Europe/Berlin"
+        fixed=re.fullmatch(r'(?:UTC|GMT)?([+-])(\d{2}):(\d{2})',zone_name)
+        if fixed:
+            hours,minutes=int(fixed[2]),int(fixed[3])
+            if hours>18 or minutes>59 or hours==18 and minutes:
+                return None
+            render_zone=timezone(timedelta(minutes=(1 if fixed[1]=='+' else -1)*(hours*60+minutes)))
+        else:
+            render_zone=timezone.utc if zone_name=='Z' else ZoneInfo(zone_name)
+    except (ValueError,KeyError):
+        return None  # A failed rendering-zone capture cannot invent an end time.
+    local=now.astimezone(render_zone)
     numeric=re.search(r"\b(\d{1,2})[/\.](\d{1,2})(?:[/\.](\d{4}))?",label)
     relative_day=re.search(r"\b(heute|today|morgen|tomorrow)\b",label)
     weekday=re.search(r"\b("+"|".join(weekdays)+r")\b",label)
@@ -5840,6 +5853,9 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         if visible_end:
             result["itemEndDate"] = visible_end
             result["htmlEndPrecision"] = "minute"
+            render_zone = soup.select_one('head > meta[name="emonitor-render-timezone"]')
+            if render_zone is not None:
+                result["htmlEndTimezone"] = render_zone.get('content','')
     primary = soup.select_one(".x-price-primary")
     primary_text=primary.get_text(" ",strip=True) if primary else ''
     if primary and not ("AUCTION" in buying_options and "FIXED_PRICE" in buying_options):

@@ -91,5 +91,61 @@
     "now": "2026-12-31T20:30:00Z",
     "expected": "2027-01-01T20:30:59Z",
     "source": "synthetic next-year boundary"
+  },
+  {
+    "name": "utc_numeric_after_dst",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"UTC\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 9 T 5 Std</span><span class=\"ux-timer__time-left\">01/11, 19:00</span></span></body></html>",
+    "now": "2026-10-23T13:00:02Z",
+    "expected": "2026-11-01T19:00:59Z",
+    "source": "Controlled render-timezone boundary derived from237137966995/117480739501 API-vs-Android clock mismatch; not a full historical raw page"
+  },
+  {
+    "name": "berlin_numeric_after_dst",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"Europe/Berlin\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 9 T 5 Std</span><span class=\"ux-timer__time-left\">01/11, 20:00</span></span></body></html>",
+    "now": "2026-10-23T13:00:02Z",
+    "expected": "2026-11-01T19:00:59Z",
+    "source": "Controlled render-timezone boundary derived from237137966995/117480739501 API-vs-Android clock mismatch; not a full historical raw page"
+  },
+  {
+    "name": "utc_summer_relative_day",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"UTC\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 1 T 2 Std</span><span class=\"ux-timer__time-left\">Morgen, 14:15</span></span></body></html>",
+    "now": "2026-06-01T12:00:02Z",
+    "expected": "2026-06-02T14:15:59Z",
+    "source": "Controlled render-timezone boundary derived from237137966995/117480739501 API-vs-Android clock mismatch; not a full historical raw page"
+  },
+  {
+    "name": "utc_weekday_across_dst",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"UTC\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 2 T 5 Std</span><span class=\"ux-timer__time-left\">Sonntag, 19:00</span></span></body></html>",
+    "now": "2026-10-23T13:00:02Z",
+    "expected": "2026-10-25T19:00:59Z",
+    "source": "Controlled render-timezone boundary derived from237137966995/117480739501 API-vs-Android clock mismatch; not a full historical raw page"
+  },
+  {
+    "name": "unknown_render_timezone",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"Unknown/Zone\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 9 T 5 Std</span><span class=\"ux-timer__time-left\">01/11, 20:00</span></span></body></html>",
+    "now": "2026-10-23T13:00:02Z",
+    "expected": null,
+    "source": "Controlled render-timezone boundary derived from237137966995/117480739501 API-vs-Android clock mismatch; not a full historical raw page"
+  },
+  {
+    "name": "empty_render_timezone",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 9 T 5 Std</span><span class=\"ux-timer__time-left\">01/11, 20:00</span></span></body></html>",
+    "now": "2026-10-23T13:00:02Z",
+    "expected": null,
+    "source": "Controlled render-timezone boundary derived from237137966995/117480739501 API-vs-Android clock mismatch; not a full historical raw page"
+  },
+  {
+    "name": "fixed_zero_offset",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"+00:00\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 9 T 5 Std</span><span class=\"ux-timer__time-left\">01/11, 19:00</span></span></body></html>",
+    "now": "2026-10-23T13:00:02Z",
+    "expected": "2026-11-01T19:00:59Z",
+    "source": "Controlled fixed rendering offset; no guessed auction duration"
+  },
+  {
+    "name": "fixed_nonzero_offset",
+    "html": "<html><head><meta name=\"emonitor-render-timezone\" content=\"+05:30\"></head><body><span class=\"ux-timer\"><span class=\"ux-timer__text\">Endet in 1 T 2 Std</span><span class=\"ux-timer__time-left\">02/07, 19:45</span></span></body></html>",
+    "now": "2026-07-01T12:00:02Z",
+    "expected": "2026-07-02T14:15:59Z",
+    "source": "Controlled fixed rendering offset; no guessed auction duration"
   }
 ]
