@@ -1806,8 +1806,15 @@ _PHONE_MODEL_PATTERNS = (
 )
 
 
+def _phone_other_device_heading(value):
+    """The offered object, never a device mentioned later as an extra/advert."""
+    return bool(re.match(r"^\s*(?:\d+\s*[).:-]\s*)?(?:(?:apple|samsung|google|sony|asus|dell|lenovo|garmin|fitbit|huawei|xiaomi)\s+)?(?:(?:galaxy|pixel)\s+)?(?:smart[ -]?watch|watch\s*\d*|tablet|ipad|tab(?:\s*s?\d+)?|headphones|kopfhoerer|earbuds|laptop|notebook|monitor|desktop|gaming\s*pc|playstation|xbox)\b", _normalize(value)))
+
+
 def _phone_model_aspect_matches(value, query):
     value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
+    if _phone_other_device_heading(value):
+        return False
     # Own Model of257801627073: "14 PM zu17PM". PM is ProMax here,
     # not an unknown model code that can silently agree with every iPhone.
     if "iphone" in query and any(not _matches_phone_query_model(f"iphone {generation} pro max", query)
@@ -2041,6 +2048,8 @@ def _phone_implicit_bundle_confirmed(title, description):
 
 def _phone_description_purpose_confirmed(description):
     own = _normalize(_clean_description(description or ''))
+    if _phone_other_device_heading(own):
+        return False
     if _phone_packaging_only(own):
         return False
     conversion = "|".join(re.escape(_normalize(word)) for word in PHONE_CONVERSION_PART_WORDS)
@@ -2206,6 +2215,8 @@ def _phone_specifications_match(title, description, query):
 
 def _matches_phone_query_model(title_norm, query_norm):
     title_norm, query_norm = _phone_model_spacing(title_norm), _phone_model_spacing(query_norm)
+    if _phone_other_device_heading(title_norm):
+        return False
     # A seller can name the camera used for listing photographs, not a second
     # handset in the sale (298705766786). Keep competing models elsewhere.
     title_norm = re.sub(r"\b(?:fotos?|bilder|photos?|pictures)\s+(?:wurden\s+)?mit\s+[^.!?]{1,60}\s+(?:gemacht|aufgenommen)\b", " ", title_norm)
@@ -7039,6 +7050,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         for aspect in details.get("localizedAspects") or []:
             name = _normalize(aspect.get("name") or "")
             value = _normalize(aspect.get("value") or "")
+            if name.replace(' ', '') in ('produktart', 'produkttyp', 'producttype', 'devicetype', 'type', 'typ') and _phone_other_device_heading(value):
+                return False
             if name.replace(' ', '') in ('modell', 'model', 'modello', 'modellnummer', 'modelnumber', 'modellnr', 'modelno', 'numeromodello', 'herstellernummer', 'manufacturerpartnumber', 'mpn') and not _samsung_phone_code_matches(value, query):
                 return False
             if name in ('modell','model','modello') and value and not _phone_model_aspect_matches(value, query):
