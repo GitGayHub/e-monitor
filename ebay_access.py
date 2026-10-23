@@ -72,6 +72,32 @@ class MonitorPassBudget:
         return max(1,int(cls.timeout(value/1000)*1000))
 
 
+# The last place in the app's priority order is checked this many times less
+# often than the first. Android shows the same estimate (SearchPriority.kt).
+PRIORITY_MAX_WEIGHT = 8.0
+
+
+def priority_weights(searches):
+    """{search id: weight >= 1} from the app's places; {} keeps plain rotation."""
+    ranks = sorted({int(s.get('priority') or 0) for s in searches if int(s.get('priority') or 0) > 0})
+    if not ranks:
+        return {}
+    place = {rank: index for index, rank in enumerate(ranks)}
+    span = max(1, len(ranks)-1)
+    # An unranked search (added on an old app) waits as long as the last place.
+    return {str(s['id']): 1+(PRIORITY_MAX_WEIGHT-1)*(place[int(s.get('priority') or 0)]/span if int(s.get('priority') or 0) > 0 else 1)
+            for s in searches}
+
+
+def priority_intervals(searches, searches_per_minute, pass_minutes):
+    """Expected minutes between checks; never faster than one pass."""
+    weights = priority_weights(searches) or {str(s['id']): 1.0 for s in searches}
+    if not weights or not searches_per_minute:
+        return {}
+    scale = sum(1/w for w in weights.values())/searches_per_minute
+    return {search_id: round(max(pass_minutes, w*scale), 1) for search_id, w in weights.items()}
+
+
 class BrowseAccess:
     def __init__(self):
         self.lock = threading.RLock()
@@ -175,13 +201,26 @@ class BrowseAccess:
             return max(900, searches * (value["reset"] - now) / available)
         return 900
 
-    def normal_queue(self, searches, market):
+    def normal_queue(self, searches, market, now=None):
         """Resume the next active search after a checkpoint or forced shutdown."""
         rows = [s for s in searches if s.get('enabled', True)]
         state = self.state()
-        next_id = state.get('normal_next_search', {}).get(market)
-        offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
-        rotated = rows[offset:] + rows[:offset]
+        weights = priority_weights(rows)
+        if weights:
+            # Owner order from the app: the most overdue search relative to its
+            # place goes first, so a higher place is checked more often and the
+            # last one still runs at least every PRIORITY_MAX_WEIGHT intervals.
+            now = time.time() if now is None else now
+            attempts = state.get('html_attempts', {})
+            def overdue(row):
+                stamp = attempts.get(str(row['id'])+'|'+market)
+                age = now-stamp if isinstance(stamp, (int, float)) and not isinstance(stamp, bool) else math.inf
+                return age/weights[str(row['id'])]
+            rotated = sorted(rows, key=lambda row: (-overdue(row), weights[str(row['id'])]))
+        else:
+            next_id = state.get('normal_next_search', {}).get(market)
+            offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
+            rotated = rows[offset:] + rows[:offset]
         # A page received just before the runner deadline must not wait for a
         # whole catalogue rotation before its first description is checked.
         # Only search IDs are retained: the next attempt fetches fresh data.

@@ -53,7 +53,7 @@ def _issue(detail):
     return dict(code=code or 'unknown',message=message or 'Проверка поиска не завершена; повторится')
 
 
-def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None,search_errors=None,last_pass=None,coverage=None):
+def publish(active_config, logic_version, state, error=None, path=None, data_source=None, warning=None, source_policy=None,pending=None,search_errors=None,last_pass=None,coverage=None,schedule=None,api_keys=None):
     path = Path(path or STATUS_PATH)
     try:
         previous = json.loads(path.read_text(encoding="utf-8"))
@@ -86,6 +86,9 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         "warning": str(warning)[:1000] if warning else None,
         "activeSearches": sum(bool(row.get("enabled", True)) for row in active_config.get("searches", [])),
         "configFingerprint": fingerprint,
+        # A running pass has no throughput yet: keep the last measured plan.
+        "schedule": schedule or previous.get("schedule"),
+        "apiKeys": api_keys if api_keys is not None else previous.get("apiKeys", []),
     }
     try:
         feed=json.loads(path.with_name('feed.json').read_text(encoding='utf8'))

@@ -11026,7 +11026,40 @@ def _publish_runtime(state, error=None):
             data_source=("html+api" if _runtime_api_fallback else "html") if html_primary else "html" if html_only else "api+html" if _runtime_html_fallback else "api",
             warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first",pending=_runtime_pending,
             search_errors=_runtime_errors,last_pass=dict(_runtime_progress) or None,
-            coverage=browse_access.search_coverage(config.raw.get('searches', []),EBAY_MARKETPLACE_ID) if html_primary else None)
+            coverage=browse_access.search_coverage(config.raw.get('searches', []),EBAY_MARKETPLACE_ID) if html_primary else None,
+            schedule=_runtime_schedule(), api_keys=_runtime_api_keys(quota_paused))
+
+
+def _runtime_schedule():
+    """Measured searches per minute and the expected check interval of each search."""
+    from ebay_access import PRIORITY_MAX_WEIGHT, priority_intervals
+    from datetime import datetime
+    progress = dict(_runtime_progress or {})
+    try:
+        started = datetime.fromisoformat(progress['startedAt'])
+        finished = datetime.fromisoformat(progress['finishedAt'])
+    except (KeyError, TypeError, ValueError):
+        return None
+    attempted = progress.get('searchesAttempted') or 0
+    # Pass plus the runner's checkpoint, git pull and pause before the next one.
+    pass_minutes = (finished-started).total_seconds()/60 + 0.5
+    if attempted <= 0 or pass_minutes <= 0.5:
+        return None
+    active = [row for row in config.raw.get('searches', []) if row.get('enabled', True)]
+    per_minute = attempted/pass_minutes
+    return {"searchesPerMinute": round(per_minute, 2), "passMinutes": round(pass_minutes, 1),
+            "priorityMaxWeight": PRIORITY_MAX_WEIGHT,
+            "intervalsMinutes": priority_intervals(active, per_minute, pass_minutes)}
+
+
+def _runtime_api_keys(paused=False):
+    """Approximate Browse API use per key; only the last 4 characters are shown."""
+    if not _ebay_api_configured():
+        return []
+    used = get_api_calls_count_24h()
+    limit = int(browse_access.state().get('limit') or 5000)
+    return [{"label": "Ключ 1", "clientId": "…" + str(EBAY_CLIENT_ID)[-4:], "used24h": used, "limit": limit,
+             "percent": min(100, round(100*used/limit)) if limit else None, "paused": bool(paused)}]
 
 
 async def run_once():

@@ -63,6 +63,8 @@ def app_search_to_config(search):
     }
     if search.get("displayName"):
         res["display_name"] = search["displayName"]
+    if as_number(search.get("priority")):
+        res["priority"] = int(as_number(search.get("priority")))
     return res
 
 
