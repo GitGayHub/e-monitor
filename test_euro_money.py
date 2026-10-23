@@ -4,6 +4,10 @@ from unittest.mock import patch
 import monitor
 
 class EuroMoneyTest(unittest.TestCase):
+    def test_api_shipping_regions_and_destination_quotes(self):
+        for c in json.loads((Path(__file__).parent/'qa/fixtures/api_shipping_quote_oct23.json').read_text()):
+            with self.subTest(case=c['id']),patch.object(monitor,'EBAY_MARKETPLACE_ID','EBAY_FR' if c['country']=='FR' else 'EBAY_DE'):
+                self.assertEqual(c['complete'],monitor._provider_details_complete(c['data']))
     def test_shipping_without_a_destination_quote_is_not_free(self):
         for c in json.loads((Path(__file__).parent/'qa/fixtures/shipping_unconfirmed_oct23.json').read_text(encoding='utf8')):
             with self.subTest(case=c['id']):

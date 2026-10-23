@@ -5929,6 +5929,19 @@ def _provider_details_complete(data):
         return False
     if any(row.get("estimatedAvailabilityStatus") == "UNAVAILABLE" for row in (data.get("estimatedAvailabilities") or []) if isinstance(row, dict)):
         return True
+    regions = data.get('shipToLocations')
+    if isinstance(regions, dict) and not _description_pickup_only(data.get('description')):
+        country = EBAY_API_COUNTRY_BY_MARKETPLACE.get(EBAY_MARKETPLACE_ID, 'DE')
+        included = [row for row in regions.get('regionIncluded') or [] if isinstance(row, dict)]
+        excluded = [row for row in regions.get('regionExcluded') or [] if isinstance(row, dict)]
+        if any(row.get('regionType') == 'COUNTRY' and row.get('regionId') == country for row in excluded):
+            return False
+        if included and all(row.get('regionType') == 'COUNTRY' and re.fullmatch(r'[A-Z]{2}', str(row.get('regionId',''))) for row in included) and not any(row.get('regionId') == country for row in included):
+            return False
+        # A domestic free quote or a bare allowed-country list cannot certify
+        # delivery to the actual destination used by our Browse request.
+        if not any(_api_float(row.get('shippingCost')) is not None and isinstance(row.get('shipToLocationUsedForEstimate'), dict) and row['shipToLocationUsedForEstimate'].get('country') == country for row in data.get('shippingOptions') or [] if isinstance(row, dict)):
+            return False
     if not _clean_description(data.get("description") or "").strip():
         return False
     costs=[data.get('htmlShippingCost'),data.get('htmlImportCharges')]
