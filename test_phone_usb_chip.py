@@ -3,7 +3,7 @@ from pathlib import Path
 import unittest
 
 import monitor
-from test_search_intent_rules import item
+from test_search_intent_rules import item, DummyConfig
 
 
 class PhoneUsbChipTests(unittest.TestCase):
@@ -16,12 +16,19 @@ class PhoneUsbChipTests(unittest.TestCase):
     def test_pixel_model_word_order_controls(self):
         self.check_cases('phone_model_word_order_oct23.json')
 
+    def test_sold_pixel_spacing_and_referential_repair(self):
+        self.check_cases('phone_sold_pixel_oct23.json')
+
     def check_cases(self, resource):
         cases = json.loads((Path(__file__).parent/'qa/fixtures'/resource).read_text(encoding='utf8'))['cases']
         for c in cases:
             with self.subTest(c['id']):
                 if c['kind'] == 'purpose':
                     actual = monitor._is_phone_accessory_title(monitor._normalize(c['title']))
+                elif c['kind'] == 'repair':
+                    actual = monitor._phone_repair_label(c['description']) is not None
+                elif c['kind'] == 'listing':
+                    actual = bool(monitor.filter_results([item(c['title'], price=500)], dict(query=c['query'], filters=dict(category='phones', listing_type='buy_now', limit_price=910)), DummyConfig(), skip_seen=True, is_statistics=True))
                 elif c['kind'] == 'model':
                     actual = monitor._matches_phone_query_model(monitor._normalize(c['title']), monitor._normalize(c['query']))
                 else:

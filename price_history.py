@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 46  # Positive own processor prose and equivalent Pixel XL Pro modifier order.
+HISTORY_VERSION = 47  # Sold Pixel joined model names and explicit referential display repair.
 _DB_LOCK = threading.Lock()
 
 
