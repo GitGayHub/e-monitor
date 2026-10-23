@@ -85,6 +85,8 @@ _ebay_query_cache = {}  # key -> (timestamp, items, err)
 
 _ebay_api_token = None
 _ebay_api_token_expiry = 0.0
+_ebay_api_tokens_by_id = {}
+_active_ebay_key_id = ""
 
 # When eBay blocks one fingerprint we rotate to the next. curl_cffi exposes
 # multiple TLS / HTTP-2 fingerprints — rotating helps when an IP is flagged
@@ -4857,8 +4859,65 @@ EBAY_API_COUNTRY_BY_MARKETPLACE = {
 }
 
 
+def _configured_ebay_api_keys():
+    """Return all configured eBay Browse API credential pairs in priority order."""
+    pairs = []
+    seen = set()
+
+    def add_pair(cid, csec):
+        cid = str(cid or "").strip()
+        csec = str(csec or "").strip()
+        if not cid or not csec or cid in seen:
+            return
+        seen.add(cid)
+        idx = len(pairs) + 1
+        pairs.append({
+            "index": idx,
+            "label": f"Ключ {idx}",
+            "client_id": cid,
+            "client_secret": csec,
+            "key_id": cid[-4:] if len(cid) >= 4 else cid,
+        })
+
+    raw_ids = [s.strip() for s in re.split(r"[,;\r\n]+", str(EBAY_CLIENT_ID or "")) if s.strip()]
+    raw_secs = [s.strip() for s in re.split(r"[,;\r\n]+", str(EBAY_CLIENT_SECRET or "")) if s.strip()]
+    for cid, csec in zip(raw_ids, raw_secs):
+        add_pair(cid, csec)
+
+    for suffix in range(2, 10):
+        add_pair(
+            os.environ.get(f"EBAY_CLIENT_ID_{suffix}") or os.environ.get(f"EBAY_APP_ID_{suffix}"),
+            os.environ.get(f"EBAY_CLIENT_SECRET_{suffix}") or os.environ.get(f"EBAY_CERT_ID_{suffix}"),
+        )
+
+    extra_env = os.environ.get("EBAY_API_KEYS", "").strip()
+    if extra_env:
+        try:
+            parsed = json.loads(extra_env)
+            if isinstance(parsed, list):
+                for row in parsed:
+                    if isinstance(row, dict):
+                        add_pair(row.get("clientId") or row.get("client_id"), row.get("clientSecret") or row.get("client_secret"))
+        except Exception:
+            for line in extra_env.splitlines():
+                if ":" in line:
+                    cid, csec = line.split(":", 1)
+                    add_pair(cid, csec)
+
+    try:
+        cfg_keys = (config.get_settings() or {}).get("ebay_api_keys") or []
+        if isinstance(cfg_keys, list):
+            for row in cfg_keys:
+                if isinstance(row, dict):
+                    add_pair(row.get("clientId") or row.get("client_id"), row.get("clientSecret") or row.get("client_secret"))
+    except Exception:
+        pass
+
+    return pairs
+
+
 def _ebay_api_configured():
-    return bool(EBAY_CLIENT_ID and EBAY_CLIENT_SECRET)
+    return bool(_configured_ebay_api_keys())
 
 
 def _ebay_api_http_error(code):
@@ -4870,14 +4929,24 @@ def _ebay_api_http_error(code):
 
 
 def _get_ebay_api_token():
-    global _ebay_api_token, _ebay_api_token_expiry
-    if not _ebay_api_configured():
+    global _ebay_api_token, _ebay_api_token_expiry, _active_ebay_key_id
+    keys = _configured_ebay_api_keys()
+    if not keys:
         return None, "api_not_configured"
     now = time.time()
-    if _ebay_api_token and now < _ebay_api_token_expiry:
+    if len(keys) == 1 and _ebay_api_token and now < _ebay_api_token_expiry:
+        _active_ebay_key_id = keys[0]["key_id"]
         return _ebay_api_token, None
+    chosen = browse_access.select_key(keys) or keys[0]
+    cid = chosen["client_id"]
+    csec = chosen["client_secret"]
+    _active_ebay_key_id = chosen["key_id"]
+    cached = _ebay_api_tokens_by_id.get(cid)
+    if cached and now < cached[1]:
+        _ebay_api_token, _ebay_api_token_expiry = cached
+        return cached[0], None
     try:
-        raw = f"{EBAY_CLIENT_ID}:{EBAY_CLIENT_SECRET}".encode("utf-8")
+        raw = f"{cid}:{csec}".encode("utf-8")
         auth = base64.b64encode(raw).decode("ascii")
         body = urllib.parse.urlencode({
             "grant_type": "client_credentials",
@@ -4898,8 +4967,10 @@ def _get_ebay_api_token():
         if not token:
             return None, "api_auth"
         expires = int(data.get("expires_in") or 7200)
+        exp_ts = time.time() + max(60, expires - 120)
         _ebay_api_token = token
-        _ebay_api_token_expiry = time.time() + max(60, expires - 120)
+        _ebay_api_token_expiry = exp_ts
+        _ebay_api_tokens_by_id[cid] = (token, exp_ts)
         return token, None
     except urllib.error.HTTPError as e:
         try:
@@ -5109,7 +5180,8 @@ def fetch_ebay_api_ex(search, force=False):
     target = (search.get("id", ""), market)
     if not force and target not in _allowed_api_targets_this_run:
         return [], "api_deferred"
-    if not browse_access.acquire():
+    key_id = _active_ebay_key_id if len(_configured_ebay_api_keys()) > 1 else ""
+    if not browse_access.acquire(key_id) if key_id else not browse_access.acquire():
         return [], "api_rate_limit"
     _allowed_api_targets_this_run.discard(target)
     params = _build_ebay_api_params(search, market=market)
@@ -5134,7 +5206,11 @@ def fetch_ebay_api_ex(search, force=False):
         return items, "parse" if len(items)<len(data.get("itemSummaries") or []) else None
     except urllib.error.HTTPError as e:
         if e.code == 429:
-            browse_access.pause(e.headers.get("Retry-After") if e.headers else None)
+            retry_hdr = e.headers.get("Retry-After") if e.headers else None
+            if key_id:
+                browse_access.pause(retry_hdr, key_id=key_id)
+            else:
+                browse_access.pause(retry_hdr)
         logger.warning("eBay Browse HTTP %s for %s", e.code, search.get("query"))
         return [], _ebay_api_http_error(e.code)
     except Exception as e:
@@ -5833,7 +5909,8 @@ def _fetch_item_details(item_id):
     token, err = _get_ebay_api_token()
     if err:
         return fallback_details()
-    if not browse_access.acquire():
+    key_id = _active_ebay_key_id if len(_configured_ebay_api_keys()) > 1 else ""
+    if not (browse_access.acquire(key_id) if key_id else browse_access.acquire()):
         return fallback_details()
     browse_id = f"v1|{item_id}|0"
     url = f"https://api.ebay.com/buy/browse/v1/item/{urllib.parse.quote(browse_id)}"
@@ -5858,7 +5935,11 @@ def _fetch_item_details(item_id):
         return copy.deepcopy(data)
     except urllib.error.HTTPError as e:
         if e.code == 429:
-            browse_access.pause(e.headers.get("Retry-After") if e.headers else None)
+            retry_hdr = e.headers.get("Retry-After") if e.headers else None
+            if key_id:
+                browse_access.pause(retry_hdr, key_id=key_id)
+            else:
+                browse_access.pause(retry_hdr)
             return fallback_details()
         logger.warning("eBay Browse details HTTP %s for item %s", e.code, item_id)
     except Exception as e:
@@ -11053,13 +11134,30 @@ def _runtime_schedule():
 
 
 def _runtime_api_keys(paused=False):
-    """Approximate Browse API use per key; only the last 4 characters are shown."""
-    if not _ebay_api_configured():
+    """Approximate Browse API use per key across all configured keys."""
+    keys = _configured_ebay_api_keys()
+    if not keys:
         return []
-    used = get_api_calls_count_24h()
-    limit = int(browse_access.state().get('limit') or 5000)
-    return [{"label": "Ключ 1", "clientId": "…" + str(EBAY_CLIENT_ID)[-4:], "used24h": used, "limit": limit,
-             "percent": min(100, round(100*used/limit)) if limit else None, "paused": bool(paused)}]
+    from price_history import get_api_calls_by_key_24h
+    state = browse_access.state()
+    limit = int(state.get('limit') or 5000)
+    by_key = get_api_calls_by_key_24h()
+    untagged = by_key.get("", 0)
+    now = time.time()
+    result = []
+    for idx, k in enumerate(keys):
+        kid = k["key_id"]
+        used = by_key.get(kid, 0) + (untagged if idx == 0 else 0)
+        key_paused = bool(paused) or browse_access.is_key_paused(kid, value=state, now=now)
+        result.append({
+            "label": k["label"],
+            "clientId": "…" + kid,
+            "used24h": used,
+            "limit": limit,
+            "percent": min(100, round(100 * used / limit)) if limit else None,
+            "paused": key_paused,
+        })
+    return result
 
 
 async def run_once():

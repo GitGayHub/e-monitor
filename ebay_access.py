@@ -102,6 +102,7 @@ class BrowseAccess:
     def __init__(self):
         self.lock = threading.RLock()
         self.last_request = 0.0
+        self.last_key_id = ""
 
     def state(self):
         conn = sqlite3.connect(price_history.DB_PATH)
@@ -140,7 +141,7 @@ class BrowseAccess:
                 return True
         return False
 
-    def pause(self, retry_after=None):
+    def pause(self, retry_after=None, key_id=None):
         now = time.time()
         try:
             delay = max(1, float(retry_after))
@@ -153,16 +154,69 @@ class BrowseAccess:
             value = self.state()
             if value.get("remaining", 1) <= 0:
                 delay = max(delay, value.get("reset", now) - now)
-            value["pause_until"] = now + delay
+            if key_id:
+                pauses = {k: v for k, v in value.get("key_pauses", {}).items() if v > now}
+                pauses[str(key_id)] = now + delay
+                value["key_pauses"] = pauses
+            else:
+                value["pause_until"] = now + delay
             self.save(value)
 
-    def acquire(self):
+    def is_key_paused(self, key_id=None, value=None, now=None):
+        value = value if value is not None else self.state()
+        now = time.time() if now is None else now
+        if now < value.get("pause_until", 0):
+            return True
+        if key_id and now < value.get("key_pauses", {}).get(str(key_id), 0):
+            return True
+        if not key_id and now < value.get("reset", 0) and value.get("remaining", 1) <= 0:
+            return True
+        return False
+
+    def select_key(self, keys):
+        """Pick the next active API key in round-robin / least-used order so no single key is drained first."""
+        if not keys:
+            return None
         with self.lock:
             value = self.state()
             now = time.time()
-            if now < value.get("pause_until", 0):
+            available = [k for k in keys if not self.is_key_paused(k.get("key_id"), value=value, now=now)]
+            if not available:
+                return None
+            if len(available) == 1:
+                chosen = available[0]
+                self.last_key_id = str(chosen.get("key_id") or "")
+                return chosen
+            counts = price_history.get_api_calls_by_key_24h()
+            untagged = counts.get("", 0)
+            primary_id = str(keys[0].get("key_id") or "")
+            last_id = self.last_key_id or str(value.get("last_key_id") or "")
+            ids = [str(k.get("key_id") or "") for k in available]
+            start_idx = (ids.index(last_id) + 1) % len(available) if last_id in ids else 0
+
+            def key_score(idx):
+                k = available[idx]
+                kid = str(k.get("key_id") or "")
+                used = counts.get(kid, 0) + (untagged if kid == primary_id and len(keys) == 1 else 0)
+                rr_order = (idx - start_idx) % len(available)
+                return (used, rr_order)
+
+            best_idx = min(range(len(available)), key=key_score)
+            chosen = available[best_idx]
+            chosen_id = str(chosen.get("key_id") or "")
+            self.last_key_id = chosen_id
+            if value.get("last_key_id") != chosen_id:
+                value["last_key_id"] = chosen_id
+                self.save(value)
+            return chosen
+
+    def acquire(self, key_id=""):
+        with self.lock:
+            value = self.state()
+            now = time.time()
+            if self.is_key_paused(key_id or None, value=value, now=now):
                 return False
-            if now < value.get("reset", 0) and value.get("remaining", 1) <= 0:
+            if not key_id and now < value.get("reset", 0) and value.get("remaining", 1) <= 0:
                 return False
             wait = 0.5 - (time.monotonic() - self.last_request)
             if wait > 0:
@@ -170,14 +224,16 @@ class BrowseAccess:
             if now < value.get("reset", 0):
                 value["remaining"] = max(0, value.get("remaining", 1) - 1)
                 self.save(value)
-            price_history.record_api_call()  # count attempts, including errors/details
+            price_history.record_api_call(key_id=key_id)  # count attempts per key, including errors/details
             self.last_request = time.monotonic()
             return True
 
-    def is_paused(self):
+    def is_paused(self, keys=None):
         """Inspect persisted quota without spending a request or changing state."""
         value = self.state()
         now = time.time()
+        if keys:
+            return all(self.is_key_paused(k.get("key_id"), value=value, now=now) for k in keys)
         return now < value.get("pause_until", 0) or (
             now < value.get("reset", 0) and value.get("remaining", 1) <= 0
         )

@@ -77,6 +77,36 @@ class SearchPriorityTests(unittest.TestCase):
         self.assertNotIn('priority', app_search_to_config({'id': 'y', 'query': 'q'}))
         self.assertNotIn('priority', convert_search(app_search_to_config({'id': 'y', 'query': 'q'})))
 
+    def test_multiple_ebay_api_keys_rotate_evenly_and_skip_paused_key(self):
+        keys = [
+            {'key_id': 'k1', 'label': 'Ключ 1', 'client_id': 'cid_one_1111', 'client_secret': 'sec1'},
+            {'key_id': 'k2', 'label': 'Ключ 2', 'client_id': 'cid_two_2222', 'client_secret': 'sec2'},
+            {'key_id': 'k3', 'label': 'Ключ 3', 'client_id': 'cid_thr_3333', 'client_secret': 'sec3'},
+        ]
+        chosen = []
+        with patch('ebay_access.time.sleep'):
+            for _ in range(9):
+                picked = self.access.select_key(keys)
+                self.assertIsNotNone(picked)
+                self.assertTrue(self.access.acquire(picked['key_id']))
+                chosen.append(picked['key_id'])
+        # 9 requests across 3 keys -> 3 calls per key in round-robin order
+        self.assertEqual(['k1', 'k2', 'k3'] * 3, chosen)
+        counts = price_history.get_api_calls_by_key_24h()
+        self.assertEqual({'k1': 3, 'k2': 3, 'k3': 3}, counts)
+
+        # Pause k2 on HTTP 429 -> remaining keys k1 and k3 continue alternating
+        self.access.pause(900, key_id='k2')
+        self.assertFalse(self.access.is_paused())
+        self.assertTrue(self.access.is_key_paused('k2'))
+        next_two = []
+        with patch('ebay_access.time.sleep'):
+            for _ in range(2):
+                picked = self.access.select_key(keys)
+                self.assertTrue(self.access.acquire(picked['key_id']))
+                next_two.append(picked['key_id'])
+        self.assertEqual(['k1', 'k3'], next_two)
+
 
 if __name__ == '__main__':
     unittest.main()
