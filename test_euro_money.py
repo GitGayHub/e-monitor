@@ -4,6 +4,13 @@ from unittest.mock import patch
 import monitor
 
 class EuroMoneyTest(unittest.TestCase):
+    def test_shipping_without_a_destination_quote_is_not_free(self):
+        for c in json.loads((Path(__file__).parent/'qa/fixtures/shipping_unconfirmed_oct23.json').read_text(encoding='utf8')):
+            with self.subTest(case=c['id']):
+                d=monitor._parse_item_details_html(c['html'],description=c['description'])
+                self.assertEqual(c['complete'],monitor._provider_details_complete(d))
+                self.assertEqual(c['shipping'],monitor._api_float(d.get('htmlShippingCost')))
+
     def test_shared_quotes(self):
         for c in json.loads((Path(__file__).parent/'qa/fixtures/euro_money_oct17.json').read_text(encoding='utf8'))['text']:
             with self.subTest(text=c['text']):

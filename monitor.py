@@ -5741,11 +5741,19 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     shipping_cost = _parse_labeled_money(page_lines, (r"^versand\b", r"^shipping\b"))
     import_charges = _parse_labeled_money(page_lines, (r"^einfuhr(?:abgaben|geb[üu]hren)\b", r"^import charges\b", r"^import fees\b"))
     own_costs = {}
+    shipping_quote_unconfirmed = False
     for key, selector in (('shipping', '.ux-labels-values--shipping'), ('imports', '.ux-labels-values--importCharges')):
         module = soup.select_one(selector)
         if module is not None:
             text = module.get_text(' ', strip=True)
             own_costs[key] = 0.0 if _description_pickup_only(text) or (not re.search(r'EUR|€',text,re.I) and any(w in text.lower() for w in ('kostenlos','free','gratis'))) else _parse_price(text)
+            if key == 'shipping':
+                # The own destination warning is not a zero-cost quote, even
+                # when a generic free-shipping label appears in the module.
+                restricted = re.search(r"\bkein(?:en)?\s+versand\s+nach\s+(?:deutschland|germany)\b|\b(?:may\s+not|does\s+not|doesn't|cannot|can't)\s+(?:ship|post|deliver)\s+to\s+(?:germany|deutschland)\b", text, re.I)
+                if restricted:
+                    own_costs[key] = None
+                shipping_quote_unconfirmed = own_costs[key] is None
     if 'shipping' in own_costs:
         shipping_cost = own_costs['shipping']
     if 'imports' in own_costs:
@@ -5773,6 +5781,8 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         "title": title_text,
         "localizedAspects": aspects,
     }
+    if shipping_quote_unconfirmed:
+        result['htmlMoneyIncomplete'] = True
     own_image = soup.select_one(".ux-image-carousel-item img[src], .ux-image-magnify img[src], meta[property='og:image'][content]")
     if own_image:
         image_url = own_image.get("src") or own_image.get("content") or ""

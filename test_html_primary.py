@@ -8,6 +8,17 @@ from pathlib import Path
 
 
 class HtmlPrimaryTest(unittest.TestCase):
+    def test_unknown_html_shipping_uses_api_or_stays_unverified(self):
+        c=json.loads((Path(__file__).parent/'qa/fixtures/shipping_unconfirmed_oct23.json').read_text(encoding='utf8'))[0]
+        partial=monitor._parse_item_details_html(c['html'],description=c['description'])
+        quote={'description':c['description'],'price':{'value':'19.17','currency':'EUR'},'shippingOptions':[{'shippingCost':{'value':'12','currency':'EUR'},'shippingCostType':'FIXED','shipToLocationUsedForEstimate':{'country':'DE','postalCode':'09648'}}]}
+        for api_data in (quote,None):
+            response=MagicMock();response.__enter__.return_value.read.return_value=json.dumps(api_data).encode()
+            with self.subTest(quoted=api_data is not None),patch.object(monitor,'_fetch_item_details_html',return_value=partial) as html,patch.object(monitor,'_get_ebay_api_token',return_value=('qa',None)),patch.object(monitor.browse_access,'acquire',return_value=True),patch.object(monitor.urllib.request,'urlopen',return_value=response,side_effect=TimeoutError('offline API') if api_data is None else None) as api:
+                monitor._item_details_cache.clear()
+                data=monitor._fetch_item_details('123456789012')
+                self.assertEqual(api_data is not None,monitor._provider_details_complete(data))
+                html.assert_called_once();api.assert_called_once()
     def test_missing_live_price_cannot_pass_candidate_or_send_even_with_complete_seller_body(self):
         item={'item_id':'123456789012','title':'Device','price':30.0,'seller_name':'qa-seller'}
         data={'description':'Device works correctly.'}
