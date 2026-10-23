@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import price_history
+import monitor
 from ebay_access import BrowseAccess, PRIORITY_MAX_WEIGHT, priority_intervals, priority_weights
 from mobile.build_app_sync import convert_search
 from mobile.merge_app_sync_to_config import app_search_to_config
@@ -106,6 +107,45 @@ class SearchPriorityTests(unittest.TestCase):
                 self.assertTrue(self.access.acquire(picked['key_id']))
                 next_two.append(picked['key_id'])
         self.assertEqual(['k1', 'k3'], next_two)
+
+    def test_old_single_key_usage_is_not_lost_when_a_second_key_is_added(self):
+        price_history.record_api_call()  # legacy single-key calls were untagged
+        keys = [{'key_id': 'primary'}, {'key_id': 'new'}]
+        self.assertEqual('new', self.access.select_key(keys)['key_id'])
+
+    def test_remaining_second_key_is_available_despite_legacy_first_key_quota(self):
+        self.access.save({'remaining': 0, 'reset': 4_000_000_000,
+                          'pause_until': 4_000_000_000,
+                          'key_pauses': {'first': 4_000_000_000}})
+        keys = [{'key_id': 'first'}, {'key_id': 'second'}]
+        with patch.object(monitor, 'browse_access', self.access), \
+             patch.object(monitor, '_configured_ebay_api_keys', return_value=keys):
+            self.assertFalse(monitor._ebay_api_paused())
+            self.assertEqual('second', self.access.select_key(keys)['key_id'])
+            self.assertTrue(self.access.acquire('second'))
+            self.assertFalse(self.access.acquire('first'))
+            self.access.pause(60, key_id='second')
+            self.assertLess(self.access.state()['key_pauses']['second'], 4_000_000_000)
+
+    def test_all_paused_keys_do_not_fetch_an_oauth_token(self):
+        keys = [{'key_id': 'first'}, {'key_id': 'second'}]
+        for key in keys:
+            self.access.pause(600, key_id=key['key_id'])
+        with patch.object(monitor, 'browse_access', self.access), \
+             patch.object(monitor, '_configured_ebay_api_keys', return_value=keys), \
+             patch.object(monitor.urllib.request, 'urlopen') as request:
+            self.assertEqual((None, 'api_rate_limit'), monitor._get_ebay_api_token())
+            request.assert_not_called()
+
+    def test_second_key_request_does_not_spend_first_keys_remaining_quota(self):
+        self.access.save({'remaining': 5, 'reset': 4_000_000_000})
+        keys = [{'key_id': 'first'}, {'key_id': 'second'}]
+        self.access.select_key(keys)  # bind the pre-existing single-key quota
+        self.assertTrue(self.access.acquire('second'))
+        self.assertEqual(5, self.access.state()['remaining'])
+        with patch('ebay_access.time.sleep'):
+            self.assertTrue(self.access.acquire('first'))
+        self.assertEqual(4, self.access.state()['remaining'])
 
 
 if __name__ == '__main__':

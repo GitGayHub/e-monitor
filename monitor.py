@@ -4920,6 +4920,12 @@ def _ebay_api_configured():
     return bool(_configured_ebay_api_keys())
 
 
+def _ebay_api_paused():
+    """One exhausted credential must not disable other configured credentials."""
+    keys = _configured_ebay_api_keys()
+    return browse_access.is_paused(keys=keys) if len(keys) > 1 else browse_access.is_paused()
+
+
 def _ebay_api_http_error(code):
     if code == 429:
         return "api_rate_limit"
@@ -4933,11 +4939,15 @@ def _get_ebay_api_token():
     keys = _configured_ebay_api_keys()
     if not keys:
         return None, "api_not_configured"
+    if _ebay_api_paused():
+        return None, "api_rate_limit"
     now = time.time()
     if len(keys) == 1 and _ebay_api_token and now < _ebay_api_token_expiry:
         _active_ebay_key_id = keys[0]["key_id"]
         return _ebay_api_token, None
-    chosen = browse_access.select_key(keys) or keys[0]
+    chosen = browse_access.select_key(keys)
+    if chosen is None:
+        return None, "api_rate_limit"
     cid = chosen["client_id"]
     csec = chosen["client_secret"]
     _active_ebay_key_id = chosen["key_id"]
@@ -5888,7 +5898,7 @@ def _fetch_item_details(item_id):
             return copy.deepcopy(html_result)
         html_attempted = True
         _runtime_html_fallback = True
-        reserve_available=EBAY_SOURCE not in ('html','api') and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open
+        reserve_available=EBAY_SOURCE not in ('html','api') and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open
         with MonitorPassBudget.slice(12 if reserve_available else 20):
             data = _fetch_item_details_html(item_id)
         if data and _clean_description(data.get("description") or "").strip():
@@ -5904,7 +5914,7 @@ def _fetch_item_details(item_id):
         primary = html_details()
         if primary is not None:
             return primary
-    if MonitorPassBudget.exhausted() or not _ebay_api_configured() or EBAY_SOURCE == "html" or browse_access.is_paused() is True:
+    if MonitorPassBudget.exhausted() or not _ebay_api_configured() or EBAY_SOURCE == "html" or _ebay_api_paused() is True:
         return fallback_details()
     token, err = _get_ebay_api_token()
     if err:
@@ -8128,10 +8138,10 @@ def _fetch_html_primary(search, force=False, allow_api=False):
                 variant["filters"].pop("min_price", None)
         # Normal live searches have a20s parent slice. Keep time for the
         # authorized API reserve instead of exhausting it all inside HTML.
-        reserve_available=allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open
+        reserve_available=allow_api and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open
         with MonitorPassBudget.slice(12 if reserve_available else 20):
             found, error = fetch_ebay_ex(variant, force=force)
-        if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse", "pass_deferred") and not MonitorPassBudget.exhausted() and allow_api and _ebay_api_configured() and browse_access.is_paused() is not True and not _ebay_api_circuit_open:
+        if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse", "pass_deferred") and not MonitorPassBudget.exhausted() and allow_api and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open:
             reserve = copy.deepcopy(variant)
             reserve.pop("_html_fallback", None)
             api_rows, api_error = fetch_ebay_api_ex(reserve, force=True)
@@ -8166,7 +8176,7 @@ def fetch_ebay_ex(search, force=False):
         return [], "pass_deferred"
     now = time.time()
     source = "html" if search.get("_html_fallback") else EBAY_SOURCE if EBAY_SOURCE in ("auto", "html", "api") else "auto"
-    if source != "html" and _ebay_api_configured() and browse_access.is_paused() is True:
+    if source != "html" and _ebay_api_configured() and _ebay_api_paused() is True:
         return _fetch_quota_html(search, force=force)
 
     # Short per-query cache: absorbs duplicate calls from the UI ('Retry'
@@ -8534,7 +8544,7 @@ def _fetch_source_label(source=None):
     if EBAY_SOURCE != "api" or not _ebay_api_configured():
         return "eBay HTML / резерв API" if _runtime_api_fallback else "eBay HTML"
     if _runtime_html_fallback:
-        return "eBay HTML (резерв после квоты API)" if browse_access.is_paused() is True else "eBay Browse API / HTML"
+        return "eBay HTML (резерв после квоты API)" if _ebay_api_paused() is True else "eBay Browse API / HTML"
     return "eBay Browse API"
 
 
@@ -9368,7 +9378,7 @@ def initialize_api_budget_and_queue(searches):
                 browse_access.update_quota(json.loads(resp.read().decode("utf-8")))
         except Exception as exc:
             logger.warning("eBay quota refresh unavailable: %s", exc)
-    quota_paused = browse_access.is_paused() is True
+    quota_paused = _ebay_api_paused() is True
     interval = 180 if quota_paused or html_primary else browse_access.interval(len(active))
     state = browse_access.state()
     if state.get('remaining',1)<=0 and state.get('reset',0)>time.time():
@@ -10776,7 +10786,7 @@ async def _process_searches_in_pass(bot, once=False):
         # the next run is 15 minutes away).
         # auto already tried its bounded API reserve inside _fetch_html_primary.
         # Explicit html forbids API. Never repeat that reserve at pass end.
-        if blocked_searches and EBAY_SOURCE == "api" and _ebay_api_configured() and browse_access.is_paused() is not True:
+        if blocked_searches and EBAY_SOURCE == "api" and _ebay_api_configured() and _ebay_api_paused() is not True:
             logger.info("=== API retry for %d blocked search(es) ===", len(blocked_searches))
             for search in blocked_searches:
                 if MonitorPassBudget.exhausted(reserve=30):
@@ -11085,7 +11095,7 @@ _runtime_api_fallback = False
 def _publish_runtime(state, error=None):
     from mobile.runtime_status import publish
     from mobile import telegram_text_outbox
-    quota_paused = browse_access.is_paused() is True
+    quota_paused = _ebay_api_paused() is True
     html_only = quota_paused or EBAY_SOURCE == "html" or not _ebay_api_configured()
     html_primary = EBAY_SOURCE != "api"
     warnings = []
