@@ -1787,6 +1787,8 @@ _IPHONE_PRO_MAX_CODES = {
 def _phone_model_spacing(text):
     # 267813864215: "iphone 17 ProMax" is the same model as "17 Pro Max".
     text = re.sub(r"\b(iphone\s*\d{1,2})\s*promax\b", r"\1 pro max", text)
+    # 267813623560: the seller reverses both existing Pixel modifiers.
+    text = re.sub(r"\bpixel\s*(\d+[a-z]?)\s*xl\s*pro\b", r"pixel \1 pro xl", text)
     return re.sub(r"\bs\s+(\d{2})\b", r"s\1", text)
 
 
@@ -1841,25 +1843,36 @@ def _phone_chipset_matches(value, query):
 
 
 def _phone_own_processor_overrides_catalogue(value, description, query):
-    """A matching own Model + Processor field can resolve stale Apple catalogue chips."""
+    """Own sale identity plus a positive processor declaration resolves stale Apple chips."""
     q = _normalize(query)
     generation = re.search(r"\biphone\s*(15|16|17)\s*pro\b", q)
     if not generation or not re.fullmatch(r"(?:apple\s+)?a\d{1,2}(?:\s*(?:pro|bionic))?(?:\s+chip(?:satz|set)?)?", _normalize(value)):
         return False
-    own = _normalize(_clean_description(description))
-    models = re.finditer(r"\b(?:modell|model)\s*:\s*([^.!?]{1,100})", own)
-    if not any(_matches_phone_query_model(m.group(1), q) for m in models):
+    own = _phone_model_spacing(_normalize(_clean_description(description)))
+    models = re.finditer(_PHONE_MODEL_PATTERNS[0], own)
+    if not any(_phone_own_model_claim(own[:m.start()], own[m.end():]) and _matches_phone_query_model(m.group(), q) for m in models):
         return False
     expected_ram = '12' if generation.group(1) == '17' else '8'
     ram = re.finditer(r"\b(\d+)\s*gb\s*(?:ram|arbeitsspeicher)\b|\b(?:ram|arbeitsspeicher)\s*:\s*(\d+)\s*gb\b", own)
     if any((m.group(1) or m.group(2)) != expected_ram for m in ram):
         return False
-    for chip in re.finditer(r"\b(?:prozessor|processor|chipsatz|chipset|cpu)\s*:\s*((?:apple\s+)?a\d{1,2}\s*pro)\b", own):
-        before = own[max(0, chip.start()-45):chip.start()]
-        if not re.search(r"\b(?:kein\w*|nicht|not|no|alt\w*|previous|vorgaenger|vergleich|comparison)\s*$", before) and _phone_chipset_matches(chip.group(1), q):
+    # A seller may use normal prose or a feature list, not only 'Processor:'.
+    for chip in re.finditer(r"\b(?:apple\s+)?a\d{1,2}\s*pro\b", own):
+        before = own[max(0, chip.start()-100):chip.start()]
+        before = re.sub(r"\b(?:prozessor|processor|chipsatz|chipset|cpu)\s*:\s*$", "", before)
+        after = re.sub(r"^\s+chip(?:satz|set)?\b", "", own[chip.end():chip.end()+80])
+        denied = re.search(r"\b(?:kein\w*|nicht|not|no|ohne|without)\s+(?:(?:ein\w*|a|an|the|der|den|leistungsstark\w*|powerful)\s+)*$", before)
+        comparison = re.search(r"\b(?:zum\s+vergleich|im\s+vergleich|compared\s+to|comparison|beispiel|example|angenommen|hypothetisch|falls|wenn|if|suppose|passend\s+fuer|kompatibel\s+mit|compatible\s+with)\b[^.!?;]{0,80}$", before)
+        historical = re.search(r"\b(?:alt\w*|vorherig\w*|vorgaenger\w*|previous|old)\s*(?:(?:prozessor|processor|chip(?:satz|set)?|cpu|modell|model|iphone|phone|handy|geraet|device)\b[^.!?;]{0,60})?$", before)
+        other_device = re.search(r"\b(?:mein\w*|my|the|das|dieses)\s+(?:ander\w*|other|previous|vorherig\w*)\s+(?:handy|iphone|smartphone|phone|geraet|device)\b[^.!?;]{0,80}$", before)
+        uncertain = re.search(r"\b(?:nicht\s+sicher|not\s+sure|unsure|unbekannt|unknown|vielleicht|maybe|perhaps|weiss\s+nicht)\b[^.!?;]{0,80}$", before)
+        denied_after = re.match(r"\s*(?:(?:ist|is|war|was|wurde|has\s+been)\s+)?(?:nicht|kein\w*|not|no)\b", after)
+        historical_after = re.match(r"\s*(?:(?:ist|is|war|was|wurde)\s+)?(?:(?:im|in|mein\w*|my|the|dem)\s+)*(?:vorgaenger|previous|vorherig\w*|alt\w*|old)\b", after)
+        other_device_after = re.match(r"\s*(?:(?:ist|is|war|was)\s+)?(?:in|im)\s+(?:(?:mein\w*|my|the|dem|einem|a|an)\s+)*(?:ander\w*|other|previous|vorherig\w*)\s+(?:handy|iphone|smartphone|phone|geraet|device)\b", after)
+        uncertain_after = re.match(r"\s*(?:\?|(?:waere|would|could|koennte|sollte)\b)", after)
+        if not any((denied, comparison, historical, other_device, uncertain, denied_after, historical_after, other_device_after, uncertain_after)) and _phone_chipset_matches(chip.group(), q):
             return True
     return False
-
 
 def _samsung_phone_code_matches(value, query):
     """Recognized device codes must agree, including every code in a list."""
@@ -2067,6 +2080,33 @@ def _phone_storage_mismatch(value, query):
     return None
 
 
+def _phone_own_model_claim(before, after):
+    glue = r'(?:(?:hier|hiermit|nun|jetzt|euch|ihnen|an|mein\w*|ein\w*|das|dieses|gebraucht\w*|neu\w*|alt\w*|my|a|an|the|this|complete|working)\s+)*'
+    brand = r'(?:(?:apple|samsung|google|galaxy)\s+)*'
+    sale = (r'\b(?:(?:(?:ich|wir)\s+)?(?:verkaufe[n]?|biete[n]?)(?:\s+ich)?|'
+            r'(?:i(?:\s+am)?|we)\s+(?:selling|sell|offer)|zum\s+verkauf\s+steht|angeboten\s+wird|verkauft\s+wird|'
+            r'(?:das|dieses|mein|the|this|my)\s+(?:angebotene\s+)?(?:smartphone|telefon|handy|geraet|phone|device|handset)\s+(?:ist|is))\s+')
+    clause = re.search(r'[^.!?;]*$', before).group()
+    if re.search(r'\b(?:beispiel|example|angenommen|hypothetisch|falls|wenn|suppose|if)\b', clause):
+        return False
+    if re.search(r'\b(?:alt\w*|vorherig\w*|vorgaenger\w*|old|previous)\s+(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*'+brand+r'$', before):
+        return False
+    if re.search(r'\b(?:(?:huelle|case|cover|zubehoer|accessories)\s+(?:(?:fuer|for)\s+)?|(?:passend\s+fuer|compatible\s+with)\s+)(?:modell|model)\s*:\s*'+brand+r'$', before):
+        return False
+    if re.match(r'\s*(?:huelle|case|cover|schutzfolie|ladekabel|zubehoer|accessories)\b', after):
+        return False
+    if re.match(r'\s*(?:(?:war|was|ist|is)\s+)?(?:(?:mein|my|der|das|the)\s+)?(?:vorgaenger|previous|vorherig\w*|altes|old|nur\s+zum\s+vergleich|used\s+for\s+photos)\b', after):
+        return False
+    leading = r'\s*(?:(?:artikelbeschreibung|produktbeschreibung|description)\s*:?\s*)?(?:(?:das|dieses|mein|the|this|my)\s+)?(?:(?:neue?s?|gebrauchte?s?|new|used)\s+)?'+brand
+    if re.fullmatch(leading, before):
+        return True
+    if re.search(sale+glue+brand+r'$', before) or re.search(r'\b(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*'+brand+r'$', before):
+        return True
+    return bool(re.search(r'\b(?:sondern|but|instead)\s+'+glue+brand+r'$', before) and
+                re.search(r'\b(?:kein\w*|nicht|not|no)\b[^.!?;]{0,100}$', before) and
+                not re.search(r'\b(?:not\s+only|nicht\s+nur)\b[^.!?;]*$', before))
+
+
 def _phone_own_model_conflict(description, query):
     """Only own sale/identity declarations, not every model mentioned by a seller."""
     text = _phone_model_spacing(_normalize(_clean_description(description or '')))
@@ -2075,42 +2115,17 @@ def _phone_own_model_conflict(description, query):
     wanted = next(((i, re.search(p, q)) for i, p in enumerate(_PHONE_MODEL_PATTERNS) if re.search(p, q)), None)
     if not wanted or not text:
         return None
-    glue = r'(?:(?:hier|hiermit|nun|jetzt|euch|ihnen|an|mein\w*|ein\w*|das|dieses|gebraucht\w*|neu\w*|alt\w*|my|a|an|the|this|complete|working)\s+)*'
-    brand = r'(?:(?:apple|samsung|google|galaxy)\s+)*'
-    sale = (r'\b(?:(?:(?:ich|wir)\s+)?(?:verkaufe[n]?|biete[n]?)(?:\s+ich)?|'
-            r'(?:i(?:\s+am)?|we)\s+(?:selling|sell|offer)|zum\s+verkauf\s+steht|angeboten\s+wird|verkauft\s+wird|'
-            r'(?:das|dieses|mein|the|this|my)\s+(?:angebotene\s+)?(?:smartphone|telefon|handy|geraet|phone|device|handset)\s+(?:ist|is))\s+')
-    def own_claim(before, after):
-        clause = re.search(r'[^.!?;]*$', before).group()
-        if re.search(r'\b(?:beispiel|example|angenommen|hypothetisch|falls|wenn|suppose|if)\b', clause):
-            return False
-        if re.search(r'\b(?:alt\w*|vorherig\w*|vorgaenger\w*|old|previous)\s+(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*'+brand+r'$', before):
-            return False
-        if re.search(r'\b(?:(?:huelle|case|cover|zubehoer|accessories)\s+(?:(?:fuer|for)\s+)?|(?:passend\s+fuer|compatible\s+with)\s+)(?:modell|model)\s*:\s*'+brand+r'$', before):
-            return False
-        if re.match(r'\s*(?:huelle|case|cover|schutzfolie|ladekabel|zubehoer|accessories)\b', after):
-            return False
-        if re.match(r'\s*(?:(?:war|was|ist|is)\s+)?(?:(?:mein|my|der|das|the)\s+)?(?:vorgaenger|previous|vorherig\w*|altes|old|nur\s+zum\s+vergleich|used\s+for\s+photos)\b', after):
-            return False
-        leading = r'\s*(?:(?:artikelbeschreibung|produktbeschreibung|description)\s*:?\s*)?(?:(?:das|dieses|mein|the|this|my)\s+)?(?:(?:neue?s?|gebrauchte?s?|new|used)\s+)?'+brand
-        if re.fullmatch(leading, before):
-            return True
-        if re.search(sale+glue+brand+r'$', before) or re.search(r'\b(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*'+brand+r'$', before):
-            return True
-        return bool(re.search(r'\b(?:sondern|but|instead)\s+'+glue+brand+r'$', before) and
-                    re.search(r'\b(?:kein\w*|nicht|not|no)\b[^.!?;]{0,100}$', before) and
-                    not re.search(r'\b(?:not\s+only|nicht\s+nur)\b[^.!?;]*$', before))
     for i, pattern in enumerate(_PHONE_MODEL_PATTERNS):
         for actual in re.finditer(pattern, text):
             before, after = text[:actual.start()], text[actual.end():]
-            if not own_claim(before, after):
+            if not _phone_own_model_claim(before, after):
                 continue
             compatible = i == wanted[0] and all(not a or a.replace(' ','') == (b or '').replace(' ','') for a,b in zip(actual.groups(), wanted[1].groups()))
             if not compatible:
                 return actual.group()
     # Explicit model-number fields can contain a recognized manufacturer code.
     for field in re.finditer(r'\b(?:modell(?:nummer)?|model(?:\s+number)?)\s*:\s*([^.!?\r\n]{1,100})', text):
-        if own_claim(text[:field.start(1)], text[field.end(1):]) and not _phone_model_number_matches(field.group(1), q):
+        if _phone_own_model_claim(text[:field.start(1)], text[field.end(1):]) and not _phone_model_number_matches(field.group(1), q):
             return field.group(1).strip()
     return None
 

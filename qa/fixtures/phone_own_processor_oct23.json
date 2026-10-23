@@ -1,0 +1,709 @@
+{
+  "scope": "Synthetic minimal controls based on independently browser-read live327408155844. Own sale identity and positive processor prose; not full original seller descriptions or permission to notify.",
+  "cases": [
+    {
+      "id": "live327408155844-prose",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Apple iPhone 17 Pro Max 512GB. Zum Verkauf steht mein iPhone 17 Pro Max. Leistungsstarker Apple A19 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "sale-de-not-heading",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Guten Tag. Ich verkaufe mein Apple iPhone 17 Pro Max 512GB mit Apple A19 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "sale-en-not-heading",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Hello. I am selling my Apple iPhone 17 Pro Max 512GB with Apple A19 Pro chip.",
+      "expected": true
+    },
+    {
+      "id": "field-and-prose",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Modell: iPhone 17 Pro Max. Im Geraet arbeitet der Apple A19 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "unrelated-cloud-denial",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Keine iCloud-Sperre, mit Apple A19 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "unrelated-repair-denial",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Nie repariert, mit leistungsstarkem Apple A19 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "historical-model-only",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Mein vorheriges iPhone 17 Pro Max hatte den Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "hypothetical-model-only",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Falls ich ein iPhone 17 Pro Max verkaufe, hat es einen Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "compatible-model-only",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Huelle fuer Modell: iPhone 17 Pro Max mit Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "no-own-model",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Technisch einwandfrei. Prozessor: Apple A19 Pro.",
+      "expected": false
+    },
+    {
+      "id": "negated-prose-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Kein leistungsstarker Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "compared-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Zum Vergleich hat mein anderes Handy einen Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "chip-denied-after",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Der Apple A19 Pro Chip ist nicht verbaut.",
+      "expected": false
+    },
+    {
+      "id": "chip-historical-after",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Der Apple A19 Pro Chip war im Vorgaenger.",
+      "expected": false
+    },
+    {
+      "id": "previous-field-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Alter Prozessor: Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "hypothetical-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Wenn ein Apple A19 Pro Chip verbaut waere, waere das schnell.",
+      "expected": false
+    },
+    {
+      "id": "wrong-own-identity",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "Ich verkaufe ein iPhone 15 Pro Max. Zum Vergleich iPhone 17 Pro Max mit Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "wrong-own-ram",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Apple A19 Pro Chip. RAM: 8GB.",
+      "expected": false
+    },
+    {
+      "id": "repaired-own",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Apple A19 Pro Chip. Display wurde ausgetauscht.",
+      "expected": false
+    },
+    {
+      "id": "fake-own",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Apple A19 Pro Chip. Ich verkaufe es als F A K E.",
+      "expected": false
+    },
+    {
+      "id": "wrong-own-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Prozessor: Apple A18 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "ram-not-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. RAM: 12GB.",
+      "expected": false
+    },
+    {
+      "id": "iphone15-prose",
+      "kind": "details",
+      "title": "Apple iPhone 15 Pro Max 256GB",
+      "query": "iphone 15 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 15 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A19 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ],
+      "description": "Ich verkaufe mein iPhone 15 Pro Max 256GB. Apple A17 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "iphone16-prose",
+      "kind": "details",
+      "title": "Apple iPhone 16 Pro Max 256GB",
+      "query": "iphone 16 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 16 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A19 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "8 GB"
+        }
+      ],
+      "description": "Ich verkaufe mein iPhone 16 Pro Max 256GB. Apple A18 Pro Chip.",
+      "expected": true
+    },
+    {
+      "id": "other-handset-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Mein anderes Handy hat einen Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "compatible-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Passend fuer ein Geraet mit Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "uncertain-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Ich bin nicht sicher, ob ein Apple A19 Pro Chip verbaut ist.",
+      "expected": false
+    },
+    {
+      "id": "conditional-chip-after",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Der Apple A19 Pro Chip waere schneller.",
+      "expected": false
+    },
+    {
+      "id": "question-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Hat das Handy einen Apple A19 Pro Chip?",
+      "expected": false
+    },
+    {
+      "id": "without-chip",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Ohne Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "without-chip-en",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Without an Apple A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "id": "other-handset-chip-after",
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 512GB Deep Blue ohne Simlock",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        },
+        {
+          "name": "RAM",
+          "value": "12 GB"
+        }
+      ],
+      "description": "iPhone 17 Pro Max 512GB. Der Apple A19 Pro Chip ist in meinem anderen Handy.",
+      "expected": false
+    }
+  ]
+}
