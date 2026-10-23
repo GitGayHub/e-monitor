@@ -1,0 +1,89 @@
+{
+  "scope": "Synthetic controls based on independently browser-read sold267813623560. Both modifiers XL and Pro are present; do not invent a missing modifier or change a generation.",
+  "cases": [
+    {
+      "id": "reverse-title",
+      "kind": "model",
+      "title": "Google Pixel 9 XL Pro 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "joined-reverse-title",
+      "kind": "model",
+      "title": "Google Pixel9XLPro 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "reverse-query",
+      "kind": "model",
+      "title": "Google Pixel 9 Pro XL 128GB",
+      "query": "pixel 9 xl pro",
+      "expected": true
+    },
+    {
+      "id": "hyphen-title",
+      "kind": "model",
+      "title": "Google Pixel 9 XL-Pro 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "missing-xl",
+      "kind": "model",
+      "title": "Google Pixel 9 Pro 128GB",
+      "query": "pixel 9 xl pro",
+      "expected": false
+    },
+    {
+      "id": "missing-pro",
+      "kind": "model",
+      "title": "Google Pixel 9 XL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "wrong-generation",
+      "kind": "model",
+      "title": "Google Pixel 8 XL Pro 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "wrong-a-variant",
+      "kind": "model",
+      "title": "Google Pixel 9a XL Pro 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "live267813623560-own-order",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 128GB",
+      "query": "pixel 9 pro xl",
+      "description": "Verkaufe mein Google Pixel 9 XL Pro. Ohne Kratzer, mit Huelle.",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Google Pixel 9 Pro XL"
+        }
+      ],
+      "expected": true
+    },
+    {
+      "id": "reverse-model-aspect",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 128GB",
+      "query": "pixel 9 pro xl",
+      "description": "Ich verkaufe mein Pixel 9 Pro XL, technisch einwandfrei.",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Google Pixel 9 XL Pro"
+        }
+      ],
+      "expected": true
+    }
+  ]
+}

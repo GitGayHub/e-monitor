@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 45  # Complete handset USB-C features and explicit seller processor evidence against stale catalogue chips.
+HISTORY_VERSION = 46  # Positive own processor prose and equivalent Pixel XL Pro modifier order.
 _DB_LOCK = threading.Lock()
 
 
@@ -219,7 +219,7 @@ def is_outlier(price, search_id, filter_signature=None):
     """Detect suspiciously low prices that are likely errors or scams.
     
     Uses a dynamic threshold based on the 7-day median:
-    - If price < 40% of median РІвЂ вЂ™ outlier (likely scam/error/wrong item)
+    - If price < 40% of median Р Р†РІР‚В РІР‚в„ў outlier (likely scam/error/wrong item)
     - Requires at least 3 snapshots to have confidence in the median
     """
     median = get_median_7d(search_id, filter_signature)
