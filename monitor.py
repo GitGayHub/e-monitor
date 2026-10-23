@@ -5360,6 +5360,7 @@ def parse_ebay_api_results(data):
             "top_rated": bool(summary.get("topRatedBuyingExperience")),
             "location": _api_location(summary),
             "time_left": time_left_str,
+            "item_end_date": end_date_str,
             "is_multivariation": is_multivariation,
             "is_pickup_only": is_pickup_only,
         })
@@ -7332,6 +7333,8 @@ def _merge_same_item(existing, incoming):
 
     for key in ("title", "image_url", "url", "condition", "seller_name", "seller_type", "location", "time_left"):
         merged[key] = _prefer_present(merged.get(key), incoming.get(key))
+    if incoming.get("item_end_date"):
+        merged["item_end_date"] = incoming["item_end_date"]
     for key in ("seller_rating_count", "seller_rating_percent", "bids_count"):
         merged[key] = max(existing.get(key) or 0, incoming.get(key) or 0)
     merged["top_rated"] = bool(existing.get("top_rated") or incoming.get("top_rated"))
@@ -9154,7 +9157,8 @@ def _live_validation_tier(row, search, ready, fact, now):
     if not ready:
         if not pure_auction or _parse_time_left_to_minutes(row.get("time_left", "")) is not None:
             return 3, None
-        # The page clock read by an earlier description is used for order only.
+        # An exact earlier card/page clock is used for order only. A due known
+        # auction must precede cards whose clocks still need to be discovered.
         minutes = 1380 if end is None else int((end-now)//60)
         if minutes <= 0 or minutes > 1440:
             return 3, None
@@ -9165,7 +9169,7 @@ def _live_validation_tier(row, search, ready, fact, now):
     checked = fact.get('checked_at')
     if checked is not None and ready_from is not None and checked >= ready_from:
         return 2, ready_from
-    return (0 if ready else 1), ready_from
+    return (0 if ready or end is not None else 1), ready_from
 
 
 # The checkpoint reserve stays; only the extra delivery window is given up.
@@ -9195,6 +9199,31 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         ready = {id(row): bool(_notify_candidates_from_filtered(filter_results([row],search,config))) for row in candidates}
         now = time.time()
         facts = browse_access.normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID) if resumable else {}
+        if resumable:
+            # 307235909958 had an API clock one minute before its24h window.
+            # The next HTML page omitted clocks: do not forget that precise
+            # end just because this lot did not get a description slot yet.
+            from datetime import datetime
+            clocks = {}
+            for row in candidates:
+                raw = row.get('item_end_date')
+                if not row.get('auction') or not isinstance(raw,str):
+                    continue
+                try:
+                    value = datetime.fromisoformat(raw.replace('Z','+00:00'))
+                    if value.tzinfo is None:
+                        continue  # Never invent a timezone or an auction duration.
+                    stamp = value.timestamp()
+                except (ValueError,TypeError,OverflowError):
+                    continue
+                if math.isfinite(stamp) and stamp > 0:
+                    clocks[str(row['item_id'])] = {'ends':stamp}
+            if clocks:
+                # Keep the existing160-ID bound. Retain clocks closest to the
+                # notification window rather than arbitrary search-card order.
+                clocks = dict(sorted(clocks.items(),key=lambda pair:abs(pair[1]['ends']-now-86400))[:160])
+                browse_access.note_normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID,clocks,now)
+                facts = browse_access.normal_candidate_facts(queue_id,resume_context,EBAY_MARKETPLACE_ID)
         for row in candidates:
             tier[id(row)], ready_from[id(row)] = _live_validation_tier(row, search, ready[id(row)], facts.get(str(row['item_id'])), now)
         # Stable sort keeps the persisted rotation inside every tier.

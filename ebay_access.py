@@ -433,8 +433,14 @@ class BrowseAccess:
                 merged['updated'] = now
                 ids[str(item_id)] = merged
             ids = {k:v for k,v in ids.items() if now-v.get('updated', 0) < 2*86400}
+            def timing_retention(row):
+                fact=row[1];end=fact.get('ends')
+                known=isinstance(end,(int,float)) and not isinstance(end,bool) and math.isfinite(end) and 0 < end-now <= 2*86400
+                # New clock-less cards must not evict the only clock that
+                # tells us an unchecked lot has just entered its24h window.
+                return (known,-abs(end-now-86400) if known else fact['updated'],fact['updated'])
             entries[key] = {'context':context,'updated':now,
-                            'ids':dict(sorted(ids.items(),key=lambda row:row[1]['updated'])[-160:])}
+                            'ids':dict(sorted(ids.items(),key=timing_retention)[-160:])}
             state['normal_candidate_facts'] = dict(sorted(entries.items(),key=lambda row:row[1]['updated'])[-128:])
             self.save(state)
 
