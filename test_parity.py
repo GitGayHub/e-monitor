@@ -68,6 +68,19 @@ class SharedParityTests(unittest.TestCase):
             self.assertFalse(reviewed["corrected"]["accepted"])
             self.assertEqual(reviewed["corrected"]["reason"], "over_limit")
             expected = reviewed["corrected"]
+        phone = json.loads((Path(__file__).parent / "qa/fixtures/phone_usb_expectation_corrections.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(phone), 16)
+        if case["name"] in phone:
+            reviewed = phone[case["name"]]
+            self.assertEqual(expected, reviewed["original"])
+            self.assertEqual(case["item"]["title"], reviewed["title"])
+            self.assertFalse(case.get("details"))
+            self.assertEqual(reviewed["scope"], "title_and_price_snapshot_only")
+            self.assertEqual(reviewed["corrected"]["totalPrice"], expected["totalPrice"])
+            # 'notify' is this legacy fixture's preliminary price/time gate;
+            # it never substitutes for production's mandatory own description.
+            self.assertIn(reviewed["corrected"]["reason"], ("notify", "wait_24h", "over_limit"))
+            expected = reviewed["corrected"]
         return expected
 
     def test_captured_browse_api_cases(self):

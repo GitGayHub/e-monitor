@@ -1,0 +1,302 @@
+{
+  "scope": "Synthetic minimal controls based on independently browser-read live840048433110 and198736751866; title purpose and seller-declared processor vs eBay catalogue. Not full original seller descriptions.",
+  "cases": [
+    {
+      "id": "live840048433110-usbc-handset",
+      "kind": "purpose",
+      "title": "Apple iPhone 17 Pro Max 256 GB Silber ohne Simlock Dreifach-Kamera USB-C mit OVP",
+      "query": "iphone 17 pro max",
+      "expected": false
+    },
+    {
+      "id": "pixel-port-feature",
+      "kind": "purpose",
+      "title": "Google Pixel 9 Pro XL 128GB USB-C 5G mit OVP",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "samsung-port-feature",
+      "kind": "purpose",
+      "title": "Samsung Galaxy S24 Ultra 256GB USB-C ohne Simlock",
+      "query": "s24 ultra",
+      "expected": false
+    },
+    {
+      "id": "capacity-cable-not-phone",
+      "kind": "purpose",
+      "title": "Apple iPhone 17 Pro Max 256GB USB-C Ladekabel",
+      "query": "iphone 17 pro max",
+      "expected": true
+    },
+    {
+      "id": "capacity-port-spare",
+      "kind": "purpose",
+      "title": "Apple iPhone 17 Pro Max 256GB USB-C Ladebuchse Platine",
+      "query": "iphone 17 pro max",
+      "expected": true
+    },
+    {
+      "id": "compatible-cable",
+      "kind": "purpose",
+      "title": "USB-C Kabel für iPhone 17 Pro Max",
+      "query": "iphone 17 pro max",
+      "expected": true
+    },
+    {
+      "id": "no-device-capacity",
+      "kind": "purpose",
+      "title": "iPhone 17 Pro Max USB-C",
+      "query": "iphone 17 pro max",
+      "expected": true
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "live198736751866-own-processor",
+      "description": "Modell: iPhone 17 Pro Max. Prozessor: A19 Pro Chip. Technisch einwandfrei.",
+      "expected": true
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "no-own-chip-proof",
+      "description": "Modell: iPhone 17 Pro Max. Technisch einwandfrei.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "ram-is-not-processor-proof",
+      "description": "Modell: iPhone 17 Pro Max. Speicher: 256GB. RAM: 12GB.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "wrong-own-processor",
+      "description": "Modell: iPhone 17 Pro Max. Prozessor: A17 Pro Chip.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "historical-chip-only",
+      "description": "Zum Vergleich alter Prozessor: A19 Pro Chip. Modell: iPhone 17 Pro Max.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "wrong-own-ram",
+      "description": "Modell: iPhone 17 Pro Max. Prozessor: A19 Pro Chip. RAM: 8GB.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "right-own-ram",
+      "description": "Modell: iPhone 17 Pro Max. Prozessor: A19 Pro Chip. RAM: 12GB.",
+      "expected": true
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "own-chip-denied",
+      "description": "Modell: iPhone 17 Pro Max. Kein Prozessor: A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "service-still-rejected",
+      "description": "Modell: iPhone 17 Pro Max. Prozessor: A19 Pro Chip. Display wurde ausgetauscht.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 15 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "conflicting-device-model-stays",
+      "description": "Prozessor: A19 Pro Chip. Technisch einwandfrei.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Chipsatz Modell",
+          "value": "Snapdragon 8 Elite"
+        }
+      ],
+      "id": "foreign-processor-stays",
+      "description": "Prozessor: A19 Pro Chip. Technisch einwandfrei.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "unrelated-negation-before-processor",
+      "description": "Modell: iPhone 17 Pro Max\nKeine iCloud-Sperre\nProzessor: A19 Pro Chip",
+      "expected": true
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "previous-processor-label",
+      "description": "Modell: iPhone 17 Pro Max. Zum Vergleich alter Prozessor: A19 Pro Chip.",
+      "expected": false
+    },
+    {
+      "kind": "details",
+      "title": "Apple iPhone 17 Pro Max 256GB Cosmic Orange Gut OVP 93% 386 Zyklen",
+      "query": "iphone 17 pro max",
+      "aspects": [
+        {
+          "name": "Modell",
+          "value": "Apple iPhone 17 Pro Max"
+        },
+        {
+          "name": "Chipsatz Modell",
+          "value": "Apple A17 Pro"
+        }
+      ],
+      "id": "missing-own-description",
+      "description": "",
+      "expected": false
+    }
+  ]
+}
