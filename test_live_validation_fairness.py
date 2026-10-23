@@ -144,6 +144,35 @@ class LiveValidationFairnessTests(unittest.TestCase):
         self.run_pass(rows,lambda i:calls.append(i))
         self.assertEqual(['r0','r1'],calls)
 
+    def test_known_ready_retry_gets_one_slot_before_new_unknown_clocks(self):
+        # Live840048433110 was ready but tier2 behind8 unknown-clock auctions.
+        self.access=BrowseAccess()
+        self.search['filters']['listing_type']='all'
+        ready=dict(self.lot('ready',''),auction=False,buy_now=True)
+        self.run_pass([ready],lambda i:None)
+        unknown=[self.lot(f'u{n}','') for n in range(8)]
+        calls=[]
+        deliver=AsyncMock()
+        self.run_pass(unknown+[ready],lambda i:calls.append(i),deliver=deliver)
+        deliver.assert_not_awaited()
+        self.assertEqual('ready',calls[0])
+        self.assertTrue(calls[1].startswith('u'))
+
+    def test_ready_retries_rotate_without_taking_both_unknown_clock_slots(self):
+        self.access=BrowseAccess()
+        self.search['filters']['listing_type']='all'
+        ready=[dict(self.lot(f'r{n}',''),auction=False,buy_now=True) for n in range(2)]
+        self.run_pass(ready,lambda i:None)
+        unknown=[self.lot(f'u{n}','') for n in range(6)]
+        rounds=[]
+        for _ in range(2):
+            calls=[]
+            self.run_pass(unknown+ready,lambda i:calls.append(i))
+            self.assertEqual(1,sum(i.startswith('r') for i in calls))
+            self.assertEqual(1,sum(i.startswith('u') for i in calls))
+            rounds.append(calls[0])
+        self.assertEqual({'r0','r1'},set(rounds))
+
     def context(self):
         return f"{monitor._read_logic_version_timestamp()}:{monitor._history_filter_signature(self.search)}:{monitor._search_limit_price(self.search)}"
 
