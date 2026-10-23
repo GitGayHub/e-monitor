@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "preparedAtUtc": "2026-10-23T19:07:38.145723+00:00",
+  "preparedAtUtc": "2026-10-23T19:12:30.711656+00:00",
   "purpose": "User-requested Cloud continuation; PC may be off; return later through safe cloud_sync integration",
   "entrypoint": "docs/CLOUD_CONTINUE_NOW.md",
   "branch": "codex/cloud-work",
@@ -39,11 +39,12 @@
       "android-cloud": "5772104fd9724aa255fca64aa3162320f05e55db"
     },
     "productionApplied": true,
-    "telegram155Confirmed": false,
+    "telegram155Confirmed": true,
     "priority155ProductsFinished": 2,
     "acceptanceComplete": false,
     "priority155BasketsFinished": 8,
     "priority155RequestErrors": 0,
+    "telegram155DesktopConfirmed": false,
     "apkVersion": "0.155",
     "apkSha256": "107539bf53e4914167f27caa2b5c855ffd35f14b7eff77f1e72497421728da12",
     "installResult": "Success",
@@ -53,19 +54,16 @@
     "physicalVersionInThisStageNotVerified": true
   },
   "realDelivery": {
-    "apk": "0.153",
-    "messageIds": [
-      120154,
-      120155,
-      120156,
-      120157,
-      120158
-    ],
-    "clientReadOnlyVerified": true,
-    "imagePixelsVisuallyVerified": false,
-    "version155Confirmed": false,
+    "apk": "0.155",
+    "messageId": 120160,
+    "itemId": "327408155844",
+    "stage": "final_15m",
+    "totalPrice": 897.19,
+    "serverAckVerified": true,
+    "clientReadOnlyVerified": false,
+    "detailsToTelegramSeconds": 0.749,
     "under15MinutesProven": false,
-    "evidence": "docs/qa/pc-20261023/TELEGRAM_CONFIRMED_153.json"
+    "evidence": "docs/qa/pc-20261023/DELIVERY_155.json"
   },
   "manualReview": {
     "s24FullOwn": 40,
@@ -577,11 +575,12 @@
       "android-cloud": "5772104fd9724aa255fca64aa3162320f05e55db"
     },
     "productionApplied": true,
-    "telegram155Confirmed": false,
+    "telegram155Confirmed": true,
     "priority155ProductsFinished": 2,
     "acceptanceComplete": false,
     "priority155BasketsFinished": 8,
-    "priority155RequestErrors": 0
+    "priority155RequestErrors": 0,
+    "telegram155DesktopConfirmed": false
   },
   "apkCurrent155": {
     "schema": 1,
@@ -612,11 +611,12 @@
       "android-cloud": "5772104fd9724aa255fca64aa3162320f05e55db"
     },
     "productionApplied": true,
-    "telegram155Confirmed": false,
+    "telegram155Confirmed": true,
     "priority155ProductsFinished": 2,
     "acceptanceComplete": false,
     "priority155BasketsFinished": 8,
-    "priority155RequestErrors": 0
+    "priority155RequestErrors": 0,
+    "telegram155DesktopConfirmed": false
   },
   "previousTopLevelBefore155": {
     "cloudCodeHeads": {
@@ -647,5 +647,20 @@
       "detailsToTelegramSeconds": 1.561,
       "under15MinutesProven": false
     }
+  },
+  "lastDesktopVerified153": {
+    "apk": "0.153",
+    "messageIds": [
+      120154,
+      120155,
+      120156,
+      120157,
+      120158
+    ],
+    "clientReadOnlyVerified": true,
+    "imagePixelsVisuallyVerified": false,
+    "version155Confirmed": false,
+    "under15MinutesProven": false,
+    "evidence": "docs/qa/pc-20261023/TELEGRAM_CONFIRMED_153.json"
   }
 }
