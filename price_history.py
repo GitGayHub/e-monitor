@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 48  # Missing destination shipping quotes cannot certify a total.
+HISTORY_VERSION = 49  # Missing destination shipping quotes cannot certify a total.
 _DB_LOCK = threading.Lock()
 
 

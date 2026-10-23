@@ -1,3 +1,5 @@
+Последующая проверка:154 не закрывала APIбезкотировкиDE. См.этап155; текущую154 не считать полнымисправлениемдоставки.
+
 # 0.154: неизвестная доставка больше не считается бесплатной
 
 При ручной сверке настоящего сообщения153/120156 обнаружено расхождение: [мышь327411626248](https://www.ebay.de/itm/327411626248) отправлена с ценой19,17€, доставкой0€ и оценкой импорта9,41€. Текущая страница Chrome для Германии показывает «Ggf. kein Versand nach Deutschland», без котировки. Собственное описание продаёт целую мышь; отсутствие коробки и инструкции не делает её запчастью. Историческое состояние страницы в момент отправки не сохранено, поэтому текущую страницу нельзя выдавать за точную копию той отправки.
@@ -28,7 +30,7 @@ APK SHA256: d870d21bc4a871084bd1dab3f9304e3a614445ddc9d5ae19455d931acdf4c4ed.
 
 ## Рабочая система и оставшиеся проверки
 
-0.154: проверена локально; публикация ещё ожидается. Пять настоящих153доставок120154–120158 сверены с TelegramнаПК в фоне:название, сумма, версия, метаданныефото. ID изfeed;пикселифото не проверены. Новые154доставки пока не подтверждены; старые IDнепереотправлялись. Восемь iPhone/Pixelкорзин153 завершены без ошибок запроса, дата13:39–13:42UTC явно сохранена. Это не полный26/104прогон154.
+0.154: применена сервером. Пять настоящих153доставок120154–120158 сверены с TelegramнаПК в фоне:название, сумма, версия, метаданныефото. ID изfeed;пикселифото не проверены. Новые154доставки пока не подтверждены; старые IDнепереотправлялись. Восемь iPhone/Pixelкорзин153 завершены без ошибок запроса, дата13:39–13:42UTC явно сохранена. Это не полный26/104прогон154.
 
 HTMLосновной/APIрезерв. Последнийсерверный153прогонPARTIAL:частьblocked/site_error,очередьнепуста. ОценкаинтервалаPixel31,5минприpriority18;порядокпользователянеменялся. <=15миндлявсехинеисчерпывающаябраузернаяприёмкаостаётсянезавершённой. Обычный QA-поиск мыши завершён; результаты в MOUSE_SCAN_154.json. Не запускать повтор по старому guard-файлу.
 
@@ -38,3 +40,13 @@ HTMLосновной/APIрезерв. Последнийсерверный153п�
 | Sofort+ | 74.19 | 🟣 Дорого |
 | Auktion | None | ❌ Не найдено подходящих · Отсев кандидатов (8): нет Superlight 2 ×8 |
 | Auktion+ | None | ❌ Не найдено подходящих · Отсев кандидатов (2): нет Superlight 2 ×2 |
+
+Sourcecommits: {"bot": "3c81bed6aff06a0a3be32572937944cfda0e11d7", "bot-cloud": "4cb2a57be0731c6ca70ec172abbccfc0e16e8ab5", "android-cloud": "6fda10386a5154bdd66a96107b2eca8ed22c145f"}.
+
+На эмуляторе визуально подтверждены3миниатюры отсеянных карточек. В обычном отчёте диапазон От25€ уменьшил8→6;сбросвернул8. Все50строк/столбцыпоисков и ключи после проверки побайтно/попольно сохранены;лимит45€неизменён. Снимокrejected-thumbnails154.png, REJECTED_UI_154.json.
+
+Новый повтор iPhone/Pixel на154: 2/2 завершено; активные guard-файлыreview154/*-with-api-started.json не дублировать.
+
+iPhone 17 Pro Max: [{"label": "Sofort", "price": 906.19, "verdict": "🟢 Подходит по фильтрам", "url": "https://www.ebay.de/itm/840048433110?_skw=iphone+17+pro+max&hash=itemc396c9d7d6:g:500AAeSwB1tq2hi8", "title": "Apple iPhone 17 Pro Max 256 GB Silber mit OVP Batterie 93 % Ohne Simlock", "rejectedCount": 57}, {"label": "Sofort+", "price": 928.18, "verdict": "🟣 Дорого", "url": "https://www.ebay.de/itm/198738964473?_skw=iphone+17+pro+max&hash=item2e45c3eff9:g:hcgAAeSwJYBq2zAm", "title": "Verkaufe iPhone 17 Pro Max 256 GB", "rejectedCount": 62}, {"label": "Auktion", "price": 267.19, "verdict": "🟡 Ожидает времени аукциона · 9д 2ч · 4 ставки", "url": "https://www.ebay.de/itm/407297495387", "title": "Apple iPhone 17 Pro Max 512GB Blau A3526 ohne Simlock iOS MFYU4ZD/A", "rejectedCount": 7}, {"label": "Auktion+", "price": 904.79, "verdict": "🟢 Auktion+ · 6д 2ч · 0 ставок", "url": "https://www.ebay.de/itm/820266951018", "title": "Apple iPhone 17 Pro Max 256 GB Blau", "rejectedCount": 3}]
+
+Pixel 9 Pro Xl: [{"label": "Sofort", "price": 439.99, "verdict": "🟣 Дорого", "url": "https://www.ebay.de/itm/137856724627?_skw=google+pixel+9+pro+xl&hash=item2018e6ae93:g:ebkAAeSwla9q1fK9", "title": "Google Pixel 9 Pro XL 5G Dual-SIM 256 GB weiß Smartphone Handy Android", "rejectedCount": 62}, {"label": "Sofort+", "price": 431.19, "verdict": "🟣 Дорого", "url": "https://www.ebay.de/itm/227562767914?_skw=google+pixel+9+pro+xl&hash=item34fbcc462a:g:iWIAAeSwVptqy9e9", "title": "Google Pixel 9 Pro XL 128GB 16GB 5G Obsidian Schwarz", "rejectedCount": 4}, {"label": "Auktion", "price": 108.19, "verdict": "🟡 Ожидает времени аукциона · 9д · 9 ставок", "url": "https://www.ebay.de/itm/237137966995", "title": "Google Pixel 9 Pro XL 256 GB Porcelain Weiß ohne Simlock", "rejectedCount": 17}, {"label": "Auktion+", "price": 456.19, "verdict": "🟣 Дорого", "url": "https://www.ebay.de/itm/128152486631", "title": "Google Pixel 9 Pro XL 256GB 16GB 6,8\" Android 5G ohne Simlock Weiß", "rejectedCount": 2}]
