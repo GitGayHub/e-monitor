@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 44  # Sold iPhone audit: ProMax spacing, model RAM, battery-health bundles, generated chip text, off-platform contact.
+HISTORY_VERSION = 45  # Complete handset USB-C features and explicit seller processor evidence against stale catalogue chips.
 _DB_LOCK = threading.Lock()
 
 

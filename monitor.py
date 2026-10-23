@@ -1822,6 +1822,8 @@ def _phone_model_aspect_matches(value, query):
 def _phone_chipset_matches(value, query):
     pro = re.search(r"\biphone\s*(15|16|17)\s*pro\b", _normalize(query))
     if pro:
+        if re.search(r"\b(?:snapdragon|qualcomm|exynos|dimensity|mediatek|helio|unisoc|kirin|tensor)\b", _normalize(value)):
+            return False
         # Apple specifications: support.apple.com/en-us/111828, /121032,
         # apple.com/am/iphone-17-pro/specs/ (checked2026-10-07).
         expected = {'15':'17','16':'18','17':'19'}[pro.group(1)]
@@ -1836,6 +1838,27 @@ def _phone_chipset_matches(value, query):
         return False
     chip = re.search(r"\bsnapdragon\s*(\d+)(?:\s*(elite|gen\s*\d+))?\b", value)
     return not chip or (chip.group(1) == '8' and chip.group(2) in (None, 'elite'))
+
+
+def _phone_own_processor_overrides_catalogue(value, description, query):
+    """A matching own Model + Processor field can resolve stale Apple catalogue chips."""
+    q = _normalize(query)
+    generation = re.search(r"\biphone\s*(15|16|17)\s*pro\b", q)
+    if not generation or not re.fullmatch(r"(?:apple\s+)?a\d{1,2}(?:\s*(?:pro|bionic))?(?:\s+chip(?:satz|set)?)?", _normalize(value)):
+        return False
+    own = _normalize(_clean_description(description))
+    models = re.finditer(r"\b(?:modell|model)\s*:\s*([^.!?]{1,100})", own)
+    if not any(_matches_phone_query_model(m.group(1), q) for m in models):
+        return False
+    expected_ram = '12' if generation.group(1) == '17' else '8'
+    ram = re.finditer(r"\b(\d+)\s*gb\s*(?:ram|arbeitsspeicher)\b|\b(?:ram|arbeitsspeicher)\s*:\s*(\d+)\s*gb\b", own)
+    if any((m.group(1) or m.group(2)) != expected_ram for m in ram):
+        return False
+    for chip in re.finditer(r"\b(?:prozessor|processor|chipsatz|chipset|cpu)\s*:\s*((?:apple\s+)?a\d{1,2}\s*pro)\b", own):
+        before = own[max(0, chip.start()-45):chip.start()]
+        if not re.search(r"\b(?:kein\w*|nicht|not|no|alt\w*|previous|vorgaenger|vergleich|comparison)\s*$", before) and _phone_chipset_matches(chip.group(1), q):
+            return True
+    return False
 
 
 def _samsung_phone_code_matches(value, query):
@@ -2410,6 +2433,10 @@ def _is_phone_accessory_title(title_norm):
     # model-led handset with storage is being sold. Never remove actual defects
     # or parts elsewhere in the title; seller details remain mandatory.
     if _title_leads_with_phone_model(title_norm) and _has_phone_storage(title_norm):
+        # 840048433110: USB-C is the complete handset's connector. Real cable,
+        # charger/port parts and compatibility-only titles retain their words.
+        if not re.search(r"\b(?:fuer|for|compatible|fits|nur|only|ersatz\w*|replacement|spare)\b", title_norm):
+            title_norm = re.sub(r"\busb[-\s]*c\b", " ", title_norm)
         # 257794983463 sells a complete handset; Slate Design is its form factor.
         # Keep separate case/screen/repair terms and require own seller contents.
         title_norm = re.sub(r"\b(?:slate|candy\s*bar|bar)\s+(?:design|style|stil)\s+(?:smartphone|handy|phone)\b", "smartphone", title_norm)
@@ -6935,7 +6962,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
                 return False
             if name.replace(' ','') in ('modellnummer','modelnumber','modellnr','modelno','numeromodello') and value and not _phone_model_number_matches(value, query):
                 return False
-            if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query):
+            if name.replace(' ','') in ('prozessor','processor','chipsatz','chipsatzmodell','chipset','chipsetmodel','cpu') and not _phone_chipset_matches(value,query) and not _phone_own_processor_overrides_catalogue(value, details.get('description') or '', query):
                 return False
             if name in ("ram", "arbeitsspeicher", "memory") and re.search(r"\bs24\s*ultra\b|\bs25\s*edge\b", query):
                 if not _phone_ram_matches(value):
