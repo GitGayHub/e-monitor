@@ -63,12 +63,16 @@ def init_db():
             """)
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS api_calls_log (
-                    called_at TEXT NOT NULL
+                    called_at TEXT NOT NULL,
+                    key_id TEXT NOT NULL DEFAULT ''
                 )
             """)
             conn.execute(
                 "CREATE INDEX IF NOT EXISTS idx_api_calls_log_time ON api_calls_log(called_at)"
             )
+            api_cols = {r[1] for r in conn.execute("PRAGMA table_info(api_calls_log)")}
+            if "key_id" not in api_cols:
+                conn.execute("ALTER TABLE api_calls_log ADD COLUMN key_id TEXT NOT NULL DEFAULT ''")
             columns = {r[1] for r in conn.execute("PRAGMA table_info(price_snapshots)")}
             for name, definition in (("median_auction", "REAL"),
                                      ("history_version", "INTEGER NOT NULL DEFAULT 0"),
@@ -252,26 +256,52 @@ def record_search_run(search_id, market):
             )
 
 
-def record_api_call():
+def record_api_call(key_id=""):
     init_db()
     now = datetime.now()
     now_iso = now.isoformat()
     cutoff = (now - timedelta(hours=24)).isoformat()
     with _DB_LOCK:
         with _connect() as conn:
-            conn.execute("INSERT INTO api_calls_log (called_at) VALUES (?)", (now_iso,))
+            conn.execute(
+                "INSERT INTO api_calls_log (called_at, key_id) VALUES (?, ?)",
+                (now_iso, str(key_id or "")),
+            )
             conn.execute("DELETE FROM api_calls_log WHERE called_at < ?", (cutoff,))
 
 
-def get_api_calls_count_24h():
+def get_api_calls_count_24h(key_id=None, include_untagged=False):
     init_db()
     cutoff = (datetime.now() - timedelta(hours=24)).isoformat()
     with _DB_LOCK:
         with _connect() as conn:
-            row = conn.execute(
-                "SELECT COUNT(*) FROM api_calls_log WHERE called_at >= ?",
-                (cutoff,)
-            ).fetchone()
+            if key_id is None:
+                row = conn.execute(
+                    "SELECT COUNT(*) FROM api_calls_log WHERE called_at >= ?",
+                    (cutoff,)
+                ).fetchone()
+            elif include_untagged:
+                row = conn.execute(
+                    "SELECT COUNT(*) FROM api_calls_log WHERE called_at >= ? AND (key_id = ? OR key_id = '')",
+                    (cutoff, str(key_id)),
+                ).fetchone()
+            else:
+                row = conn.execute(
+                    "SELECT COUNT(*) FROM api_calls_log WHERE called_at >= ? AND key_id = ?",
+                    (cutoff, str(key_id)),
+                ).fetchone()
             return row[0] if row else 0
+
+
+def get_api_calls_by_key_24h():
+    init_db()
+    cutoff = (datetime.now() - timedelta(hours=24)).isoformat()
+    with _DB_LOCK:
+        with _connect() as conn:
+            rows = conn.execute(
+                "SELECT key_id, COUNT(*) AS cnt FROM api_calls_log WHERE called_at >= ? GROUP BY key_id",
+                (cutoff,),
+            ).fetchall()
+            return {str(r["key_id"] or ""): int(r["cnt"]) for r in rows}
 
 

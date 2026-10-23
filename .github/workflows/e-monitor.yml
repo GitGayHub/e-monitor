@@ -94,6 +94,11 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
           EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          EBAY_CLIENT_ID_2: ${{ secrets.EBAY_CLIENT_ID_2 }}
+          EBAY_CLIENT_SECRET_2: ${{ secrets.EBAY_CLIENT_SECRET_2 }}
+          EBAY_CLIENT_ID_3: ${{ secrets.EBAY_CLIENT_ID_3 }}
+          EBAY_CLIENT_SECRET_3: ${{ secrets.EBAY_CLIENT_SECRET_3 }}
+          EBAY_API_KEYS: ${{ secrets.EBAY_API_KEYS }}
           EBAY_MARKETPLACE_ID: EBAY_DE
           EMOBILE_CONFIG: "1"
           # HTML is primary; Browse API is a bounded reserve respecting quota.
