@@ -12,6 +12,25 @@
   },
   "mode": "normal",
   "sourcePublished": true,
-  "productionAppliedConfirmed": false,
-  "telegram147Confirmed": false
+  "productionAppliedConfirmed": true,
+  "telegram147Confirmed": false,
+  "confirmationMethod": "Inferred from a successful post-publication pass, the workflow requiring git pull --ff-only before each monitor process, ancestry and unchanged source blobs in the published checkpoint; not inferred from the unchanged filter stamp alone.",
+  "checkpointCommit": "e0d25dfe3335e3eb918537034a01b4a1b818fa14",
+  "postDeploymentSourceBlobsMatch": {
+    "monitor.py": true,
+    "ebay_access.py": true,
+    "mobile/app_version.json": true,
+    ".github/workflows/e-monitor.yml": true
+  },
+  "postDeploymentPass": {
+    "startedAt": "2026-10-23T01:50:19+00:00",
+    "finishedAt": "2026-10-23T01:56:26+00:00",
+    "searchesAttempted": 29,
+    "searchesSucceeded": 14,
+    "candidatesReceived": 2088,
+    "descriptionsVerified": 36,
+    "notificationsConfirmed": 0
+  },
+  "checkedAtUtc": "2026-10-23T02:00:05.328639+00:00",
+  "realMultiKeyApiFailoverVerified": false
 }
