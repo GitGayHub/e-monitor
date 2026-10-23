@@ -9,6 +9,25 @@ import test_verified_history as history_fixtures
 
 
 class MonitorPassBudgetTests(unittest.TestCase):
+    def test_priority_is_reconsidered_after_slow_search_without_repeating_a_product(self):
+        searches=[dict(copy.deepcopy(self.search),id=k,priority=rank,notify=False)
+                  for k,rank in [('first',1),('second',2),('third',3)]]
+        self.config.raw={'mobile_managed':True};self.config.get_searches=lambda:searches;self.config.save=Mock()
+        self.access.save({'html_attempts':{'first|EBAY_DE':995,'second|EBAY_DE':970,'third|EBAY_DE':950}})
+        fetched=[]
+        parent=MonitorPassBudget(180,clock=lambda:self.clock[0]);token=MonitorPassBudget.current.set(parent)
+        def fetch(search,**kwargs):
+            fetched.append(search['id']);self.clock[0]+=20
+            return [],None
+        try:
+            with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_is_statistics_mode',return_value=False),patch.object(monitor,'initialize_api_budget_and_queue'),patch.object(monitor,'fetch_ebay_ex',side_effect=fetch),patch.object(monitor,'save_seen_ids'),patch('mobile.feed_writer.flush_pending'),patch('ebay_access.time.time',side_effect=lambda:1000+self.clock[0]):
+                asyncio.run(monitor._process_searches_in_pass(None,once=True))
+            self.assertEqual(['second','first','third'],fetched)
+            self.assertEqual(3,len(set(fetched)))
+            self.assertEqual([1,2,3],[s['priority'] for s in searches])
+            self.assertEqual(0,price_history.get_api_calls_count_24h())
+        finally:MonitorPassBudget.current.reset(token)
+
     def test_queue_audit_distinguishes_unknown_clock_wait_and_ready_without_seller_text(self):
         self.search['filters']['listing_type']='auction'
         self.config.get_item_hashes=lambda:set()

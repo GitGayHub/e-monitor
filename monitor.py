@@ -2014,6 +2014,19 @@ def _phone_implicit_bundle_confirmed(title, description):
     if (_title_leads_with_phone_model(first) and _has_phone_storage(first)
             and not any(_has_accessory_term(first, word) for word in PHONE_HARD_PART_WORDS + PHONE_HARD_ACCESSORY_WORDS)):
         return True
+    # 840047691008: S Pen in a complete Samsung Ultra hardware heading is a
+    # handset feature. A bare model + pen remains ambiguous; require own RAM
+    # and camera declarations and retain every other accessory/part guard.
+    pen = re.search(r"\bs[ -]?pen\b", first)
+    without_pen = re.sub(r"\bs[ -]?pen\b", " ", first)
+    if (pen and re.match(r"^(?:samsung\s+)?(?:galaxy\s+)?s\d{2}\s+ultra\b", first)
+            and _has_phone_storage(first)
+            and re.search(r"\b\d{1,2}\s*gb\s*ram\b", first)
+            and re.search(r"\b\d{2,3}\s*mp\b", first)
+            and not re.search(r"\b(?:fuer|for|compatible|fits|nur|only|ersatz\w*|replacement|spare)\b", first)
+            and not re.search(r"\b(?:ohne|kein\w*|without|no)\s*$", first[:pen.start()])
+            and not any(_has_accessory_term(without_pen, word) for word in PHONE_HARD_PART_WORDS + PHONE_HARD_ACCESSORY_WORDS)):
+        return True
     phone = r"(?:smartphone|handy|telefon|phone|(?:apple\s+)?iphone(?:\s*\d{1,2})?|(?:samsung\s+)?(?:galaxy\s+)?s\d{2}|(?:google\s+)?pixel\s+\d|(?:zte\s+)?nubia\s+z\d{2}s?|(?:(?:zte|nubia)\s+)?red\s*magic\s*\d{1,2}s?|(?:oneplus|xiaomi)\s*\d{1,2})"
     # A later condition sentence may explicitly describe the offered handset;
     # it need not start the body with "I sell" (800799315029, Stylus feature).
@@ -10769,18 +10782,31 @@ async def _process_searches_in_pass(bot, once=False):
 
         total_new = 0
         blocked_searches = []  # Searches that failed due to block/rate_limit/cooldown
-        normal_queue = browse_access.normal_queue(searches, EBAY_MARKETPLACE_ID)
+        # Reconsider elapsed waiting after each network/description slice.
+        # A fixed snapshot can leave a high priority product at the back for
+        # the whole pass even after it has become the most overdue search.
+        # Weights use the full catalogue; each enabled ID still runs at most
+        # once per pass, including pacing failures and empty successful pages.
+        remaining_search_ids = {s['id'] for s in searches if s.get('enabled', True)}
         def report_yield():
             message = "Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
             if message not in _runtime_pending:
                 _runtime_pending.append(message)
             logger.info(message)
 
-        for index, search in enumerate(normal_queue):
+        while remaining_search_ids:
             if MonitorPassBudget.exhausted(reserve=30):
                 report_yield()
                 break
-            browse_access.start_normal_search(search.get('id'), normal_queue[(index + 1) % len(normal_queue)].get('id'), EBAY_MARKETPLACE_ID)
+            full_queue = browse_access.normal_queue(searches, EBAY_MARKETPLACE_ID)
+            normal_queue = [s for s in full_queue if s['id'] in remaining_search_ids]
+            if not normal_queue:
+                break
+            search = normal_queue[0]
+            remaining_search_ids.remove(search['id'])
+            next_search = normal_queue[1] if len(normal_queue) > 1 else full_queue[(full_queue.index(search) + 1) % len(full_queue)]
+            browse_access.start_normal_search(search.get('id'), next_search.get('id'), EBAY_MARKETPLACE_ID)
+            logger.info("Normal search dispatch id=%s priority=%s remaining=%d", search['id'], search.get('priority', 0), len(remaining_search_ids))
             # Same filters as statistics, but discover new stock before old cheap bids.
             # Always fetch/filter (feed + seen + stats). Telegram only if notify=true.
             fetch_search = _normal_discovery_search(search)
