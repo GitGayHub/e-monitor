@@ -9199,6 +9199,20 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
             tier[id(row)], ready_from[id(row)] = _live_validation_tier(row, search, ready[id(row)], facts.get(str(row['item_id'])), now)
         # Stable sort keeps the persisted rotation inside every tier.
         candidates.sort(key=lambda row: tier[id(row)])
+        # 840048433110 was already card-ready, but eight new clock-less auctions
+        # consumed both description slots before its next retry. When no fresh
+        # ready lot exists, give ONE slot to the oldest ready retry and leave the
+        # other slot for unknown clocks. Never bypass fresh lots or validation.
+        if (max_candidates is not None and max_candidates >= 2
+                and not any(tier[id(row)] == 0 for row in candidates)
+                and any(tier[id(row)] == 1 for row in candidates)):
+            retries = [(index, row) for index, row in enumerate(candidates)
+                       if tier[id(row)] == 2 and ready[id(row)]]
+            if retries:
+                index, row = min(retries, key=lambda pair: facts.get(str(pair[1]['item_id']), {}).get('checked_at', 0))
+                candidates.insert(0, candidates.pop(index))
+                logger.info("Live validation ready retry search=%s item=%s before_unknown_clock=true",
+                            queue_id, row['item_id'])
         if resumable:
             updates = {}
             for row in candidates:
