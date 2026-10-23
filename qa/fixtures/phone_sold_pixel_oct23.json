@@ -1,0 +1,178 @@
+{
+  "source": "Manually read sold920029271156 and128103661042; minimal synthetic context controls, no full seller body.",
+  "cases": [
+    {
+      "id": "joined_0",
+      "kind": "listing",
+      "title": "Google Pixel 9Pro XL Silber, gebraucht 2 Jahre alt",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "joined_1",
+      "kind": "listing",
+      "title": "Google Pixel9ProXL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "joined_2",
+      "kind": "listing",
+      "title": "Pixel9Pro XL 256GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "joined_3",
+      "kind": "listing",
+      "title": "Google Pixel 9proxl 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "joined_4",
+      "kind": "listing",
+      "title": "Pixel 9 Pro XL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": true
+    },
+    {
+      "id": "different_0",
+      "kind": "listing",
+      "title": "Google Pixel 8Pro XL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "different_1",
+      "kind": "listing",
+      "title": "Google Pixel 9aPro XL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "different_2",
+      "kind": "listing",
+      "title": "Pixel 9Pro 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "different_3",
+      "kind": "listing",
+      "title": "Google Pixel 9 XL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "different_4",
+      "kind": "listing",
+      "title": "Pixel 10Pro XL 128GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "different_5",
+      "kind": "listing",
+      "title": "Pixel 9 Fold 256GB",
+      "query": "pixel 9 pro xl",
+      "expected": false
+    },
+    {
+      "id": "128103661042_referential_repair",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 512GB",
+      "query": "pixel 9 pro xl",
+      "description": "Ich verkaufe mein Google Pixel 9 Pro XL. Das Display hatte ein Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht. Daher ist das Display nagelneu.",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "referential_english",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 512GB",
+      "query": "pixel 9 pro xl",
+      "description": "I sell my Google Pixel 9 Pro XL. The screen had a factory defect, it was replaced in September under warranty by Google. The display is now new.",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "referential_german_other_panel",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 512GB",
+      "query": "pixel 9 pro xl",
+      "description": "Ich verkaufe mein Google Pixel 9 Pro XL. Der Bildschirm hatte einen Herstellungsfehler, dieser wurde im September auf Garantieleistung von Google ersetzt.",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "whole_protected_phone",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 512GB",
+      "query": "pixel 9 pro xl",
+      "description": "Ich verkaufe mein Google Pixel 9 Pro XL. Es funktioniert einwandfrei. Panzerglas und Hülle sind dabei.",
+      "aspects": [],
+      "expected": true
+    },
+    {
+      "id": "new_factory_panel",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 512GB",
+      "query": "pixel 9 pro xl",
+      "description": "Ich verkaufe mein Google Pixel 9 Pro XL. Neues Gerät, Display ab Werk verbaut. Nie repariert.",
+      "aspects": [],
+      "expected": true
+    },
+    {
+      "id": "spare_protector_exchanged",
+      "kind": "details",
+      "title": "Google Pixel 9 Pro XL 512GB",
+      "query": "pixel 9 pro xl",
+      "description": "Ich verkaufe mein Google Pixel 9 Pro XL. Das Panzerglas hatte einen Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht. Das Display ist unbeschädigt.",
+      "aspects": [],
+      "expected": true
+    },
+    {
+      "id": "negative_referential",
+      "kind": "repair",
+      "description": "Das Display hatte einen Werksfehler, dieses wurde im September nicht auf Garantieleistung von Google getauscht.",
+      "expected": false
+    },
+    {
+      "id": "conditional_referential",
+      "kind": "repair",
+      "description": "Falls das Display hatte einen Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht.",
+      "expected": false
+    },
+    {
+      "id": "previous_device_referential",
+      "kind": "repair",
+      "description": "Mein vorheriges Handy: Das Display hatte einen Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht.",
+      "expected": false
+    },
+    {
+      "id": "protector_before_display",
+      "kind": "repair",
+      "description": "Das Panzerglas auf dem Display hatte einen Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht.",
+      "expected": false
+    },
+    {
+      "id": "current_device_after_previous",
+      "kind": "repair",
+      "description": "Mein vorheriges Handy ist verkauft. Das Display hatte einen Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht.",
+      "expected": true
+    },
+    {
+      "id": "factory_fault_really_repaired",
+      "kind": "repair",
+      "description": "Ab Werk: Das Display hatte einen Werksfehler, dieses wurde im September auf Garantieleistung von Google getauscht.",
+      "expected": true
+    },
+    {
+      "id": "english_referential_denied",
+      "kind": "repair",
+      "description": "The screen had a factory defect, it was never replaced under warranty by Google.",
+      "expected": false
+    }
+  ]
+}

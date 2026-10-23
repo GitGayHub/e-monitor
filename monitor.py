@@ -1594,6 +1594,7 @@ def _exclude_word_hits(title_norm, word):
 
 
 def _is_phone_device_title(title_norm):
+    title_norm = _phone_model_spacing(title_norm)
     if any(_has_term(title_norm, w) for w in PHONE_DEVICE_HINTS):
         return True
     if re.search(r"\bnubia\s+(?:z\d+[a-z]?|focus|red\s*magic)\b.*\bultra\b", title_norm):
@@ -1787,6 +1788,9 @@ _IPHONE_PRO_MAX_CODES = {
 def _phone_model_spacing(text):
     # 267813864215: "iphone 17 ProMax" is the same model as "17 Pro Max".
     text = re.sub(r"\b(iphone\s*\d{1,2})\s*promax\b", r"\1 pro max", text)
+    # 920029271156: a joined modifier is not part of the generation number.
+    text = re.sub(r"\bpixel\s*(\d+[a-z]?)(?=pro(?:\s*xl)?\b|xl\b|fold\b)", r"pixel \1 ", text)
+    text = re.sub(r"\bpixel\s*(\d+[a-z]?)\s*pro\s*xl\b", r"pixel \1 pro xl", text)
     # 267813623560: the seller reverses both existing Pixel modifiers.
     text = re.sub(r"\bpixel\s*(\d+[a-z]?)\s*xl\s*pro\b", r"pixel \1 pro xl", text)
     return re.sub(r"\bs\s+(\d{2})\b", r"s\1", text)
@@ -6328,6 +6332,17 @@ def _phone_repair_label(description):
     factory = r"\b(?:werksseitig|ab\s+werk|factory[- ](?:fitted|installed)|from\s+the\s+factory)\b"
     def before_clause(at,limit):
         return re.split(r"[.!?]",text[max(0,at-limit):at])[-1]
+    # 128103661042: the next clause refers back to the faulty screen as 'dieses'.
+    referential = (rf"\b{panel}\b\s+(?:hatte[n]?|had)\s+(?:(?:ein\w*|a|an|the)\s+)?"
+                   rf"(?:werksfehler|herstellungsfehler|factory\s+(?:defect|fault))\b\s*[,;]\s*"
+                   rf"(?:dieses|dieser|es|it)\s+{past}\b[^.!?;]{{0,100}}\b(?:getauscht|ausgetauscht|ersetzt|replaced)\b")
+    for m in re.finditer(referential, text):
+        before = before_clause(m.start(), 90)
+        if (not re.search(r"\b(?:nicht|nie|kein\w*|not|never|no|can|could|will|would|may|might|kann|koennen|soll)\b", m.group())
+                and not re.search(previous, before)
+                and not re.search(r"\b(?:falls|wenn|if|beispiel|example|hypothetisch)\b", before)
+                and not re.search(r"\b(?:panzerglas|schutzglas|schutzfolie|protector|ersatzdisplay|spare\s+display)\b[^.!?;]{0,50}$", before)):
+            return "замена дисплея в описании"
     for pattern in patterns:
         for m in re.finditer(pattern,text):
             before=before_clause(m.start(),80)
