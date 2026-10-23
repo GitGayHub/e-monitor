@@ -152,7 +152,10 @@ class BrowseAccess:
                 delay = 900
         with self.lock:
             value = self.state()
-            if value.get("remaining", 1) <= 0:
+            if value.get("remaining", 1) <= 0 and (
+                not key_id or not value.get("legacy_primary_key_id") or
+                str(key_id) == value["legacy_primary_key_id"]
+            ):
                 delay = max(delay, value.get("reset", now) - now)
             if key_id:
                 pauses = {k: v for k, v in value.get("key_pauses", {}).items() if v > now}
@@ -165,11 +168,15 @@ class BrowseAccess:
     def is_key_paused(self, key_id=None, value=None, now=None):
         value = value if value is not None else self.state()
         now = time.time() if now is None else now
-        if now < value.get("pause_until", 0):
+        # Single-key runners stored quota/pause without a credential ID. Bind
+        # that state to the original primary key when more keys are added.
+        legacy_primary = value.get("legacy_primary_key_id")
+        legacy_applies = not key_id or not legacy_primary or str(key_id) == legacy_primary
+        if legacy_applies and now < value.get("pause_until", 0):
             return True
         if key_id and now < value.get("key_pauses", {}).get(str(key_id), 0):
             return True
-        if not key_id and now < value.get("reset", 0) and value.get("remaining", 1) <= 0:
+        if legacy_applies and now < value.get("reset", 0) and value.get("remaining", 1) <= 0:
             return True
         return False
 
@@ -179,6 +186,9 @@ class BrowseAccess:
             return None
         with self.lock:
             value = self.state()
+            if len(keys) > 1 and not value.get("legacy_primary_key_id"):
+                value["legacy_primary_key_id"] = str(keys[0].get("key_id") or "")
+                self.save(value)
             now = time.time()
             available = [k for k in keys if not self.is_key_paused(k.get("key_id"), value=value, now=now)]
             if not available:
@@ -197,7 +207,7 @@ class BrowseAccess:
             def key_score(idx):
                 k = available[idx]
                 kid = str(k.get("key_id") or "")
-                used = counts.get(kid, 0) + (untagged if kid == primary_id and len(keys) == 1 else 0)
+                used = counts.get(kid, 0) + (untagged if kid == primary_id else 0)
                 rr_order = (idx - start_idx) % len(available)
                 return (used, rr_order)
 
@@ -221,7 +231,10 @@ class BrowseAccess:
             wait = 0.5 - (time.monotonic() - self.last_request)
             if wait > 0:
                 time.sleep(wait)
-            if now < value.get("reset", 0):
+            if now < value.get("reset", 0) and (
+                not key_id or not value.get("legacy_primary_key_id") or
+                str(key_id) == value["legacy_primary_key_id"]
+            ):
                 value["remaining"] = max(0, value.get("remaining", 1) - 1)
                 self.save(value)
             price_history.record_api_call(key_id=key_id)  # count attempts per key, including errors/details
@@ -233,6 +246,8 @@ class BrowseAccess:
         value = self.state()
         now = time.time()
         if keys:
+            if len(keys) > 1 and not value.get("legacy_primary_key_id"):
+                value = {**value, "legacy_primary_key_id": str(keys[0].get("key_id") or "")}
             return all(self.is_key_paused(k.get("key_id"), value=value, now=now) for k in keys)
         return now < value.get("pause_until", 0) or (
             now < value.get("reset", 0) and value.get("remaining", 1) <= 0
