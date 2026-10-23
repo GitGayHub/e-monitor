@@ -99,7 +99,7 @@ class LiveValidationFairnessTests(unittest.TestCase):
         # 17 hours later the saved page clock is inside 24h: priority again,
         # although it was described before and its card still has no clock.
         tier,_=monitor._live_validation_tier(early,self.search,False,facts['target'],self.now[0]+17*3600)
-        self.assertEqual(1,tier)
+        self.assertEqual(0,tier)  # A known due page clock precedes unknown clocks.
 
     def test_repeated_incomplete_ready_lot_retries_after_fresh_ready_lots(self):
         self.access=BrowseAccess()
@@ -172,6 +172,81 @@ class LiveValidationFairnessTests(unittest.TestCase):
             self.assertEqual(1,sum(i.startswith('u') for i in calls))
             rounds.append(calls[0])
         self.assertEqual({'r0','r1'},set(rounds))
+
+    def test_unchecked_api_clock_survives_later_clockless_html_and_runner_restart(self):
+        # 307235909958 had an API end clock at10:09, but HTML at10:17
+        # lost it and left the now-due lot behind23 unknown-clock auctions.
+        self.access=BrowseAccess()
+        end=int(self.now[0])+900+25*3600
+        target=dict(self.lot('target','1d 1h'),source='api',
+                    item_end_date=datetime.fromtimestamp(end,timezone.utc).isoformat())
+        blockers=[self.lot(f'b{n}','20h') for n in range(6)]
+        self.run_pass(blockers+[target],lambda i:None)
+        facts=self.access.normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID)
+        self.assertAlmostEqual(end,facts['target']['ends'])
+        self.assertNotIn('checked_at',facts['target'])
+        self.now[0]+=2*3600
+        clockless=self.lot('target','')
+        unknown=[self.lot(f'u{n}','') for n in range(25)]
+        calls=[];deliver=AsyncMock()
+        self.run_pass(unknown+[clockless],lambda i:calls.append(i),access=BrowseAccess(),deliver=deliver)
+        self.assertEqual('target',calls[0])
+        deliver.assert_not_awaited()  # A saved clock never substitutes for own details.
+        self.assertEqual('',clockless['time_left'])
+
+    def test_saved_serp_clock_keeps_future_auction_out_of_unknown_clock_front(self):
+        self.access=BrowseAccess()
+        end=int(self.now[0])+900+40*3600
+        target=dict(self.lot('target','1d 16h'),source='api',
+                    item_end_date=datetime.fromtimestamp(end,timezone.utc).isoformat())
+        self.run_pass([self.lot(f'b{n}','20h') for n in range(4)]+[target],lambda i:None)
+        facts=self.access.normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID)
+        self.assertEqual((3,None),monitor._live_validation_tier(self.lot('target',''),self.search,False,facts['target'],self.now[0]))
+        calls=[]
+        self.run_pass([self.lot('target','')]+[self.lot(f'u{n}','') for n in range(5)],lambda i:calls.append(i))
+        self.assertNotIn('target',calls)
+
+    def test_exact_api_end_is_preserved_through_summary_and_mixed_source_merge(self):
+        end='2026-10-24T10:09:41.000Z'
+        summary={'itemId':'v1|307235909958|0','title':self.base['title'],
+                 'buyingOptions':['AUCTION'],'currentBidPrice':{'value':'30','currency':'EUR'},'itemEndDate':end}
+        row=monitor.parse_ebay_api_results({'itemSummaries':[summary]})[0]
+        self.assertEqual(end,row.get('item_end_date'))
+        html=dict(row,source='html',time_left='');html.pop('item_end_date',None)
+        self.assertEqual(end,monitor._merge_same_item(html,row).get('item_end_date'))
+        self.assertEqual(end,monitor._merge_same_item(row,html).get('item_end_date'))
+
+    def test_known_near_window_clock_survives_pressure_from_new_unknown_cards(self):
+        self.access=BrowseAccess();now=self.now[0]
+        self.access.note_normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID,
+                                               {'target':{'ends':now+23*3600}},now)
+        self.access.note_normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID,
+                                               {f'unknown{n}':{'ready_at':now+60} for n in range(180)},now+60)
+        facts=self.access.normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID)
+        self.assertLessEqual(len(facts),160)
+        self.assertIn('target',facts)
+        self.assertEqual(0,monitor._live_validation_tier(self.lot('target',''),self.search,False,facts['target'],now+60)[0])
+
+    def test_fresh_api_clock_can_move_a_previously_due_auction_back_to_waiting(self):
+        self.access=BrowseAccess();now=self.now[0]
+        self.access.note_normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID,
+                                               {'target':{'ends':now+23*3600}},now)
+        end=int(now)+3*86400
+        row=dict(self.lot('target','3d'),source='api',item_end_date=datetime.fromtimestamp(end,timezone.utc).isoformat())
+        calls=[];deliver=AsyncMock()
+        self.run_pass([row]+[self.lot(f'u{n}','') for n in range(4)],lambda i:calls.append(i),deliver=deliver)
+        facts=self.access.normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID)
+        self.assertEqual(end,facts['target']['ends'])
+        self.assertNotIn('target',calls)
+        deliver.assert_not_awaited()
+
+    def test_malformed_or_timezone_free_card_end_does_not_become_a_saved_clock(self):
+        self.access=BrowseAccess()
+        rows=[dict(self.lot(f'target{n}','2d'),source='api',item_end_date=value)
+              for n,value in enumerate([None,True,'not a date','2026-10-24T10:09:41'])]
+        self.run_pass([self.lot(f'b{n}','20h') for n in range(4)]+rows,lambda i:None)
+        facts=self.access.normal_candidate_facts('qa',self.context(),monitor.EBAY_MARKETPLACE_ID)
+        for row in rows:self.assertNotIn('ends',facts.get(row['item_id'],{}))
 
     def context(self):
         return f"{monitor._read_logic_version_timestamp()}:{monitor._history_filter_signature(self.search)}:{monitor._search_limit_price(self.search)}"
