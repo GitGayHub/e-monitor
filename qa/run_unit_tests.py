@@ -80,6 +80,7 @@ def main():
         modules.append("test_phone_spacing")
         modules.append("test_sold_iphone_oct23")
         modules.append("test_search_priority")
+        modules.append("test_browser_bootstrap")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
