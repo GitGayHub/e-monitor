@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "recordedAtUtc": "2026-10-23T17:27:59.955796+00:00",
+  "versionName": "0.153",
+  "versionCode": 153,
+  "logicVersion": 1792762139,
+  "historyVersion": 47,
+  "sourceHeads": {
+    "bot": "acb9c38f6e9e98126f5d870839556cd49c18c1ed",
+    "android": "ac4ba9e46daad5ddaf0cd3714fb7741a27907dd3"
+  },
+  "python": {
+    "command": "python qa/run_unit_tests.py",
+    "tests": 548,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 130.202
+  },
+  "cloudSyncTests": 9,
+  "phoneAdbTests": 4,
+  "jvm": {
+    "tests": 455,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "passed": 454,
+    "suites": 102,
+    "skippedCase": "SoldListingReplayTest.privateSoldListingsMatchManualVerdicts",
+    "skipReason": "Private sold-listing capture batch from PC is unavailable in Cloud"
+  },
+  "gradle": {
+    "tasks": [
+      "testDebugUnitTest",
+      "assembleDebug",
+      "assembleDebugAndroidTest"
+    ],
+    "result": "BUILD SUCCESSFUL",
+    "elapsed": "8m14s",
+    "jdk": "OpenJDK21.0.2",
+    "sdk": 36,
+    "coldBuild": true
+  },
+  "pairedFreshHttpRelevance": {
+    "cases": 3,
+    "pythonDisagreements": 0,
+    "kotlinDisagreements": 0,
+    "sameInputSha256": "97094ba5b528de83b618084245275d7501987e53465da9e854a27c79bb54b015",
+    "historical99Replayed": false,
+    "rawHtmlKotlinParserReplayed": false
+  },
+  "artifacts": {
+    "debugApk": {
+      "sha256": "9fd435ac26c9316fb5c54f9fdb4a2decb3a1532e8dbc676bc5270e77abc9bf98",
+      "bytes": 70200753,
+      "cloudDebugSignature": true,
+      "compatiblePhysicalUpdateProven": false
+    },
+    "testApk": {
+      "sha256": "730c8592fe4f8bace2b2357ca3cf299151873469db1910289d47d708c66dfa73",
+      "bytes": 2673231,
+      "cloudDebugSignature": true,
+      "compatiblePhysicalUpdateProven": false
+    }
+  },
+  "warnings": [
+    "Existing D8 warning: API36 unsupported by this compiler; assemble tasks succeeded."
+  ],
+  "nativeTestsRun": 0,
+  "physicalPhoneUsed": false,
+  "telegramDesktopGuiConfirmed": false,
+  "priorityEightBasketsAccepted": false,
+  "acceptanceComplete": false,
+  "productionChanged": false,
+  "codeChanged": false
+}
