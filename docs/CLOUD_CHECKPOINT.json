@@ -1,38 +1,71 @@
 {
   "schema": 1,
-  "preparedAtUtc": "2026-10-23T19:01:26.929935+00:00",
+  "preparedAtUtc": "2026-10-23T19:07:38.145723+00:00",
   "purpose": "User-requested Cloud continuation; PC may be off; return later through safe cloud_sync integration",
   "entrypoint": "docs/CLOUD_CONTINUE_NOW.md",
   "branch": "codex/cloud-work",
   "sourceAndroid": "5772104fd9724aa255fca64aa3162320f05e55db",
   "sourceBot": "bfb72376793397cfb2b4a591fb6823031c23d694",
   "cloudCodeHeads": {
-    "bot": "d1a222dbf841b8647e009d428017b57f7212968a",
-    "android": "bdb55f8374ea65a2accfd40da7c438bab3ad683b"
+    "bot": "bfb72376793397cfb2b4a591fb6823031c23d694",
+    "android": "5772104fd9724aa255fca64aa3162320f05e55db"
   },
   "apk": {
-    "apkVersion": "0.136",
-    "versionCode": 136,
-    "apkSha256": "9b67186f941f65d4ed6f8416f896a87ae3cf1f6df0ae77a756f3c1ad965fe752",
+    "schema": 1,
+    "versionName": "0.155",
+    "versionCode": 155,
+    "logicVersion": 1792781006,
+    "historyVersion": 49,
+    "pythonTests": 551,
+    "jvmTests": 457,
+    "jvmSuites": 102,
+    "jvmFailures": 0,
+    "jvmErrors": 0,
+    "jvmSkipped": 0,
+    "assembleDebug": true,
+    "assembleDebugAndroidTest": true,
+    "sharedApiShippingControls": 15,
+    "newNativeTests": 1,
+    "nativeSavedCases": 16,
+    "sameRealApiRejectedPythonAndAndroid": true,
+    "emulatorInstalledVersion": 155,
+    "all50SearchRowsPreserved": true,
+    "encryptedCredentialsPreserved": true,
+    "physicalPhoneUsed": false,
+    "sourcePublished": true,
+    "sourceCommits": {
+      "bot": "4af4be7dc31da1621acb3bd196e6a5a876858fa8",
+      "bot-cloud": "bfb72376793397cfb2b4a591fb6823031c23d694",
+      "android-cloud": "5772104fd9724aa255fca64aa3162320f05e55db"
+    },
+    "productionApplied": true,
+    "telegram155Confirmed": false,
+    "priority155ProductsFinished": 2,
+    "acceptanceComplete": false,
+    "priority155BasketsFinished": 8,
+    "priority155RequestErrors": 0,
+    "apkVersion": "0.155",
+    "apkSha256": "107539bf53e4914167f27caa2b5c855ffd35f14b7eff77f1e72497421728da12",
     "installResult": "Success",
-    "androidTests": 417,
-    "pythonTests": 490,
-    "physicalNativeTests": 11,
-    "physicalRepairScreenVerified": false,
-    "logicVersion": 1792591986,
-    "historyVersion": 39,
-    "settingsPreservedExactly": true,
-    "currentSettingsRevision": "ce6d8944-34df-441a-8cd5-483e0b5a9542",
+    "androidTests": 457,
+    "currentSettingsRevision": "f92be8e8-8345-4d11-9078-4bffa9fa17df",
     "sourcePolicy": "html_first_api_fallback",
-    "acceptanceComplete": false
+    "physicalVersionInThisStageNotVerified": true
   },
   "realDelivery": {
-    "apk": "0.135",
-    "messageId": 120121,
-    "itemId": "327409314879",
+    "apk": "0.153",
+    "messageIds": [
+      120154,
+      120155,
+      120156,
+      120157,
+      120158
+    ],
     "clientReadOnlyVerified": true,
-    "detailsToTelegramSeconds": 1.561,
-    "under15MinutesProven": false
+    "imagePixelsVisuallyVerified": false,
+    "version155Confirmed": false,
+    "under15MinutesProven": false,
+    "evidence": "docs/qa/pc-20261023/TELEGRAM_CONFIRMED_153.json"
   },
   "manualReview": {
     "s24FullOwn": 40,
@@ -584,5 +617,35 @@
     "acceptanceComplete": false,
     "priority155BasketsFinished": 8,
     "priority155RequestErrors": 0
+  },
+  "previousTopLevelBefore155": {
+    "cloudCodeHeads": {
+      "bot": "d1a222dbf841b8647e009d428017b57f7212968a",
+      "android": "bdb55f8374ea65a2accfd40da7c438bab3ad683b"
+    },
+    "apk": {
+      "apkVersion": "0.136",
+      "versionCode": 136,
+      "apkSha256": "9b67186f941f65d4ed6f8416f896a87ae3cf1f6df0ae77a756f3c1ad965fe752",
+      "installResult": "Success",
+      "androidTests": 417,
+      "pythonTests": 490,
+      "physicalNativeTests": 11,
+      "physicalRepairScreenVerified": false,
+      "logicVersion": 1792591986,
+      "historyVersion": 39,
+      "settingsPreservedExactly": true,
+      "currentSettingsRevision": "ce6d8944-34df-441a-8cd5-483e0b5a9542",
+      "sourcePolicy": "html_first_api_fallback",
+      "acceptanceComplete": false
+    },
+    "realDelivery": {
+      "apk": "0.135",
+      "messageId": 120121,
+      "itemId": "327409314879",
+      "clientReadOnlyVerified": true,
+      "detailsToTelegramSeconds": 1.561,
+      "under15MinutesProven": false
+    }
   }
 }
