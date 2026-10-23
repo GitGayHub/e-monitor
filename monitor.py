@@ -6943,12 +6943,29 @@ def _headphone_details_match(query, title, description, aspects):
     return True
 
 
+def _image_only_title(title):
+    text = _normalize(title or '')
+    return bool(re.search(r"\b(?:photo|picture|image)\s+only\b|\bnur\s+(?:(?:ein|das)\s+)?(?:bild|foto|ausdruck)\b", text)
+                or (re.search(r"\(\s*image\s*\)", text) and re.search(r"\bread\s+(?:the\s+)?description\b", text)))
+
+
+def _image_only_body(raw):
+    text = _normalize(_clean_description(raw or ''))
+    image = r"(?:(?:digital|printed)\s+)?(?:image|photo(?:graph)?|picture)|(?:a\s+)?piece\s+of\s+paper"
+    return bool(re.search(r"\byou\s+are\s+(?:buying|purchasing|bidding\s+on)\s+(?:(?:only|just)\s+)?(?:a[n]?\s+)?(?:"+image+r")\b", text)
+                or re.search(r"\bthis\s+(?:listing|auction|offer)\s+is\s+for\s+(?:(?:only|just)\s+)?(?:a[n]?\s+)?(?:"+image+r")\b", text)
+                or re.search(r"\bsie\s+(?:(?:kaufen|erwerben)\s+(?:hier\s+)?(?:(?:nur|lediglich)\s+)?|erhalten\s+(?:hier\s+)?(?:nur|lediglich)\s+)(?:ein(?:en)?\s+|das\s+)?(?:bild|foto|ausdruck|blatt\s+papier)\b", text)
+                or re.search(r"\b(?:hier\s+)?wird\s+nur\s+(?:ein(?:en)?\s+|das\s+)?(?:bild|foto|ausdruck)\b[^.!?]{0,50}\bverkauft\b", text))
+
+
 def _details_match_contract(item, search, details, *, require_description=True, now=None):
     """Common checks; only isolated legacy metadata fixtures may omit description."""
     if require_description and (not details or not _clean_description(details.get("description") or "").strip()):
         return False
     if not details:
         return _intent_details_match(search, item, details)
+    if _image_only_title(details.get('title') or item.get('title')) or _image_only_body(details.get('description')):
+        return False
     if require_description:
         seconds_left = (_parse_end_date_to_seconds(details.get("itemEndDate")) if now is None
                         else _parse_end_date_to_seconds(details.get("itemEndDate"), now_dt=now))
@@ -7150,6 +7167,8 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
     for item in items:
         # Bucket selection must never change the cached SERP used by another search.
         item = copy.deepcopy(item)
+        if _image_only_title(item.get('title')):
+            continue
         # Multi-variation bait (price "from X") is never a real deal for either mode.
         if item.get("is_multivariation"):
             continue
