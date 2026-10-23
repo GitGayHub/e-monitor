@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "preparedAtUtc": "2026-10-23T20:01:32.860244+00:00",
+  "preparedAtUtc": "2026-10-23T23:29:14.118622+00:00",
   "purpose": "User-requested Cloud continuation; PC may be off; return later through safe cloud_sync integration",
   "entrypoint": "docs/CLOUD_CONTINUE_NOW.md",
   "branch": "codex/cloud-work",
@@ -12,9 +12,9 @@
   },
   "apk": {
     "schema": 1,
-    "versionName": "0.157",
-    "versionCode": 157,
-    "logicVersion": 1792785378
+    "versionName": "0.158",
+    "versionCode": 158,
+    "logicVersion": 1792797651
   },
   "realDelivery": {
     "apk": "0.155",
@@ -627,7 +627,7 @@
     "evidence": "docs/qa/pc-20261023/TELEGRAM_CONFIRMED_153.json"
   },
   "acceptanceComplete": false,
-  "nextReport": "docs/qa/pc-20261023/REVIEW_157.md",
+  "nextReport": "docs/qa/pc-20261024/REVIEW_158.md",
   "production156Applied": false,
   "lastStage156": {
     "version": {
@@ -657,5 +657,30 @@
     "watchRejected": true,
     "sourceCommits": {},
     "physicalPhoneUsed": false
+  },
+  "production158Applied": false,
+  "lastStage158": {
+    "version": {
+      "schema": 1,
+      "versionName": "0.158",
+      "versionCode": 158,
+      "logicVersion": 1792797651
+    },
+    "pythonTests": 553,
+    "jvmTests": 459,
+    "jvmSkipped": 0,
+    "nativeCases": 25,
+    "photoOfferRejected": true,
+    "sourceCommits": {
+      "bot": "048e21fbac7543595d38e925f5067d4b36524223"
+    },
+    "physicalPhoneUsed": false
+  },
+  "badDelivery157": {
+    "messageId": 120162,
+    "itemId": "920065395787",
+    "price": 209.49,
+    "reason": "Paper print instead of console",
+    "report": "docs/qa/pc-20261024/REVIEW_158.md"
   }
 }

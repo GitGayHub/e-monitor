@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 50  # A smartwatch with a phone advert cannot enter phone medians.
+HISTORY_VERSION = 51  # Printed device images cannot enter physical-device medians.
 _DB_LOCK = threading.Lock()
 
 
