@@ -9426,6 +9426,17 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         # The projection checks each hybrid side independently; legacy medians
         # cannot influence outlier exclusion in this new cohort.
         observations = [side for row in verified for side in _history_price_sides(row, search)]
+        # New subscription history accepts individual fully checked quotes even
+        # when another candidate's description is unavailable. It never promotes
+        # the incomplete search population to a successful market snapshot.
+        try:
+            from mobile import median_reports
+            selected, _ = median_reports.preferences(config.get_settings())
+            if search['id'] in selected and context_unchanged:
+                median_reports.record_verified(search['id'], signature, observations)
+        except Exception as median_error:
+            logger.error('Median observation unavailable: %s', type(median_error).__name__)
+            _runtime_errors.append('Медиана: не удалось сохранить проверенные цены')
         purchases, offers, bids = _market_history_prices(observations, search["id"], signature)
         record_snapshot(search["id"], purchases, offers, bids, len(verified),
                         verified=True, validation_complete=population_complete and unavailable == 0 and missing_prices == 0 and deferred == 0 and description_deferred == 0 and context_unchanged, filter_signature=signature)
@@ -11377,6 +11388,15 @@ async def run_once():
     try:
         await process_pending_callbacks(bot)
         await process_searches(bot, once=True)
+        if not _is_statistics_mode(config):
+            try:
+                from mobile import median_reports
+                result = await median_reports.send_due(bot, TELEGRAM_CHAT_ID, config.raw, _history_filter_signature)
+                if result:
+                    logger.info('Median report confirmed: message=%s listings=%s', result['messageId'], result['count'])
+            except Exception as report_error:
+                logger.error('Median report deferred/held: %s', type(report_error).__name__)
+                _runtime_errors.append('Медиана: отчёт не подтверждён; неопределённая доставка автоматически не повторяется')
         save_seen_ids()
     except Exception as error:
         _finish_runtime_pass()

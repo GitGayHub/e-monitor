@@ -91,6 +91,11 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         "apiKeys": api_keys if api_keys is not None else previous.get("apiKeys", []),
     }
     try:
+        from mobile.median_reports import delivery_status
+        status['medianReports']=delivery_status(path.with_name('median_delivery.json'))
+    except (OSError, ValueError, KeyError, TypeError):
+        status['medianReports']={'confirmed':0,'held':0,'lastConfirmedAt':None,'error':'Не удалось прочитать состояние отчётов медианы'}
+    try:
         feed=json.loads(path.with_name('feed.json').read_text(encoding='utf8'))
         latest=max(feed.get('items',[]),key=lambda r:r.get('telegramConfirmedTime') or r.get('spottedTime') or 0,default={})
         confirmed=latest.get('telegramConfirmedTime') or latest.get('spottedTime')
