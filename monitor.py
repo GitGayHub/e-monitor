@@ -3546,7 +3546,7 @@ COUNTRY_INFO = {
 COUNTRY_ALIASES = {
     "deutschland": "DE", "germany": "DE", "germania": "DE",
     "grossbritannien": "GB", "great britain": "GB", "united kingdom": "GB",
-    "vereinigtes konigreich": "GB", "vereinigtes koenigreich": "GB",
+    "vereinigtes konigreich": "GB", "vereinigtes koenigreich": "GB", "schottland": "GB",
     "england": "GB", "scotland": "GB", "wales": "GB",
     "usa": "US", "united states": "US", "china": "CN", "japan": "JP",
     "frankreich": "FR", "france": "FR", "italien": "IT", "italy": "IT",
@@ -6621,53 +6621,14 @@ def _trust_emoji(trust):
 
 def _is_eu(location_text):
     code = _country_code_from_location(location_text)
-    if code and code in COUNTRY_INFO:
-        return COUNTRY_INFO[code][2]
-    loc = location_text.lower().strip()
-    # Known non-EU countries that must NOT match
-    non_eu = ("großbritannien", "grossbritannien", "great britain", "united kingdom",
-              "uk", "england", "schottland", "scotland", "wales",
-              "schweiz", "switzerland", "norwegen", "norway",
-              "usa", "united states", "china", "japan", "türkei", "turkey",
-              "indien", "india", "australien", "australia", "kanada", "canada")
-    if any(n in loc for n in non_eu):
-        return False
-    # Only match full words or long country names
-    for country in EU_COUNTRIES:
-        if len(country) <= 2:
-            # Short codes: must be exact word boundary to avoid false matches (like "ie" in "grossbritannien")
-            if re.search(rf"\b{re.escape(country)}\b", loc):
-                return True
-        else:
-            if country in loc:
-                return True
-    return False
+    # Do not reinterpret lower-case city/preposition tokens ("Val de Loire")
+    # as a country after the shared country parser has left it unknown.
+    return bool(code and COUNTRY_INFO[code][2])
 
 
 def _is_clearly_non_germany_location(location_text):
     code = _country_code_from_location(location_text)
-    if code:
-        return code != "DE"
-    loc = _normalize(location_text)
-    non_de_terms = (
-        "grossbritannien", "great britain", "united kingdom", "uk", "england",
-        "schottland", "scotland", "wales", "oesterreich", "osterreich", "austria",
-        "frankreich", "france", "italien", "italy", "spanien", "spain",
-        "niederlande", "netherlands", "belgien", "belgium", "polen", "poland",
-        "portugal", "griechenland", "greece", "tschechien", "czech",
-        "schweden", "sweden", "daenemark", "danemark", "denmark",
-        "finnland", "finland", "ungarn", "hungary", "rumaenien", "rumanien",
-        "romania", "bulgarien", "bulgaria", "kroatien", "croatia",
-        "slowakei", "slovakia", "slowenien", "slovenia", "litauen", "lithuania",
-        "lettland", "latvia", "estland", "estonia", "luxemburg", "luxembourg",
-        "malta", "zypern", "cyprus", "schweiz", "switzerland", "norwegen",
-        "norway", "usa", "united states", "china", "japan", "tuerkei",
-        "turkey", "indien", "india", "australien", "australia", "kanada",
-        "canada",
-    )
-    if any(term in loc for term in non_de_terms):
-        return True
-    return re.search(r"\b(?:at|fr|it|es|nl|be|pl|pt|gr|cz|se|dk|fi|hu|ro|bg|hr|sk|si|lt|lv|ee|lu|ch|no|gb|uk|us|cn|jp|tr|in|au|ca)\b", loc) is not None
+    return code is not None and code != "DE"
 
 
 def _is_germany_location(location_text):
