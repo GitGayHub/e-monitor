@@ -19,6 +19,7 @@ import argparse
 import asyncio
 import json
 import selected_variant
+import mouse_offer
 import html
 import hashlib
 import subprocess
@@ -1589,6 +1590,8 @@ def _exclude_word_hits(title_norm, word):
     if w in (
         "stick", "sticks", "hall", "hallpi", "halleffekt", "effect", "effekt", "tmr"
     ) and _is_hall_or_tmr_stick_upgrade(title_norm):
+        return False
+    if mouse_offer.bundled_stop_word(title_norm, w, w in mouse_offer.BUNDLED and _is_device_bundle(title_norm, "mice")):
         return False
     return _has_term(title_norm, word)
 
@@ -6976,6 +6979,10 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             return False
     query = _normalize(_intent_query(search))
     category = _effective_category(search.get("filters", {}).get("category", "all"), query)
+    if category == 'mice' or mouse_offer.requested_model(query) is not None:
+        own_mouse_text = _normalize(_clean_description(details.get('description') or ''))
+        if mouse_offer.packaging_only(own_mouse_text) or mouse_offer.own_model_conflict(own_mouse_text, query):
+            return False
     if category == 'laptops' and _laptop_battery_unverified(details.get('description') or ''):
         return False
     if _description_off_platform_contact(details.get('description') or ''):

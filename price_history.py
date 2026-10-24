@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 51  # Printed device images cannot enter physical-device medians.
+HISTORY_VERSION = 52  # Require matching seller-declared mouse model as well as title.
 _DB_LOCK = threading.Lock()
 
 
