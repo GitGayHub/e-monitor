@@ -1,20 +1,20 @@
 {
   "schema": 1,
-  "preparedAtUtc": "2026-10-23T23:37:06.650396+00:00",
+  "preparedAtUtc": "2026-10-24T02:45:07.760126+00:00",
   "purpose": "User-requested Cloud continuation; PC may be off; return later through safe cloud_sync integration",
   "entrypoint": "docs/CLOUD_CONTINUE_NOW.md",
   "branch": "codex/cloud-work",
-  "sourceAndroid": "94c4d791c9d7e0ea1734f0aad80b8704c0b3241f",
-  "sourceBot": "ee1c9882d9fa348e4255d10692fae79d39c77eb5",
+  "sourceAndroid": "d559536713911c18da3a694875bb9af2820054fd",
+  "sourceBot": "7dbfc29eca9e2dab6b2302b81751eddfc0065352",
   "cloudCodeHeads": {
-    "bot": "ee1c9882d9fa348e4255d10692fae79d39c77eb5",
-    "android": "94c4d791c9d7e0ea1734f0aad80b8704c0b3241f"
+    "bot": "7dbfc29eca9e2dab6b2302b81751eddfc0065352",
+    "android": "d559536713911c18da3a694875bb9af2820054fd"
   },
   "apk": {
     "schema": 1,
-    "versionName": "0.158",
-    "versionCode": 158,
-    "logicVersion": 1792797651
+    "versionName": "0.159",
+    "versionCode": 159,
+    "logicVersion": 1792808864
   },
   "realDelivery": {
     "apk": "0.155",
@@ -627,7 +627,7 @@
     "evidence": "docs/qa/pc-20261023/TELEGRAM_CONFIRMED_153.json"
   },
   "acceptanceComplete": false,
-  "nextReport": "docs/qa/pc-20261024/REVIEW_158.md",
+  "nextReport": "docs/qa/pc-20261024/REVIEW_159.md",
   "production156Applied": false,
   "lastStage156": {
     "version": {
@@ -684,5 +684,29 @@
     "price": 209.49,
     "reason": "Paper print instead of console",
     "report": "docs/qa/pc-20261024/REVIEW_158.md"
+  },
+  "production159Applied": true,
+  "lastStage159": {
+    "tests": {
+      "pythonTests": 573,
+      "pythonSeconds": 145.396,
+      "jvmUniqueChecks": 463,
+      "jvmSuites": 104,
+      "jvmInitialSkip": 1,
+      "skippedPrivateReplayResolved": true,
+      "savedSellerCases": 104,
+      "disagreements": 0,
+      "nativeTests": 2,
+      "nativeSavedSellerCases": 25,
+      "physicalPhone": false
+    },
+    "sourceCommits": {
+      "bot": "858aa88d9e601c6c984317264f00e230a8044f72",
+      "bot-cloud": "7dbfc29eca9e2dab6b2302b81751eddfc0065352",
+      "android-cloud": "d559536713911c18da3a694875bb9af2820054fd"
+    },
+    "medianEnabledInProduction": false,
+    "syntheticTelegramMessage": 120163,
+    "physicalPhoneUsed": false
   }
 }
