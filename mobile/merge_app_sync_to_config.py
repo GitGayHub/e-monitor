@@ -104,6 +104,17 @@ def main():
         config["settings"]["non_eu_tax_rate"] = rate if rate is not None else 0.19
     if "warn_non_eu" in app_config:
         config["settings"]["warn_non_eu"] = as_bool(app_config.get("warn_non_eu"), True)
+    # Optional schema-1 settings: older clients omitting them preserve subscriptions.
+    from mobile.median_reports import preferences
+    median_settings = dict(config["settings"])
+    for key in ("median_products", "median_interval_days"):
+        if key in app_config:
+            median_settings[key] = app_config[key]
+    selected, days = preferences(median_settings)
+    if "median_products" in app_config:
+        config["settings"]["median_products"] = sorted(selected & {s['id'] for s in searches})
+    if "median_interval_days" in app_config:
+        config["settings"]["median_interval_days"] = days
 
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(dir=CONFIG_PATH.parent, prefix=".config-", suffix=".tmp")

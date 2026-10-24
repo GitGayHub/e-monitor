@@ -96,6 +96,8 @@ def main():
             "user_country": str(settings.get("user_country") or "de"),
             "non_eu_tax_rate": str(settings.get("non_eu_tax_rate", 0.19)),
             "warn_non_eu": str(settings.get("warn_non_eu", True)).lower(),
+            "median_products": json.dumps(settings.get("median_products", []), ensure_ascii=False, separators=(",", ":")),
+            "median_interval_days": str(settings.get("median_interval_days", 7)),
         },
         "searches": searches,
         "items": [],

@@ -28,6 +28,7 @@ def main():
         original_connect = socket.socket.connect
         modules.append("test_battery_swelling_manual")
         modules.append("test_telegram_text_outbox")
+        modules.append("test_median_reports")
         modules.append("test_import_estimates")
         modules.append("test_live_bid_history")
         modules.append("test_verified_history")
