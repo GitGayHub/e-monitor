@@ -81,6 +81,16 @@ class SharedParityTests(unittest.TestCase):
             # it never substitutes for production's mandatory own description.
             self.assertIn(reviewed["corrected"]["reason"], ("notify", "wait_24h", "over_limit"))
             expected = reviewed["corrected"]
+        mice = json.loads((Path(__file__).parent / "qa/fixtures/mouse_offer_expectation_corrections.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(mice), 14)
+        if case["name"] in mice:
+            reviewed = mice[case["name"]]
+            self.assertEqual(expected, reviewed["original"])
+            self.assertEqual(case["item"]["title"], reviewed["title"])
+            self.assertFalse(case.get("details"))
+            self.assertEqual(reviewed["scope"], "title_and_price_snapshot_only")
+            self.assertEqual(reviewed["corrected"], dict(expected, accepted=False, reason="over_limit"))
+            expected = reviewed["corrected"]
         return expected
 
     def test_captured_browse_api_cases(self):

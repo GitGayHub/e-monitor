@@ -1,0 +1,254 @@
+[
+  {
+    "id": "whole-ovp",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus Ovp",
+    "description": "Voll funktionsfähige Maus mit Originalverpackung.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "whole-skates",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus + Jade Skates",
+    "description": "Verkaufe meine Superstrike, technisch einwandfrei. Zusätzliche Gleitfüße sind dabei.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": [
+      "skates"
+    ]
+  },
+  {
+    "id": "wrong-body",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus",
+    "description": "Superstrike. Zum Verkauf steht meine Logitech G PRO X Superlight 2. Lieferumfang: Logitech G PRO X Superlight 2.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": []
+  },
+  {
+    "id": "wrong-reverse",
+    "title": "Logitech G PRO X Superlight 2 Gaming-Maus",
+    "description": "Zum Verkauf steht meine Logitech Superstrike.",
+    "query": "logitech superlight 2",
+    "expected": false,
+    "excludeWords": []
+  },
+  {
+    "id": "comparison",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus",
+    "description": "Ich verkaufe meine Superstrike. Besser als die alte Superlight 2.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": []
+  },
+  {
+    "id": "compatible-feet",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus + Skates",
+    "description": "Verkaufe meine Superstrike. Die zusätzlichen Skates passen auch für Superlight 2.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": [
+      "skates"
+    ]
+  },
+  {
+    "id": "feet-only",
+    "title": "Jade Skates für Logitech G Pro X2 Superstrike",
+    "description": "Nur Ersatzfüße, keine Maus.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "skates"
+    ]
+  },
+  {
+    "id": "box-only-title",
+    "title": "Nur OVP Logitech Superstrike",
+    "description": "Nur Verpackung, Maus nicht enthalten.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "box-only-body",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus OVP",
+    "description": "Es wird nur die Originalverpackung angeboten. Die Maus ist nicht enthalten.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "without-device",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus OVP",
+    "description": "Originalverpackung ohne Maus.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "without-box",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus ohne OVP",
+    "description": "Voll funktionsfähige Maus, ohne Verpackung.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "not-just-box",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus OVP",
+    "description": "Nicht nur die Box: Die vollständige Maus ist dabei und funktioniert.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "fault-kept",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus OVP Defekt",
+    "description": "Maus funktioniert nicht.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "other-stop-kept",
+    "title": "Logitech G Pro X2 SUPERSTRIKE Gaming-Maus weiß OVP",
+    "description": "Funktionierende Maus.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "weiss",
+      "ovp"
+    ]
+  },
+  {
+    "id": "receiver-only",
+    "title": "Receiver für Logitech Superstrike + Skates",
+    "description": "Dongle und Gleitfüße, ohne Maus.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": [
+      "receiver",
+      "skates"
+    ]
+  },
+  {
+    "id": "wrong-seller-model",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus",
+    "description": "Modell: Logitech G Pro 2 Lightspeed. Funktioniert.",
+    "query": "logitech superstrike",
+    "expected": false,
+    "excludeWords": []
+  },
+  {
+    "id": "negated-other",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus",
+    "description": "Ich verkaufe keine Superlight 2. Angeboten wird die Superstrike.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": []
+  },
+  {
+    "id": "no-mousepad",
+    "title": "Logitech G PRO X 2 SUPERSTRIKE Gaming-Maus OVP",
+    "description": "Funktionierende Maus ohne Mauspad.",
+    "query": "logitech superstrike",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "ovp-std",
+    "title": "Logitech G PRO X Superlight 2 Gaming-Maus OVP",
+    "description": "Die Maus ist vollständig und funktioniert.",
+    "query": "logitech Superlight 2",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "skates-std",
+    "title": "Logitech G PRO X Superlight 2 Gaming-Maus + Skates",
+    "description": "Funktioniert einwandfrei, Zubehör dabei.",
+    "query": "logitech Superlight 2",
+    "expected": true,
+    "excludeWords": [
+      "skates"
+    ]
+  },
+  {
+    "id": "ovp-dex",
+    "title": "Logitech G PRO X Superlight 2 DEX Gaming-Maus OVP",
+    "description": "Die Maus ist vollständig und funktioniert.",
+    "query": "logitech Superlight 2 DEX",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "skates-dex",
+    "title": "Logitech G PRO X Superlight 2 DEX Gaming-Maus + Skates",
+    "description": "Funktioniert einwandfrei, Zubehör dabei.",
+    "query": "logitech Superlight 2 DEX",
+    "expected": true,
+    "excludeWords": [
+      "skates"
+    ]
+  },
+  {
+    "id": "ovp-se",
+    "title": "Logitech G PRO X Superlight 2 SE Gaming-Maus OVP",
+    "description": "Die Maus ist vollständig und funktioniert.",
+    "query": "logitech Superlight 2 SE",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "skates-se",
+    "title": "Logitech G PRO X Superlight 2 SE Gaming-Maus + Skates",
+    "description": "Funktioniert einwandfrei, Zubehör dabei.",
+    "query": "logitech Superlight 2 SE",
+    "expected": true,
+    "excludeWords": [
+      "skates"
+    ]
+  },
+  {
+    "id": "ovp-c",
+    "title": "Logitech G PRO X Superlight 2c Gaming-Maus OVP",
+    "description": "Die Maus ist vollständig und funktioniert.",
+    "query": "logitech Superlight 2c",
+    "expected": true,
+    "excludeWords": [
+      "ovp"
+    ]
+  },
+  {
+    "id": "skates-c",
+    "title": "Logitech G PRO X Superlight 2c Gaming-Maus + Skates",
+    "description": "Funktioniert einwandfrei, Zubehör dabei.",
+    "query": "logitech Superlight 2c",
+    "expected": true,
+    "excludeWords": [
+      "skates"
+    ]
+  }
+]
