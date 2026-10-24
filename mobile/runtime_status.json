@@ -4,23 +4,31 @@
   "appliedAt": "2026-10-23T01:13:59+00:00",
   "logicVersion": 1792797651,
   "lastSuccessfulRun": "2026-10-16T10:08:38+00:00",
-  "updatedAt": "2026-10-24T02:07:01+00:00",
+  "updatedAt": "2026-10-24T02:13:43+00:00",
   "state": "partial",
   "error": null,
-  "pendingCount": 4,
+  "pendingCount": 12,
   "pendingChecks": [
-    "logitech_superlight_2_std_buy: search_deferred",
-    "samsung_odyssey_oled_g6_500hz_buy: search_deferred",
-    "logitech_superlight_2_dex_auc: search_deferred",
+    "iphone_17_pro_max: search_deferred",
+    "iphone_17_pro_max: очередь проверки, переход к следующему товару (96 описаний); очередь продолжится",
+    "iphone_17_pro_max: очередь проверки, переход к следующему товару (3 описаний); очередь продолжится",
+    "iphone_16_pro_max_buy: очередь проверки, переход к следующему товару (43 описаний); очередь продолжится",
+    "iphone_16_pro_max_auc: очередь проверки, переход к следующему товару (49 описаний); очередь продолжится",
+    "iphone_16_pro_max_auc: очередь проверки, переход к следующему товару (24 описаний); очередь продолжится",
+    "4060_oled_auc: очередь проверки, переход к следующему товару (18 описаний); очередь продолжится",
+    "ray_ban_meta_gen_2: search_deferred",
+    "ray_ban_meta_gen_2: очередь проверки, переход к следующему товару (49 описаний); очередь продолжится",
+    "4080_pc_buy: search_deferred",
+    "4080_pc_buy: очередь проверки, переход к следующему товару (22 описаний); очередь продолжится",
     "Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
   ],
-  "searchIssueCount": 18,
+  "searchIssueCount": 15,
   "searchIssues": [
     {
       "searchId": "iphone_17_pro_max",
       "searchName": "iphone 17 pro max",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
+      "code": "details_unavailable",
+      "message": "Не удалось полностью проверить описание или цену"
     },
     {
       "searchId": "iphone_16_pro_max_buy",
@@ -29,28 +37,28 @@
       "message": "eBay вернул страницу временной ошибки"
     },
     {
-      "searchId": "iphone_16_pro_max_auc",
+      "searchId": "iphone_16_pro_max_buy",
       "searchName": "iPhone 16 Pro Max",
-      "code": "blocked",
-      "message": "eBay ограничил доступ к выдаче"
+      "code": "details_unavailable",
+      "message": "Не удалось полностью проверить описание или цену"
     },
     {
-      "searchId": "4050_oled_auc",
-      "searchName": "4050 oled",
-      "code": "blocked",
-      "message": "eBay ограничил доступ к выдаче"
-    },
-    {
-      "searchId": "asus_vivobook_14x_oled_buy",
-      "searchName": "asus vivobook 14x oled",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
+      "searchId": "4060_oled_auc",
+      "searchName": "4060 oled",
+      "code": "details_unavailable",
+      "message": "Не удалось полностью проверить описание или цену"
     },
     {
       "searchId": "ray_ban_meta_gen_2",
       "searchName": "Ray-Ban Meta Gen 2",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
+      "code": "details_unavailable",
+      "message": "Не удалось полностью проверить описание или цену"
+    },
+    {
+      "searchId": "4080_pc_buy",
+      "searchName": "4080 (pc, rechner, computer, desktop, gaming pc)",
+      "code": "details_unavailable",
+      "message": "Не удалось полностью проверить описание или цену"
     },
     {
       "searchId": "asus_vivobook_14x_oled_auc",
@@ -59,14 +67,32 @@
       "message": "eBay вернул страницу временной ошибки"
     },
     {
-      "searchId": "logitech_superlight_2_std_auc",
-      "searchName": "logitech superlight 2",
+      "searchId": "4050_oled_auc",
+      "searchName": "4050 oled",
       "code": "site_error",
       "message": "eBay вернул страницу временной ошибки"
     },
     {
-      "searchId": "5070_ti_pc_auc",
-      "searchName": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+      "searchId": "nubia_z70_ultra_buy",
+      "searchName": "Nubia Z70 Ultra",
+      "code": "site_error",
+      "message": "eBay вернул страницу временной ошибки"
+    },
+    {
+      "searchId": "lg_ultragear_oled_480hz_auc",
+      "searchName": "lg ultragear oled 480hz",
+      "code": "site_error",
+      "message": "eBay вернул страницу временной ошибки"
+    },
+    {
+      "searchId": "logitech_superstrike_auc",
+      "searchName": "logitech superstrike",
+      "code": "blocked",
+      "message": "eBay ограничил доступ к выдаче"
+    },
+    {
+      "searchId": "nubia_z70s_ultra_auc",
+      "searchName": "Nubia Z70S Ultra",
       "code": "blocked",
       "message": "eBay ограничил доступ к выдаче"
     },
@@ -77,70 +103,34 @@
       "message": "eBay ограничил доступ к выдаче"
     },
     {
-      "searchId": "nubia_z70s_ultra_buy",
-      "searchName": "Nubia Z70S Ultra",
+      "searchId": "ps5_pro_buy",
+      "searchName": "(playstation 5 pro, ps5 pro)",
       "code": "blocked",
       "message": "eBay ограничил доступ к выдаче"
     },
     {
-      "searchId": "sony_wh_1000xm6_auc",
-      "searchName": "Sony WH-1000XM6",
+      "searchId": "lg_ultragear_oled_480hz_buy",
+      "searchName": "lg ultragear oled 480hz",
       "code": "blocked",
       "message": "eBay ограничил доступ к выдаче"
-    },
-    {
-      "searchId": "samsung_odyssey_oled_g6_500hz_auc",
-      "searchName": "samsung odyssey oled g6 500hz",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
-    },
-    {
-      "searchId": "nubia_z80_ultra_leading_auc",
-      "searchName": "Nubia Z80 Ultra Leading",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
-    },
-    {
-      "searchId": "4080_pc_auc",
-      "searchName": "4080 (pc, rechner, computer, desktop, gaming pc)",
-      "code": "blocked",
-      "message": "eBay ограничил доступ к выдаче"
-    },
-    {
-      "searchId": "nubia_z80_ultra_leading_buy",
-      "searchName": "Nubia Z80 Ultra Leading",
-      "code": "blocked",
-      "message": "eBay ограничил доступ к выдаче"
-    },
-    {
-      "searchId": "4060_oled_buy",
-      "searchName": "4060 oled",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
-    },
-    {
-      "searchId": "logitech_superlight_2_dex_buy",
-      "searchName": "logitech superlight 2 dex",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
     }
   ],
   "lastPass": {
-    "startedAt": "2026-10-24T02:00:53+00:00",
-    "finishedAt": "2026-10-24T02:07:01+00:00",
-    "searchesAttempted": 22,
-    "searchesSucceeded": 0,
-    "candidatesReceived": 0,
-    "descriptionsVerified": 0,
+    "startedAt": "2026-10-24T02:07:36+00:00",
+    "finishedAt": "2026-10-24T02:13:42+00:00",
+    "searchesAttempted": 17,
+    "searchesSucceeded": 3,
+    "candidatesReceived": 789,
+    "descriptionsVerified": 7,
     "notificationsConfirmed": 0
   },
   "searchCoverage": {
     "activeSearches": 48,
     "attemptedSearches": 48,
-    "within15Minutes": 41,
+    "within15Minutes": 35,
     "neverAttempted": 0,
-    "oldestAttemptAt": "2026-10-24T01:40:59+00:00",
-    "oldestAttemptAgeSeconds": 1561
+    "oldestAttemptAt": "2026-10-24T01:50:52+00:00",
+    "oldestAttemptAgeSeconds": 1370
   },
   "dataSource": "html",
   "sourcePolicy": "html_first",
@@ -148,65 +138,65 @@
   "activeSearches": 48,
   "configFingerprint": "bd216abff0fd9c79912a2986817ec68da31631ab0659cd8a341f9bcd5039e0f5",
   "schedule": {
-    "searchesPerMinute": 3.32,
+    "searchesPerMinute": 2.58,
     "passMinutes": 6.6,
     "priorityMaxWeight": 8.0,
     "intervalsMinutes": {
-      "pixel_9_pro_xl": 24.4,
-      "ray_ban_meta_gen_2": 6.6,
-      "samsung_galaxy_s25_edge": 29.2,
+      "pixel_9_pro_xl": 31.4,
+      "ray_ban_meta_gen_2": 8.5,
+      "samsung_galaxy_s25_edge": 37.6,
       "iphone_17_pro_max": 6.6,
-      "redmagic_11_pro_buy": 26.8,
-      "redmagic_11_pro_auc": 26.8,
-      "redmagic_11s_pro_buy": 28.0,
-      "redmagic_11s_pro_auc": 28.0,
-      "samsung_odyssey_oled_g6_500hz_buy": 30.4,
-      "samsung_odyssey_oled_g6_500hz_auc": 30.4,
-      "sony_ult_wear_buy": 33.9,
-      "sony_ult_wear_auc": 33.9,
-      "samsung_s24_ultra_buy": 32.7,
-      "samsung_s24_ultra_auc": 32.7,
-      "sony_wh_1000xm6_buy": 31.5,
-      "sony_wh_1000xm6_auc": 31.5,
-      "nubia_z80_ultra_buy": 20.9,
-      "nubia_z80_ultra_auc": 20.9,
-      "nubia_z80_ultra_leading_buy": 22.1,
-      "nubia_z80_ultra_leading_auc": 22.1,
-      "nubia_z70_ultra_buy": 18.5,
-      "nubia_z70_ultra_auc": 18.5,
-      "nubia_z70s_ultra_buy": 19.7,
-      "nubia_z70s_ultra_auc": 19.7,
-      "pixel_5_buy": 23.2,
-      "pixel_5_auc": 23.2,
-      "logitech_superstrike_buy": 17.3,
-      "logitech_superstrike_auc": 17.3,
-      "logitech_superlight_2_std_buy": 14.9,
-      "logitech_superlight_2_std_auc": 14.9,
-      "logitech_superlight_2_dex_buy": 16.1,
-      "logitech_superlight_2_dex_auc": 16.1,
-      "ps5_pro_buy": 25.6,
-      "ps5_pro_auc": 25.6,
-      "iphone_16_pro_max_buy": 6.6,
-      "iphone_16_pro_max_auc": 6.6,
-      "lg_ultragear_oled_480hz_buy": 13.7,
-      "lg_ultragear_oled_480hz_auc": 13.7,
-      "4080_pc_buy": 11.4,
-      "4080_pc_auc": 11.4,
-      "4050_oled_buy": 9.0,
-      "4050_oled_auc": 9.0,
-      "4060_oled_buy": 10.2,
-      "4060_oled_auc": 10.2,
-      "5070_ti_pc_buy": 12.6,
-      "5070_ti_pc_auc": 12.6,
-      "asus_vivobook_14x_oled_buy": 7.8,
-      "asus_vivobook_14x_oled_auc": 7.8
+      "redmagic_11_pro_buy": 34.5,
+      "redmagic_11_pro_auc": 34.5,
+      "redmagic_11s_pro_buy": 36.0,
+      "redmagic_11s_pro_auc": 36.0,
+      "samsung_odyssey_oled_g6_500hz_buy": 39.1,
+      "samsung_odyssey_oled_g6_500hz_auc": 39.1,
+      "sony_ult_wear_buy": 43.7,
+      "sony_ult_wear_auc": 43.7,
+      "samsung_s24_ultra_buy": 42.2,
+      "samsung_s24_ultra_auc": 42.2,
+      "sony_wh_1000xm6_buy": 40.6,
+      "sony_wh_1000xm6_auc": 40.6,
+      "nubia_z80_ultra_buy": 26.9,
+      "nubia_z80_ultra_auc": 26.9,
+      "nubia_z80_ultra_leading_buy": 28.4,
+      "nubia_z80_ultra_leading_auc": 28.4,
+      "nubia_z70_ultra_buy": 23.8,
+      "nubia_z70_ultra_auc": 23.8,
+      "nubia_z70s_ultra_buy": 25.3,
+      "nubia_z70s_ultra_auc": 25.3,
+      "pixel_5_buy": 29.9,
+      "pixel_5_auc": 29.9,
+      "logitech_superstrike_buy": 22.3,
+      "logitech_superstrike_auc": 22.3,
+      "logitech_superlight_2_std_buy": 19.2,
+      "logitech_superlight_2_std_auc": 19.2,
+      "logitech_superlight_2_dex_buy": 20.7,
+      "logitech_superlight_2_dex_auc": 20.7,
+      "ps5_pro_buy": 33.0,
+      "ps5_pro_auc": 33.0,
+      "iphone_16_pro_max_buy": 7.0,
+      "iphone_16_pro_max_auc": 7.0,
+      "lg_ultragear_oled_480hz_buy": 17.7,
+      "lg_ultragear_oled_480hz_auc": 17.7,
+      "4080_pc_buy": 14.6,
+      "4080_pc_auc": 14.6,
+      "4050_oled_buy": 11.6,
+      "4050_oled_auc": 11.6,
+      "4060_oled_buy": 13.1,
+      "4060_oled_auc": 13.1,
+      "5070_ti_pc_buy": 16.2,
+      "5070_ti_pc_auc": 16.2,
+      "asus_vivobook_14x_oled_buy": 10.0,
+      "asus_vivobook_14x_oled_auc": 10.0
     }
   },
   "apiKeys": [
     {
       "label": "Ключ 1",
       "clientId": "…ae16",
-      "used24h": 5369,
+      "used24h": 5352,
       "limit": 5000,
       "percent": 100,
       "paused": true
