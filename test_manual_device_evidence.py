@@ -259,6 +259,22 @@ class ManualDeviceEvidenceTests(unittest.TestCase):
             self.assertFalse(monitor._query_matches_title(monitor._normalize('Sony WF1000XM6 Kopfhörer'),query))
             self.assertFalse(monitor._query_matches_title(monitor._normalize('Sony WH1000XM5 Kopfhörer'),query))
 
+    def test_mouse_model_label_is_not_a_modification_part(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/mouse_model_label.json').read_text(encoding='utf8'))
+        for case in cases:
+            with self.subTest(item=case['id']):
+                title=monitor._normalize(case['title'])
+                # Python's category helper also checks compatibility against its
+                # query. Isolate accessory purpose from the separate generation gate.
+                blocked=monitor._is_category_blocked_title(title,'mice',case.get('purposeQuery',case['query']))
+                self.assertEqual(case['accessory'],bool(blocked))
+                search={'query':case['query'],'filters':{'category':'mice'}}
+                self.assertEqual(case['relevant'],not blocked and monitor._query_matches_title(title,case['query']) and monitor._details_match_contract({'title':case['title']},search,case))
+        for word in ('model','modell','modelle','modellnummer','models','modello'):
+            self.assertFalse(monitor._has_accessory_term(word,'mod'),word)
+        for word in ('mod','modding','weightmod'):
+            self.assertTrue(monitor._has_accessory_term(word,'mod'),word)
+
     def test_actual_monitor_category_placeholder_and_panel_conflict(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/monitor_manual_details.json').read_text(encoding='utf-8'))
         for category in ('monitors','all'):

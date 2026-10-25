@@ -2465,6 +2465,10 @@ def _has_accessory_term(title_norm, term):
             continue
         if term_norm == "kabel" and w.startswith("kabellos"):
             continue
+        # A model label (Modell/Model/Modello) is not a separately sold mod.
+        # Keep real mod/modding/weightmod parts and all other accessory terms.
+        if term_norm == "mod" and w.startswith("model"):
+            continue
         if w == term_norm:
             return True
         if len(w) > len(term_norm):
