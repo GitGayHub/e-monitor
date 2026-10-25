@@ -1382,6 +1382,12 @@ def _query_match_plan(query):
 
 def _query_matches_title(title_norm, query):
     query_norm = _normalize(query)
+    if _headphone_models(query):
+        # WH-1000XM6, WH1000XM6 and WH 1000 XM6 are the same identifier.
+        # Keep this local to model matching: stop-words and stored hashes must
+        # still see the original normalized title.
+        title_norm = _headphone_model_spacing(title_norm)
+        query = _headphone_model_spacing(query_norm)
     if _is_phone_search_query(_phone_model_spacing(query_norm)):
         title_norm = _phone_model_spacing(title_norm)
         query = _phone_model_spacing(query)
@@ -6872,6 +6878,11 @@ def _details_price_mismatch(item, details):
     return (abs(details_price - item_price) > 1.0 if item.get("auction") else details_price > item_price + 1.0), item_price, details_price
 
 
+def _headphone_model_spacing(text):
+    return re.sub(r"\b(wh|wf)[\s-]*1000[\s-]*xm[\s-]*(\d+)\b",
+                  lambda m: m.group(1) + '1000xm' + m.group(2), _normalize(text))
+
+
 def _headphone_models(text):
     pattern = r"\b(?:(wh|wf)[\s-]*1000[\s-]*)?xm(\d+)\b|\b(?:wh[\s-]*ult900n|ult\s*wear)\b"
     return [(match.group(1) or 'wh') + '1000xm' + match.group(2) if match.group(2) else 'ult900n'
@@ -6900,10 +6911,19 @@ def _headphone_details_match(query, title, description, aspects):
     title_norm = _normalize(title)
     case_bundle = _is_device_bundle(title_norm,'headphones') and re.search(r"\b(?:case|cover|hulle|huelle|schutzhulle|tasche)\b",title_norm)
     if case_bundle:
-        device = re.search(r"\b(?:kopfhoerer|headphones|headset)\b", own)
-        if not device or re.search(r"\b(?:case|cover|hulle|huelle|schutzhulle|tasche)\b", own[:device.start()]):
+        case_words = r"(?:case|cover|hulle|huelle|schutzhulle|tasche)"
+        if re.search(r"\b(?:nur|only)\s+(?:(?:the|die|das)\s+)?" + case_words + r"\b|\b" + case_words + r"\s+only\b", own):
             return False
-        if re.search(r"\b(?:headphones|headset|kopfhoerer)\s+(?:are\s+|sind\s+)?(?:not\s+included|nicht\s+enthalten)\b", own):
+        if re.search(r"\b(?:headphones|headset|kopfhoerer)\s+(?:are\s+|sind\s+)?(?:not\s+included|nicht\s+enthalten)\b|\b(?:no|ohne)\s+(?:headphones|headset|kopfhoerer)\b", own):
+            return False
+        device = re.search(r"\b(?:kopfhoerer|headphones|headset|wh[\s-]*1000[\s-]*xm\d+)\b", own)
+        if device:
+            if re.search(r"\b" + case_words + r"\b", own[:device.start()]):
+                return False
+        # An explicit device + case title can have a short condition-only own
+        # description. An ambiguous model | case title still needs evidence.
+        elif (not re.search(r"\b(?:kopfhoerer|headphones|headset)\b", title_norm)
+              or re.search(r"\b" + case_words + r"\b", own)):
             return False
     return True
 

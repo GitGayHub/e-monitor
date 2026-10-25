@@ -238,6 +238,27 @@ class ManualDeviceEvidenceTests(unittest.TestCase):
         self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6 | Original Case','Original case for Sony WH1000XM6 headphones. Headphones not included.',[]))
         self.assertFalse(monitor._headphone_details_match('sony wh1000xm6','Sony WH1000XM6 Bluetooth Headphones Case Inc','Original case for Sony WH1000XM6 headphones. Headphones not included.',[]))
 
+    def test_headphone_bundle_and_compact_model_across_formats(self):
+        cases=json.loads((Path(__file__).parent/'qa/fixtures/headphone_bundle_spacing.json').read_text(encoding='utf8'))
+        for category in ('all','headphones'):
+            for listing,offer in (('buy_now',False),('buy_now',True),('auction',False),('auction',True)):
+                search={'query':'Sony WH-1000XM6','filters':{'category':category,'location':'world','listing_type':listing,'best_offer':offer}}
+                class Settings:
+                    def get_global_banned_sellers(self):return []
+                    def get_banned_item_ids(self):return set()
+                    def get_item_hashes(self):return set()
+                    def get_settings(self):return dict(warn_non_eu=False)
+                for case in cases:
+                    with self.subTest(category=category,listing=listing,offer=offer,item=case['id']):
+                        item=dict(item_id=case['id'],title=case['title'],price=500,shipping_cost=0,currency='EUR',condition='Gebraucht',location='DE',seller_name='fixture',buy_now=listing=='buy_now',auction=listing=='auction',best_offer=offer)
+                        preliminary=bool(monitor.filter_results([item],search,Settings(),skip_seen=True,is_statistics=True))
+                        self.assertEqual(case['expected'],preliminary and monitor._details_match_contract(item,search,case))
+        for query in ('Sony WH-1000XM6','Sony WH1000XM6','Sony WH 1000 XM6','WH-1000XM6','WH1000XM6','WH 1000 XM6'):
+            for title in ('Sony WH-1000XM6 Kopfhörer','Sony WH1000XM6 Kopfhörer','Sony WH 1000 XM6 Kopfhörer'):
+                self.assertTrue(monitor._query_matches_title(monitor._normalize(title),query),(title,query))
+            self.assertFalse(monitor._query_matches_title(monitor._normalize('Sony WF1000XM6 Kopfhörer'),query))
+            self.assertFalse(monitor._query_matches_title(monitor._normalize('Sony WH1000XM5 Kopfhörer'),query))
+
     def test_actual_monitor_category_placeholder_and_panel_conflict(self):
         cases=json.loads((Path(__file__).parent/'qa/fixtures/monitor_manual_details.json').read_text(encoding='utf-8'))
         for category in ('monitors','all'):
