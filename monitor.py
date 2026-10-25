@@ -6452,6 +6452,7 @@ def _is_description_blocked(desc_html, category):
     desc_html = _strip_review_sections(desc_html)
     clean_desc = _clean_description(desc_html)
     desc_norm = _normalize(clean_desc)
+    desc_norm = mouse_offer.strip_previous_fault(desc_norm)
     if category == "phones" and _phone_repair_label(clean_desc):
         return True
     # 198304841229: clear lines describe the PC case's minimalist design,
