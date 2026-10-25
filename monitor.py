@@ -1601,6 +1601,8 @@ def _exclude_word_hits(title_norm, word):
         return False
     if mouse_offer.bundled_stop_word(title_norm, w, w in mouse_offer.BUNDLED and _is_device_bundle(title_norm, "mice")):
         return False
+    if w in ('akku','battery','batterie','kabel','cable','box') and not _has_term(mouse_offer.feature_title(title_norm),w):
+        return False
     return _has_term(title_norm, word)
 
 
@@ -2642,6 +2644,11 @@ def _is_for_accessory_title(title_norm, query_norm, category):
                 return True
 
     if query_norm:
+        if category == 'mice' and mouse_offer.device_title(before_part):
+            # Whole model-led mouse '... Gaming Maus für [PC]' also works
+            # when the seller omits Logitech or eBay truncates the final words.
+            # Subsequent category checks still reject actual parts in the title.
+            return False
         if category == "consoles":
             if _matches_console_query_model(before_part, query_norm):
                 return False
@@ -2845,6 +2852,7 @@ def _console_storage_feature_title(title_norm):
 
 
 def _mouse_feature_title(title_norm):
+    title_norm = mouse_offer.feature_title(title_norm)
     # 900005491322: the own type/body sell a whole new mouse. Scrollrad is
     # in a comma-separated feature list after Gaming-Maus, not a spare wheel.
     # Keep leading components, compatibility, replacement/repair and defects.

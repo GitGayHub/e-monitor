@@ -82,7 +82,7 @@ class SharedParityTests(unittest.TestCase):
             self.assertIn(reviewed["corrected"]["reason"], ("notify", "wait_24h", "over_limit"))
             expected = reviewed["corrected"]
         mice = json.loads((Path(__file__).parent / "qa/fixtures/mouse_offer_expectation_corrections.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(mice), 14)
+        self.assertEqual(len(mice), 22)
         if case["name"] in mice:
             reviewed = mice[case["name"]]
             self.assertEqual(expected, reviewed["original"])
