@@ -4997,7 +4997,7 @@ def _ebay_api_configured():
 def _ebay_api_paused():
     """One exhausted credential must not disable other configured credentials."""
     keys = _configured_ebay_api_keys()
-    return browse_access.is_paused(keys=keys) if len(keys) > 1 else browse_access.is_paused()
+    return browse_access.is_paused(keys=keys)
 
 
 def _ebay_api_http_error(code):
@@ -11361,7 +11361,7 @@ def _runtime_api_keys(paused=False):
         from mobile.api_usage import identity as usage_identity
         kid = k["key_id"]
         used = by_key.get(kid, 0) + (untagged if idx == 0 else 0)
-        key_paused = bool(paused) or browse_access.is_key_paused(kid, value=state, now=now)
+        key_paused = bool(paused) or browse_access.is_key_paused(kid, value=state, now=now, client_id=k['client_id'])
         measured = state.get('api_usage_snapshots', {}).get(usage_identity(k))
         row = {
             "label": k["label"],
