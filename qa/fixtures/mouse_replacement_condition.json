@@ -1,0 +1,16 @@
+[
+ {"id":"sold-manufacturer-replacement","description":"Zustand: Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte.","expected":true},
+ {"id":"sealed-replacement","description":"Neu und versiegelt, Austauschartikel vom Hersteller, weil meine vorherige Maus defekt war.","expected":true},
+ {"id":"current-defect-after","description":"Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte. Die neue Maus ist defekt.","expected":false},
+ {"id":"current-defect-same-sentence","description":"Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte, aber diese Maus ist auch defekt.","expected":false},
+ {"id":"not-new","description":"Nicht brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte.","expected":false},
+ {"id":"hypothetical","description":"Falls brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte.","expected":false},
+ {"id":"not-manufacturer-replacement","description":"Brandneu & ungeöffnet, kein direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte.","expected":false},
+ {"id":"missing-new-sealed","description":"Direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte.","expected":false},
+ {"id":"current-device","description":"Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine DEX einen Defekt hatte.","expected":false},
+ {"id":"fault-still-present","description":"Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hat.","expected":false},
+ {"id":"repair-not-replacement","description":"Brandneu & ungeöffnet, vom Hersteller repariert, da meine ursprüngliche DEX einen Defekt hatte.","expected":false},
+ {"id":"other-fault-before","description":"Der USB Port ist defekt. Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte.","expected":false},
+ {"id":"missing-mouse","description":"Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte. Nur Box ohne Maus.","expected":false},
+ {"id":"wrong-model","description":"Brandneu & ungeöffnet, direkter Austauschartikel vom Hersteller, da meine ursprüngliche DEX einen Defekt hatte. Ich verkaufe eine Logitech Superlight 2 SE.","expected":false}
+]

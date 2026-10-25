@@ -29,6 +29,7 @@ def main():
         modules.append("test_battery_swelling_manual")
         modules.append("test_mouse_catalogue_context")
         modules.append("test_mouse_feature_context")
+        modules.append("test_mouse_replacement_condition")
         modules.append("test_telegram_text_outbox")
         modules.append("test_median_reports")
         modules.append("test_import_estimates")

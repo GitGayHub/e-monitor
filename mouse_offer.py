@@ -23,6 +23,26 @@ def requested_model(query):
     return _key(match.group()) if match else None
 
 
+def strip_previous_fault(text):
+    """A sealed manufacturer replacement is not the failed previous mouse.
+
+    Remove only the explicit past-device clause. Any fault of the replacement,
+    negation, hypothetical claim or missing contents must remain visible.
+    """
+    prefix = (r"\b(?:brandneu|nagelneu|neu)\s*(?:&|und|,)\s*"
+              r"(?:ungeoeffnet|versiegelt)\s*,\s*(?:direkter\s+)?"
+              r"austauschartikel\s+vom\s+hersteller\s*,\s*")
+    old = (r"\b(?:da|weil)\s+mein(?:e|en|er|es)?\s+"
+           r"(?:urspruengliche[nrs]?|alte[nrs]?|vorherige[nrs]?)\s+"
+           r"(?:dex|maus|mouse)\s+(?:einen\s+defekt\s+hatte|defekt\s+war)\b")
+    def replace(match):
+        before = re.split(r"[.!?;\n]", text[:match.start()])[-1]
+        if re.search(r"\b(?:nicht|nie|kein\w*|falls|wenn|sofern|not|never|if)\b", before):
+            return match.group()
+        return re.sub(old, " ", match.group())
+    return re.sub(prefix + old, replace, text)
+
+
 def device_title(text):
     """A model-led title explicitly calls the offered product a mouse."""
     return bool(re.match(r'^(?:logitech\s+)?(?:g\s+)?(?:pro\s*x\s+)?'+MODEL.pattern,text)
