@@ -40,6 +40,13 @@ def main():
         proof['success']=proof.get('browseHttp')==200
     except Exception as error:
         proof.update(success=False,error='HTTP '+str(error.code) if hasattr(error,'code') else type(error).__name__)
+        if hasattr(error,'read'):
+            try:
+                body=json.loads(error.read())
+                for field in ('error','error_description'):
+                    if isinstance(body.get(field),str):
+                        proof['provider_'+field]=body[field].replace(key_id,'[client]').replace(secret,'[secret]')[:200]
+            except (ValueError,TypeError):pass
     Path('api-usage-proof.json').write_text(json.dumps(proof,indent=2)+'\n',encoding='utf8')
     print(json.dumps(proof))
     return 0 if proof.get('success') else 1
