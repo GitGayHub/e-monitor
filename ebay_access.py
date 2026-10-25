@@ -8,6 +8,7 @@ import threading
 import time
 import os
 import math
+import hashlib
 from contextvars import ContextVar
 from contextlib import contextmanager
 from datetime import datetime, timezone
@@ -103,6 +104,14 @@ class BrowseAccess:
         self.lock = threading.RLock()
         self.last_request = 0.0
         self.last_key_id = ""
+        self._key_identities = {}
+
+    def _remember_key_identities(self, keys):
+        # In-memory credential fingerprints only; never persist IDs or secrets.
+        for key in keys:
+            client_id = key.get('client_id')
+            if client_id:
+                self._key_identities[str(key.get('key_id') or '')] = hashlib.sha256(client_id.encode()).hexdigest()[:16]
 
     def state(self):
         conn = sqlite3.connect(price_history.DB_PATH)
@@ -165,9 +174,19 @@ class BrowseAccess:
                 value["pause_until"] = now + delay
             self.save(value)
 
-    def is_key_paused(self, key_id=None, value=None, now=None):
+    def is_key_paused(self, key_id=None, value=None, now=None, *, client_id=None):
         value = value if value is not None else self.state()
         now = time.time() if now is None else now
+        identity = (hashlib.sha256(client_id.encode()).hexdigest()[:16] if client_id
+                    else self._key_identities.get(str(key_id or '')))
+        measured = value.get('api_usage_snapshots', {}).get(identity)
+        if isinstance(measured, dict) and type(measured.get('remaining')) is int and measured['remaining'] == 0:
+            try:
+                reset = datetime.fromisoformat(measured['resetAt'].replace('Z', '+00:00'))
+                if reset.tzinfo is not None and now < reset.timestamp():
+                    return True
+            except (ValueError, TypeError, KeyError):
+                pass  # Malformed/stale snapshots do not create an endless pause.
         # Single-key runners stored quota/pause without a credential ID. Bind
         # that state to the original primary key when more keys are added.
         legacy_primary = value.get("legacy_primary_key_id")
@@ -185,12 +204,13 @@ class BrowseAccess:
         if not keys:
             return None
         with self.lock:
+            self._remember_key_identities(keys)
             value = self.state()
             if len(keys) > 1 and not value.get("legacy_primary_key_id"):
                 value["legacy_primary_key_id"] = str(keys[0].get("key_id") or "")
                 self.save(value)
             now = time.time()
-            available = [k for k in keys if not self.is_key_paused(k.get("key_id"), value=value, now=now)]
+            available = [k for k in keys if not self.is_key_paused(k.get("key_id"), value=value, now=now, client_id=k.get('client_id'))]
             if not available:
                 return None
             if len(available) == 1:
@@ -246,9 +266,10 @@ class BrowseAccess:
         value = self.state()
         now = time.time()
         if keys:
+            self._remember_key_identities(keys)
             if len(keys) > 1 and not value.get("legacy_primary_key_id"):
                 value = {**value, "legacy_primary_key_id": str(keys[0].get("key_id") or "")}
-            return all(self.is_key_paused(k.get("key_id"), value=value, now=now) for k in keys)
+            return all(self.is_key_paused(k.get("key_id"), value=value, now=now, client_id=k.get('client_id')) for k in keys)
         return now < value.get("pause_until", 0) or (
             now < value.get("reset", 0) and value.get("remaining", 1) <= 0
         )

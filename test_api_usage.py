@@ -77,3 +77,47 @@ class ApiUsageTest(unittest.TestCase):
             row=monitor._runtime_api_keys()[0]
         self.assertEqual('monitor_log_estimate',row['usageSource'])
         self.assertNotIn('quotaResetAt',row)
+
+    def two_key_state(self, second_remaining=4810):
+        second=dict(self.key,client_id='qa-client-two',key_id='two',label='Key 2')
+        first=usage.parse(self.payload,self.now)
+        first.update(used=5010,remaining=0)
+        second_snapshot=dict(first,used=5000-second_remaining,remaining=second_remaining)
+        self.access.save(dict(remaining=second_remaining,reset=self.now+4000,
+            legacy_primary_key_id='one',last_key_id='two',normal_next_search='preserve',
+            api_usage_snapshots={usage.identity(self.key):first,usage.identity(second):second_snapshot}))
+        return [self.key,second]
+
+    def test_exhausted_official_key_cannot_reopen_from_other_keys_legacy_counter(self):
+        keys=self.two_key_state()
+        with patch('ebay_access.time.time',return_value=self.now):
+            self.assertFalse(self.access.is_paused(keys))
+            chosen=self.access.select_key(keys)
+            self.assertEqual('two',chosen['key_id'])
+            self.assertFalse(self.access.acquire('one'))
+        self.assertEqual({},price_history.get_api_calls_by_key_24h())
+        self.assertEqual('preserve',self.access.state()['normal_next_search'])
+
+    def test_cold_runtime_marks_only_the_exhausted_official_key_paused(self):
+        keys=self.two_key_state()
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_configured_ebay_api_keys',return_value=keys),patch('ebay_access.time.time',return_value=self.now):
+            rows=monitor._runtime_api_keys()
+        self.assertEqual([True,False],[row['paused'] for row in rows])
+        self.assertEqual([0,4810],[row['remaining'] for row in rows])
+
+    def test_expired_official_window_does_not_hold_the_new_daily_window(self):
+        keys=self.two_key_state()
+        from datetime import datetime
+        reset=datetime.fromisoformat(self.access.state()['api_usage_snapshots'][usage.identity(self.key)]['resetAt']).timestamp()
+        with patch('ebay_access.time.time',return_value=reset):
+            self.assertEqual('one',self.access.select_key(keys)['key_id'])
+            self.assertTrue(self.access.acquire('one'))
+
+    def test_official_availability_never_clears_a_distinct_network_cooldown(self):
+        keys=self.two_key_state()
+        value=self.access.state();value['key_pauses']={'two':self.now+30};self.access.save(value)
+        with patch('ebay_access.time.time',return_value=self.now):
+            self.assertTrue(self.access.is_paused(keys))
+            self.assertIsNone(self.access.select_key(keys))
+        with patch('ebay_access.time.time',return_value=self.now+31):
+            self.assertEqual('two',self.access.select_key(keys)['key_id'])
