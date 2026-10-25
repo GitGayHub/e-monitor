@@ -51,6 +51,11 @@ def app_search_to_config(search):
         filters["plz_center"] = str(search.get("plzCenter"))
     if search.get("maxDistanceKm") is not None:
         filters["max_distance_km"] = int(search["maxDistanceKm"])
+    if 'auctionNotifyMinutes' in search:
+        value = search['auctionNotifyMinutes']
+        if value is not None and (isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 1440):
+            raise ValueError('auctionNotifyMinutes must be null or integer 1–1440')
+        filters['auction_notify_minutes'] = value
     res = {
         "id": search.get("id") or "",
         "query": search.get("query") or "",
@@ -85,11 +90,18 @@ def main():
     config["mobile_manifest_revision"] = str(manifest.get("updatedAt", ""))
     config["mobile_settings_revision"] = manifest.get("settingsRevision")
 
+    previous_searches = {s['id']: s for s in config.get('searches', [])}
     searches = [
         app_search_to_config(search)
         for search in manifest.get("searches", [])
         if search.get("query")
     ]
+    # An older APK omits this optional field; that must not erase a newer rule.
+    for converted, original in zip(searches, [s for s in manifest['searches'] if s.get('query')]):
+        if 'auctionNotifyMinutes' not in original:
+            old = previous_searches.get(converted['id'], {}).get('filters', {})
+            if 'auction_notify_minutes' in old:
+                converted['filters']['auction_notify_minutes'] = old['auction_notify_minutes']
     config["searches"] = searches
     config["global_banned_sellers"] = sorted(set(manifest.get("bannedSellers", [])))
     config["banned_item_ids"] = sorted(set(manifest.get("hiddenItems", [])))

@@ -53,6 +53,8 @@ def convert_search(search):
         "notify": bool(search.get("notify", True)),
         "enabled": bool(search.get("enabled", True)),
     }
+    if 'auction_notify_minutes' in filters:
+        converted['auctionNotifyMinutes'] = filters['auction_notify_minutes']
     if search.get("display_name"):
         converted["displayName"] = search["display_name"]
     if search.get("priority"):

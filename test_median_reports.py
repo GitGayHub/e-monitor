@@ -12,6 +12,16 @@ from mobile import build_app_sync as build, merge_app_sync_to_config as merge
 
 
 class MedianReportsTest(unittest.TestCase):
+    def test_app_and_telegram_share_exact_data_without_forcing_subscription(self):
+        self.seed()
+        self.config['settings']['median_products'] = []
+        self.assertEqual([], m.groups(self.config, lambda _: 'sig'))
+        data = m.app_snapshots(self.config, lambda _: 'sig', self.now)
+        expected = m.trend({'iphone': 'sig'}, self.now)
+        self.assertEqual(1, len(data))
+        for key in ('median', 'count', 'excluded', 'points'):
+            self.assertEqual(expected[key], data[0][key])
+        self.assertEqual(['iphone'], data[0]['searchIds'])
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
