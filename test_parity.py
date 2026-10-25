@@ -91,6 +91,16 @@ class SharedParityTests(unittest.TestCase):
             self.assertEqual(reviewed["scope"], "title_and_price_snapshot_only")
             self.assertEqual(reviewed["corrected"], dict(expected, accepted=False, reason="over_limit"))
             expected = reviewed["corrected"]
+        headphones=json.loads((Path(__file__).parent/'qa/fixtures/headphone_spacing_expectation_corrections.json').read_text(encoding='utf8'))
+        self.assertEqual(len(headphones),13)
+        if case['name'] in headphones:
+            reviewed=headphones[case['name']]
+            self.assertEqual(expected,reviewed['original'])
+            self.assertEqual(case['item']['title'],reviewed['title'])
+            self.assertFalse(case.get('details'))
+            self.assertEqual(reviewed['scope'],'title_and_price_snapshot_only')
+            self.assertEqual(reviewed['corrected'],dict(expected,accepted=False,reason='over_limit'))
+            expected=reviewed['corrected']
         return expected
 
     def test_captured_browse_api_cases(self):
