@@ -1,0 +1,30 @@
+name: Audit eBay API usage
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: qa-api-usage-readonly
+  cancel-in-progress: false
+jobs:
+  verify_second_key:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify second key without changing monitor state
+        env:
+          EBAY_CLIENT_ID_2: ${{ secrets.EBAY_CLIENT_ID_2 }}
+          EBAY_CLIENT_SECRET_2: ${{ secrets.EBAY_CLIENT_SECRET_2 }}
+        run: python qa/api_usage_probe.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-usage-proof
+          path: api-usage-proof.json
+          retention-days: 7
