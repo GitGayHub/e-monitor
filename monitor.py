@@ -919,7 +919,9 @@ def _mouse_part_number_models(details):
         # logitechg.com/en-gb/shop/p/pro-x-superlight-2-dex.910-007358
         # press.logicool.co.jp/ja-jp/pro-x-superlight-2-dex/
         # sistema.pauta.com.br/api2/produto/pdf/47148
-        'superlight 2 dex': {'007358', '007356', '007364', '007372', '007362', '007370', '007378'},
+        # Official German product page lists 007357/007365/007373 (black/white/pink):
+        # https://www.logitechg.com/de-de/products/gaming-mice/pro-x-superlight-2-dex.910-007357.html
+        'superlight 2 dex': {'007357', '007365', '007373', '007358', '007356', '007364', '007372', '007362', '007370', '007378'},
         # Original Logitech 2020 datasheet: media.distrelec.com/Web/Downloads/_t/ds/Logitech_ProXSuperlight_eng_tds.pdf
         'superlight 1': {'005881', '005943'},
     }
@@ -6967,7 +6969,9 @@ def _details_match_contract(item, search, details, *, require_description=True, 
     category = _effective_category(search.get("filters", {}).get("category", "all"), query)
     if category == 'mice' or mouse_offer.requested_model(query) is not None:
         own_mouse_text = _normalize(_clean_description(details.get('description') or ''))
-        if mouse_offer.packaging_only(own_mouse_text) or mouse_offer.own_model_conflict(own_mouse_text, query):
+        mouse_models = _mouse_part_number_models(details)
+        confirmed_mouse = next(iter(mouse_models)) if len(mouse_models)==1 else None
+        if mouse_offer.packaging_only(own_mouse_text) or mouse_offer.own_model_conflict(own_mouse_text, query, confirmed_mouse):
             return False
     if category == 'laptops' and _laptop_battery_unverified(details.get('description') or ''):
         return False

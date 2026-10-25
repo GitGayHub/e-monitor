@@ -26,6 +26,10 @@ def requested_model(query):
 def packaging_only(text):
     pattern=r'\b(?:nur|only|lediglich|ausschliesslich)\s+(?:(?:die|das|der|the)\s+)?(?:originalverpackung|verpackung|ovp|karton|box)\b'
     for match in re.finditer(pattern,text):
+        # Only the PACKAGING was opened/missing, not an offer of packaging only.
+        # Keep subsequent 'without mouse' and every actual device fault.
+        if re.match(r'\s+(?:(?:wurde|ist|war)\s+)?(?:geoeffnet|beschaedigt|fehlt)\b|\s+(?:(?:is|was|has\s+been)\s+)?(?:opened|damaged|missing)\b',text[match.end():]):
+            continue
         if not re.search(r'\b(?:nicht|not)\s*$',text[max(0,match.start()-12):match.start()]):
             return True
     return bool(re.search(r'\b(?:ohne|without|keine?)\s+(?:die\s+|the\s+)?(?:maus|mouse)\b|\b(?:maus|mouse)\s+(?:(?:ist|is)\s+)?(?:nicht\s+(?:enthalten|dabei)|not\s+included)\b',text))
@@ -43,7 +47,7 @@ def bundled_stop_word(title, word, is_bundle=False):
     return bool(connector and not term.search(title[:connector.start()]) and term.search(title[connector.end():]))
 
 
-def own_model_conflict(text, query):
+def own_model_conflict(text, query, confirmed_model=None):
     requested=requested_model(query)
     if requested is None:
         return None
@@ -53,12 +57,19 @@ def own_model_conflict(text, query):
         declarations.append(heading.group())
     intro=r'\b(?:zum\s+verkauf\s+steht|(?:ich\s+)?verkaufe|i\s+am\s+selling|selling\s+my|for\s+sale\s+is|lieferumfang\s*:?|contents\s*:|(?:model|modell)\s*:)\s*'
     for start in re.finditer(intro,text):
-        tail=re.split(r'[.!?;]',text[start.end():start.end()+160],maxsplit=1)[0]
+        # Read the complete model token at the window edge, including DEX/SE.
+        tail=re.split(r'[.!?;]',text[start.end():start.end()+240],maxsplit=1)[0]
         match=MODEL.search(tail)
-        if not match:
+        if not match or match.start()>=160:
             continue
         before=tail[:match.start()]
         if re.search(r'\b(?:kein\w*|nicht|no|not|ohne|without)\b',before) or COMPATIBLE.search(before):
+            continue
+        # A shortened catalogue label may omit the edition when the item's
+        # own manufacturer-number field proves it. Never override selling
+        # declarations, headings, explicit other editions or contradictory MPNs.
+        if (re.fullmatch(r'(?:model|modell)\s*:\s*',start.group())
+                and _key(match.group())=='superlight 2' and confirmed_model==requested):
             continue
         declarations.append(match.group())
     for declaration in declarations:

@@ -27,6 +27,7 @@ def main():
                    "test_auction_serp_recovery", "test_serp_empty_marker", "test_mobile_contract", "test_parity", "test_checkpoint_integration", "test_ebay_access", "test_runtime_status", "test_browse_request_contract", "test_seller_description_scope", "test_manual_device_evidence", "test_query_variants", "test_cloud_search_regressions"]
         original_connect = socket.socket.connect
         modules.append("test_battery_swelling_manual")
+        modules.append("test_mouse_catalogue_context")
         modules.append("test_telegram_text_outbox")
         modules.append("test_median_reports")
         modules.append("test_import_estimates")
