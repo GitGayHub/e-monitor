@@ -122,11 +122,11 @@ def trend(signatures, now=None):
     return dict(**window(now), points=points, windowDays=7, minimum=MIN_LISTINGS)
 
 
-def groups(config, signature_for):
+def groups(config, signature_for, all_products=False):
     selected, interval = preferences(config.get('settings', {}))
     grouped = {}
     for search in config.get('searches', []):
-        if search.get('id') not in selected:
+        if not all_products and search.get('id') not in selected:
             continue
         f = search.get('filters', {})
         key = json.dumps([search.get('query', '').strip().casefold(),
@@ -142,6 +142,17 @@ def groups(config, signature_for):
         result.append(dict(key=hashlib.sha256(json.dumps(ids).encode()).hexdigest(), signatures=signatures,
                            title=searches[0].get('display_name') or searches[0]['query'], interval=interval))
     return result
+
+
+def app_snapshots(config, signature_for, now=None, logic_version=None):
+    """The APK consumes the exact same deduplicated/MAD-filtered data as Telegram."""
+    now = time.time() if now is None else now
+    return [dict(searchIds=list(group['signatures']), title=group['title'],
+                 settingsRevision=config.get('mobile_settings_revision'), logicVersion=logic_version,
+                 historyVersion=price_history.HISTORY_VERSION,
+                 generatedAt=datetime.fromtimestamp(now, timezone.utc).isoformat(timespec='seconds'),
+                 **trend(group['signatures'], now))
+            for group in groups(config, signature_for, all_products=True)]
 
 
 def delivery_status(path=None):

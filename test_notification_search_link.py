@@ -14,9 +14,9 @@ class NotificationSearchLinkTest(unittest.TestCase):
             url=monitor._build_url_with_host('ebay.de',s,sub='m')
             item=monitor._stamp_search_origin([{}],'html',url,s['query'])[0]
             s['query']='unrelated new query';s['filters']['min_price']=999
-            button=monitor._notification_search_keyboard(item,s).inline_keyboard[0][0]
-        self.assertEqual('🔎 Поиск · eBay HTML',button.text);self.assertEqual(url,button.url)
-        params=parse_qs(urlsplit(button.url).query)
+            link=monitor._notification_search_url(item,s)
+        self.assertEqual(url,link)
+        params=parse_qs(urlsplit(link).query)
         self.assertEqual(['ps5 pro'],params['_nkw']);self.assertEqual(['1'],params['LH_Auction']);self.assertEqual(['1'],params['LH_BO'])
         self.assertEqual(['300'],params['_udlo']);self.assertEqual(['2500'],params['_udhi']);self.assertEqual(['3000'],params['LH_ItemCondition'])
         self.assertEqual('ps5 pro',item['_search_query'])
@@ -27,9 +27,9 @@ class NotificationSearchLinkTest(unittest.TestCase):
         with patch.object(monitor.config,'get_settings',return_value={}):
             url=monitor._api_public_search_url(s,'EBAY_DE',params)
         item=monitor._stamp_search_origin([{}],'api',url,params['q'])[0]
-        button=monitor._notification_search_keyboard(item,s).inline_keyboard[0][0]
-        self.assertEqual('🔎 Поиск · eBay API',button.text)
-        query=parse_qs(urlsplit(button.url).query)
+        link=monitor._notification_search_url(item,s)
+        self.assertEqual(url,link)
+        query=parse_qs(urlsplit(link).query)
         self.assertEqual([params['q']],query['_nkw']);self.assertEqual([params['category_ids']],query['_sacat'])
         self.assertNotIn('Modell',query);self.assertNotIn('_dcat',query);self.assertNotIn('LH_ItemCondition',query);self.assertNotIn('LH_BO',query)
         self.assertNotIn('api.ebay.com',url)
@@ -46,10 +46,13 @@ class NotificationSearchLinkTest(unittest.TestCase):
 
     def test_notification_passes_real_button_to_photo_and_text_delivery(self):
         bot=Mock();bot.get_me=AsyncMock(return_value=Mock(username='test'))
-        s=self.search();item={'item_id':'link-test','title':'PlayStation 5 Pro','price':600,'shipping_cost':6.19,'total_price':606.19,'seller_name':'fixture','condition':'Gebraucht','location':'DE','auction':True,'buy_now':False,'best_offer':True,'source':'html','_search_url':'https://m.ebay.de/sch/i.html?_nkw=ps5+pro&LH_Auction=1'}
+        s=self.search();item={'item_id':'123456789012','title':'PlayStation 5 Pro','price':600,'shipping_cost':6.19,'total_price':606.19,'seller_name':'fixture','condition':'Gebraucht','location':'DE','auction':True,'buy_now':False,'best_offer':True,'source':'html','_search_url':'https://m.ebay.de/sch/i.html?_nkw=ps5+pro&LH_Auction=1'}
         with patch.object(monitor,'safe_send_telegram',new=AsyncMock(return_value=Mock(message_id=1))) as send:
             self.assertTrue(asyncio.run(monitor.send_notification(bot,item,s)))
-        keyboard=send.await_args.kwargs['keyboard'];self.assertEqual(item['_search_url'],keyboard.inline_keyboard[0][0].url)
+        keyboard=send.await_args.kwargs['keyboard'];self.assertEqual('https://www.ebay.de/itm/123456789012',keyboard.inline_keyboard[0][0].url)
+        self.assertEqual('🔗 Открыть объявление',keyboard.inline_keyboard[0][0].text)
+        self.assertIn('>Поиск: eBay HTML</a>',send.await_args.args[2])
+        self.assertIn('href="https://m.ebay.de/sch/i.html?_nkw=ps5+pro&amp;LH_Auction=1"',send.await_args.args[2])
         for photo in (True,False):
             sink=Mock();sink.send_message=AsyncMock(return_value=Mock(message_id=1));sink.send_photo=AsyncMock(return_value=Mock(message_id=2))
             asyncio.run(monitor.safe_send_telegram(sink,1,'test',img='https://example.invalid/image.jpg' if photo else None,keyboard=keyboard))

@@ -3680,10 +3680,11 @@ def _notify_eligibility(item, search):
     if (hard_max is not None and float(item.get("price") or 0) > float(hard_max)) or not _price_within_limit(item, search):
         return False, "over_limit"
     if item.get("auction") and not item.get("buy_now"):
-        if item.get("best_offer"):
+        window = (search.get('filters') or {}).get('auction_notify_minutes')
+        if item.get("best_offer") and window is None:
             return True, "notify"
         minutes = _parse_time_left_to_minutes(item.get("time_left", ""))
-        if minutes is not None and minutes <= 1440:
+        if minutes is not None and minutes <= (window if window is not None else 1440):
             return True, "notify"
         return False, "wait_24h"
     return True, "notify"
@@ -7244,12 +7245,13 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         # "🟡 Ждёт 24ч" instead of green — controlled later via _notify_eligibility.
         if not is_statistics:
             if item.get("auction") and not item.get("buy_now"):
-                is_best_offer = item.get("best_offer")
+                window = filters.get('auction_notify_minutes')
+                is_best_offer = item.get("best_offer") and window is None
                 is_ending_soon = False
                 time_left_str = item.get("time_left", "")
                 if time_left_str:
                     minutes = _parse_time_left_to_minutes(time_left_str)
-                    if minutes is not None and minutes <= 1440:  # 24 hours (1 day)
+                    if minutes is not None and minutes <= (window if window is not None else 1440):
                         is_ending_soon = True
                 if not (is_best_offer or is_ending_soon):
                     continue
@@ -8683,11 +8685,15 @@ def get_category_emoji(cat_name):
     return mapping.get(cat_name, "📦")
 
 
+def _notification_search_url(item, search):
+    return _safe_public_search_url(item.get('_search_url')) or _safe_public_search_url(build_ebay_url(search))
+
+
 def _notification_search_keyboard(item, search):
-    url=_safe_public_search_url(item.get('_search_url')) or _safe_public_search_url(build_ebay_url(search))
+    item_id = str(item.get('item_id') or '')
+    url = f'https://www.ebay.de/itm/{item_id}' if item_id.isdigit() else None
     if not url:return None
-    source={'html':'eBay HTML','api':'eBay API'}.get(item.get('source'),'eBay')
-    return InlineKeyboardMarkup([[InlineKeyboardButton(f'🔎 Поиск · {source}',url=url)]])
+    return InlineKeyboardMarkup([[InlineKeyboardButton('🔗 Открыть объявление',url=url)]])
 
 
 async def send_notification(bot, item, search, stats_7d=None, notify_stage="initial"):
@@ -8865,11 +8871,14 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
     hide_url = f"https://t.me/{bot_username}?start=ban_{item['item_id']}"
     ban_url = f"https://t.me/{bot_username}?start=banseller_{encoded_seller}"
 
-    links_line = f"🔗 <a href=\"{html.escape(item_url)}\">Ссылка</a>  │  ❌ <a href=\"{html.escape(hide_url)}\">Скрыть</a>  │  🚫 <a href=\"{html.escape(ban_url)}\">Бан</a>"
+    links_line = f"❌ <a href=\"{html.escape(hide_url)}\">Скрыть</a>  │  🚫 <a href=\"{html.escape(ban_url)}\">Бан</a>"
 
     is_github = os.environ.get("GITHUB_ACTIONS") == "true"
     source_line = "🤖 GitHub автомониторинг" if is_github else "💻 Локальный автомониторинг"
-    source_line += f"\nℹ️ Сервер: {_get_version_string()}\n📱 APK: {_apk_version_label()}\n🔎 Поиск: {_fetch_source_label(item.get('source'))}"
+    source_line += f"\nℹ️ Сервер: {_get_version_string()}\n📱 APK: {_apk_version_label()}"
+    search_url = _notification_search_url(item, search)
+    if search_url:
+        source_line += f'\n🔎 <a href="{html.escape(search_url, quote=True)}">Поиск: {html.escape(_fetch_source_label(item.get("source")))}</a>'
 
     details_block = f"{cond_line}\n{country_line}\n{seller_line}\n{limit_line}"
 
@@ -9152,7 +9161,7 @@ def _history_filter_signature(search, config_obj=None):
     """An edit to model/region/blacklists must not reuse another population."""
     filters = search.get("filters", {}) or {}
     structural = {k: v for k, v in filters.items() if k not in
-                  {"limit_price", "sort", "_ipg", "_stats_bucket_filter"} and not k.startswith("_")}
+                  {"limit_price", "sort", "_ipg", "_stats_bucket_filter", "auction_notify_minutes"} and not k.startswith("_")}
     history_config = config if config_obj is None else config_obj
     settings = history_config.get_settings()
     document = {"query": _normalize(_intent_query(search)), "filters": structural,
@@ -9205,19 +9214,22 @@ def _live_validation_tier(row, search, ready, fact, now):
     """
     fact = fact or {}
     end = fact.get('ends')
-    pure_auction = bool(row.get("auction") and not row.get("buy_now") and not row.get("best_offer"))
+    window = (search.get('filters') or {}).get('auction_notify_minutes')
+    window = 1440 if window is None else window
+    pure_auction = bool(row.get("auction") and not row.get("buy_now") and
+                        (not row.get("best_offer") or (search.get('filters') or {}).get('auction_notify_minutes') is not None))
     if not ready:
         if not pure_auction or _parse_time_left_to_minutes(row.get("time_left", "")) is not None:
             return 3, None
         # An exact earlier card/page clock is used for order only. A due known
         # auction must precede cards whose clocks still need to be discovered.
-        minutes = 1380 if end is None else int((end-now)//60)
-        if minutes <= 0 or minutes > 1440:
+        minutes = max(1, window - 1) if end is None else int((end-now)//60)
+        if minutes <= 0 or minutes > window:
             return 3, None
         probe = dict(row, time_left=f"{minutes} min")
         if not _notify_candidates_from_filtered(filter_results([probe], search, config)):
             return 3, None
-    ready_from = end-86400 if pure_auction and end is not None else fact.get('ready_at')
+    ready_from = end-window*60 if pure_auction and end is not None else fact.get('ready_at')
     checked = fact.get('checked_at')
     if checked is not None and ready_from is not None and checked >= ready_from:
         return 2, ready_from
@@ -9399,8 +9411,7 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
         # the incomplete search population to a successful market snapshot.
         try:
             from mobile import median_reports
-            selected, _ = median_reports.preferences(config.get_settings())
-            if search['id'] in selected and context_unchanged:
+            if context_unchanged:
                 median_reports.record_verified(search['id'], signature, observations)
         except Exception as median_error:
             logger.error('Median observation unavailable: %s', type(median_error).__name__)
@@ -11289,12 +11300,21 @@ def _publish_runtime(state, error=None):
         warnings.append("Квота API закончилась: проверяю сайт eBay через HTML")
     elif _runtime_html_fallback and not html_only:
         warnings.append("Описание проверяется через сайт eBay")
+    median_prices, median_error = None, None
+    if state != 'running':
+        try:
+            from mobile.median_reports import app_snapshots
+            median_prices = app_snapshots(config.raw, _history_filter_signature, logic_version=_read_logic_version_timestamp())
+        except Exception as error_median:
+            logger.error('App median unavailable: %s', type(error_median).__name__)
+            median_error = 'Не удалось обновить медиану; показаны сохранённые данные'
     publish(config.raw, _read_logic_version_timestamp(), state, error,
             data_source=("html+api" if _runtime_api_fallback else "html") if html_primary else "html" if html_only else "api+html" if _runtime_html_fallback else "api",
             warning="; ".join(warnings) or None, source_policy="html_first" if html_primary else "api_first",pending=_runtime_pending,
             search_errors=_runtime_errors,last_pass=dict(_runtime_progress) or None,
             coverage=browse_access.search_coverage(config.raw.get('searches', []),EBAY_MARKETPLACE_ID) if html_primary else None,
-            schedule=_runtime_schedule(), api_keys=_runtime_api_keys(quota_paused))
+            schedule=_runtime_schedule(), api_keys=_runtime_api_keys(quota_paused),
+            median_prices=median_prices, median_error=median_error)
 
 
 def _runtime_schedule():
