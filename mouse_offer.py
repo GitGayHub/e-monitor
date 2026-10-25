@@ -23,6 +23,29 @@ def requested_model(query):
     return _key(match.group()) if match else None
 
 
+def device_title(text):
+    """A model-led title explicitly calls the offered product a mouse."""
+    return bool(re.match(r'^(?:logitech\s+)?(?:g\s+)?(?:pro\s*x\s+)?'+MODEL.pattern,text)
+                and re.search(r'\b(?:maus|mouse)\b',text))
+
+
+def feature_title(text):
+    """Mask precise device features locally; keep the displayed title intact."""
+    if not device_title(text) or re.search(r'\b(?:fuer|for|fits|compatible|kompatibel|nur|only|ersatz\w*|replacement|spare|repair|reparatur\w*)\b',text):
+        return text
+    # A wired connection is not a separately sold cable. Bare cable nouns stay.
+    result=re.sub(r'\b(?:kabelgebunden(?:e|en|er|es)?|wired)\b',' ',text)
+    device=re.search(r'\b(?:maus|mouse)\b',result)
+    prefix,tail=result[:device.end()],result[device.end():]
+    tail=re.sub(r'\bopen\s*box\b',' ',tail)
+    # Runtime next to a complete mouse is a feature, not a spare battery.
+    if re.search(r'\b(?:kabellos\w*|wireless|\d+\s*k?dpi)\b',result):
+        hours=r'[1-9]\d{0,2}\s*(?:h|std|stunden|hours?)'
+        battery=r'(?:akku(?:laufzeit)?|battery(?:\s+life)?)'
+        tail=re.sub(rf'\b(?:{hours}\s*{battery}|{battery}\s*:?\s*{hours})\b',' ',tail)
+    return prefix+tail
+
+
 def packaging_only(text):
     pattern=r'\b(?:nur|only|lediglich|ausschliesslich)\s+(?:(?:die|das|der|the)\s+)?(?:originalverpackung|verpackung|ovp|karton|box)\b'
     for match in re.finditer(pattern,text):
