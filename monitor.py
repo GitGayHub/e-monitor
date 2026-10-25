@@ -9541,6 +9541,11 @@ def initialize_api_budget_and_queue(searches):
     _runtime_api_fallback = False
     active = [s for s in searches if s.get("enabled", True)]
     html_primary = EBAY_SOURCE != "api"
+    # Usage is a read-only Analytics request, independent of depleted Browse quota.
+    # HTML-first used to skip this entirely and exposed only rolling local attempts.
+    if not MonitorPassBudget.exhausted(reserve=30):
+        from mobile.api_usage import refresh as refresh_api_usage
+        refresh_api_usage(browse_access, _configured_ebay_api_keys(), time.time())
     token, err = (None, None) if html_primary else _get_ebay_api_token()
     state = browse_access.state()
     if token and time.time() - state.get("checked", 0) >= 900:
@@ -11340,7 +11345,8 @@ def _runtime_schedule():
 
 
 def _runtime_api_keys(paused=False):
-    """Approximate Browse API use per key across all configured keys."""
+    from datetime import datetime, timezone
+    """Last official Analytics snapshot, with an explicitly estimated log fallback."""
     keys = _configured_ebay_api_keys()
     if not keys:
         return []
@@ -11352,17 +11358,28 @@ def _runtime_api_keys(paused=False):
     now = time.time()
     result = []
     for idx, k in enumerate(keys):
+        from mobile.api_usage import identity as usage_identity
         kid = k["key_id"]
         used = by_key.get(kid, 0) + (untagged if idx == 0 else 0)
         key_paused = bool(paused) or browse_access.is_key_paused(kid, value=state, now=now)
-        result.append({
+        measured = state.get('api_usage_snapshots', {}).get(usage_identity(k))
+        row = {
             "label": k["label"],
             "clientId": "…" + kid,
             "used24h": used,
             "limit": limit,
             "percent": min(100, round(100 * used / limit)) if limit else None,
             "paused": key_paused,
-        })
+            "usageSource": "monitor_log_estimate",
+            "usageUpdatedAt": datetime.now(timezone.utc).isoformat(timespec='seconds'),
+            "usageError": state.get('api_usage_errors', {}).get(usage_identity(k)),
+        }
+        if measured:
+            row.update(used24h=measured['used'], limit=measured['limit'], remaining=measured['remaining'],
+                percent=min(100,round(100*measured['used']/measured['limit'])),
+                usageSource='ebay_analytics', usageUpdatedAt=measured['checkedAt'],
+                quotaResetAt=measured['resetAt'], windowSeconds=measured['windowSeconds'])
+        result.append(row)
     return result
 
 
