@@ -86,6 +86,7 @@ def main():
         modules.append("test_image_only_offer")
         modules.append("test_mouse_offer")
         modules.append("test_product_tools")
+        modules.append("test_api_usage")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
