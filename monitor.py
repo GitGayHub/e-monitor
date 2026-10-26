@@ -2969,6 +2969,9 @@ def _strip_negated_condition_terms(text_norm):
     # without swallowing an asserted defect after "aber" or a new sentence.
     denied_de = r"(?:(?:sonstige[nr]?|sichtbare[nr]?|erkennbare[nr]?|leichte[nr]?|auffaellige[nr]?)\s+)?(?:gebrauchsspuren|kratzer|flecken|dellen|risse|maengel|schaeden|beschaedigungen|displayfehler|bildschirmfehler|pixelfehler)"
     text_norm = re.sub(rf"(?<!nicht )(?<!not )\b(?:kein(?:e|en|er)?|keinerlei|ohne)\s+{denied_de}(?:\s*(?:,\s*(?:(?:und|oder)\s+)?|(?:und|oder)\s+){denied_de})*\b(?!\s*(?:,|und\b|oder\b))", " ", text_norm)
+    # A panel type can sit between the denial and the fault ("no OLED burn-in").
+    # Consume only this denied phrase; later damage and double negation remain.
+    text_norm = re.sub(r'(?<!not )(?<!no )(?<!nicht )\b(?:no|without|kein(?:e|en|er)?|ohne)\s+(?:oled|amoled)\s+burn\s*ins?\b', ' ', text_norm)
     text = _negated_condition_pattern().sub(' ',text_norm)
     # Samsung's cooling feature prevents burn-in; it does not admit an existing
     # fault. Remove only that exact prevention statement, keeping later defects.
