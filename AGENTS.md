@@ -1,3 +1,19 @@
+# Продолжение этапа184 — SamsungSKU, APK0.178,26октября2026
+
+Читать docs/qa/pc-20261026/REVIEW_184.md. APK0.178/code178/rules1793022848/History53/Room9/SHA0535429db18215adf9e1e4917ab5e540037094b0e20aededf7687374b34caeeb. Толькоemulator-5580; физическийтелефоннеиспользовать/окнаПКнеактивировать. Сервер подтвердил16:37:41UTC; normal/f92/50/48/цены/порядок/Pixelpriority18/получатель/seen/баны/3ключасохранены. Goalактивна26/104/40–50own/≤15минНЕзавершена.
+
+267437531888короткийS27FG602SUцелыйOLED500:реальныйPython/JVM/ART177отказ→178PASS. LS/Sобапризнаны,ложныйIPS/E/350Hz/часть/дефект/пустойownотказсохранён. History53безсмены.16контролей×4Python/JVM,ART16толькоbuy;не16реальныхChrome.614PythonPASS111,085с;486JVM/115/0skip/104oldown;сборки57с. Native13+1реальных/16SKU/25old/19историческихPASSвсетерминальные. QAqa-local/notifyfalse/workerfalse/безAPIнепубликовать.
+
+Chrome3/Бейби/tab214040380:14полныхown11active3sold;9overlapсоold18,не+14global.267fixed/307167578900519free/398162444700500+23,99;другиеIDвотчёте. Sold137245228620/127332124787/407216707533финальныеofferценыНЕизвестны. Primary10active,aliasдобавил227319448387,3Chromeauctionqueriesчестные0. Initialcat80053/aliasesUIresetallкатегории,DE/09648подтверждены. DOMсохранёнполнымread-onlyкомпакторомбезscript/style/noscript;3старыхrawHTMLtruncatedнеиспользовать. QAошибкаBeobachtungslisteотозвана,неproduct. Старые18Samsung+1Asusповтор,не19новыхown.
+
+Samsung177scan60,054с519/523,99/0/0;178scan75,873с519/523,99/403/403. Chrome0неисправляетAPK403. ЦеныPythonизAndroidсошлись/обе>400/нетalert. GUIреальныйSAMSUNG_178. Room9→9/все50всестолбцы/ключи/seen/feed/цены/банысохранены/0QAцен/2старыхQAфайлавосстановлены/толькоlogic_version_ts. Mainобычнаяоткрыта,всеguardsзавершены.
+
+Runtime16:37:41UTC48/48attempts≤15мин/525сдавняя/10успехов≤15мин/41successс12:02. НЕmarket capture%. ПравильныйTGчатAXтекстподтверждён0.177message120241/267818751501/783,96=777,77+6,19/probsandre/13:12:36UTC. AXфото600×800,носохранённыйснимокпоказалChatGPT;НЕвизуальныйproofмедиа/НЕ178доставка. НовыхtestTG0. НеактивироватьПК.
+
+Sourcebotmain8b025bbd22da264fbcec878e208880027801870a/cloud71ef849ce6a81ee32925a341c7e30e6050727fc1/Androidcloud62de44555cd75cf63edc34b4de3962f75a1ccd4a/release178manifest3eedc507f3f004d38f39033db9dff5251b6f9028. Finaldocs/checkpointотдельно. Rawprivateaudit/review184непубликовать.
+
+ДалееAsus185:guardasus_vivobook_14x_oled_buyУЖЕЗАВЕРШЁН68,308с/34отказаbuy/34offer/0/0,безAPI/лимит425сохранён. Причины3050/Intel/не14X/1unresolvedvariation. BrowserAsusDE/09648начат,полныеownещёнет. Неrerunвслепую. Дальшеостальныетовары/soldаукционы/длительныйуспех/≤15мин/реальныйпустойfollowup/TGmedia/deletionGit. РеальныеdeletionНЕACK/НЕудалять,mojibake162/6,19отзывысохранить.
+
 # Продолжение этапа183 — охват и APK0.177,26октября2026
 
 Читать docs/qa/pc-20261026/REVIEW_183.md. APK0.177/code177/rules1793015292/History53/Room9/SHA98bf018c0d77d47b1467f80dba069b44e970486f3d3e30604248d152f6d256c8. Установлена толькоemulator-5580; физическийтелефоннеиспользовать/окнаПКнеактивировать. Сервер подтвердил12:07:50UTC26октября; normal/f92/50/48/цены/порядок/приоритетPixel18/получатель/seen/баны/3ключасохранены.
