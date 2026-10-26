@@ -8278,6 +8278,14 @@ def _fetch_html_primary(search, force=False, allow_api=False):
         if MonitorPassBudget.exhausted():
             errors.append('pass_deferred')
             break
+        reserve_available=allow_api and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open
+        html_seconds = (6 if search.get('_live_alias_rotation') else 12) if reserve_available else 20
+        if live_rotation and reserve_available and MonitorPassBudget.exhausted(reserve=html_seconds+2):
+            # Keep the next alias's cursor untouched if the parent cannot fit
+            # a real HTML+API turn. A full6s HTML slice alone is not a full
+            # recovery turn when it leaves zero time for the available API.
+            errors.append('pass_deferred')
+            break
         if live_rotation:
             browse_access.start_normal_alias(search['id'],context,EBAY_MARKETPLACE_ID,(task_index+1)%len(tasks))
             logger.info('%s: live alias task %d/%d format=%s query=%s',search['id'],task_index+1,len(tasks),listing or (search.get('filters') or {}).get('listing_type','all'),query)
@@ -8289,8 +8297,10 @@ def _fetch_html_primary(search, force=False, allow_api=False):
                 variant["filters"].pop("min_price", None)
         # Normal live searches have a20s parent slice. Keep time for the
         # authorized API reserve instead of exhausting it all inside HTML.
-        reserve_available=allow_api and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open
-        html_seconds = 12 if reserve_available else 20
+        # Live discovery must visit every spelling/format across paced turns.
+        # A failed12s HTML attempt plus API used13s of a20s parent, leaving
+        # the next alias no complete turn. Healthy HTML (~1-2s) still wins;
+        # only live auto recovery yields sooner to the quota-checked reserve.
         with MonitorPassBudget.slice(html_seconds) as html_budget:
             # Ignore tiny bookkeeping overhead, but remember a task that was
             # given only the tail of its parent's deadline. Pixel's third
@@ -9804,10 +9814,13 @@ async def process_searches(bot, once=False):
 
 async def _fetch_normal_slice(search, force=False):
     """A slow query yields to other products without consuming their deadline."""
+    started = time.monotonic()
     with MonitorPassBudget.slice(20,reserve=30):
         rows, error = await asyncio.to_thread(fetch_ebay_ex,search,force=force)
     if error == 'pass_deferred' and not MonitorPassBudget.exhausted(reserve=30):
-        return rows,'search_deferred'
+        error = 'search_deferred'
+    browse_access.note_normal_outcome(search['id'],EBAY_MARKETPLACE_ID,error,
+                                      len(rows or []),time.monotonic()-started)
     return rows,error
 
 

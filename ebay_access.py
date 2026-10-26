@@ -76,6 +76,9 @@ class MonitorPassBudget:
 # The last place in the app's priority order is checked this many times less
 # often than the first. Android shows the same estimate (SearchPriority.kt).
 PRIORITY_MAX_WEIGHT = 8.0
+# A starvation guard, not a promised refresh or Telegram delivery interval.
+# Preserve the owner's relative weights while rescuing very old searches.
+NORMAL_STARVATION_SECONDS = 1800
 
 
 def priority_weights(searches):
@@ -308,7 +311,14 @@ class BrowseAccess:
                 stamp = attempts.get(str(row['id'])+'|'+market)
                 age = now-stamp if isinstance(stamp, (int, float)) and not isinstance(stamp, bool) else math.inf
                 return age/weights[str(row['id'])]
-            rotated = sorted(rows, key=lambda row: (-overdue(row), weights[str(row['id'])]))
+            def order_key(row):
+                stamp = attempts.get(str(row['id'])+'|'+market)
+                age = now-stamp if isinstance(stamp,(int,float)) and not isinstance(stamp,bool) and math.isfinite(stamp) else math.inf
+                weight = weights[str(row['id'])]
+                if age >= NORMAL_STARVATION_SECONDS:
+                    return (0, -age, weight)
+                return (1, -overdue(row), weight)
+            rotated = sorted(rows, key=order_key)
         else:
             next_id = state.get('normal_next_search', {}).get(market)
             offset = next((i for i, s in enumerate(rows) if s.get('id') == next_id), 0)
@@ -352,11 +362,51 @@ class BrowseAccess:
                 continue
             ages.append(max(0, now-stamp))
         oldest = max(ages, default=None)
-        return dict(activeSearches=len(active), attemptedSearches=len(ages),
+        report = dict(activeSearches=len(active), attemptedSearches=len(ages),
                     within15Minutes=sum(age <= 900 for age in ages),
                     neverAttempted=len(active)-len(ages),
                     oldestAttemptAt=datetime.fromtimestamp(now-oldest, timezone.utc).isoformat(timespec='seconds') if oldest is not None else None,
                     oldestAttemptAgeSeconds=int(oldest) if oldest is not None else None)
+        outcomes = self.state().get('normal_search_outcomes', {})
+        def age(value):
+            if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or value <= 0 or value > now+5:
+                return None
+            return int(max(0,now-value))
+        rows = []
+        for search_id in sorted(active):
+            value = outcomes.get(search_id+'|'+market, {})
+            rows.append(dict(searchId=search_id,lastAttemptAgeSeconds=age(value.get('attempted')),
+                lastSuccessAgeSeconds=age(value.get('succeeded')),lastResultsAgeSeconds=age(value.get('results')),
+                lastReceived=value.get('received'),lastError=value.get('error'),lastDurationSeconds=value.get('seconds')))
+        successes=[r['lastSuccessAgeSeconds'] for r in rows if r['lastSuccessAgeSeconds'] is not None]
+        starts=[outcomes.get(k+'|'+market,{}).get('first_attempt') for k in active]
+        starts=[x for x in starts if age(x) is not None]
+        report.update(successfulSearches=len(successes),successfulWithin15Minutes=sum(x<=900 for x in successes),
+            withoutRecordedSuccess=len(active)-len(successes),withResultsSearches=sum(r['lastResultsAgeSeconds'] is not None for r in rows),
+            cleanEmptySearches=sum(r['lastReceived']==0 and r['lastError'] is None and r['lastAttemptAgeSeconds'] is not None for r in rows),
+            measurementStartedAt=datetime.fromtimestamp(min(starts),timezone.utc).isoformat(timespec='seconds') if starts else None,
+            listingCapturePercent=None,searches=rows)
+        return report
+
+    def note_normal_outcome(self, search_id, market, error, received, seconds, now=None):
+        """Evidence of retrieval only; never a filter or notification verdict."""
+        if error in ('api_deferred','pass_deferred'):
+            return
+        now = time.time() if now is None else now
+        with self.lock:
+            state = self.state()
+            entries = {k:v for k,v in state.get('normal_search_outcomes',{}).items()
+                       if now-v.get('attempted',0)<7*86400}
+            key=str(search_id)+'|'+market
+            value=dict(entries.get(key,{}))
+            value.setdefault('first_attempt',now)
+            value.update(attempted=now,error=str(error)[:80] if error else None,
+                         received=max(0,int(received)),seconds=round(max(0,float(seconds)),3))
+            if error is None:value['succeeded']=now
+            if received:value['results']=now
+            entries[key]=value
+            state['normal_search_outcomes']=dict(sorted(entries.items(),key=lambda r:r[1]['attempted'])[-256:])
+            self.save(state)
 
     def note_normal_discovery(self, items, search_id, market):
         """First observed time is evidence, never an inferred listing start."""
