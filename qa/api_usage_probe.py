@@ -1,4 +1,4 @@
-"""Read-only acceptance of the explicitly configured second Production key."""
+"""Read-only acceptance of one explicitly selected Production key."""
 import json
 import os
 import sys
@@ -13,9 +13,12 @@ from mobile.api_usage import parse
 
 
 def main():
-    key_id=os.environ.get('EBAY_CLIENT_ID_2','').strip()
-    secret=os.environ.get('EBAY_CLIENT_SECRET_2','').strip()
-    proof=dict(keySlot=2,credentialsPresent=bool(key_id and secret),readOnly=True,telegramSent=False)
+    slot=os.environ.get('EBAY_KEY_SLOT','2').strip()
+    if slot not in ('2','3'):
+        raise ValueError('Only explicit QA slots 2 and 3 are supported')
+    key_id=os.environ.get('EBAY_CLIENT_ID_'+slot,'').strip()
+    secret=os.environ.get('EBAY_CLIENT_SECRET_'+slot,'').strip()
+    proof=dict(keySlot=int(slot),credentialsPresent=bool(key_id and secret),readOnly=True,telegramSent=False)
     try:
         if not proof['credentialsPresent']:
             raise ValueError('Missing key pair')
