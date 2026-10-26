@@ -1214,7 +1214,13 @@ def _known_oled_configuration(model_text, screen_text):
     # ASUS official specifications: ProArt PX13 HN7306 / Vivobook N6506CU.
     # asus.com/us/laptops/for-creators/proart/proart-px13-hn7306/techspec/
     # press.asus.com/news/press-releases/asus-vivobook-pro-15-intel-core-ultra-nvidia-geforce-rtx/
-    resolution = r"2880\s*(?:x|\*|×)?\s*1800" if re.search(r"\b14imh9\b|\b(?:px13\s*)?hn7306[a-z]*\b", model_text) else (
+    # HP's published 9P2N2EA / 16-aa0779ng datasheet specifies OLED.
+    # Require the offered Spectre and its explicit own model label, plus the
+    # matching display resolution; an IPS/LCD statement keeps it unconfirmed.
+    hp_exact = (re.search(r"\bhp\s+spectre\b", model_text) and
+                re.search(r"\bmodellbez\w*[\s.:]*9p2n2ea(?:#abd)?\b", screen_text) and
+                not re.search(r"\b(?:display(?:aufloesung)?|bildschirm|screen)\b[^.!?\n]{0,60}\b(?:ips|lcd)\b", screen_text))
+    resolution = r"2880\s*(?:x|\*|×)?\s*1800" if hp_exact or re.search(r"\b14imh9\b|\b(?:px13\s*)?hn7306[a-z]*\b", model_text) else (
         r"2880\s*(?:x|\*|×)?\s*1620" if re.search(r"\bn6506cu\b", model_text) else
         r"3456\s*(?:x|\*|×)?\s*2160" if re.search(r"\bxps\s*15\s*9530\b", model_text) else None
     )
