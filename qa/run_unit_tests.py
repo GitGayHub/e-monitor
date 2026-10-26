@@ -65,6 +65,8 @@ def main():
         modules.append("test_phone_condition_context")
         modules.append("test_phone_sales_object")
         modules.append("test_live_alias_queue")
+        modules.append("test_live_coverage_recovery")
+        modules.append("test_followup_dispatch")
         modules.append("test_browser_challenge_wait")
         modules.append("test_spare_accessory_exchange")
         modules.append("test_html_seller_type")
