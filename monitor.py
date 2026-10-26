@@ -852,11 +852,13 @@ def _search_intent(search_or_query):
 def _matches_samsung_odyssey_g6_500hz(text_norm):
     """G60SF OLED500, not G60F IPS350: the shared FG602 prefix is ambiguous."""
     t = text_norm or ""
-    if re.search(r"\bg60f\b|\bls27fg60[24]e[a-z0-9]*\b|\bips\b", t):
+    if re.search(r"\bg60f\b|\bl?s27fg60[24]e[a-z0-9]*\b|\bips\b", t):
         return False
     if any(int(m) >= 70 and int(m) != 500 for m in re.findall(r"\b(\d{2,4})\s*hz\b", t)):
         return False
-    if re.search(r"\bg60sf\b|\bls27fg60[24]s[a-z0-9]*\b", t):
+    # eBay also uses Samsung's short S27... name without the regional L prefix.
+    # Keep the S panel suffix: the E sibling is an IPS monitor.
+    if re.search(r"\bg60sf\b|\bl?s27fg60[24]s[a-z0-9]*\b", t):
         return True
     # Explicit non-500Hz sibling models without a 500Hz claim
     if re.search(r"\b(?:g60sd|g61sd|ls27dg60[12]|ls27dg61)\b", t) and not re.search(
