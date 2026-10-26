@@ -8246,9 +8246,9 @@ def _fetch_html_primary(search, force=False, allow_api=False):
     target = (search.get("id", ""), EBAY_MARKETPLACE_ID)
     if not force and target not in _allowed_api_targets_this_run:
         return [], "api_deferred"
-    _allowed_api_targets_this_run.discard(target)
-    if not force:
-        browse_access.record_html_attempt(search.get("id", ""), EBAY_MARKETPLACE_ID)
+    task_budget = MonitorPassBudget.current.get()
+    if task_budget is not None:
+        task_budget.html_task_started = False
     child = copy.deepcopy(search)
     child["_html_fallback"] = True
     # Return the HTML error itself if it fails. No API loop and no fake empty.
@@ -8273,6 +8273,7 @@ def _fetch_html_primary(search, force=False, allow_api=False):
         offset = browse_access.normal_alias_offset(search['id'],context,EBAY_MARKETPLACE_ID,len(tasks))
         order = order[offset:]+order[:offset]
     failed_formats = set()
+    attempt_recorded = False
     for task_index in order:
         listing, query = tasks[task_index]
         if listing in failed_formats:
@@ -8288,6 +8289,15 @@ def _fetch_html_primary(search, force=False, allow_api=False):
             # recovery turn when it leaves zero time for the available API.
             errors.append('pass_deferred')
             break
+        if not attempt_recorded:
+            # A queued task with no time for I/O is not a fresh search.
+            # Keeping its old attempt also preserves its place in fairness.
+            _allowed_api_targets_this_run.discard(target)
+            if not force:
+                browse_access.record_html_attempt(search.get("id", ""), EBAY_MARKETPLACE_ID)
+            attempt_recorded = True
+            if task_budget is not None:
+                task_budget.html_task_started = True
         if live_rotation:
             browse_access.start_normal_alias(search['id'],context,EBAY_MARKETPLACE_ID,(task_index+1)%len(tasks))
             logger.info('%s: live alias task %d/%d format=%s query=%s',search['id'],task_index+1,len(tasks),listing or (search.get('filters') or {}).get('listing_type','all'),query)
@@ -9817,8 +9827,13 @@ async def process_searches(bot, once=False):
 async def _fetch_normal_slice(search, force=False):
     """A slow query yields to other products without consuming their deadline."""
     started = time.monotonic()
-    with MonitorPassBudget.slice(20,reserve=30):
+    with MonitorPassBudget.slice(20,reserve=30) as search_budget:
         rows, error = await asyncio.to_thread(fetch_ebay_ex,search,force=force)
+    # HTML can decline its first task when the tail cannot fit HTML+reserve.
+    # Keep that distinct from a real timed-out request. Do not impose a new
+    # minimum on a fast single-query fetch or an already verified candidate.
+    if error == 'pass_deferred' and search_budget is not None and getattr(search_budget,'html_task_started',None) is False:
+        return rows, error
     if error == 'pass_deferred' and not MonitorPassBudget.exhausted(reserve=30):
         error = 'search_deferred'
     browse_access.note_normal_outcome(search['id'],EBAY_MARKETPLACE_ID,error,
