@@ -1,3 +1,13 @@
+# Продолжение этапа182 — ключ3 и soldDEX,26октября2026
+
+Читать docs/qa/pc-20261026/KEY3_182.md,REVIEW_182.md,BROWSER_182_CASES.json. APK176/code176/rules1792986775/History53/Room9/SHAba34a12616c701ba1c2838a014e80094b6b4ed7528673c99ca1b46e2547224dd без новой сборки. Толькоemulator5580, физическийтелефоннеиспользовать,окнаПКнеактивировать. Normal/f92/50/48/цены/приоритетPixel18/получатель/seen/банысохранены. Goalактивна/26/104НЕзавершена.
+
+ТретийотдельныйProductionAppIDактивированвeBay; старыйWorker/D1переиспользованбезизмененияключа2,SendTestNotificationуспех. ПаразащищенаDPAPIтольковaudit/2026-10-26/key3/key3.dpapi иGitHubEBAY_CLIENT_ID_3/SECRET_3. Старые1/2/candidateнетронуты. ЛокальноOAuth/Analytics/Browse200,GitHubQA40285970131success(slot3),default2QA40287359672success. Продуктworkflowужепередавал3,monitorперебирал2..9; изменёнтолькоQAвыбор2/3. НеACK/неочищатьреальныесобытияWorker. Runtimeфактическоеприменениесм.KEY3_182.md/приватныйruntime-final-proof.json,невыдаватьQAзарабочиймонитор. За24ч7013APIпопыток,3официальныхлимита5000=15000;07:33UTCостатки5000/4920/4999/reset27окт07UTC(08Берлин). Двукратныйрасчётныйзапас,необещать0потерь/≤15мин,HTMLошибкиостаются.
+
+Все15старыхunopenedDEXsoldIDоткрытыChrome4:12full/2catalogredirect/1partial389614096225. Дочитаны2старыхpartial406777772858(скроллреальнодефект)/389189283637(customerreturnwhole). Python14/0mismatch/ART17614PASS;промежуточные9/12неприбавлять. 41исходныйID=37продуктовых/36полныхown/1partial/4redirect/0unopened;5окончательнонеприняты. Redirect398224446236/128034587830/178223958894/178426866768. НеувеличиватьglobalIDзаactiveoverlap/повторы/quantitysold; фактическийofferpriceнеугадывать. Soldаукционыоткрыты. NativeQAподготовлены500/DE/наличие,неalertproof.12/14guardsтерминальны;неповторятьвслепую. Room9/все50строквсестолбцы/ключи/seen/feed/история/банысохранены,app_config0изменений,2QAфайлавосстановлены. Main176открыт. QAqa-localnotifyfalseworkerfalseбезAPIнепубликовать.
+
+Chrome4/профильБейби/tab214040093сейчасown389614096225. Devtab214040175eBaykeys,Cloudflare214040176,session🔑eMonitorkey3;невыводитьсекреты. Полныеrawприватныreview182. Далее1partial/4redirect/soldаукционы/остальныетовары/≤15мин/свежийTGGUI/deletionGit. Отзывыmojibake162/6,19сохранить. Общаяцельнеокончена.
+
 # Продолжение этапа181 — soldDEX и Chrome4,26октября2026
 
 Читать docs/qa/pc-20261026/REVIEW_181.md иBROWSER_181_CASES.json. APK176/rules1792986775/History53/Room9/SHAba34a12616c701ba1c2838a014e80094b6b4ed7528673c99ca1b46e2547224ddбезизмененийкода/новойсборки,толькоemulator5580. Физическийтелефоннеиспользовать,окнаПКнеактивировать. Runtime2026-10-26T06:31:44+00:00подтвердилcore176/normal/f92/50/48/fingerprint/вселимиты/notify/приоритеты/Pixel18. Goalактивна/26/104НЕзавершена.
