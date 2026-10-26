@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "scope": "Synthetic panel-type controls. First title based on browser366223825607; descriptions reconstructed, not full seller captures. Neutral500EUR/DE/availability, not notification proof.",
+  "sources": [
+    "https://www.samsung.com/uk/mobile-phone-buying-guide/what-is-dynamic-amoled-screen/"
+  ],
+  "cases": [
+    {
+      "id": "book4-amoled",
+      "title": "Samsung Galaxy Book4 Ultra 16 Core Ultra 7 16GB 512GB RTX 4050 Moonstone Gray",
+      "description": "Working notebook. Dynamic AMOLED 2X touchscreen. NVIDIA RTX 4050. Charger included.",
+      "expected": true,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "super-amoled",
+      "title": "Creator Notebook RTX 4050 Super AMOLED",
+      "description": "Fully working notebook with Super AMOLED screen and RTX 4050 graphics. Original charger.",
+      "expected": true,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "amoled-4060",
+      "title": "Creator Notebook RTX 4060 AMOLED",
+      "description": "Fully working notebook. AMOLED display, RTX 4060 graphics. Original charger included.",
+      "expected": true,
+      "query": "4060 oled",
+      "synthetic": true
+    },
+    {
+      "id": "standard-oled",
+      "title": "Creator Notebook RTX 4050 OLED",
+      "description": "Fully working notebook. OLED display and RTX 4050. Charger included.",
+      "expected": true,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "wrong-gpu",
+      "title": "Creator Notebook RTX 4060 AMOLED",
+      "description": "Fully working notebook with AMOLED display and RTX 4060.",
+      "expected": false,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "screen-only",
+      "title": "AMOLED Display Ersatzteil für RTX 4050 Laptop",
+      "description": "Only the replacement display panel. No notebook included.",
+      "expected": false,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "broken",
+      "title": "Creator Notebook RTX 4050 AMOLED DEFEKT",
+      "description": "The notebook display is broken. RTX 4050.",
+      "expected": false,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "empty-own",
+      "title": "Creator Notebook RTX 4050 AMOLED",
+      "description": "",
+      "expected": false,
+      "query": "4050 oled",
+      "synthetic": true
+    },
+    {
+      "id": "ips-only",
+      "title": "Creator Notebook RTX 4050 IPS",
+      "description": "Fully working notebook. IPS LCD display and RTX 4050.",
+      "expected": false,
+      "query": "4050 oled",
+      "synthetic": true
+    }
+  ]
+}

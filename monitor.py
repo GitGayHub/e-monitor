@@ -1255,7 +1255,7 @@ def _intent_details_match(search, item=None, details=None):
         return _matches_sony_ult_wear(title_only or text_norm)
     if kind == "rtx_oled_laptop":
         own_model = _normalize((details or {}).get('title') or (item or {}).get('title') or '')
-        panel_confirmed = _has_term(text_norm, "oled") or _known_oled_configuration(own_model,text_norm)
+        panel_confirmed = _has_term(text_norm, "oled") or _has_term(text_norm, "amoled") or _known_oled_configuration(own_model,text_norm)
         return _has_rtx_gpu(text_norm, intent["gpu"]) and panel_confirmed and _has_laptop_hint(text_norm)
     if kind == "vivobook_14x_oled_3050":
         # 3050 text OR official ASUS model codes that are 3050-class
