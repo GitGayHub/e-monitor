@@ -1,0 +1,21 @@
+{
+  "scope": "SKU and whole-device regression controls. First title from independently read listing267437531888; descriptions and other combinations are explicit controls, not additional browsed listings.",
+  "cases": [
+    {"id":"short602-observed","title":"Samsung Odyssey S27FG602SU QD-OLED, Gaming-Monitor, 68 cm (27 Zoll), silber","description":"Samsung S27FG602SU, QD-OLED, 500 Hz. Voll funktionsfähiger Monitor mit Standfuß.","expected":true},
+    {"id":"short604","title":"Samsung S27FG604SU OLED Gaming Monitor","description":"Samsung S27FG604SU OLED Monitor, 500 Hz, funktioniert einwandfrei.","expected":true},
+    {"id":"full602","title":"Samsung LS27FG602SUXEN OLED Gaming Monitor","description":"Samsung LS27FG602SUXEN OLED Monitor, 500 Hz, funktioniert einwandfrei.","expected":true},
+    {"id":"full604","title":"Samsung LS27FG604SUXEN OLED Gaming Monitor","description":"Samsung LS27FG604SUXEN OLED Monitor, 500 Hz, funktioniert einwandfrei.","expected":true},
+    {"id":"short-region","title":"Samsung S27FG602SUXEN OLED Gaming Monitor","description":"Samsung S27FG602SUXEN OLED Monitor, 500 Hz, funktioniert einwandfrei.","expected":true},
+    {"id":"device-bundle","title":"Samsung S27FG602SU OLED Monitor mit Standfuß und HDMI Kabel","description":"Kompletter Samsung S27FG602SU Monitor mit Standfuß und Kabel. OLED, 500 Hz, funktionsfähig.","expected":true},
+    {"id":"g60sf","title":"Samsung Odyssey OLED G6 G60SF Monitor","description":"Samsung G60SF OLED Gaming Monitor, 500 Hz. Voll funktionsfähig.","expected":true},
+    {"id":"ambiguous-prefix","title":"Samsung Odyssey G6 S27FG602 Monitor","description":"Samsung Odyssey G6 S27FG602 Monitor, voll funktionsfähig.","expected":false},
+    {"id":"short-ips-code-conflict","title":"Samsung Odyssey OLED G6 S27FG602EU 500 Hz Monitor","description":"Samsung S27FG602EU Monitor, voll funktionsfähig.","expected":false},
+    {"id":"full-ips-code","title":"Samsung LS27FG602EUXEN G60F IPS 350 Hz Monitor","description":"Samsung LS27FG602EUXEN IPS Monitor mit 350 Hz.","expected":false},
+    {"id":"short-604-ips-conflict","title":"Samsung Odyssey OLED G6 S27FG604EU 500 Hz Monitor","description":"Samsung S27FG604EU Monitor, voll funktionsfähig.","expected":false},
+    {"id":"refresh-conflict","title":"Samsung S27FG602SU OLED Monitor 350 Hz","description":"Samsung S27FG602SU Monitor, voll funktionsfähig.","expected":false},
+    {"id":"wrong-generation","title":"Samsung S27DG600SU G60SD OLED Monitor 360 Hz","description":"Samsung S27DG600SU G60SD OLED Monitor, 360 Hz.","expected":false},
+    {"id":"stand-only","title":"Standfuß für Samsung S27FG602SU Monitor","description":"Nur der Standfuß für Samsung S27FG602SU, kein Monitor enthalten.","expected":false},
+    {"id":"actual-defect","title":"Samsung S27FG602SU OLED Monitor 500 Hz","description":"Samsung S27FG602SU OLED Monitor. Das Display hat einen Pixelfehler.","expected":false},
+    {"id":"no-own","title":"Samsung S27FG602SU OLED Monitor","description":"","expected":false}
+  ]
+}
