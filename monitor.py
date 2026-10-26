@@ -8290,7 +8290,12 @@ def _fetch_html_primary(search, force=False, allow_api=False):
         # Normal live searches have a20s parent slice. Keep time for the
         # authorized API reserve instead of exhausting it all inside HTML.
         reserve_available=allow_api and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open
-        with MonitorPassBudget.slice(12 if reserve_available else 20):
+        html_seconds = 12 if reserve_available else 20
+        with MonitorPassBudget.slice(html_seconds) as html_budget:
+            # Ignore tiny bookkeeping overhead, but remember a task that was
+            # given only the tail of its parent's deadline. Pixel's third
+            # alias repeatedly received about1s and lost its next full turn.
+            short_html_slice = html_budget is not None and html_budget.seconds < html_seconds-1
             found, error = fetch_ebay_ex(variant, force=force)
         if error in ("blocked", "rate_limit", "cooldown", "network", "site_error", "parse", "pass_deferred") and not MonitorPassBudget.exhausted() and allow_api and _ebay_api_configured() and _ebay_api_paused() is not True and not _ebay_api_circuit_open:
             reserve = copy.deepcopy(variant)
@@ -8300,6 +8305,12 @@ def _fetch_html_primary(search, force=False, allow_api=False):
             if api_error is None and api_rows:
                 found, error = api_rows, None
                 _runtime_api_fallback = True
+        if live_rotation and error == 'pass_deferred' and short_html_slice:
+            # A full-budget timeout or killed worker still advances before I/O
+            # so one blocked spelling cannot starve the rest. A shortened tail
+            # instead resumes this unfinished task with a fresh runner budget.
+            browse_access.start_normal_alias(search['id'],context,EBAY_MARKETPLACE_ID,task_index)
+            logger.info('%s: unfinished live alias %d/%d resumes after short deadline slice',search['id'],task_index+1,len(tasks))
         collected.extend(found)
         if error:
             errors.append(error)

@@ -45,6 +45,43 @@ class LiveAliasQueueTests(unittest.TestCase):
         self.assertEqual([0,1,1],[len(rows) for rows,error in outputs])
         self.assertTrue(all(error=='pass_deferred' for rows,error in outputs))
 
+    def test_short_tail_deadline_retries_alias_with_a_fresh_budget(self):
+        # Real Pixel03:03: third task received only the remainder of20s.
+        # Advancing it makes the same tail alias lose its turn every pass.
+        completed=[]
+        def provider(child,force=False):
+            budget=MonitorPassBudget.current.get()
+            query=child['_query_override']
+            self.calls.append((query,budget.seconds))
+            if budget.seconds<9:
+                self.clock[0]+=budget.seconds
+                return [],'pass_deferred'
+            self.clock[0]+=9
+            completed.append(query)
+            return [dict(item_id=query,price=800)],None
+        with patch.object(monitor,'record_search_run') as complete:
+            for _ in range(3):
+                _,error=self.fetch(provider)
+                self.assertEqual('pass_deferred',error)
+        complete.assert_not_called()
+        self.assertEqual(set(self.aliases),set(completed))
+        self.assertEqual(self.aliases[2],self.calls[3][0])
+
+    def test_short_tail_retries_both_formats_across_process_restarts(self):
+        search=copy.deepcopy(self.source);search['filters']['listing_type']='all'
+        search=monitor._normal_discovery_search(search)
+        completed=[]
+        def provider(child,force=False):
+            budget=MonitorPassBudget.current.get()
+            if budget.seconds<9:
+                self.clock[0]+=budget.seconds
+                return [],'pass_deferred'
+            self.clock[0]+=9
+            completed.append((child['filters']['listing_type'],child['_query_override']))
+            return [dict(item_id=str(completed[-1]),price=800)],None
+        for _ in range(3):self.fetch(provider,search)
+        self.assertEqual([(kind,q) for q in self.aliases for kind in ('buy_now','auction')],completed)
+
     def test_all_formats_resume_the_alias_and_format_not_only_purchase_pages(self):
         search=copy.deepcopy(self.source);search['filters']['listing_type']='all'
         search=monitor._normal_discovery_search(search)
