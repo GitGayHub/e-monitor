@@ -68,6 +68,7 @@ def main():
         modules.append("test_live_coverage_recovery")
         modules.append("test_live_unstarted_search")
         modules.append("test_laptop_amoled")
+        modules.append("test_oled_burn_negation")
         modules.append("test_followup_dispatch")
         modules.append("test_browser_challenge_wait")
         modules.append("test_spare_accessory_exchange")
