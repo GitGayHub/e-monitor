@@ -1,3 +1,13 @@
+# Продолжение этапа179 — soldDEX/Powerplay,26октября2026
+
+Читать docs/qa/pc-20261026/REVIEW_179.md. APK0.175/code175/rules1792982986/History53/Room9/SHAfcb1725f87e4a68fd24cbba5bfe54d6a14eeac13fe88ec825b05a2beac3c065b;private release опубликован,толькоemulator-5580. Runtime2026-10-26T02:58:45+00:00подтвердил175/core/fingerprint/f92/50/48/normal/цены/notify/order/Pixelpriority18. Физическийтелефоннеиспользовать,окнаПКнеактивировать.
+
+8новыхsoldIDпрочитаныAndroidChrome:187320103757,406777772858,358824982052,327241466633,407279190414,187286217182,147612748348,157333731141.7полныхown,406777толькопродуктовыйблок(нижнийmerchantшаблоннепрочитан).+старые3=11продуктовыхпримеров/10полныхиз41;остальные30soldипроданныеаукционыоткрыты.Не8+7+4повторакак19новых.147612whole+Powerplayошибочноотсеивалсяcharging:Python/native174FAIL,175PASS.23общихконтроля/9Pythonпрежнихложныхотказов→PASS;600Python92,965с;484JVM/114/0skip/104oldown0расхождений;обесборки50с. ART8+25PASS/QAфайлывосстановлены. Модельныйreplay500/DE/наличиенеразрешаетTG.147612текущийoutofstock/GB/отсутствиепродавца;Direct175UNAVAILABLE22,9с/relevanceNULL,не0/неповторятьвслепую.
+
+Room9/50всестолбцы/ключи/seen/feed/баны/историясохранены/0QAцен;толькоlogic_version_ts. QAnotifyfalse/workerfalse/qa-localбезAPIнепубликовать. Публикацииисточниковbotmaincc0d4dc7e3c4c41fedd5dce44bf349abfeeb4467,botroadf22438b18480dfd3f853798bdf071104f6c5c237,Androidroad2fc237fb05fce73d9468a47068713beba3fe54aa;finaldocsсмотретьpublicationrecordsreview179. Guardsвсеterminal;неMainвовремяinstrumentation. Rawprivatereview179. Chrome19вкладок,старые/чужиенетрогать.
+
+Runtimepartial17/3/1255кандидатов/21own/0TG:7searchIssues(site_error/blocked),16pendingотдельныеочереди/деферы,неарифметика17−3. Rooterrornull. APIостатки1890/2420несинхронны02:39/02:52UTC/обабезпауз/reset07UTC.36/48попыток≤15мин/самаядавняя1558с;планPixel31,5/iPhone6,6миннеpublicationlatency. Общая26/104/40–50own/sold/≤15мин/новыйTGGUI/deletionGit НЕзавершена. Следом30sold/дочитать406777/остальные/очередьидоступ.09648/резерв128150684813открыты;отзывыmojibake162/6,19сохранить.
+
 # Продолжение этапа178 — Chrome и гибрид, 25 октября2026
 
 Читать docs/qa/pc-20261025/REVIEW_178.md. Версия прежняя0.174/code174/rules1792965159/History53/Room9/SHA dfc2968f550cb6b76384610fc676dbb60dfa55f2071a8a8b4dfdf88888ff283c. НовогоAPK/правилнет. Толькоemulator-5580;физическийтелефоннеиспользовать,окнаПКнеактивировать. normal/f92/50/48/цены/порядок/seen/баны/ключи сохранить;Pixelpriority18.
