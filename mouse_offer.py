@@ -5,7 +5,7 @@ MODEL = re.compile(r'\b(?:superstrike|(?:superlight|gpx)\s*(?:2|ii)c?\b(?:[\s-]+
 CONNECTOR = re.compile(r'\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)')
 COMPATIBLE = re.compile(r'\b(?:fuer|for|voor|para|pour|per|kompatibel|compatible|fits)\b|\bf\s*\.\s*')
 PACKAGING = {'ovp','verpackung','karton','box','originalverpackung'}
-BUNDLED = {'skates','skate','glides','glide','feet','mouse feet','mausfuesse','mausgleiter','grip','tape','grip tape','receiver','dongle','empfaenger'}
+BUNDLED = {'skates','skate','glides','glide','feet','mouse feet','mausfuesse','mausgleiter','grip','tape','grip tape','receiver','dongle','empfaenger','charging'}
 
 
 def _key(value):
@@ -85,6 +85,18 @@ def bundled_stop_word(title, word, is_bundle=False):
         return bool(device and packaging and device.start()<packaging.start() and not COMPATIBLE.search(title) and not packaging_only(title))
     if word not in BUNDLED or not is_bundle:
         return False
+    if word == 'charging':
+        # Sold 147612748348 is the mouse AND its charging mat. Only this
+        # explicit accessory noun may consume the word; a charging failure,
+        # separate charging adapter/cable or compatibility title must remain.
+        if not device_title(title) or COMPATIBLE.search(title) or packaging_only(title):
+            return False
+        connector=CONNECTOR.search(title)
+        if not connector:
+            return False
+        tail=title[connector.end():]
+        without_mats=re.sub(r'\bcharging[\s-]+(?:mat|matt|pad)s?\b',' ',tail)
+        return (without_mats != tail and not re.search(r'\bcharging\b',title[:connector.start()]+without_mats))
     connector=CONNECTOR.search(title)
     term=re.compile(r'\b'+re.escape(word)+r'\b')
     return bool(connector and not term.search(title[:connector.start()]) and term.search(title[connector.end():]))
