@@ -189,6 +189,20 @@ def groups(config, signature_for, all_products=False):
     return result
 
 
+def _compact_points(points):
+    """Reduce graph density without drawing across an unobserved day."""
+    indices = list(range(0, len(points), 2))
+    if indices and indices[-1] != len(points) - 1:
+        indices.append(len(points) - 1)
+    reduced = []
+    for pos, index in enumerate(indices):
+        point = dict(points[index])
+        if pos and any(p.get('median') is None for p in points[indices[pos-1]+1:index+1]):
+            point['median'] = None
+        reduced.append(point)
+    return reduced
+
+
 def app_snapshots(config, signature_for, now=None, logic_version=None):
     """The APK consumes the exact same deduplicated/MAD-filtered data as Telegram."""
     now = time.time() if now is None else now
@@ -207,24 +221,32 @@ def app_snapshots(config, signature_for, now=None, logic_version=None):
     # for the rest of runtime_status.json; never remove medians or counts.
     def size():
         return len(json.dumps(result, ensure_ascii=False, indent=2).encode('utf8'))
+    # Keep useful listing evidence before spending the budget on six dense
+    # graphs per product. Missing days remain gaps after downsampling.
+    if size() > 600_000:
+        for snapshot in result:
+            for view in snapshot['conditionViews'].values():
+                if len(view['points']) > 2:
+                    view['points'] = _compact_points(view['points'])
     if size() > 600_000:
         for snapshot in result:
             for view in snapshot['conditionViews'].values():
                 if len(view['items']) > 3:
                     view['items'] = view['items'][:3]
                     view['itemsTruncated'] = True
-    if size() > 600_000:
-        for snapshot in result:
-            for view in snapshot['conditionViews'].values():
-                if view['items']:
-                    view['items'] = []
-                    view['itemsTruncated'] = True
     while size() > 600_000 and any(len(view['points']) > 2 for snapshot in result for view in snapshot['conditionViews'].values()):
         for snapshot in result:
             for view in snapshot['conditionViews'].values():
-                points = view['points']
-                if len(points) > 2:
-                    view['points'] = points[::2] + ([points[-1]] if len(points) % 2 == 0 else [])
+                if len(view['points']) > 2:
+                    view['points'] = _compact_points(view['points'])
+    for limit in (1, 0):
+        if size() <= 600_000:
+            break
+        for snapshot in result:
+            for view in snapshot['conditionViews'].values():
+                if len(view['items']) > limit:
+                    view['items'] = view['items'][:limit]
+                    view['itemsTruncated'] = True
     return result
 
 

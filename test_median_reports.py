@@ -55,6 +55,13 @@ class MedianReportsTest(unittest.TestCase):
         self.assertEqual(26, len(snapshots))
         self.assertTrue(all(s['conditionViews']['used7']['count'] == 50 for s in snapshots))
         self.assertTrue(all(s['conditionViews']['used7']['itemsTruncated'] for s in snapshots))
+        self.assertTrue(all(s['conditionViews']['used7']['items'] for s in snapshots))
+
+    def test_compacted_graph_does_not_connect_across_missing_observations(self):
+        points = [dict(day=str(i), median=value) for i, value in enumerate([100, None, 110, 120, 130])]
+        reduced = m._compact_points(points)
+        self.assertEqual(['0', '2', '4'], [p['day'] for p in reduced])
+        self.assertEqual([100, None, 130], [p['median'] for p in reduced])
     def test_condition_views_use_only_known_conditions_and_expose_the_actual_quotes(self):
         rows = []
         for i in range(6):
