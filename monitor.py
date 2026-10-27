@@ -6477,6 +6477,9 @@ def _is_description_blocked(desc_html, category):
     # 198304841229: clear lines describe the PC case's minimalist design,
     # not screen artefacts. Remove only this exact positive design clause.
     desc_norm = re.sub(r"\bminimalistisches\s+design\s*[-–—:]\s*hochwertige\s+materialien,?\s*klare\s+linien\b", " ", desc_norm)
+    # A physical LED light strip on the lid/case is a feature. Remove only its
+    # generic "streifen" token; separate screen stripes and damage still block.
+    desc_norm = re.sub(r"\bled\s+streifen\b(?=\s+(?:auf|an|am)\s+(?:(?:dem|der|den)\s+)?(?:deckel|gehaeuse|rueckseite|cover|lid)\b)", "led beleuchtung", desc_norm)
     if category == "headphones" and _headphone_structure_damaged(desc_norm):
         return True
     # 318450377900: the merchant restricts customer DATA after fulfillment,
