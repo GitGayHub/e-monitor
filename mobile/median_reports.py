@@ -138,10 +138,17 @@ def trend(signatures, now=None, condition=None, window_days=7, include_items=Fal
         for row in rows:
             if end-window_days*DAY < row['observed_at'] <= end:
                 latest[row['item_id']] = row
+        if with_items and condition is not None:
+            condition_excluded_unknown = sum(row['condition_group'] not in ('used', 'new') for row in latest.values())
+            condition_excluded_other = sum(row['condition_group'] in ('used', 'new') and row['condition_group'] != condition
+                                           for row in latest.values())
         if condition is not None:
             latest = {key: row for key, row in latest.items() if row['condition_group'] == condition}
         result = robust_median(row['total'] for row in latest.values())
         if with_items:
+            if condition is not None:
+                result['conditionExcludedUnknown'] = condition_excluded_unknown
+                result['conditionExcludedOther'] = condition_excluded_other
             prices = [row['total'] for row in latest.values()]
             if len(prices) >= MIN_LISTINGS:
                 center = statistics.median(prices)
