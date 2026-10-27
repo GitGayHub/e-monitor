@@ -5576,12 +5576,17 @@ def _fetch_item_details_browser(item_id):
     """One bounded ordinary browser visit; never solve or retry a challenge."""
     if MonitorPassBudget.exhausted() or os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
         return None
+    started = time.monotonic()
+    stage = 'start'
     try:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
+            stage = 'launch'
             browser = p.chromium.launch(headless=True, args=["--disable-dev-shm-usage"],timeout=MonitorPassBudget.milliseconds(30000))
             try:
+                stage = 'new_page'
                 page = browser.new_page(locale="de-DE")
+                stage = 'item_page'
                 page.goto(f"https://www.ebay.de/itm/{item_id}", wait_until="domcontentloaded", timeout=MonitorPassBudget.milliseconds(25000))
                 if MonitorPassBudget.exhausted():
                     _details_event(item_id,'browser_deadline')
@@ -5592,6 +5597,7 @@ def _fetch_item_details_browser(item_id):
                 own_page = page.content()
                 linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
                 if not page.locator("#desc_ifr").count() and linked:
+                    stage = 'linked_description'
                     page.goto(linked, wait_until="domcontentloaded", timeout=MonitorPassBudget.milliseconds(10000))
                     if _is_challenge_html(page.content(), page.url):
                         _details_event(item_id,'browser_description_challenge')
@@ -5599,6 +5605,7 @@ def _fetch_item_details_browser(item_id):
                     desc = page.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
                 else:
                     # Wait only for the seller's own iframe, excluding reviews/recs.
+                    stage = 'description_iframe'
                     page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=MonitorPassBudget.milliseconds(6000))
                     frame = page.frame_locator("#desc_ifr")
                     frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
@@ -5610,7 +5617,8 @@ def _fetch_item_details_browser(item_id):
             finally:
                 browser.close()
     except Exception as exc:
-        logger.warning("HTML browser details unavailable for %s: %s", item_id, type(exc).__name__)
+        logger.warning("HTML browser details unavailable for %s: %s stage=%s elapsed=%.3fs",
+                       item_id, type(exc).__name__, stage, time.monotonic() - started)
         _details_event(item_id,'browser_'+type(exc).__name__)
         return None
 
