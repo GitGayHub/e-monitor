@@ -68,14 +68,19 @@ class MedianReportsTest(unittest.TestCase):
             rows.append(dict(self.row(str(i), 700+i*10), condition='Gebraucht', title=f'Phone {i}'))
             rows.append(dict(self.row(str(i+10), 1200+i*10), condition='Neu', title=f'New phone {i}'))
         rows.append(dict(self.row('99', 1000), condition='', title='Unknown'))
+        rows.append(dict(self.row('100', 1010), condition='Zertifiziert - Refurbished', title='Refurbished'))
         m.record_verified('iphone','sig',rows,self.now)
         data = m.app_snapshots(self.config, lambda _: 'sig', self.now)[0]['conditionViews']
         self.assertEqual(725, data['used7']['median'])
         self.assertEqual(1225, data['new7']['median'])
         self.assertEqual(6, data['used7']['count'])
         self.assertEqual({str(i) for i in range(6)}, {x['itemId'] for x in data['used7']['items']})
-        self.assertEqual(13, data['all7']['count'])
+        self.assertEqual(14, data['all7']['count'])
         self.assertTrue(all(x['condition']=='used' for x in data['used7']['items']))
+        self.assertEqual(2, data['used7']['conditionExcludedUnknown'])
+        self.assertEqual(6, data['used7']['conditionExcludedOther'])
+        self.assertEqual(2, data['new7']['conditionExcludedUnknown'])
+        self.assertEqual(6, data['new7']['conditionExcludedOther'])
 
     def test_older_rows_cannot_be_guessed_as_used(self):
         self.seed()
