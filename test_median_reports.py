@@ -89,6 +89,16 @@ class MedianReportsTest(unittest.TestCase):
         self.assertEqual([],result['items'])
         self.assertIsNone(result['median'])
 
+    def test_previous_rules_are_preserved_but_excluded_from_new_sample(self):
+        with patch.object(price_history, 'HISTORY_VERSION', 53):
+            m.record_verified('iphone','sig',[self.row('old',900)],self.now)
+        self.assertEqual(0,m.trend({'iphone':'sig'},self.now)['count'])
+        m.record_verified('iphone','sig',[self.row('new',1100)],self.now)
+        self.assertEqual(1,m.trend({'iphone':'sig'},self.now)['count'])
+        with price_history._connect() as db:
+            self.assertEqual([(53,'old'),(54,'new')], [tuple(row) for row in db.execute(
+                'select history_version,item_id from median_observations order by history_version')])
+
     def test_explicit_device_use_overrides_only_new_condition_for_median(self):
         actual_style = 'Das Gerät befindet sich in gutem Zustand, da es von Anfang an mit einer Hülle genutzt wurde.'
         self.assertTrue(m.new_condition_conflicts(actual_style))

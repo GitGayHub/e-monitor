@@ -8953,6 +8953,8 @@ async def send_notification(bot, item, search, stats_7d=None, notify_stage="init
         diff_pct = ((median - base_p) / median) * 100
         if diff_pct > 5:
             extra_lines.append(f"🔥 <b>Цена покупки:</b> {price_approx}{base_p:.2f}€ — на {diff_pct:.0f}% ниже медианы цен покупки ({stats_7d['first_date']}–{stats_7d['last_date']})")
+    if not live_bid and (not stats_7d or (stats_7d.get('purchase_snapshots') or 0) < 3):
+        extra_lines.append("ℹ️ Истории цен пока недостаточно для проверки необычно низкой цены.")
 
     # 7. Assemble deep links
     try:
