@@ -1,9 +1,20 @@
-import asyncio, unittest
+import asyncio, tempfile, unittest
+from pathlib import Path
 from unittest.mock import patch, AsyncMock, Mock
-import monitor, price_history
+import price_history, config_manager
+
+# Importing the monitor can initialise history; isolate direct test runs too.
+with tempfile.TemporaryDirectory() as folder, \
+        patch.object(price_history,'DB_PATH',str(Path(folder)/'history.db')), \
+        patch.object(config_manager,'CONFIG_PATH',str(Path(folder)/'config.json')):
+    import monitor
 
 
 class LiveBidHistoryTests(unittest.TestCase):
+    def setUp(self):
+        folder=tempfile.TemporaryDirectory();self.addCleanup(folder.cleanup)
+        db=patch.object(price_history,'DB_PATH',str(Path(folder.name)/'history.db'));db.start();self.addCleanup(db.stop)
+
     def test_purchases_offers_and_bids_are_independent_and_hybrid_prices_projected(self):
         rows=[{'buy_now':True,'auction':False,'best_offer':False,'total_price':1000},
               {'buy_now':True,'auction':False,'best_offer':True,'total_price':900},

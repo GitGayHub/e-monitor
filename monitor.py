@@ -5567,8 +5567,14 @@ def _fetch_item_details_html(item_id):
 
     details = _parse_item_details_html(html, session=session, host=host,item_id=item_id)
     if not _provider_details_complete(details):
-        _details_event(item_id,'seller_description_missing' if not _clean_description(details.get('description') or '') else 'live_price_missing')
-        return _fetch_item_details_browser(item_id)
+        own_description = _clean_description(details.get('description') or '').strip()
+        _details_event(item_id,'seller_description_missing' if not own_description else 'live_price_missing')
+        browser_details = _fetch_item_details_browser(item_id)
+        if browser_details is not None:
+            return browser_details
+        # Preserve an actual seller description for diagnostics/API fallback;
+        # the caller still requires a complete live price and shipping quote.
+        return details if own_description else None
     return details
 
 

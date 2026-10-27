@@ -1,13 +1,39 @@
 import io
 import asyncio
 import json
+import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
-import monitor
+import price_history
+import config_manager
 from pathlib import Path
+
+# Direct unittest invocation must not initialise the user's local history.
+with tempfile.TemporaryDirectory() as folder, \
+        patch.object(price_history,'DB_PATH',str(Path(folder)/'history.db')), \
+        patch.object(config_manager,'CONFIG_PATH',str(Path(folder)/'config.json')):
+    import monitor
 
 
 class HtmlPrimaryTest(unittest.TestCase):
+    def test_incomplete_html_keeps_own_description_if_browser_is_unavailable(self):
+        c=json.loads((Path(__file__).parent/'qa/fixtures/shipping_unconfirmed_oct23.json').read_text(encoding='utf8'))[0]
+        partial=monitor._parse_item_details_html(c['html'],description=c['description'])
+        self.assertFalse(monitor._provider_details_complete(partial))
+        response=MagicMock(status_code=200,text=c['html'],url='https://www.ebay.de/itm/327411626248')
+        session=MagicMock();session.get.return_value=response
+        with patch.object(monitor,'_get_ebay_session',return_value=session), \
+             patch.object(monitor,'_parse_item_details_html',return_value=partial), \
+             patch.object(monitor,'_fetch_item_details_browser',return_value=None) as browser:
+            result=monitor._fetch_item_details_html('327411626248')
+        self.assertEqual(partial,result)
+        self.assertFalse(monitor._provider_details_complete(result))
+        browser.assert_called_once_with('327411626248')
+        with patch.object(monitor,'_get_ebay_session',return_value=session), \
+             patch.object(monitor,'_parse_item_details_html',return_value={'description':''}), \
+             patch.object(monitor,'_fetch_item_details_browser',return_value=None):
+            self.assertIsNone(monitor._fetch_item_details_html('327411626248'))
+
     def test_unknown_html_shipping_uses_api_or_stays_unverified(self):
         c=json.loads((Path(__file__).parent/'qa/fixtures/shipping_unconfirmed_oct23.json').read_text(encoding='utf8'))[0]
         partial=monitor._parse_item_details_html(c['html'],description=c['description'])
@@ -82,6 +108,9 @@ class HtmlPrimaryTest(unittest.TestCase):
             self.assertEqual(case['complete'],monitor._provider_details_complete(case['data']),case['name'])
 
     def setUp(self):
+        folder=tempfile.TemporaryDirectory();self.addCleanup(folder.cleanup)
+        db=patch.object(price_history,'DB_PATH',str(Path(folder.name)/'history.db'));db.start();self.addCleanup(db.stop)
+        keys=patch.object(monitor,'_configured_ebay_api_keys',return_value=[]);keys.start();self.addCleanup(keys.stop)
         self.search = {'id':'qa-phone','query':'phone','filters':{'listing_type':'buy_now'}}
         for name,value in [('_ebay_query_cache',{}),('_item_details_cache',{}),('EBAY_SOURCE','auto'),
                            ('_ebay_block_until',0),('_ebay_api_circuit_open',False)]:
