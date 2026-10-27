@@ -1,10 +1,15 @@
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# Direct execution (python mobile/merge_app_sync_to_config.py) puts only
+# mobile/ on sys.path, while the shared median module lives under ROOT.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 CONFIG_PATH = ROOT / "config.json"
 MANIFEST_PATH = ROOT / "mobile" / "app_sync.json"
 
