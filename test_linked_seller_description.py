@@ -11,6 +11,19 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
     item_id = '147635764543'
     body = '<p>Samsung Galaxy S24 Ultra SM-S928B/DS,12GB /256GB.</p><p>Leichte Schäden im Displayglas. Schäden am Backcover.</p>'
 
+    def test_browser_timeout_reports_stage_without_retrying_or_accepting(self):
+        page=Mock();page.goto.side_effect=TimeoutError()
+        browser=Mock();browser.new_page.return_value=page
+        runtime=Mock();runtime.chromium.launch.return_value=browser
+        context=MagicMock();context.__enter__.return_value=runtime
+        module=Mock();module.sync_playwright.return_value=context
+        with patch.dict(sys.modules,{'playwright.sync_api':module}),patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}),patch.object(monitor.logger,'warning') as warning:
+            result=monitor._fetch_item_details_browser(self.item_id)
+        self.assertIsNone(result)
+        page.goto.assert_called_once()
+        browser.close.assert_called_once()
+        self.assertEqual(('TimeoutError','item_page'),warning.call_args.args[2:4])
+
     def page(self, url):
         return '<h1 class="x-item-title">Samsung Galaxy S24 Ultra SM-S928B/DS</h1><div class="x-price-primary">EUR380,00</div><a href="'+url+'">Zur vollständigen Artikelbeschreibung</a>'
 
