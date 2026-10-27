@@ -80,8 +80,10 @@ def new_condition_conflicts(description):
                 continue
             prefix = sentence[max(start.end(), match.start()-80):match.start()]
             suffix = sentence[match.end():match.end()+30]
+            before_subject = sentence[max(0, start.start()-40):start.start()]
             past_use = (re.search(r'\b(?:wurde|worden|habe|hat|war|was|were|has|have|had)\b', prefix, re.I)
-                        or re.match(r'\s+(?:wurde|worden|habe|hat)\b', suffix, re.I))
+                        or re.match(r'\s+(?:wurde|worden|habe|hat)\b', suffix, re.I)
+                        or re.search(r'\b(?:ich habe|i have|i had)\s*$', before_subject, re.I))
             if past_use and not negation.search(prefix):
                 return True
     return False
