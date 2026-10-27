@@ -12,6 +12,7 @@ import io
 import json
 import math
 import os
+import re
 import statistics
 import tempfile
 import time
@@ -63,6 +64,29 @@ def condition_group(value):
     return 'unknown'
 
 
+def new_condition_conflicts(description):
+    """Find explicit past use of the offered device; never infer a used grade."""
+    text = re.sub(r'\s+', ' ', html.unescape(str(description or '')))
+    subject = re.compile(r'\b(?:das|dieses|mein|the|this|my)\s+(?:ger[aä]t|handy|telefon|smartphone|iphone|device|phone)\b', re.I)
+    usage = re.compile(r'\b(?:genutzt|benutzt|verwendet|used)\b', re.I)
+    negation = re.compile(r'\b(?:nie|niemals|nicht|unbenutzt|ungenutzt|never|not|unused)\b', re.I)
+    other_subject = re.compile(r'\b(?:die|der|das|the|my)\s+(?:hülle|schutzhülle|kabel|ladegerät|akku|case|charger|battery)\s+(?:wurde|war|was|has)\b', re.I)
+    for sentence in re.split(r'[.!?]+', text):
+        start = subject.search(sentence)
+        if not start:
+            continue
+        for match in usage.finditer(sentence, start.end(), min(len(sentence), start.end()+240)):
+            if other_subject.search(sentence[start.end():match.start()]):
+                continue
+            prefix = sentence[max(start.end(), match.start()-80):match.start()]
+            suffix = sentence[match.end():match.end()+30]
+            past_use = (re.search(r'\b(?:wurde|worden|habe|hat|war|was|were|has|have|had)\b', prefix, re.I)
+                        or re.match(r'\s+(?:wurde|worden|habe|hat)\b', suffix, re.I))
+            if past_use and not negation.search(prefix):
+                return True
+    return False
+
+
 def record_verified(search_id, signature, rows, now=None):
     """Only the post-description, post-price, structurally re-filtered projection."""
     now = time.time() if now is None else now
@@ -84,9 +108,12 @@ def record_verified(search_id, signature, rows, now=None):
             continue
         if not math.isfinite(value) or value <= 0 or not row.get('item_id'):
             continue
+        group = condition_group(row.get('condition'))
+        if group == 'new' and row.get('_median_new_condition_conflict'):
+            group = 'unknown'
         values.append((str(search_id), signature, str(row['item_id']), day, now, value,
                        price_history.HISTORY_VERSION, MEDIAN_VERSION,
-                       condition_group(row.get('condition')), str(row.get('title') or '')[:120]))
+                       group, str(row.get('title') or '')[:120]))
     if not values:
         return 0
     init_db()

@@ -89,6 +89,20 @@ class MedianReportsTest(unittest.TestCase):
         self.assertEqual([],result['items'])
         self.assertIsNone(result['median'])
 
+    def test_explicit_device_use_overrides_only_new_condition_for_median(self):
+        actual_style = 'Das Gerät befindet sich in gutem Zustand, da es von Anfang an mit einer Hülle genutzt wurde.'
+        self.assertTrue(m.new_condition_conflicts(actual_style))
+        for text in ('Das Gerät wurde nie benutzt.', 'Dieses Smartphone wurde nicht verwendet.',
+                     'Mein altes Handy wurde genutzt. Das neue Zubehör ist unbenutzt.',
+                     'Das Gerät wurde auf Funktion getestet.', 'Das Gerät wird bei Bedarf mit einer Hülle genutzt.',
+                     'The phone can be used with a protective cover.',
+                     'Das Gerät ist neu, die Hülle wurde zuvor benutzt.'):
+            self.assertFalse(m.new_condition_conflicts(text), text)
+        row = dict(self.row('1', 900), condition='Neu: Sonstige', _median_new_condition_conflict=True)
+        m.record_verified('iphone', 'sig', [row], self.now)
+        self.assertEqual(0, m.trend({'iphone':'sig'}, self.now, condition='new')['count'])
+        self.assertEqual(1, m.trend({'iphone':'sig'}, self.now)['count'])
+
     def test_latest_condition_of_a_lot_wins_before_condition_filtering(self):
         m.record_verified('iphone','sig',[dict(self.row('1',800),condition='Gebraucht')],self.now-m.DAY)
         m.record_verified('iphone','sig',[dict(self.row('1',900),condition='Neu')],self.now)
@@ -297,6 +311,24 @@ class MedianReportsTest(unittest.TestCase):
                 observed={r['item_id']:r['total'] for r in db.execute('select item_id,total from median_observations')}
             self.assertEqual({'seen':45,'expensive':95},observed)
             self.assertIsNone(price_history.get_stats_7d('qa')) # whole population is still incomplete
+
+    def test_verified_pipeline_excludes_conflicting_new_label_only_from_condition_view(self):
+        import config_manager
+        with patch.object(config_manager,'CONFIG_PATH',str(Path(self.temp.name)/'config.json')):
+            import monitor
+            from test_verified_history import VerifiedHistoryTests, HistoryConfig
+        cfg=HistoryConfig()
+        cfg.get_settings=lambda:dict(user_zip='09648',warn_non_eu=False,median_products=['qa'])
+        rows,details=VerifiedHistoryTests().data()
+        details['seen']['condition']='Neu: Sonstige'
+        details['seen']['description']='Logitech Superlight 2. Das Gerät wurde mit einer Hülle genutzt.'
+        search=dict(id='qa',query='logitech superlight 2',filters=dict(category='mice',listing_type='all',limit_price=45,max_price=150))
+        with patch.object(monitor,'config',cfg),patch.object(monitor,'_runtime_errors',[]),patch.object(monitor,'_fetch_item_details',side_effect=lambda i:details[i]):
+            verified=asyncio.run(monitor._verified_history(rows,search))
+            self.assertIn('seen',{row['item_id'] for row in verified})
+            with price_history._connect() as db:
+                row=db.execute('select condition_group,total from median_observations where item_id=?',('seen',)).fetchone()
+            self.assertEqual(('unknown',45),tuple(row))
 
     def test_delivery_status_exposes_uncertain_and_confirmed_counts_without_routes(self):
         self.store.save(dict(schema=1,entries={'x':dict(status='confirmed',confirmedAt=self.now),
