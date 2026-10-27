@@ -69,6 +69,7 @@ def main():
         modules.append("test_live_unstarted_search")
         modules.append("test_laptop_amoled")
         modules.append("test_laptop_led_strip")
+        modules.append("test_touchpad_click_failure")
         modules.append("test_oled_burn_negation")
         modules.append("test_hp_spectre_oled")
         modules.append("test_followup_dispatch")
