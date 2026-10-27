@@ -5596,7 +5596,8 @@ def _fetch_item_details_browser(item_id):
                     return None
                 own_page = page.content()
                 linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
-                if not page.locator("#desc_ifr").count() and linked:
+                iframe_present = bool(page.locator("#desc_ifr").count())
+                if not iframe_present and linked:
                     stage = 'linked_description'
                     page.goto(linked, wait_until="domcontentloaded", timeout=MonitorPassBudget.milliseconds(10000))
                     if _is_challenge_html(page.content(), page.url):
@@ -5605,10 +5606,12 @@ def _fetch_item_details_browser(item_id):
                     desc = page.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
                 else:
                     # Wait only for the seller's own iframe, excluding reviews/recs.
-                    stage = 'description_iframe'
+                    stage = 'description_iframe_scroll' if iframe_present else 'description_iframe_missing'
                     page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=MonitorPassBudget.milliseconds(6000))
                     frame = page.frame_locator("#desc_ifr")
+                    stage = 'description_iframe_wait'
                     frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
+                    stage = 'description_iframe_read'
                     desc = frame.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
                 if not _clean_description(desc).strip():
                     _details_event(item_id,'browser_description_missing')

@@ -24,6 +24,26 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
         browser.close.assert_called_once()
         self.assertEqual(('TimeoutError','item_page'),warning.call_args.args[2:4])
 
+    def test_iframe_timeout_reports_the_operation_without_retry(self):
+        for failure, present, expected in [('scroll', False, 'description_iframe_missing'),
+                                           ('scroll', True, 'description_iframe_scroll'),
+                                           ('wait', True, 'description_iframe_wait'),
+                                           ('read', True, 'description_iframe_read')]:
+            with self.subTest(failure=failure, present=present):
+                page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
+                page.content.return_value='<html><body>item</body></html>'
+                iframe=page.locator.return_value; iframe.count.return_value=int(present)
+                body=page.frame_locator.return_value.locator.return_value
+                {'scroll':iframe.scroll_into_view_if_needed,'wait':body.wait_for,'read':body.inner_html}[failure].side_effect=TimeoutError()
+                browser=Mock(); browser.new_page.return_value=page
+                runtime=Mock(); runtime.chromium.launch.return_value=browser
+                context=MagicMock(); context.__enter__.return_value=runtime
+                module=Mock(); module.sync_playwright.return_value=context
+                with patch.dict(sys.modules,{'playwright.sync_api':module}), patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}), patch.object(monitor.logger,'warning') as warning:
+                    self.assertIsNone(monitor._fetch_item_details_browser(self.item_id))
+                self.assertEqual(('TimeoutError',expected),warning.call_args.args[2:4])
+                page.goto.assert_called_once(); browser.close.assert_called_once()
+
     def page(self, url):
         return '<h1 class="x-item-title">Samsung Galaxy S24 Ultra SM-S928B/DS</h1><div class="x-price-primary">EUR380,00</div><a href="'+url+'">Zur vollständigen Artikelbeschreibung</a>'
 
