@@ -6517,6 +6517,12 @@ def _is_description_blocked(desc_html, category):
     # PS5 Pro 137809113124 includes a controller whose touchpad cannot swipe.
     if re.search(r"\btouchpad\b.{0,180}\bnicht\s+als\s+(?:fingerwisch|wisch|touch)", desc_norm) or re.search(r"\b(?:touchpad|touchscreen|fingerabdrucksensor|fingerprint\s*(?:reader|sensor))\b[^.!?]{0,60}\b(?:funktioniert|reagiert|geht)\s+nicht\b", desc_norm):
         return True
+    # 287559689188: intermittent physical clicks on this touchpad fail.
+    # A troubleshooting conditional is not a statement of this device's fault.
+    for match in re.finditer(r"\b(?:touchpad|trackpad)\s+(?:(?:occasionally|sometimes|intermittently)\s+)?fails\s+to\s+register\s+(?:a\s+)?click\b", desc_norm):
+        prefix = re.split(r"[.!?\n]", desc_norm[:match.start()])[-1]
+        if not re.search(r"\b(?:if|when|should)\b", prefix):
+            return True
     if re.search(r"\bsim(?:\s*(?:karten?|cards?))?\b[^.!?]{0,80}\b(?:nicht(?:\s+mehr)?\s+(?:erkannt|gelesen)|(?:not|no longer)\s+(?:recognized|recognised|detected|working))\b", desc_norm) or re.search(r"\b(?:erkennt|erkennen)\s+(?:keine|keinen|nicht)\s+.{0,20}\bsim\b", desc_norm):
         return True
 
