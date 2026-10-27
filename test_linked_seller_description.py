@@ -44,6 +44,21 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
                 self.assertEqual(('TimeoutError',expected),warning.call_args.args[2:4])
                 page.goto.assert_called_once(); browser.close.assert_called_once()
 
+    def test_iframe_that_appears_late_is_still_read_and_measured(self):
+        page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
+        page.content.return_value='<html><body>item</body></html>'
+        page.locator.return_value.count.return_value=0
+        page.frame_locator.return_value.locator.return_value.inner_html.return_value=self.body
+        browser=Mock(); browser.new_page.return_value=page
+        runtime=Mock(); runtime.chromium.launch.return_value=browser
+        context=MagicMock(); context.__enter__.return_value=runtime
+        module=Mock(); module.sync_playwright.return_value=context
+        with patch.dict(sys.modules,{'playwright.sync_api':module}), patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}), patch.object(monitor.logger,'info') as info:
+            details=monitor._fetch_item_details_browser(self.item_id)
+        self.assertIn('Schäden am Backcover',details['description'])
+        self.assertTrue(any('iframe appeared' in call.args[0] for call in info.call_args_list))
+        page.goto.assert_called_once(); browser.close.assert_called_once()
+
     def page(self, url):
         return '<h1 class="x-item-title">Samsung Galaxy S24 Ultra SM-S928B/DS</h1><div class="x-price-primary">EUR380,00</div><a href="'+url+'">Zur vollständigen Artikelbeschreibung</a>'
 
