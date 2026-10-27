@@ -9473,6 +9473,19 @@ async def _verified_history(items, search, on_verified=None, max_candidates=None
             if on_verified is not None:
                 for row in checked:
                     await on_verified(row)
+            # Median state is derived only after ready notifications are sent.
+            # Contradictory seller text makes a new-labelled quote unknown,
+            # without changing filtering, alert eligibility or old history.
+            try:
+                from mobile.median_reports import condition_group, new_condition_conflicts
+                if any(condition_group(row.get('condition')) == 'new' for row in checked):
+                    conflict = new_condition_conflicts(_clean_description((details or {}).get('description') or ''))
+                    for row in checked:
+                        row['_median_new_condition_conflict'] = conflict
+            except Exception:
+                for row in checked:
+                    row['_median_new_condition_conflict'] = True
+                logger.warning('Median condition evidence unavailable; new-labelled quotes remain unclassified')
     if resumable and deferred == 0:
         browse_access.finish_normal_candidates(queue_id,resume_context,EBAY_MARKETPLACE_ID)
     context_unchanged = signature == _history_filter_signature(search)
