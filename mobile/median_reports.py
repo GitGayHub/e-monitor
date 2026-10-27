@@ -47,6 +47,20 @@ def init_db():
             history_version INTEGER NOT NULL, median_version INTEGER NOT NULL,
             PRIMARY KEY(search_id,signature,item_id,day,history_version,median_version))''')
         db.execute('CREATE INDEX IF NOT EXISTS idx_median_observed ON median_observations(observed_at)')
+        columns = {row[1] for row in db.execute('PRAGMA table_info(median_observations)')}
+        for name in ('condition_group', 'title'):
+            if name not in columns:
+                db.execute(f'ALTER TABLE median_observations ADD COLUMN {name} TEXT')
+
+
+def condition_group(value):
+    """Only classify explicitly labelled conditions; old/unknown rows remain unknown."""
+    text = str(value or '').strip().casefold()
+    if text in ('new', 'neu', 'neu: sonstige', 'neu: sonstige (siehe artikelbeschreibung)', '1000', '1500'):
+        return 'new'
+    if text in ('used', 'gebraucht', '3000') or text.startswith('gebraucht ') or text.startswith('gebraucht:'):
+        return 'used'
+    return 'unknown'
 
 
 def record_verified(search_id, signature, rows, now=None):
@@ -71,12 +85,19 @@ def record_verified(search_id, signature, rows, now=None):
         if not math.isfinite(value) or value <= 0 or not row.get('item_id'):
             continue
         values.append((str(search_id), signature, str(row['item_id']), day, now, value,
-                       price_history.HISTORY_VERSION, MEDIAN_VERSION))
+                       price_history.HISTORY_VERSION, MEDIAN_VERSION,
+                       condition_group(row.get('condition')), str(row.get('title') or '')[:120]))
     if not values:
         return 0
     init_db()
     with price_history._DB_LOCK, price_history._connect() as db:
-        db.executemany('INSERT OR REPLACE INTO median_observations VALUES (?,?,?,?,?,?,?,?)', values)
+        db.executemany('''INSERT INTO median_observations
+            (search_id,signature,item_id,day,observed_at,total,history_version,median_version,condition_group,title)
+            VALUES (?,?,?,?,?,?,?,?,?,?)
+            ON CONFLICT(search_id,signature,item_id,day,history_version,median_version)
+            DO UPDATE SET observed_at=excluded.observed_at, total=excluded.total,
+                condition_group=excluded.condition_group, title=excluded.title
+            WHERE excluded.observed_at >= median_observations.observed_at''', values)
         db.execute('DELETE FROM median_observations WHERE observed_at < ?', (now - 60 * DAY,))
     return len({row[2] for row in values})
 
@@ -95,31 +116,55 @@ def robust_median(values):
                 count=len(kept), excluded=len(values) - len(kept))
 
 
-def trend(signatures, now=None):
-    now = time.time() if now is None else now
+def _trend_rows(signatures, now):
     init_db()
     rows = []
     with price_history._DB_LOCK, price_history._connect() as db:
         for search_id, signature in signatures.items():
-            rows.extend(db.execute('''SELECT item_id, observed_at, total FROM median_observations
+            rows.extend(db.execute('''SELECT item_id, observed_at, total, condition_group, title FROM median_observations
                 WHERE search_id=? AND signature=? AND history_version=? AND median_version=?
                   AND observed_at>=? AND observed_at<=?''',
-                (search_id, signature, price_history.HISTORY_VERSION, MEDIAN_VERSION, now-37*DAY, now)).fetchall())
-    def window(end):
+                (search_id, signature, price_history.HISTORY_VERSION, MEDIAN_VERSION, now-60*DAY, now)).fetchall())
+    return sorted(rows, key=lambda row: row['observed_at'])
+
+
+def trend(signatures, now=None, condition=None, window_days=7, include_items=False, _rows=None):
+    now = time.time() if now is None else now
+    rows = _trend_rows(signatures, now) if _rows is None else _rows
+    def window(end, with_items=False):
         # The same listing in several aliases/formats and 200 repeated sweeps
         # still gets one vote, using its most recent verified quote in the window.
         latest = {}
-        for row in sorted(rows, key=lambda r: r['observed_at']):
-            if end-7*DAY < row['observed_at'] <= end:
-                latest[row['item_id']] = row['total']
-        return robust_median(latest.values())
+        for row in rows:
+            if end-window_days*DAY < row['observed_at'] <= end:
+                latest[row['item_id']] = row
+        if condition is not None:
+            latest = {key: row for key, row in latest.items() if row['condition_group'] == condition}
+        result = robust_median(row['total'] for row in latest.values())
+        if with_items:
+            prices = [row['total'] for row in latest.values()]
+            if len(prices) >= MIN_LISTINGS:
+                center = statistics.median(prices)
+                mad = statistics.median(abs(x-center) for x in prices)
+                radius = max(center*.25, 3.5*1.4826*mad)
+                kept = [row for row in latest.values() if abs(row['total']-center) <= radius]
+            else:
+                kept = list(latest.values())
+            result['items'] = [dict(itemId=row['item_id'], title=row['title'] or '', price=row['total'],
+                                    observedAt=datetime.fromtimestamp(row['observed_at'],timezone.utc).isoformat(timespec='seconds'),
+                                    condition=row['condition_group'] or 'unknown')
+                               for row in sorted(kept,key=lambda r:r['observed_at'],reverse=True)[:10]]
+            result['itemsTruncated'] = len(kept) > 10
+        return result
     today = datetime.fromtimestamp(now, timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     points = []
     for offset in range(29, -1, -1):
         day = today - timedelta(days=offset)
         end = min(now, (day + timedelta(days=1)).timestamp() - .001)
-        points.append(dict(day=day.date().isoformat(), **window(end)))
-    return dict(**window(now), points=points, windowDays=7, minimum=MIN_LISTINGS)
+        point = window(end)
+        point.pop('items', None); point.pop('itemsTruncated', None)
+        points.append(dict(day=day.date().isoformat(), **point))
+    return dict(**window(now, include_items), points=points, windowDays=window_days, minimum=MIN_LISTINGS)
 
 
 def groups(config, signature_for, all_products=False):
@@ -147,12 +192,40 @@ def groups(config, signature_for, all_products=False):
 def app_snapshots(config, signature_for, now=None, logic_version=None):
     """The APK consumes the exact same deduplicated/MAD-filtered data as Telegram."""
     now = time.time() if now is None else now
-    return [dict(searchIds=list(group['signatures']), title=group['title'],
-                 settingsRevision=config.get('mobile_settings_revision'), logicVersion=logic_version,
-                 historyVersion=price_history.HISTORY_VERSION,
-                 generatedAt=datetime.fromtimestamp(now, timezone.utc).isoformat(timespec='seconds'),
-                 **trend(group['signatures'], now))
-            for group in groups(config, signature_for, all_products=True)]
+    result = []
+    for group in groups(config, signature_for, all_products=True):
+        rows = _trend_rows(group['signatures'], now)
+        result.append(dict(searchIds=list(group['signatures']), title=group['title'],
+            settingsRevision=config.get('mobile_settings_revision'), logicVersion=logic_version,
+            historyVersion=price_history.HISTORY_VERSION,
+            generatedAt=datetime.fromtimestamp(now, timezone.utc).isoformat(timespec='seconds'),
+            **trend(group['signatures'], now, _rows=rows),
+            conditionViews={condition + str(days): trend(group['signatures'], now, None if condition == 'all' else condition,
+                                                         window_days=days, include_items=True, _rows=rows)
+                            for condition in ('all','used','new') for days in (7,30)}))
+    # GitHub's contents API stops returning inline data over 1 MiB. Keep room
+    # for the rest of runtime_status.json; never remove medians or counts.
+    def size():
+        return len(json.dumps(result, ensure_ascii=False, indent=2).encode('utf8'))
+    if size() > 600_000:
+        for snapshot in result:
+            for view in snapshot['conditionViews'].values():
+                if len(view['items']) > 3:
+                    view['items'] = view['items'][:3]
+                    view['itemsTruncated'] = True
+    if size() > 600_000:
+        for snapshot in result:
+            for view in snapshot['conditionViews'].values():
+                if view['items']:
+                    view['items'] = []
+                    view['itemsTruncated'] = True
+    while size() > 600_000 and any(len(view['points']) > 2 for snapshot in result for view in snapshot['conditionViews'].values()):
+        for snapshot in result:
+            for view in snapshot['conditionViews'].values():
+                points = view['points']
+                if len(points) > 2:
+                    view['points'] = points[::2] + ([points[-1]] if len(points) % 2 == 0 else [])
+    return result
 
 
 def delivery_status(path=None):
@@ -222,6 +295,7 @@ class DeliveryStore:
 
 def caption(title, data, interval):
     lines = [f'📈 <b>{html.escape(title[:140])}</b>', 'Медиана проверенных цен покупки с доставкой, €',
+             'Общая выборка без дополнительного отбора по состоянию.',
              'Скользящее окно: 7 дней · даты графика: UTC']
     if data['median'] is None:
         lines.append(f"Пока недостаточно данных: {data['count']} лотов после отсева, нужно минимум {MIN_LISTINGS}.")

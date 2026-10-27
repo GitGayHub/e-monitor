@@ -1,6 +1,10 @@
 import asyncio
 import copy
 import json
+import os
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,6 +16,23 @@ from mobile import build_app_sync as build, merge_app_sync_to_config as merge
 
 
 class MedianReportsTest(unittest.TestCase):
+    def test_direct_sync_script_imports_median_preferences(self):
+        root = Path(self.temp.name) / 'standalone'
+        mobile = root / 'mobile'
+        mobile.mkdir(parents=True)
+        source = Path(merge.__file__).resolve().parent
+        for name in ('merge_app_sync_to_config.py', 'median_reports.py'):
+            shutil.copy2(source / name, mobile / name)
+        shutil.copy2(Path(price_history.__file__), root / 'price_history.py')
+        (mobile / 'app_sync.json').write_text(json.dumps(dict(schema=1, searches=[], config={})), encoding='utf-8')
+        (root / 'config.json').write_text(json.dumps(dict(searches=[], settings={})), encoding='utf-8')
+        env = dict(os.environ)
+        env.pop('PYTHONPATH', None)
+        result = subprocess.run([sys.executable, str(mobile / 'merge_app_sync_to_config.py')],
+                                cwd=root, env=env, capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual([], json.loads((root / 'config.json').read_text(encoding='utf-8'))['searches'])
+
     def test_app_and_telegram_share_exact_data_without_forcing_subscription(self):
         self.seed()
         self.config['settings']['median_products'] = []
@@ -22,6 +43,67 @@ class MedianReportsTest(unittest.TestCase):
         for key in ('median', 'count', 'excluded', 'points'):
             self.assertEqual(expected[key], data[0][key])
         self.assertEqual(['iphone'], data[0]['searchIds'])
+
+    def test_many_products_keep_status_bounded_without_changing_counts(self):
+        config = dict(settings={}, searches=[dict(id=f'p{i}',query=f'product {i}',enabled=True,filters={}) for i in range(26)])
+        rows = [dict(item_id=str(i), observed_at=self.now-i, total=1000+i%20,
+                     condition_group='used' if i % 2 else 'new', title='Пример' * 20) for i in range(100)]
+        with patch.object(m, '_trend_rows', return_value=rows):
+            snapshots = m.app_snapshots(config, lambda _: 'sig', self.now)
+        size = len(json.dumps(snapshots, ensure_ascii=False, indent=2).encode('utf8'))
+        self.assertLessEqual(size, 600_000)
+        self.assertEqual(26, len(snapshots))
+        self.assertTrue(all(s['conditionViews']['used7']['count'] == 50 for s in snapshots))
+        self.assertTrue(all(s['conditionViews']['used7']['itemsTruncated'] for s in snapshots))
+    def test_condition_views_use_only_known_conditions_and_expose_the_actual_quotes(self):
+        rows = []
+        for i in range(6):
+            rows.append(dict(self.row(str(i), 700+i*10), condition='Gebraucht', title=f'Phone {i}'))
+            rows.append(dict(self.row(str(i+10), 1200+i*10), condition='Neu', title=f'New phone {i}'))
+        rows.append(dict(self.row('99', 1000), condition='', title='Unknown'))
+        m.record_verified('iphone','sig',rows,self.now)
+        data = m.app_snapshots(self.config, lambda _: 'sig', self.now)[0]['conditionViews']
+        self.assertEqual(725, data['used7']['median'])
+        self.assertEqual(1225, data['new7']['median'])
+        self.assertEqual(6, data['used7']['count'])
+        self.assertEqual({str(i) for i in range(6)}, {x['itemId'] for x in data['used7']['items']})
+        self.assertEqual(13, data['all7']['count'])
+        self.assertTrue(all(x['condition']=='used' for x in data['used7']['items']))
+
+    def test_older_rows_cannot_be_guessed_as_used(self):
+        self.seed()
+        result=m.trend({'iphone':'sig'},self.now,condition='used',include_items=True)
+        self.assertEqual(0,result['count'])
+        self.assertEqual([],result['items'])
+        self.assertIsNone(result['median'])
+
+    def test_latest_condition_of_a_lot_wins_before_condition_filtering(self):
+        m.record_verified('iphone','sig',[dict(self.row('1',800),condition='Gebraucht')],self.now-m.DAY)
+        m.record_verified('iphone','sig',[dict(self.row('1',900),condition='Neu')],self.now)
+        self.assertEqual(0,m.trend({'iphone':'sig'},self.now,condition='used')['count'])
+        self.assertEqual(1,m.trend({'iphone':'sig'},self.now,condition='new')['count'])
+
+    def test_older_same_day_observation_cannot_replace_newer_quote(self):
+        m.record_verified('iphone','sig',[dict(self.row('1',900),condition='Neu',title='Latest')],self.now)
+        m.record_verified('iphone','sig',[dict(self.row('1',800),condition='Gebraucht',title='Older')],self.now-1)
+        result=m.trend({'iphone':'sig'},self.now,condition='new',include_items=True)
+        self.assertEqual(1,result['count'])
+        self.assertEqual(900,result['items'][0]['price'])
+        self.assertEqual('Latest',result['items'][0]['title'])
+        self.assertEqual(0,m.trend({'iphone':'sig'},self.now,condition='used')['count'])
+
+    def test_existing_history_migrates_without_guessing_its_condition(self):
+        price_history.init_db()
+        with price_history._connect() as db:
+            db.execute('''CREATE TABLE median_observations (
+                search_id TEXT, signature TEXT, item_id TEXT, day TEXT, observed_at REAL,
+                total REAL, history_version INTEGER, median_version INTEGER,
+                PRIMARY KEY(search_id,signature,item_id,day,history_version,median_version))''')
+            db.execute('INSERT INTO median_observations VALUES (?,?,?,?,?,?,?,?)',
+                       ('iphone','sig','1','2024-10-04',self.now,900,price_history.HISTORY_VERSION,m.MEDIAN_VERSION))
+        m.record_verified('iphone','sig',[dict(self.row('2',800), condition='Gebraucht', title='Phone')],self.now)
+        self.assertEqual(1,m.trend({'iphone':'sig'},self.now,condition='used')['count'])
+        self.assertEqual(2,m.trend({'iphone':'sig'},self.now)['count'])
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
