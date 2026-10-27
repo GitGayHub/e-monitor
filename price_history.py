@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "price_history.db")
-HISTORY_VERSION = 53  # Unknown city words cannot establish EU membership or fees.
+HISTORY_VERSION = 54  # Revalidate observations after the touchpad defect rule.
 _DB_LOCK = threading.Lock()
 
 

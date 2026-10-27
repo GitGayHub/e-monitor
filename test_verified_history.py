@@ -36,6 +36,15 @@ class VerifiedHistoryTests(unittest.TestCase):
         self.assertEqual(105,price_history.get_median_7d('qa','scope'))
         self.assertEqual(1,price_history.get_stats_7d('qa','scope')['snapshots'])
         self.assertIsNone(price_history.get_stats_7d('qa','another-model'))
+    def test_old_rule_cohort_is_preserved_but_not_used_for_new_median(self):
+        with patch.object(price_history, 'HISTORY_VERSION', 53):
+            self.snapshot([900],verified=True,validation_complete=True,filter_signature='scope')
+        self.assertIsNone(price_history.get_stats_7d('qa','scope'))
+        self.snapshot([1100],verified=True,validation_complete=True,filter_signature='scope')
+        self.assertEqual(1100,price_history.get_median_7d('qa','scope'))
+        with price_history._connect() as db:
+            self.assertEqual([(53,900.0),(54,1100.0)], [tuple(row) for row in db.execute(
+                'select history_version,median_sofort from price_snapshots order by history_version')])
     def test_auction_snapshots_do_not_inflate_purchase_confidence(self):
         self.snapshot([1000],verified=True,validation_complete=True)
         for _ in range(3):price_history.record_snapshot('qa',[],[],[5],1,verified=True,validation_complete=True)

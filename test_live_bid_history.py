@@ -53,6 +53,20 @@ class LiveBidHistoryTests(unittest.TestCase):
         self.assertIn('100.00€ — на 17%',text)
         self.assertNotIn('на 33%',text)
 
+    def test_missing_current_history_is_visible_without_changing_auction_messages(self):
+        item={'item_id':'fixed-qa','title':'Sony DualSense','price':80,'shipping_cost':20,'total_price':100,'buy_now':True,'auction':False,'best_offer':False,'seller_name':'qa','condition':'Gebraucht','location':'DE'}
+        bot=Mock();bot.get_me=AsyncMock(return_value=Mock(username='isolated'))
+        search={'id':'qa','query':'dualsense','filters':{}}
+        for stats, expected in [(None,True),({'median':120,'first_date':'a','last_date':'b','purchase_snapshots':2},True),
+                                ({'median':120,'first_date':'a','last_date':'b','purchase_snapshots':3},False)]:
+            with self.subTest(stats=stats), patch.object(monitor,'is_outlier',return_value=False), patch.object(monitor,'safe_send_telegram',new=AsyncMock(return_value=Mock(message_id=1))) as sender:
+                self.assertTrue(asyncio.run(monitor.send_notification(bot,item,search,stats)))
+                self.assertEqual(expected,'Истории цен пока недостаточно' in sender.await_args.args[2])
+        item.update(buy_now=False,auction=True)
+        with patch.object(monitor,'safe_send_telegram',new=AsyncMock(return_value=Mock(message_id=1))) as sender:
+            self.assertTrue(asyncio.run(monitor.send_notification(bot,item,search,None)))
+            self.assertNotIn('Истории цен пока недостаточно',sender.await_args.args[2])
+
     def test_user_screenshot_parts_cannot_notify_even_with_empty_seen(self):
         item={'item_id':'237099772350','title':'Logitech X Superlight 2 Ersatzkufen für Maus','price':13.91,'shipping_cost':6.06,'total_price':29.56,
               'buy_now':True,'auction':False,'best_offer':False,'seller_name':'polarsector','location':'GB','condition':'Neu'}
