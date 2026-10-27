@@ -71,7 +71,19 @@ def new_condition_conflicts(description):
     usage = re.compile(r'\b(?:genutzt|benutzt|verwendet|used)\b', re.I)
     negation = re.compile(r'\b(?:nie|niemals|nicht|unbenutzt|ungenutzt|never|not|unused)\b', re.I)
     other_subject = re.compile(r'\b(?:die|der|das|the|my)\s+(?:hülle|schutzhülle|kabel|ladegerät|akku|case|charger|battery)\s+(?:wurde|war|was|has)\b', re.I)
+    # A seller can explicitly say "meinen Dell ..., den ich ... genutzt habe"
+    # instead of naming "das Gerät". Keep the relative clause tied to a device
+    # and do not transfer an accessory's use to the offered device.
+    relative_use = re.compile(
+        r'\b(?:meinen|meinem|mein|mein\s+altes|das|dieses)\s+'
+        r'(?:dell|laptop|notebook|computer|iphone|handy|smartphone|telefon|ger[aä]t)\b'
+        r'(?P<device>[^,.;!?]{0,100}),\s*(?:den|das|welches)\s+ich\b'
+        r'(?P<use>[^,.;!?]{0,100})\b(?:genutzt|benutzt|verwendet)\s+(?:habe|hatte)\b', re.I)
     for sentence in re.split(r'[.!?]+', text):
+        for match in relative_use.finditer(sentence):
+            if (not negation.search(match.group('use')) and
+                    not re.search(r'\b(?:hülle|schutzhülle|kabel|ladegerät|akku|case|charger|battery)\b', match.group('device'), re.I)):
+                return True
         start = subject.search(sentence)
         if not start:
             continue

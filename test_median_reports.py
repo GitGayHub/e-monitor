@@ -93,11 +93,15 @@ class MedianReportsTest(unittest.TestCase):
         actual_style = 'Das Gerät befindet sich in gutem Zustand, da es von Anfang an mit einer Hülle genutzt wurde.'
         self.assertTrue(m.new_condition_conflicts(actual_style))
         self.assertTrue(m.new_condition_conflicts('Ich habe das Gerät drei Monate benutzt.'))
+        self.assertTrue(m.new_condition_conflicts('Ich verkaufe meinen Dell 14 Premium, den ich seit Dezember 2025 privat genutzt habe.'))
         for text in ('Das Gerät wurde nie benutzt.', 'Dieses Smartphone wurde nicht verwendet.',
                      'Mein altes Handy wurde genutzt. Das neue Zubehör ist unbenutzt.',
                      'Das Gerät wurde auf Funktion getestet.', 'Das Gerät wird bei Bedarf mit einer Hülle genutzt.',
                      'The phone can be used with a protective cover.',
-                     'Das Gerät ist neu, die Hülle wurde zuvor benutzt.', 'Ich habe das Gerät nie benutzt.'):
+                     'Das Gerät ist neu, die Hülle wurde zuvor benutzt.', 'Ich habe das Gerät nie benutzt.',
+                     'Ich verkaufe meinen Dell, den ich nie benutzt habe.',
+                     'Ich verkaufe meinen Dell mit dem Akku, den ich zuvor benutzt habe.',
+                     'Ich verkaufe mein Ladegerät, das ich privat genutzt habe.'):
             self.assertFalse(m.new_condition_conflicts(text), text)
         row = dict(self.row('1', 900), condition='Neu: Sonstige', _median_new_condition_conflict=True)
         m.record_verified('iphone', 'sig', [row], self.now)
