@@ -5607,7 +5607,10 @@ def _fetch_item_details_browser(item_id):
                 else:
                     # Wait only for the seller's own iframe, excluding reviews/recs.
                     stage = 'description_iframe_scroll' if iframe_present else 'description_iframe_missing'
+                    iframe_wait_started = time.monotonic()
                     page.locator("#desc_ifr").scroll_into_view_if_needed(timeout=MonitorPassBudget.milliseconds(6000))
+                    if not iframe_present:
+                        logger.info("HTML browser description iframe appeared for %s after %.3fs", item_id, time.monotonic() - iframe_wait_started)
                     frame = page.frame_locator("#desc_ifr")
                     stage = 'description_iframe_wait'
                     frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
