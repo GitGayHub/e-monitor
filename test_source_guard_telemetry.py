@@ -15,6 +15,7 @@ class SourceGuardTelemetryTests(unittest.TestCase):
             'browser_untrusted_description_page', 'browser_description_page_changed',
             'browser_untrusted_description_frame', 'browser_description_frame_changed',
             'browser_source_verified_link', 'browser_source_verified_frame',
+            'browser_shadow_fresh_eligible', 'browser_shadow_check_failed',
         )
         with patch.object(monitor.logger, 'info') as info:
             for reason in reasons:
