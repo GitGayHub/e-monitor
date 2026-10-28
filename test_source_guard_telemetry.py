@@ -10,7 +10,7 @@ class SourceGuardTelemetryTests(unittest.TestCase):
         reasons = (
             'seller_description_untrusted_url', 'seller_description_untrusted_response',
             'seller_description_untrusted_redirect', 'seller_description_redirect_limit',
-            'http_source_verified', 'browser_untrusted_item_page',
+            'http_source_verified', 'html_untrusted_item_page', 'browser_untrusted_item_page',
             'browser_untrusted_description_page', 'browser_description_page_changed',
             'browser_untrusted_description_frame', 'browser_description_frame_changed',
             'browser_source_verified_link', 'browser_source_verified_frame',
