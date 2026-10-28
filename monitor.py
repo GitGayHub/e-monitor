@@ -5569,7 +5569,7 @@ def _fetch_item_details_html(item_id):
     if not _provider_details_complete(details):
         own_description = _clean_description(details.get('description') or '').strip()
         _details_event(item_id,'seller_description_missing' if not own_description else 'live_price_missing')
-        browser_details = _fetch_item_details_browser(item_id)
+        browser_details = _fetch_item_details_browser(item_id, known_description=details.get('description') if own_description else None)
         if browser_details is not None:
             return browser_details
         # Preserve an actual seller description for diagnostics/API fallback;
@@ -5578,7 +5578,7 @@ def _fetch_item_details_html(item_id):
     return details
 
 
-def _fetch_item_details_browser(item_id):
+def _fetch_item_details_browser(item_id, known_description=None):
     """One bounded ordinary browser visit; never solve or retry a challenge."""
     if MonitorPassBudget.exhausted() or os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
         return None
@@ -5601,6 +5601,19 @@ def _fetch_item_details_browser(item_id):
                     _details_event(item_id,'browser_challenge')
                     return None
                 own_page = page.content()
+                parsed_url = urllib.parse.urlsplit(page.url)
+                own_item = (parsed_url.scheme == 'https' and parsed_url.hostname in ('www.ebay.de', 'ebay.de') and
+                            not parsed_url.username and not parsed_url.password and parsed_url.port in (None, 443) and
+                            re.fullmatch(r'/itm/(?:[^/]+/)?' + re.escape(str(item_id)) + r'/?', parsed_url.path))
+                if own_item and _clean_description(known_description or '').strip():
+                    # The HTTP request already read this item's own seller body.
+                    # Try the fresh browser quote first; an incomplete quote still
+                    # follows the original iframe/link path and API fallback.
+                    recovered = _parse_item_details_html(own_page, description=known_description, item_id=item_id)
+                    if _provider_details_complete(recovered):
+                        logger.info('HTML browser quote recovered using previously read own description for %s', item_id)
+                        _details_event(item_id, 'browser_quote_with_known_description')
+                        return recovered
                 linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
                 iframe_present = bool(page.locator("#desc_ifr").count())
                 if not iframe_present and linked:

@@ -11,6 +11,70 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
     item_id = '147635764543'
     body = '<p>Samsung Galaxy S24 Ultra SM-S928B/DS,12GB /256GB.</p><p>Leichte Schäden im Displayglas. Schäden am Backcover.</p>'
 
+    def test_existing_own_body_can_use_complete_browser_quote_without_waiting_for_iframe(self):
+        page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
+        page.content.return_value='<html><body>same item page</body></html>'
+        browser=Mock(); browser.new_page.return_value=page
+        runtime=Mock(); runtime.chromium.launch.return_value=browser
+        context=MagicMock(); context.__enter__.return_value=runtime
+        module=Mock(); module.sync_playwright.return_value=context
+        complete={'description':self.body,'price':{'value':'400','currency':'EUR'}}
+        with patch.dict(sys.modules,{'playwright.sync_api':module}), patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}), \
+             patch.object(monitor,'_parse_item_details_html',return_value=complete) as parse:
+            result=monitor._fetch_item_details_browser(self.item_id, known_description=self.body)
+        self.assertEqual(complete,result)
+        parse.assert_called_once_with(page.content.return_value,description=self.body,item_id=self.item_id)
+        page.locator.assert_not_called(); browser.close.assert_called_once()
+
+    def test_unconfirmed_browser_quote_still_reads_late_iframe(self):
+        page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
+        page.content.return_value='<html><body>same item page</body></html>'
+        page.locator.return_value.count.return_value=0
+        page.frame_locator.return_value.locator.return_value.inner_html.return_value=self.body
+        browser=Mock(); browser.new_page.return_value=page
+        runtime=Mock(); runtime.chromium.launch.return_value=browser
+        context=MagicMock(); context.__enter__.return_value=runtime
+        module=Mock(); module.sync_playwright.return_value=context
+        partial={'description':self.body,'htmlMoneyIncomplete':True}
+        with patch.dict(sys.modules,{'playwright.sync_api':module}), patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}), \
+             patch.object(monitor,'_parse_item_details_html',return_value=partial):
+            result=monitor._fetch_item_details_browser(self.item_id, known_description=self.body)
+        self.assertEqual(partial,result)
+        page.locator.return_value.scroll_into_view_if_needed.assert_called_once()
+        page.frame_locator.return_value.locator.return_value.inner_html.assert_called_once()
+        browser.close.assert_called_once()
+
+    def test_real_parser_requires_confirmed_browser_shipping_for_recovered_body(self):
+        page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
+        page.content.return_value=('<h1>Samsung Galaxy S24 Ultra</h1>'
+            '<div class="x-price-primary">EUR 380,00</div>'
+            '<div class="ux-labels-values--shipping">Versand: EUR 6,19</div>')
+        browser=Mock(); browser.new_page.return_value=page
+        runtime=Mock(); runtime.chromium.launch.return_value=browser
+        context=MagicMock(); context.__enter__.return_value=runtime
+        module=Mock(); module.sync_playwright.return_value=context
+        with patch.dict(sys.modules,{'playwright.sync_api':module}), patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}):
+            result=monitor._fetch_item_details_browser(self.item_id, known_description=self.body)
+        self.assertTrue(monitor._provider_details_complete(result))
+        self.assertEqual(380.0,float(result['price']['value']))
+        self.assertEqual(6.19,float(result['htmlShippingCost']['value']))
+        self.assertIn('Schäden am Backcover',result['description'])
+        page.locator.assert_not_called(); browser.close.assert_called_once()
+
+    def test_redirect_to_a_different_item_never_combines_its_quote_with_old_body(self):
+        page=Mock(); page.url='https://www.ebay.de/itm/123456789012'
+        page.content.return_value='<html><body>different item</body></html>'
+        page.locator.return_value.count.return_value=0
+        page.locator.return_value.scroll_into_view_if_needed.side_effect=TimeoutError()
+        browser=Mock(); browser.new_page.return_value=page
+        runtime=Mock(); runtime.chromium.launch.return_value=browser
+        context=MagicMock(); context.__enter__.return_value=runtime
+        module=Mock(); module.sync_playwright.return_value=context
+        with patch.dict(sys.modules,{'playwright.sync_api':module}), patch.dict('os.environ',{'EBAY_HTML_PLAYWRIGHT':'1'}), \
+             patch.object(monitor,'_parse_item_details_html') as parse:
+            self.assertIsNone(monitor._fetch_item_details_browser(self.item_id, known_description=self.body))
+        parse.assert_not_called(); browser.close.assert_called_once()
+
     def test_browser_timeout_reports_stage_without_retrying_or_accepting(self):
         page=Mock();page.goto.side_effect=TimeoutError()
         browser=Mock();browser.new_page.return_value=page

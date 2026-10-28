@@ -28,7 +28,7 @@ class HtmlPrimaryTest(unittest.TestCase):
             result=monitor._fetch_item_details_html('327411626248')
         self.assertEqual(partial,result)
         self.assertFalse(monitor._provider_details_complete(result))
-        browser.assert_called_once_with('327411626248')
+        browser.assert_called_once_with('327411626248', known_description=partial['description'])
         with patch.object(monitor,'_get_ebay_session',return_value=session), \
              patch.object(monitor,'_parse_item_details_html',return_value={'description':''}), \
              patch.object(monitor,'_fetch_item_details_browser',return_value=None):
