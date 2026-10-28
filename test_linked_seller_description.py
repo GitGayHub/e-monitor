@@ -64,7 +64,7 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
 
     def test_real_http_full_description_link_is_read_over_https(self):
         url='http://itm.ebaydesc.com/itmdesc/'+self.item_id+'?t=0&category=9355&seller=moesyzlake&secureDesc=0'
-        session=Mock();session.get.return_value=Mock(status_code=200,text=self.body)
+        session=Mock();session.get.return_value=Mock(status_code=200,text=self.body,url='https:'+url.split(':',1)[1])
         details=monitor._parse_item_details_html(self.page(url),session=session,item_id=self.item_id)
         self.assertIn('Schäden am Backcover',details['description'])
         self.assertTrue(monitor._is_description_blocked(details['description'],'phones'))
@@ -74,7 +74,7 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
     def test_only_own_description_is_selected_not_recommendation_or_other_server(self):
         valid='https://itm.ebaydesc.com/itmdesc/'+self.item_id
         for bad in ('https://itm.ebaydesc.com/itmdesc/123456789012','https://ebaydesc.com.evil.example/itmdesc/'+self.item_id,'https://user@itm.ebaydesc.com/itmdesc/'+self.item_id,'https://itm.ebaydesc.com:8080/itmdesc/'+self.item_id,'http://127.0.0.1/itmdesc/'+self.item_id):
-            session=Mock();session.get.return_value=Mock(status_code=200,text=self.body)
+            session=Mock();session.get.return_value=Mock(status_code=200,text=self.body,url=valid)
             page=self.page(bad)+self.page(valid)
             details=monitor._parse_item_details_html(page,session=session,item_id=self.item_id)
             self.assertIn('Schäden am Backcover',details['description'])
@@ -89,7 +89,7 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
     def test_error_or_challenge_is_not_verified_and_deadline_does_not_fetch(self):
         page=self.page('https://itm.ebaydesc.com/itmdesc/'+self.item_id)
         for status,body in [(503,'Unavailable'),(200,'<title>Pardon Our Interruption</title>Verify you are a human')]:
-            session=Mock();session.get.return_value=Mock(status_code=status,text=body)
+            session=Mock();session.get.return_value=Mock(status_code=status,text=body,url='https://itm.ebaydesc.com/itmdesc/'+self.item_id)
             parsed=monitor._parse_item_details_html(page,session=session,item_id=self.item_id)
             self.assertFalse(monitor._clean_description(parsed['description']))
         session=Mock();token=MonitorPassBudget.current.set(MonitorPassBudget(0))
@@ -101,7 +101,7 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
 
     def test_lazy_iframe_data_src_still_reads_full_description(self):
         url='https://itm.ebaydesc.com/itmdesc/'+self.item_id
-        session=Mock();session.get.return_value=Mock(status_code=200,text=self.body)
+        session=Mock();session.get.return_value=Mock(status_code=200,text=self.body,url=url)
         details=monitor._parse_item_details_html('<iframe id="desc_ifr" data-src="'+url+'"></iframe>',session=session,item_id=self.item_id)
         self.assertIn('Schäden am Backcover',details['description'])
         session.get.assert_called_once()
