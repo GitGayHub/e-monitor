@@ -4,6 +4,8 @@ import sys
 import os
 import signal
 import atexit
+import json
+import tempfile
 
 REPO = os.path.dirname(os.path.abspath(__file__))
 MONITOR = os.path.join(REPO, "monitor.py")
@@ -17,21 +19,35 @@ TEXT_KW = {"text": True, "encoding": "utf-8", "errors": "replace"}
 def decrypt_config_in_launcher():
     passphrase = os.environ.get("CONFIG_PASSPHRASE")
     if not passphrase:
-        print("WARNING: CONFIG_PASSPHRASE not set; skipping config.json decryption.")
-        return
+        print("ERROR: CONFIG_PASSPHRASE not set; configuration was not changed.")
+        return False
     enc_path = os.path.join(REPO, "config.json.enc")
     dec_path = os.path.join(REPO, "config.json")
-    if os.path.exists(enc_path):
-        try:
-            import config_crypt
-            with open(enc_path, "rb") as f:
-                data = f.read()
-            dec_data = config_crypt.decrypt(data, passphrase)
-            with open(dec_path, "wb") as f:
-                f.write(dec_data)
-            print("INFO: config.json decrypted successfully.")
-        except Exception as e:
-            print(f"WARNING: config decryption failed: {e}")
+    if not os.path.exists(enc_path):
+        print("ERROR: encrypted configuration is missing; configuration was not changed.")
+        return False
+    temporary = None
+    try:
+        import config_crypt
+        with open(enc_path, "rb") as f:
+            data = f.read()
+        dec_data = config_crypt.decrypt(data, passphrase)
+        parsed = json.loads(dec_data.decode("utf-8"))
+        if not isinstance(parsed, dict) or not isinstance(parsed.get("searches"), list):
+            raise ValueError("invalid configuration structure")
+        with tempfile.NamedTemporaryFile(dir=REPO, prefix=".config-decrypt-", delete=False) as file:
+            temporary = file.name
+            file.write(dec_data)
+        os.replace(temporary, dec_path)
+        temporary = None
+        print("INFO: config.json decrypted successfully.")
+        return True
+    except Exception:
+        print("ERROR: encrypted configuration is unreadable; configuration was not changed.")
+        return False
+    finally:
+        if temporary and os.path.exists(temporary):
+            os.unlink(temporary)
 
 def encrypt_config_in_launcher():
     passphrase = os.environ.get("CONFIG_PASSPHRASE")
@@ -295,7 +311,7 @@ def sync_from_remote():
     # Show remote URL
     remote_url = git("remote", "get-url", "origin")
     if remote_url.returncode == 0 and remote_url.stdout.strip():
-        print(f"  Git remote: {remote_url.stdout.strip()}")
+        print("  Git remote: configured")
     else:
         print("  ⚠️ Git remote: not configured")
     
@@ -303,11 +319,13 @@ def sync_from_remote():
     try:
         res = subprocess.run([sys.executable, os.path.join(REPO, "git_sync.py")], cwd=REPO)
         if res.returncode != 0:
-            print("WARNING: git_sync.py exited with error code", res.returncode)
-    except Exception as e:
-        print("WARNING: failed to run git_sync.py:", e)
+            print("ERROR: sync failed; the monitor will not start with stale state")
+            return False
+    except Exception:
+        print("ERROR: could not run sync; the monitor will not start")
+        return False
         
-    decrypt_config_in_launcher()
+    return decrypt_config_in_launcher()
 
 
 acquire_lock()
@@ -322,7 +340,8 @@ ensure_on_main()
 # Persistently enable autostash so any future `git pull --rebase` auto-handles dirty trees.
 git("config", "rebase.autoStash", "true")
 
-sync_from_remote()
+if not sync_from_remote():
+    sys.exit(1)
 
 print("\n=== [2/3] Starting bot (Ctrl+C to exit) ===\n")
 
