@@ -40,9 +40,21 @@ class SellerDescriptionSourceTests(unittest.TestCase):
         url = 'https://itm.ebaydesc.com/itmdesc/' + self.item_id
         session = Mock()
         session.get.return_value = Mock(status_code=200, text=self.text, url=url)
+        monitor._item_details_events.pop(self.item_id, None)
         result = monitor._parse_item_details_html(self.page(url), session=session, item_id=self.item_id)
         self.assertIn('Complete working synthetic item', result['description'])
+        self.assertIn('http_source_verified', [x['reason'] for x in monitor.item_details_diagnostics(self.item_id)['events']])
         session.get.assert_called_once()
+
+    def test_empty_or_challenge_response_is_not_counted_as_verified_source(self):
+        url = 'https://itm.ebaydesc.com/itmdesc/' + self.item_id
+        for body in ('', '<title>Pardon Our Interruption</title>Verify you are a human'):
+            with self.subTest(body=body):
+                session = Mock(); session.get.return_value = Mock(status_code=200, text=body, url=url)
+                monitor._item_details_events.pop(self.item_id, None)
+                result = monitor._parse_item_details_html(self.page(url), session=session, item_id=self.item_id)
+                self.assertFalse(monitor._clean_description(result['description']))
+                self.assertNotIn('http_source_verified', [x['reason'] for x in monitor.item_details_diagnostics(self.item_id)['events']])
 
     def test_redirects_are_followed_only_for_the_same_item_on_trusted_hosts(self):
         url = 'https://itm.ebaydesc.com/itmdesc/' + self.item_id
