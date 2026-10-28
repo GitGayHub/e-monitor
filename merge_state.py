@@ -2,29 +2,10 @@ import os
 import sys
 import json
 import shutil
+from seen_state_merge import normalize_seen_state, merge_seen_state
 
 def _normalize_seen_state(data):
-    """Preserve final_15m — merge used to drop it and re-spam last-call alerts."""
-    state = {}
-    if isinstance(data, list):
-        for x in data:
-            iid = str(x).strip()
-            if iid:
-                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
-    elif isinstance(data, dict):
-        for k, v in data.items():
-            iid = str(k).strip()
-            if not iid:
-                continue
-            if isinstance(v, dict):
-                state[iid] = {
-                    "initial": bool(v.get("initial")),
-                    "final_hour": bool(v.get("final_hour")),
-                    "final_15m": bool(v.get("final_15m")),
-                }
-            else:
-                state[iid] = {"initial": True, "final_hour": False, "final_15m": False}
-    return state
+    return normalize_seen_state(data)
 
 
 def merge_json_lists(path_origin, path_local):
@@ -34,26 +15,23 @@ def merge_json_lists(path_origin, path_local):
     if os.path.exists(path_origin):
         try:
             with open(path_origin, "r", encoding="utf-8") as f:
-                origin = _normalize_seen_state(json.load(f))
-        except Exception:
-            origin = {}
+                raw_origin = json.load(f)
+            if not isinstance(raw_origin, (dict, list)):
+                raise ValueError("invalid seen state")
+            origin = _normalize_seen_state(raw_origin)
+        except Exception as e:
+            raise ValueError("Origin seen state is unreadable; merge stopped") from e
     if os.path.exists(path_local):
         try:
             with open(path_local, "r", encoding="utf-8") as f:
-                local = _normalize_seen_state(json.load(f))
-        except Exception:
-            local = {}
+                raw_local = json.load(f)
+            if not isinstance(raw_local, (dict, list)):
+                raise ValueError("invalid seen state")
+            local = _normalize_seen_state(raw_local)
+        except Exception as e:
+            raise ValueError("Backup seen state is unreadable; merge stopped") from e
 
-    merged = {}
-    for iid in set(origin) | set(local):
-        a = origin.get(iid) or {}
-        b = local.get(iid) or {}
-        merged[iid] = {
-            "initial": bool(a.get("initial") or b.get("initial")),
-            "final_hour": bool(a.get("final_hour") or b.get("final_hour")),
-            "final_15m": bool(a.get("final_15m") or b.get("final_15m")),
-        }
-    return merged
+    return merge_seen_state(origin, local)
 
 def merge_run_logs(path_origin, path_local):
     if os.path.exists(path_origin):

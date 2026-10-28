@@ -100,6 +100,7 @@ def main():
         modules.append("test_product_tools")
         modules.append("test_api_usage")
         modules.append("test_samsung_monitor_sku")
+        modules.append("test_git_sync_safety")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
