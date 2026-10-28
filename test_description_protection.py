@@ -18,13 +18,13 @@ class DescriptionProtectionTests(unittest.TestCase):
     def test_description_http_error_and_challenge_are_separate_and_never_seller_text(self):
         page='<h1 class="x-item-title">Apple iPhone 16 Pro Max 256GB</h1><div class="x-price-primary">EUR 400,00</div><iframe id="desc_ifr" src="https://itm.ebaydesc.com/itmdesc/123"></iframe>'
         for status,body,reason in [(403,'Forbidden','seller_description_http'),(200,'<title>Pardon Our Interruption</title>Verify you are a human','seller_description_challenge')]:
-            monitor._item_details_events.pop('qa',None)
-            session=Mock();session.get.return_value=Mock(status_code=status,text=body)
-            details=monitor._parse_item_details_html(page,session=session,item_id='qa')
+            monitor._item_details_events.pop('123',None)
+            session=Mock();session.get.return_value=Mock(status_code=status,text=body,url='https://itm.ebaydesc.com/itmdesc/123')
+            details=monitor._parse_item_details_html(page,session=session,item_id='123')
             self.assertFalse(monitor._clean_description(details['description']))
             self.assertFalse(monitor._provider_details_complete(details))
-            self.assertIn(reason,[e['reason'] for e in monitor.item_details_diagnostics('qa')['events']])
-            if status==403:self.assertEqual(403,monitor.item_details_diagnostics('qa')['events'][0]['httpStatus'])
+            self.assertIn(reason,[e['reason'] for e in monitor.item_details_diagnostics('123')['events']])
+            if status==403:self.assertEqual(403,monitor.item_details_diagnostics('123')['events'][0]['httpStatus'])
 
     def test_page_challenge_stops_without_automating_captcha(self):
         session=Mock();session.get.return_value=Mock(status_code=200,url='https://www.ebay.de/splashui/captcha',text='<title>Pardon Our Interruption</title>')
@@ -39,10 +39,10 @@ class DescriptionProtectionTests(unittest.TestCase):
         session=Mock()
         try:
             page='<iframe id="desc_ifr" src="https://itm.ebaydesc.com/itmdesc/123"></iframe>'
-            parsed=monitor._parse_item_details_html(page,session=session,item_id='expired')
+            parsed=monitor._parse_item_details_html(page,session=session,item_id='123')
             self.assertFalse(monitor._clean_description(parsed['description']))
             session.get.assert_not_called()
-            self.assertIn('seller_description_deadline',[e['reason'] for e in monitor.item_details_diagnostics('expired')['events']])
+            self.assertIn('seller_description_deadline',[e['reason'] for e in monitor.item_details_diagnostics('123')['events']])
             self.assertEqual(([],'pass_deferred'),monitor._do_fetch_playwright('https://www.ebay.de/sch/i.html?_nkw=qa'))
         finally:
             MonitorPassBudget.current.reset(token)

@@ -5635,27 +5635,33 @@ def _fetch_item_details_browser(item_id):
         return None
 
 
-def _linked_seller_description_url(soup, item_id):
-    """Own full-description link used by eBay pages which omit desc_ifr."""
+def _trusted_seller_description_url(raw, item_id):
+    """Return an HTTPS seller-description URL only for this exact item."""
     if not str(item_id or '').isdigit():
         return None
+    try:
+        parsed = urllib.parse.urlsplit(urllib.parse.urljoin('https://www.ebay.de/', raw))
+        host = (parsed.hostname or '').lower()
+        trusted = host == 'ebaydesc.com' or host.endswith('.ebaydesc.com') or host == 'ebay.de' or host.endswith('.ebay.de')
+        if not trusted or parsed.scheme.lower() not in ('http', 'https') or parsed.username or parsed.password or parsed.port not in (None, 80 if parsed.scheme.lower() == 'http' else 443):
+            return None
+        own_path = parsed.path.rstrip('/') == '/itmdesc/' + str(item_id)
+        query = urllib.parse.parse_qs(parsed.query)
+        own_legacy = parsed.path.lower().endswith('/ebayisapi.dll') and 'ViewItemDescV4' in parsed.query and query.get('item') == [str(item_id)]
+        if own_path or own_legacy:
+            # eBay itself still emits http links; fetch its endpoint over HTTPS.
+            return urllib.parse.urlunsplit(('https', host, parsed.path, parsed.query, ''))
+    except (ValueError, TypeError):
+        pass
+    return None
+
+
+def _linked_seller_description_url(soup, item_id):
+    """Own full-description link used by eBay pages which omit desc_ifr."""
     for link in soup.select('a[href]'):
-        raw = link.get('href', '').strip()
-        try:
-            parsed = urllib.parse.urlsplit(urllib.parse.urljoin('https://www.ebay.de/', raw))
-            host = (parsed.hostname or '').lower()
-            trusted = host == 'ebaydesc.com' or host.endswith('.ebaydesc.com') or host == 'ebay.de' or host.endswith('.ebay.de')
-            if not trusted or parsed.scheme.lower() not in ('http', 'https') or parsed.username or parsed.password or parsed.port not in (None, 80 if parsed.scheme.lower() == 'http' else 443):
-                continue
-            own_path = parsed.path.rstrip('/') == '/itmdesc/' + str(item_id)
-            query = urllib.parse.parse_qs(parsed.query)
-            own_legacy = parsed.path.lower().endswith('/ebayisapi.dll') and 'ViewItemDescV4' in parsed.query and query.get('item') == [str(item_id)]
-            if own_path or own_legacy:
-                # eBay itself still emits http links. Fetch its known seller
-                # endpoint over HTTPS, retaining query syntax without re-encoding.
-                return urllib.parse.urlunsplit(('https', host, parsed.path, parsed.query, ''))
-        except (ValueError, TypeError):
-            continue
+        url = _trusted_seller_description_url(link.get('href', '').strip(), item_id)
+        if url:
+            return url
     return None
 
 
@@ -5765,6 +5771,11 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
                 break
 
     desc_src = ((desc_ifr.get("src") or desc_ifr.get("data-src") or "") if desc_ifr else "").strip()
+    if desc_src:
+        trusted_src = _trusted_seller_description_url(desc_src, item_id)
+        if not trusted_src:
+            _details_event(item_id, 'seller_description_untrusted_url')
+        desc_src = trusted_src or ''
     if not desc_src:
         desc_src = _linked_seller_description_url(soup, item_id) or ""
         if desc_src:
@@ -5775,20 +5786,29 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         if desc_src and MonitorPassBudget.exhausted():
             _details_event(item_id,'seller_description_deadline')
         elif desc_src:
-            if desc_src.startswith("//"):
-                desc_src = "https:" + desc_src
-            elif desc_src.startswith("/"):
-                desc_src = f"https://www.{host}" + desc_src
-            logger.info("Fetching own seller description HTML: %s", desc_src)
+            logger.info("Fetching own seller description HTML for item %s", item_id)
             try:
                 desc_headers = {
                     "User-Agent": headers["User-Agent"] if "User-Agent" in headers else "Mozilla/5.0",
                     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
                 }
-                desc_resp = (session or _get_ebay_session()).get(desc_src, headers=desc_headers, timeout=MonitorPassBudget.timeout(10))
-                _details_event(item_id,'seller_description_http',desc_resp.status_code)
-                if desc_resp.status_code == 200:
+                desc_session = session or _get_ebay_session()
+                for hop in range(3):
+                    desc_resp = desc_session.get(desc_src, headers=desc_headers,
+                        timeout=MonitorPassBudget.timeout(10), allow_redirects=False)
+                    _details_event(item_id,'seller_description_http',desc_resp.status_code)
+                    if desc_resp.status_code not in (301, 302, 303, 307, 308):
+                        break
+                    location = desc_resp.headers.get('Location', '')
+                    next_src = _trusted_seller_description_url(urllib.parse.urljoin(desc_src, location), item_id) if location else None
+                    if not next_src or hop == 2 or MonitorPassBudget.exhausted():
+                        _details_event(item_id,'seller_description_untrusted_redirect' if not next_src else 'seller_description_redirect_limit')
+                        break
+                    desc_src = next_src
+                if desc_resp.status_code == 200 and _trusted_seller_description_url(desc_resp.url, item_id):
                     desc_html = desc_resp.text or ""
+                elif desc_resp.status_code == 200:
+                    _details_event(item_id,'seller_description_untrusted_response')
                 else:
                     logger.warning("Description iframe HTTP %d", desc_resp.status_code)
             except Exception as e:
