@@ -99,10 +99,21 @@ def publish(active_config, logic_version, state, error=None, path=None, data_sou
         status['medianReports']={'confirmed':0,'held':0,'lastConfirmedAt':None,'error':'Не удалось прочитать состояние отчётов медианы'}
     try:
         feed=json.loads(path.with_name('feed.json').read_text(encoding='utf8'))
-        latest=max(feed.get('items',[]),key=lambda r:r.get('telegramConfirmedTime') or r.get('spottedTime') or 0,default={})
-        confirmed=latest.get('telegramConfirmedTime') or latest.get('spottedTime')
-        if latest.get('telegramMessageId') and confirmed:
-            status['lastTelegramConfirmedAt']=datetime.fromtimestamp(confirmed/1000,timezone.utc).isoformat(timespec='seconds')
+        confirmed_rows=[]
+        for row in feed.get('items',[]):
+            if not isinstance(row,dict) or not row.get('telegramMessageId'):
+                continue
+            confirmed=row.get('telegramConfirmedTime')
+            if isinstance(confirmed,bool) or not isinstance(confirmed,(int,float)) or confirmed <= 0:
+                continue
+            try:
+                timestamp=datetime.fromtimestamp(confirmed/1000,timezone.utc)
+            except (OverflowError,OSError,ValueError):
+                continue
+            confirmed_rows.append((timestamp,row))
+        if confirmed_rows:
+            timestamp,latest=max(confirmed_rows,key=lambda pair:pair[0])
+            status['lastTelegramConfirmedAt']=timestamp.isoformat(timespec='seconds')
             for key in ('telegramBotUsername','telegramDeliveryRoute'):
                 if latest.get(key):status['last'+key[0].upper()+key[1:]]=latest[key]
     except (OSError,ValueError,TypeError):
