@@ -31,6 +31,52 @@ class ApiUsageTest(unittest.TestCase):
         bad=copy.deepcopy(self.payload);bad['rateLimits'][0]['resources']=bad['rateLimits'][0]['resources'][:1]
         with self.assertRaises(ValueError):usage.parse(bad,self.now)
 
+    def test_log_summary_labels_each_official_snapshot_and_never_exposes_credentials(self):
+        from datetime import datetime,timezone
+        second=dict(self.key,client_id='qa-client-two',client_secret='qa-secret-two')
+        third=dict(self.key,client_id='qa-client-three',client_secret='qa-secret-three')
+        fresh=usage.parse(self.payload,self.now)
+        stale=dict(fresh,checkedAt=datetime.fromtimestamp(self.now-3600,timezone.utc).isoformat())
+        state={'remaining':0,'reset':1,'api_usage_snapshots':{usage.identity(self.key):fresh,usage.identity(second):stale}}
+        result=usage.summarize_for_log(state,[self.key,second,third],self.now)
+        self.assertEqual(['measured','stale','unknown'],[x['status'] for x in result])
+        self.assertEqual([20,20,None],[x.get('remaining') for x in result])
+        self.assertEqual(fresh['checkedAt'],result[0]['checkedAt'])
+        for key in (self.key,second,third):
+            self.assertNotIn(key['client_id'],str(result));self.assertNotIn(key['client_secret'],str(result))
+
+    def test_log_summary_marks_expired_or_malformed_data_without_fabricating_zero(self):
+        good=usage.parse(self.payload,self.now)
+        for field,value in [('checkedAt','bad'),('resetAt','bad'),('remaining',False),('remaining',5001)]:
+            snapshot=dict(good,**{field:value})
+            rows=usage.summarize_for_log({'api_usage_snapshots':{usage.identity(self.key):snapshot}},[self.key],self.now)
+            self.assertEqual([{'key':1,'status':'unknown'}],rows)
+        from datetime import datetime
+        reset=datetime.fromisoformat(good['resetAt']).timestamp()
+        rows=usage.summarize_for_log({'api_usage_snapshots':{usage.identity(self.key):good}},[self.key],reset)
+        self.assertEqual('stale',rows[0]['status'])
+
+    def test_queue_log_does_not_call_legacy_counter_a_current_all_key_quota(self):
+        from datetime import datetime,timezone
+        now=datetime.now(timezone.utc).timestamp()
+        measured=usage.parse(self.payload,self.now)
+        measured.update(checkedAt=datetime.fromtimestamp(now,timezone.utc).isoformat(),
+                        resetAt=datetime.fromtimestamp(now+3600,timezone.utc).isoformat())
+        state={'remaining':0,'reset':1,'api_usage_snapshots':{usage.identity(self.key):measured}}
+        self.access.save(state)
+        search={'id':'qa','query':'phone','enabled':True,'filters':{}}
+        with patch.object(monitor,'browse_access',self.access),patch.object(monitor,'_configured_ebay_api_keys',return_value=[self.key]), \
+             patch.object(monitor,'_ebay_api_paused',return_value=False),patch.object(monitor,'get_last_run',return_value=None), \
+             patch.object(monitor,'EBAY_SOURCE','auto'),patch.object(usage,'refresh') as refresh,patch.object(monitor.logger,'info') as log:
+            monitor.initialize_api_budget_and_queue([search])
+        self.assertEqual(state,self.access.state())
+        refresh.assert_called_once()
+        messages=[call.args for call in log.call_args_list]
+        summary=next(args for args in messages if 'per-key Analytics snapshots' in args[0])
+        self.assertEqual(20,summary[-1][0]['remaining'])
+        self.assertNotIn(self.key['client_id'],str(messages));self.assertNotIn(self.key['client_secret'],str(messages))
+        self.assertFalse(any('real quota remaining' in args[0] for args in messages))
+
     def test_invalid_counters_cannot_become_zero_percent(self):
         for field,value in [('count',False),('remaining',-1),('limit',0),('remaining',5001),('reset','not-a-date')]:
             bad=copy.deepcopy(self.payload);bad['rateLimits'][0]['resources'][1]['rates'][0][field]=value

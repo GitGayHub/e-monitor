@@ -11,6 +11,34 @@ def identity(key):
     return hashlib.sha256(key['client_id'].encode()).hexdigest()[:16]
 
 
+def summarize_for_log(state, keys, now):
+    """Summarize per-key observations without printing IDs or claiming live quota."""
+    snapshots=state.get('api_usage_snapshots') or {}
+    if not isinstance(snapshots,dict):
+        snapshots={}
+    result=[]
+    for index,key in enumerate(keys,1):
+        row={'key':index,'status':'unknown'}
+        try:
+            measured=snapshots.get(identity(key))
+            if not isinstance(measured,dict):
+                result.append(row);continue
+            remaining,limit=measured.get('remaining'),measured.get('limit')
+            checked=datetime.fromisoformat(measured['checkedAt'].replace('Z','+00:00'))
+            reset=datetime.fromisoformat(measured['resetAt'].replace('Z','+00:00'))
+            if (type(remaining) is not int or type(limit) is not int or limit<=0 or
+                    remaining<0 or remaining>limit or checked.tzinfo is None or reset.tzinfo is None):
+                result.append(row);continue
+            age=now-checked.timestamp()
+            stale=age < -60 or age > 2700 or reset.timestamp() <= now
+            row.update(status='stale' if stale else 'measured', source='ebay_analytics',
+                       remaining=remaining,limit=limit,checkedAt=measured['checkedAt'],resetAt=measured['resetAt'])
+        except (AttributeError,KeyError,TypeError,ValueError,OverflowError,OSError):
+            pass
+        result.append(row)
+    return result
+
+
 def parse(payload, checked_at):
     for group in payload.get('rateLimits', []):
         if group.get('apiContext', '').lower() != 'buy' or group.get('apiName', '').lower() != 'browse':
