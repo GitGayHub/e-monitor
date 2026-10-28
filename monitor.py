@@ -5523,6 +5523,20 @@ def _trusted_html_item_url(raw, item_id):
         return False
 
 
+def _own_description_reference(html, item_id):
+    """Find the same trusted source the ordinary HTML parser would use."""
+    soup = BeautifulSoup(html, 'html.parser')
+    iframe = soup.find('iframe', id='desc_ifr') or soup.find('iframe', attrs={'name': 'desc_ifr'})
+    if not iframe:
+        for candidate in soup.find_all('iframe'):
+            src = candidate.get('src') or ''
+            if 'ViewItemDescV4' in src or 'ebaydesc.com' in src:
+                iframe = candidate
+                break
+    raw = (iframe.get('src') or iframe.get('data-src') or '') if iframe else ''
+    return _trusted_seller_description_url(raw, item_id) or _linked_seller_description_url(soup, item_id)
+
+
 def _fetch_item_details_html(item_id):
     """Fetches item details (description, exact end date, etc.) by scraping the item page."""
     if MonitorPassBudget.exhausted():
@@ -5587,7 +5601,16 @@ def _fetch_item_details_html(item_id):
     if not _provider_details_complete(details):
         own_description = _clean_description(details.get('description') or '').strip()
         _details_event(item_id,'seller_description_missing' if not own_description else 'live_price_missing')
-        browser_details = _fetch_item_details_browser(item_id)
+        source = None
+        if own_description:
+            try:
+                source = _own_description_reference(html, item_id)
+            except Exception:
+                _details_event(item_id, 'browser_shadow_check_failed')
+        if source:
+            browser_details = _fetch_item_details_browser(item_id, shadow_description=details.get('description'), shadow_source=source)
+        else:
+            browser_details = _fetch_item_details_browser(item_id)
         if browser_details is not None:
             return browser_details
         # Preserve an actual seller description for diagnostics/API fallback;
@@ -5608,7 +5631,7 @@ def _trusted_browser_item_url(raw, item_id):
         return False
 
 
-def _fetch_item_details_browser(item_id):
+def _fetch_item_details_browser(item_id, shadow_description=None, shadow_source=None):
     """One bounded ordinary browser visit; never solve or retry a challenge."""
     if MonitorPassBudget.exhausted() or os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
         return None
@@ -5636,6 +5659,14 @@ def _fetch_item_details_browser(item_id):
                 own_page = page.content()
                 linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
                 iframe_present = bool(page.locator("#desc_ifr").count())
+                if not iframe_present and not linked and shadow_source:
+                    try:
+                        if _trusted_seller_description_url(shadow_source, item_id) and _clean_description(shadow_description or '').strip():
+                            provisional = _parse_item_details_html(own_page, description=shadow_description, item_id=item_id)
+                            if _provider_details_complete(provisional):
+                                _details_event(item_id, 'browser_shadow_fresh_eligible')
+                    except Exception:
+                        _details_event(item_id, 'browser_shadow_check_failed')
                 if not iframe_present and linked:
                     source_kind = 'link'
                     stage = 'linked_description'
@@ -6066,6 +6097,7 @@ _SOURCE_GUARD_EVENTS = frozenset({
     'browser_untrusted_description_page', 'browser_description_page_changed',
     'browser_untrusted_description_frame', 'browser_description_frame_changed',
     'browser_source_verified_link', 'browser_source_verified_frame',
+    'browser_shadow_fresh_eligible', 'browser_shadow_check_failed',
 })
 
 

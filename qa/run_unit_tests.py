@@ -106,6 +106,7 @@ def main():
         modules.append("test_browser_description_source")
         modules.append("test_source_guard_telemetry")
         modules.append("test_html_item_source")
+        modules.append("test_browser_shadow_opportunity")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
