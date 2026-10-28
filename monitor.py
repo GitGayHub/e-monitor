@@ -9687,7 +9687,7 @@ def initialize_api_budget_and_queue(searches):
         from datetime import datetime, timezone
         reset = datetime.fromtimestamp(state['reset'],timezone.utc).isoformat()
         _runtime_html_fallback = True
-        logger.info("Browse quota exhausted until %s; using paced HTML checks", reset)
+        logger.info("Legacy primary quota counter reports exhaustion until %s; this does not describe every key", reset)
     from datetime import datetime
     now = datetime.now()
     due = set()
@@ -9713,8 +9713,10 @@ def initialize_api_budget_and_queue(searches):
         due = set(sorted(due, key=lambda target: (-priority[target], target))[:8])
     _allowed_api_targets_this_run = due
     state = browse_access.state()
-    logger.info("eBay Browse: %d/%d searches due; interval %.0fs; real quota remaining=%s, reset=%s",
-                len(due), len(active), interval, state.get("remaining", "unknown"), state.get("reset", "unknown"))
+    from mobile.api_usage import summarize_for_log
+    logger.info("eBay Browse: %d/%d searches due; interval %.0fs; per-key Analytics snapshots=%s",
+                len(due), len(active), interval,
+                summarize_for_log(state, _configured_ebay_api_keys(), time.time()))
 
 
 
