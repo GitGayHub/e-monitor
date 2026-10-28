@@ -2,6 +2,43 @@ import sys
 import os
 import hashlib
 
+# New writes remain in the legacy format until every reader and writer has
+# been upgraded and a separate, coordinated migration enables authentication.
+AUTH_MAGIC = b"EMONITOR-CONFIG-V2\x00"
+AUTH_SALT_BYTES = 16
+AUTH_NONCE_BYTES = 12
+AUTH_TAG_BYTES = 16
+
+
+def _authenticated_key(passphrase, salt):
+    if not isinstance(passphrase, str) or not passphrase:
+        raise ValueError("Passphrase required for authenticated encryption")
+    return hashlib.scrypt(passphrase.encode('utf-8'), salt=salt, n=2**15, r=8,
+                          p=1, maxmem=128 * 1024 * 1024, dklen=32)
+
+
+def encrypt_authenticated(data: bytes, passphrase: str) -> bytes:
+    """Create a V2 envelope; callers must explicitly opt in to migration."""
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    salt = os.urandom(AUTH_SALT_BYTES)
+    nonce = os.urandom(AUTH_NONCE_BYTES)
+    header = AUTH_MAGIC + salt + nonce
+    return header + AESGCM(_authenticated_key(passphrase, salt)).encrypt(nonce, data, header)
+
+
+def _decrypt_authenticated(data: bytes, passphrase: str) -> bytes:
+    from cryptography.exceptions import InvalidTag
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+    header_size = len(AUTH_MAGIC) + AUTH_SALT_BYTES + AUTH_NONCE_BYTES
+    if len(data) < header_size + AUTH_TAG_BYTES:
+        raise ValueError("Invalid authenticated ciphertext")
+    salt = data[len(AUTH_MAGIC):len(AUTH_MAGIC) + AUTH_SALT_BYTES]
+    nonce = data[len(AUTH_MAGIC) + AUTH_SALT_BYTES:header_size]
+    try:
+        return AESGCM(_authenticated_key(passphrase, salt)).decrypt(nonce, data[header_size:], data[:header_size])
+    except InvalidTag as exc:
+        raise ValueError("Ciphertext authentication failed") from exc
+
 def get_keystream(key, length):
     keystream = bytearray()
     counter = 0
@@ -20,7 +57,11 @@ def encrypt(data: bytes, passphrase: str) -> bytes:
     ciphertext = bytes(a ^ b for a, b in zip(data, keystream))
     return salt + ciphertext
 
-def decrypt(data: bytes, passphrase: str) -> bytes:
+def decrypt(data: bytes, passphrase: str, *, require_authenticated: bool = False) -> bytes:
+    if data.startswith(AUTH_MAGIC):
+        return _decrypt_authenticated(data, passphrase)
+    if require_authenticated:
+        raise ValueError("Authenticated ciphertext required")
     if len(data) < 16:
         raise ValueError("Data is too short to be valid ciphertext")
     salt = data[:16]

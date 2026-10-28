@@ -37,6 +37,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install authenticated-config support
+        run: |
+          python -m pip install --disable-pip-version-check --timeout 10 --retries 1 'cryptography>=42,<51' || echo "Authenticated config support unavailable; legacy sync remains available"
+
       - name: Decrypt config if available
         env:
           CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
