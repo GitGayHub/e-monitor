@@ -47,7 +47,9 @@ class BrowserDescriptionSourceTests(unittest.TestCase):
 
     def test_correct_linked_description_is_accepted(self):
         page = self.linked_page(self.item_url, self.desc_url)
+        monitor._item_details_events.pop(self.item, None)
         self.assertEqual(self.body, self.run_page(page)['description'])
+        self.assertIn('browser_source_verified_link', [x['reason'] for x in monitor.item_details_diagnostics(self.item)['events']])
 
     def test_linked_page_that_changes_address_during_read_is_rejected(self):
         page = self.linked_page(self.item_url, self.desc_url)
@@ -70,7 +72,17 @@ class BrowserDescriptionSourceTests(unittest.TestCase):
             with self.subTest(url=url): self.assertIsNone(self.run_page(self.iframe_page(url)))
 
     def test_correct_iframe_is_accepted(self):
+        monitor._item_details_events.pop(self.item, None)
         self.assertEqual(self.body, self.run_page(self.iframe_page(self.desc_url))['description'])
+        self.assertIn('browser_source_verified_frame', [x['reason'] for x in monitor.item_details_diagnostics(self.item)['events']])
+
+    def test_empty_frame_is_not_counted_as_verified_source(self):
+        page = self.iframe_page(self.desc_url)
+        frame = page.locator.return_value.element_handle.return_value.content_frame.return_value
+        frame.locator.return_value.inner_html.return_value = ''
+        monitor._item_details_events.pop(self.item, None)
+        self.assertIsNone(self.run_page(page))
+        self.assertNotIn('browser_source_verified_frame', [x['reason'] for x in monitor.item_details_diagnostics(self.item)['events']])
 
     def test_iframe_that_changes_address_during_read_is_rejected(self):
         class ChangingFrame:

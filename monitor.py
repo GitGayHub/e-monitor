@@ -5619,6 +5619,7 @@ def _fetch_item_details_browser(item_id):
                 linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
                 iframe_present = bool(page.locator("#desc_ifr").count())
                 if not iframe_present and linked:
+                    source_kind = 'link'
                     stage = 'linked_description'
                     page.goto(linked, wait_until="domcontentloaded", timeout=MonitorPassBudget.milliseconds(10000))
                     if _is_challenge_html(page.content(), page.url):
@@ -5632,6 +5633,7 @@ def _fetch_item_details_browser(item_id):
                         _details_event(item_id,'browser_description_page_changed')
                         return None
                 else:
+                    source_kind = 'frame'
                     # Wait only for the seller's own iframe, excluding reviews/recs.
                     stage = 'description_iframe_scroll' if iframe_present else 'description_iframe_missing'
                     iframe_wait_started = time.monotonic()
@@ -5654,6 +5656,7 @@ def _fetch_item_details_browser(item_id):
                 if not _clean_description(desc).strip():
                     _details_event(item_id,'browser_description_missing')
                     return None
+                _details_event(item_id, 'browser_source_verified_' + source_kind)
                 return _parse_item_details_html(own_page, description=desc,item_id=item_id)
             finally:
                 browser.close()
@@ -5791,6 +5794,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
     current_bid_price = _extract_html_current_bid_price(html, soup)
 
     desc_html = ""
+    http_source_verified = False
     desc_ifr = soup.find("iframe", id="desc_ifr") or soup.find("iframe", attrs={"name":"desc_ifr"})
     if not desc_ifr:
         for iframe in soup.find_all("iframe"):
@@ -5836,6 +5840,7 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
                     desc_src = next_src
                 if desc_resp.status_code == 200 and _trusted_seller_description_url(desc_resp.url, item_id):
                     desc_html = desc_resp.text or ""
+                    http_source_verified = True
                 elif desc_resp.status_code == 200:
                     _details_event(item_id,'seller_description_untrusted_response')
                 else:
@@ -5854,6 +5859,8 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
         desc_html=''
     if desc_html:
         desc_html = _strip_review_sections(desc_html)
+    if http_source_verified and _clean_description(desc_html).strip():
+        _details_event(item_id, 'http_source_verified')
     # Keep the description separate: specs-only pages remain unverified.
     aspects = []
     for term in soup.select("dt.ux-labels-values__labels"):
@@ -6033,6 +6040,14 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
 
 _item_details_cache = {}
 _item_details_events = {}
+_SOURCE_GUARD_EVENTS = frozenset({
+    'seller_description_untrusted_url', 'seller_description_untrusted_response',
+    'seller_description_untrusted_redirect', 'seller_description_redirect_limit',
+    'http_source_verified', 'browser_untrusted_item_page',
+    'browser_untrusted_description_page', 'browser_description_page_changed',
+    'browser_untrusted_description_frame', 'browser_description_frame_changed',
+    'browser_source_verified_link', 'browser_source_verified_frame',
+})
 
 
 def _details_event(item_id, reason, status=None):
@@ -6044,6 +6059,8 @@ def _details_event(item_id, reason, status=None):
     events=_item_details_events.setdefault(key,[])
     events.append(dict(reason=reason,httpStatus=status))
     del events[:-12]
+    if reason in _SOURCE_GUARD_EVENTS:
+        logger.info('DESCRIPTION_SOURCE_GUARD outcome=%s', reason)
 
 
 def item_details_diagnostics(item_id):
