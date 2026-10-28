@@ -9,6 +9,36 @@ import monitor
 
 
 class RuntimeStatusTests(unittest.TestCase):
+    def test_last_telegram_time_never_uses_discovery_or_unconfirmed_rows(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'runtime_status.json'
+            feed=Path(folder)/'feed.json'
+            rows=[{'telegramMessageId':12,'telegramConfirmedTime':2000,'spottedTime':1000,
+                   'telegramDeliveryRoute':'primary'},
+                  {'telegramMessageId':13,'spottedTime':5000},
+                  {'telegramConfirmedTime':9000,'spottedTime':9000}]
+            feed.write_text(json.dumps({'items':rows}),encoding='utf8')
+            value=publish({'searches':[]},1,'partial',path=path)
+            self.assertEqual('1970-01-01T00:00:02+00:00',value['lastTelegramConfirmedAt'])
+            self.assertEqual('primary',value['lastTelegramDeliveryRoute'])
+            feed.write_text(json.dumps({'items':rows[1:]}),encoding='utf8')
+            value=publish({'searches':[]},1,'partial',path=path)
+            self.assertNotIn('lastTelegramConfirmedAt',value)
+            feed.write_text(json.dumps({'items':[rows[1]]}),encoding='utf8')
+            value=publish({'searches':[]},1,'partial',path=path)
+            self.assertNotIn('lastTelegramConfirmedAt',value)
+
+    def test_invalid_confirmation_times_do_not_hide_valid_delivery(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path=Path(folder)/'runtime_status.json'
+            rows=[{'telegramMessageId':1,'telegramConfirmedTime':2000},
+                  {'telegramMessageId':2,'telegramConfirmedTime':'bad'},
+                  {'telegramMessageId':3,'telegramConfirmedTime':10**30},
+                  {'telegramMessageId':4,'telegramConfirmedTime':True}]
+            (Path(folder)/'feed.json').write_text(json.dumps({'items':rows}),encoding='utf8')
+            value=publish({'searches':[]},1,'partial',path=path)
+            self.assertEqual('1970-01-01T00:00:02+00:00',value['lastTelegramConfirmedAt'])
+
     def test_optional_attempt_coverage_does_not_claim_search_success(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/'status.json'

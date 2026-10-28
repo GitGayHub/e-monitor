@@ -48,9 +48,14 @@ class TelegramDeliveryUncertainTests(unittest.TestCase):
             self.assertIn('deliveryUncertain',json.loads(Path(monitor.SEEN_IDS_FILE).read_text())['uncertain-control'])
 
     def test_confirmed_route_is_optional_feed_metadata_and_runtime_evidence(self):
-        entry=feed_writer.build_entry({'item_id':'confirmed','_telegram_bot_id':123,'_telegram_bot_username':'isolated_test_bot','_telegram_delivery_route':'backup'}, {},telegram_message_id=2049,spotted_time=1000)
+        entry=feed_writer.build_entry({'item_id':'confirmed','_telegram_bot_id':123,'_telegram_bot_username':'isolated_test_bot','_telegram_delivery_route':'backup','_telegram_confirmed_at':2.0}, {},telegram_message_id=2049,spotted_time=1000)
         self.assertEqual('backup',entry['telegramDeliveryRoute']);self.assertEqual(123,entry['telegramBotId'])
         with tempfile.TemporaryDirectory() as folder:
             p=Path(folder);(p/'feed.json').write_text(json.dumps({'items':[entry]}))
             status=publish({'searches':[]},1,'partial',path=p/'runtime_status.json')
             self.assertEqual('backup',status['lastTelegramDeliveryRoute']);self.assertEqual('isolated_test_bot',status['lastTelegramBotUsername'])
+            entry.pop('telegramConfirmedTime')
+            (p/'feed.json').write_text(json.dumps({'items':[entry]}))
+            unknown=publish({'searches':[]},1,'partial',path=p/'runtime_status.json')
+            self.assertNotIn('lastTelegramDeliveryRoute',unknown)
+            self.assertNotIn('lastTelegramConfirmedAt',unknown)
