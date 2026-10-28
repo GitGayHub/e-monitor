@@ -31,7 +31,7 @@ def decrypt_config_in_launcher():
         import config_crypt
         with open(enc_path, "rb") as f:
             data = f.read()
-        dec_data = config_crypt.decrypt(data, passphrase)
+        dec_data = config_crypt.decrypt_config(data, passphrase)
         parsed = json.loads(dec_data.decode("utf-8"))
         if not isinstance(parsed, dict) or not isinstance(parsed.get("searches"), list):
             raise ValueError("invalid configuration structure")
@@ -61,7 +61,11 @@ def encrypt_config_in_launcher():
             import config_crypt
             with open(dec_path, "rb") as f:
                 data = f.read()
-            enc_data = config_crypt.encrypt(data, passphrase)
+            previous = []
+            if os.path.exists(enc_path):
+                with open(enc_path, "rb") as f:
+                    previous.append(f.read())
+            enc_data = config_crypt.encrypt_config(data, passphrase, previous=previous)
             with open(enc_path, "wb") as f:
                 f.write(enc_data)
             print("INFO: config.json encrypted successfully.")

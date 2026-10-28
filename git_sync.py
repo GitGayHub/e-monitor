@@ -164,7 +164,7 @@ def merge_configs():
                 import config_crypt
                 with open(enc_path, "rb") as f:
                     enc_bytes = f.read()
-                dec_bytes = config_crypt.decrypt(enc_bytes, passphrase)
+                dec_bytes = config_crypt.decrypt_config(enc_bytes, passphrase)
                 local_data = json.loads(dec_bytes.decode("utf-8"))
             except Exception as e:
                 raise ValueError("Local encrypted configuration is unreadable; sync stopped") from e
@@ -175,7 +175,7 @@ def merge_configs():
     try:
         sys.path.append(REPO_DIR)
         import config_crypt
-        remote_bytes_dec = config_crypt.decrypt(remote_bytes_enc, passphrase)
+        remote_bytes_dec = config_crypt.decrypt_config(remote_bytes_enc, passphrase)
         remote_data = json.loads(remote_bytes_dec.decode("utf-8"))
     except Exception as e:
         raise ValueError("Remote configuration is unreadable; sync stopped") from e
@@ -195,21 +195,22 @@ def merge_configs():
         merged_list = sorted(list(set(origin_val) | set(local_val)))
         merged_data[list_key] = merged_list
         
-    save_and_encrypt_config(merged_data, passphrase)
+    local_encrypted = None
+    if os.path.exists(enc_path):
+        with open(enc_path, "rb") as f:
+            local_encrypted = f.read()
+    save_and_encrypt_config(merged_data, passphrase, previous=(local_encrypted, remote_bytes_enc))
     print("Merged config.json successfully.")
 
-def save_and_encrypt_config(config_dict, passphrase):
+def save_and_encrypt_config(config_dict, passphrase, previous=()):
     local_path = os.path.join(REPO_DIR, "config.json")
     enc_path = os.path.join(REPO_DIR, "config.json.enc")
-    
-    with open(local_path, "w", encoding="utf-8") as f:
-        json.dump(config_dict, f, indent=2, ensure_ascii=False)
-        
+    # Validate the policy and prior authenticated envelopes before touching either file.
     import config_crypt
-    with open(local_path, "rb") as f:
-        dec_data = f.read()
-        
-    enc_data = config_crypt.encrypt(dec_data, passphrase)
+    dec_data = json.dumps(config_dict, indent=2, ensure_ascii=False).encode("utf-8")
+    enc_data = config_crypt.encrypt_config(dec_data, passphrase, previous=previous)
+    with open(local_path, "wb") as f:
+        f.write(dec_data)
     with open(enc_path, "wb") as f:
         f.write(enc_data)
 
