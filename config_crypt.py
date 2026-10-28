@@ -70,6 +70,42 @@ def decrypt(data: bytes, passphrase: str, *, require_authenticated: bool = False
     keystream = get_keystream(key, len(ciphertext))
     return bytes(a ^ b for a, b in zip(ciphertext, keystream))
 
+def config_authentication_required():
+    """An externally configured cutover policy; malformed values fail closed."""
+    value = os.environ.get("CONFIG_REQUIRE_AUTHENTICATED", "").strip().lower()
+    if value in ("", "0", "false", "no"):
+        return False
+    if value in ("1", "true", "yes"):
+        return True
+    raise ValueError("Invalid CONFIG_REQUIRE_AUTHENTICATED policy")
+
+
+def decrypt_config(data: bytes, passphrase: str) -> bytes:
+    return decrypt(data, passphrase, require_authenticated=config_authentication_required())
+
+
+def encrypt_config(data: bytes, passphrase: str, previous=()) -> bytes:
+    """Keep authenticated configuration authenticated, checking V2 before use.
+
+    Legacy remains the default before a separately coordinated migration.
+    This prevents accidental writer downgrade, but does not prevent replay or
+    malicious downgrade unless the external strict policy is enabled.
+    """
+    strict = config_authentication_required()
+    authenticated = strict
+    for old in previous:
+        if old is None:
+            continue
+        if not isinstance(old, bytes):
+            raise TypeError("Previous configuration must be bytes")
+        if old.startswith(AUTH_MAGIC):
+            decrypt(old, passphrase, require_authenticated=True)
+            authenticated = True
+        elif strict:
+            raise ValueError("Authenticated ciphertext required")
+    return encrypt_authenticated(data, passphrase) if authenticated else encrypt(data, passphrase)
+
+
 def main():
     if len(sys.argv) < 5:
         # Check if environment variable is set
@@ -100,9 +136,13 @@ def main():
             data = f.read()
 
         if action == "encrypt":
-            out_data = encrypt(data, passphrase)
+            previous = []
+            if os.path.exists(output_file):
+                with open(output_file, "rb") as f:
+                    previous.append(f.read())
+            out_data = encrypt_config(data, passphrase, previous=previous)
         else:
-            out_data = decrypt(data, passphrase)
+            out_data = decrypt_config(data, passphrase)
 
         with open(output_file, "wb") as f:
             f.write(out_data)

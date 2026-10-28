@@ -102,6 +102,7 @@ def main():
         modules.append("test_samsung_monitor_sku")
         modules.append("test_git_sync_safety")
         modules.append("test_config_crypt_compat")
+        modules.append("test_config_crypto_policy")
         modules.append("test_seller_description_source")
         modules.append("test_browser_description_source")
         modules.append("test_source_guard_telemetry")

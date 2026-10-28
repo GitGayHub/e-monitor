@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from config_crypt import decrypt, encrypt
+from config_crypt import decrypt_config, encrypt_config
 
 
 def merge_config(base, local, remote, path="config"):
@@ -52,9 +52,9 @@ def push():
                     versions = snapshots[name]
                     if name.endswith(".enc"):
                         passphrase = os.environ["CONFIG_PASSPHRASE"]
-                        documents = [json.loads(decrypt(value, passphrase)) for value in versions]
+                        documents = [json.loads(decrypt_config(value, passphrase)) for value in versions]
                         merged = merge_config(*documents)
-                        content = encrypt(json.dumps(merged, ensure_ascii=False, indent=2).encode(), passphrase)
+                        content = encrypt_config(json.dumps(merged, ensure_ascii=False, indent=2).encode(), passphrase, previous=versions)
                     else:
                         _, local, remote = [json.loads(value) for value in versions]
                         # An unconsumed phone snapshot is authoritative until next sweep.
