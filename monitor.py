@@ -5578,6 +5578,18 @@ def _fetch_item_details_html(item_id):
     return details
 
 
+def _trusted_browser_item_url(raw, item_id):
+    if not str(item_id or '').isdigit():
+        return False
+    try:
+        url = urllib.parse.urlsplit(raw)
+        return bool(url.scheme == 'https' and url.hostname in ('www.ebay.de', 'ebay.de', 'm.ebay.de') and
+                    not url.username and not url.password and url.port in (None, 443) and
+                    re.fullmatch(r'/itm/(?:[^/]+/)?' + re.escape(str(item_id)) + r'/?', url.path))
+    except (ValueError, TypeError):
+        return False
+
+
 def _fetch_item_details_browser(item_id):
     """One bounded ordinary browser visit; never solve or retry a challenge."""
     if MonitorPassBudget.exhausted() or os.environ.get("EBAY_HTML_PLAYWRIGHT", "1").lower() in ("0", "false", "no"):
@@ -5600,6 +5612,9 @@ def _fetch_item_details_browser(item_id):
                 if _is_challenge_html(page.content(), page.url):
                     _details_event(item_id,'browser_challenge')
                     return None
+                if not _trusted_browser_item_url(page.url, item_id):
+                    _details_event(item_id,'browser_untrusted_item_page')
+                    return None
                 own_page = page.content()
                 linked = _linked_seller_description_url(BeautifulSoup(own_page, "html.parser"), item_id)
                 iframe_present = bool(page.locator("#desc_ifr").count())
@@ -5609,7 +5624,13 @@ def _fetch_item_details_browser(item_id):
                     if _is_challenge_html(page.content(), page.url):
                         _details_event(item_id,'browser_description_challenge')
                         return None
+                    if not _trusted_seller_description_url(page.url, item_id):
+                        _details_event(item_id,'browser_untrusted_description_page')
+                        return None
                     desc = page.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
+                    if not _trusted_seller_description_url(page.url, item_id):
+                        _details_event(item_id,'browser_description_page_changed')
+                        return None
                 else:
                     # Wait only for the seller's own iframe, excluding reviews/recs.
                     stage = 'description_iframe_scroll' if iframe_present else 'description_iframe_missing'
@@ -5620,8 +5641,16 @@ def _fetch_item_details_browser(item_id):
                     frame = page.frame_locator("#desc_ifr")
                     stage = 'description_iframe_wait'
                     frame.locator("body").wait_for(state="visible", timeout=MonitorPassBudget.milliseconds(6000))
+                    handle = page.locator("#desc_ifr").element_handle(timeout=MonitorPassBudget.milliseconds(6000))
+                    actual_frame = handle.content_frame() if handle else None
+                    if not actual_frame or not _trusted_seller_description_url(actual_frame.url, item_id):
+                        _details_event(item_id,'browser_untrusted_description_frame')
+                        return None
                     stage = 'description_iframe_read'
-                    desc = frame.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
+                    desc = actual_frame.locator("body").inner_html(timeout=MonitorPassBudget.milliseconds(6000))
+                    if not _trusted_seller_description_url(actual_frame.url, item_id):
+                        _details_event(item_id,'browser_description_frame_changed')
+                        return None
                 if not _clean_description(desc).strip():
                     _details_event(item_id,'browser_description_missing')
                     return None
