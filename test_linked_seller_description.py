@@ -33,8 +33,10 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
                 page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
                 page.content.return_value='<html><body>item</body></html>'
                 iframe=page.locator.return_value; iframe.count.return_value=int(present)
+                iframe.element_handle.return_value.content_frame.return_value.url='https://itm.ebaydesc.com/itmdesc/'+self.item_id
                 body=page.frame_locator.return_value.locator.return_value
-                {'scroll':iframe.scroll_into_view_if_needed,'wait':body.wait_for,'read':body.inner_html}[failure].side_effect=TimeoutError()
+                actual_body=iframe.element_handle.return_value.content_frame.return_value.locator.return_value
+                {'scroll':iframe.scroll_into_view_if_needed,'wait':body.wait_for,'read':actual_body.inner_html}[failure].side_effect=TimeoutError()
                 browser=Mock(); browser.new_page.return_value=page
                 runtime=Mock(); runtime.chromium.launch.return_value=browser
                 context=MagicMock(); context.__enter__.return_value=runtime
@@ -48,7 +50,8 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
         page=Mock(); page.url='https://www.ebay.de/itm/'+self.item_id
         page.content.return_value='<html><body>item</body></html>'
         page.locator.return_value.count.return_value=0
-        page.frame_locator.return_value.locator.return_value.inner_html.return_value=self.body
+        page.locator.return_value.element_handle.return_value.content_frame.return_value.url='https://itm.ebaydesc.com/itmdesc/'+self.item_id
+        page.locator.return_value.element_handle.return_value.content_frame.return_value.locator.return_value.inner_html.return_value=self.body
         browser=Mock(); browser.new_page.return_value=page
         runtime=Mock(); runtime.chromium.launch.return_value=browser
         context=MagicMock(); context.__enter__.return_value=runtime
@@ -111,6 +114,7 @@ class LinkedSellerDescriptionTests(unittest.TestCase):
         own=self.page(url)
         for body,expected in [(self.body,True),('<title>Pardon Our Interruption</title>',False)]:
             page=Mock();page.url='https://www.ebay.de/itm/'+self.item_id
+            page.goto.side_effect=lambda target,**kwargs: setattr(page,'url',target)
             page.content.side_effect=[own,own,body]
             page.locator.return_value.count.return_value=0
             page.locator.return_value.inner_html.return_value=body
