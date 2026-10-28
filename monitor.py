@@ -5509,6 +5509,20 @@ def _html_auction_end(soup, now=None):
     return target.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _trusted_html_item_url(raw, item_id):
+    """Accept an item page only when its final eBay URL names this item."""
+    if not str(item_id or '').isdigit():
+        return False
+    try:
+        url = urllib.parse.urlsplit(raw)
+        hosts = ('ebay.de', 'www.ebay.de', 'm.ebay.de', 'ebay.com', 'www.ebay.com', 'm.ebay.com')
+        return bool(url.scheme == 'https' and url.hostname in hosts and not url.username and not url.password and
+                    url.port in (None, 443) and
+                    re.fullmatch(r'/itm/(?:[^/]+/)?' + re.escape(str(item_id)) + r'/?', url.path))
+    except (ValueError, TypeError):
+        return False
+
+
 def _fetch_item_details_html(item_id):
     """Fetches item details (description, exact end date, etc.) by scraping the item page."""
     if MonitorPassBudget.exhausted():
@@ -5564,6 +5578,10 @@ def _fetch_item_details_html(item_id):
         logger.warning("_fetch_item_details_html: challenge page hit for item %s", item_id)
         _details_event(item_id,'html_challenge',resp.status_code)
         return None
+
+    if not _trusted_html_item_url(resp.url, item_id):
+        _details_event(item_id, 'html_untrusted_item_page')
+        return _fetch_item_details_browser(item_id)
 
     details = _parse_item_details_html(html, session=session, host=host,item_id=item_id)
     if not _provider_details_complete(details):
@@ -6043,7 +6061,7 @@ _item_details_events = {}
 _SOURCE_GUARD_EVENTS = frozenset({
     'seller_description_untrusted_url', 'seller_description_untrusted_response',
     'seller_description_untrusted_redirect', 'seller_description_redirect_limit',
-    'http_source_verified', 'browser_untrusted_item_page',
+    'http_source_verified', 'html_untrusted_item_page', 'browser_untrusted_item_page',
     'browser_untrusted_description_page', 'browser_description_page_changed',
     'browser_untrusted_description_frame', 'browser_description_frame_changed',
     'browser_source_verified_link', 'browser_source_verified_frame',
