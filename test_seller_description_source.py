@@ -56,6 +56,16 @@ class SellerDescriptionSourceTests(unittest.TestCase):
                 self.assertFalse(monitor._clean_description(result['description']))
                 self.assertNotIn('http_source_verified', [x['reason'] for x in monitor.item_details_diagnostics(self.item_id)['events']])
 
+    def test_explicit_description_does_not_record_unused_iframe_as_refusal(self):
+        monitor._item_details_events.pop(self.item_id, None)
+        session = Mock()
+        result = monitor._parse_item_details_html(self.page('https://evil.invalid/unused'),
+                                                  description=self.text, session=session, item_id=self.item_id)
+        self.assertIn('Complete working synthetic item', result['description'])
+        self.assertNotIn('seller_description_untrusted_url',
+                         [x['reason'] for x in monitor.item_details_diagnostics(self.item_id)['events']])
+        session.get.assert_not_called()
+
     def test_redirects_are_followed_only_for_the_same_item_on_trusted_hosts(self):
         url = 'https://itm.ebaydesc.com/itmdesc/' + self.item_id
         safe = 'https://vi.vipr.ebaydesc.com/itmdesc/' + self.item_id

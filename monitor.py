@@ -5804,12 +5804,12 @@ def _parse_item_details_html(html, description=None, session=None, host="ebay.de
                 break
 
     desc_src = ((desc_ifr.get("src") or desc_ifr.get("data-src") or "") if desc_ifr else "").strip()
-    if desc_src:
+    if desc_src and description is None:
         trusted_src = _trusted_seller_description_url(desc_src, item_id)
         if not trusted_src:
             _details_event(item_id, 'seller_description_untrusted_url')
         desc_src = trusted_src or ''
-    if not desc_src:
+    if not desc_src and description is None:
         desc_src = _linked_seller_description_url(soup, item_id) or ""
         if desc_src:
             _details_event(item_id, 'seller_description_link_found')
