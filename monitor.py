@@ -1820,7 +1820,7 @@ def _check_separator(sep):
 
 def _matches_console_query_model(title_norm, query_norm):
     if "ps5" in query_norm and "pro" in query_norm:
-        if _is_ps5_vr_only_title(title_norm) or _is_console_game_only_title(title_norm):
+        if _is_ps5_vr_only_title(title_norm) or _is_console_game_only_title(title_norm) or _is_accessory_product(title_norm, "consoles"):
             return False
         patterns = [
             r"\b(?:ps5|playstation\s*5|ps\s*5)([^a-z0-9]{0,10})pro\b",
@@ -2948,15 +2948,66 @@ def _has_damage_word(text_norm):
     return False
 
 
+def _console_drive_or_cover_only(title_norm):
+    if re.search(r"\b(?:ohne|without|no|keine?)\s+(?:konsole|console|spielkonsole|ps5|playstation)\b", title_norm):
+        return True
+    nur_mod = r"(?:(?:die|das|der|den|the|a|an|ein|eine|einen|1x|original\w*|weisse?\w*|schwarze?\w*|white|black|ersatz\w*|replacement|spare)\s+){0,3}"
+    if re.search(
+        rf"\b(?:nur|only|lediglich|ausschliesslich)\s+{nur_mod}"
+        r"(?:kabel|cables?|netzkabel|stromkabel|controller|gamepad|dualsense|laufwerk\w*|disc[- ]?laufwerk\w*|disk[- ]?laufwerk\w*"
+        r"|disclaufwerk\w*|disklaufwerk\w*|disc[- ]?drive|disk[- ]?drive|optical[- ]?drive|abdeckung\w*|seitenabdeckung\w*"
+        r"|konsolenabdeckung\w*|faceplates?|cover(?:\s*plates?)?|standfuss|staender|stand|ovp|originalverpackung|verpackung|karton|leerkarton|box)\b",
+        title_norm,
+    ):
+        return True
+    hw_spec = bool(re.search(r"\b(?:2\s*tb|1\s*tb|825\s*gb|cfi\s*[- ]?\s*[127]\d{3}|digital\s+edition|disc\s+edition|disk\s+edition|firmware|cfw)\b", title_norm))
+    if re.search(r"\bcfi[- ]?z[a-z]{2}\d\b", title_norm) and not hw_spec:
+        return True
+    drive_re = (
+        r"(?:(?:blu[- ]?ray|blue[- ]?ray|optisches|optical|disc|disk)\s*[- ]?\s*)?"
+        r"(?:laufwerk\w*|disc[- ]?drive|disk[- ]?drive|optical[- ]?drive|disc[- ]?player)\b"
+        r"|\b(?:disclaufwerk\w*|disklaufwerk\w*|cfi[- ]?zdd1)\b"
+    )
+    cover_re = r"\b(?:abdeckung\w*|seitenabdeckung\w*|konsolenabdeckung\w*|faceplates?|cover\s*plates?|wechselcover\w*)\b"
+    if re.search(r"\bslim\b", title_norm) and re.search(r"\bpro\b", title_norm):
+        if re.search(drive_re, title_norm) or re.search(cover_re, title_norm) or not hw_spec:
+            return True
+    m_ps = re.search(r"\b(?:ps5|playstation\s*5|ps\s*5|playstation)\b", title_norm)
+    m_cover = re.search(cover_re, title_norm)
+    if m_cover:
+        if m_ps and m_cover.start() < m_ps.start():
+            return True
+        before_cover = title_norm[m_ps.end():m_cover.start()] if m_ps else title_norm[:m_cover.start()]
+        has_bundle_before_cover = bool(
+            re.search(r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|plus|ohne|without|no|keine?[mrn]?)\b|[+&]", before_cover)
+        ) and not re.search(drive_re, before_cover)
+        if not ((hw_spec and has_bundle_before_cover) or _pro_console_contents(title_norm)):
+            return True
+    m_drive = re.search(r"\b(?:" + drive_re + r")", title_norm)
+    if m_drive:
+        if m_ps and m_drive.start() < m_ps.start():
+            return True
+        if re.search(r"\b(?:f[uü]r|fuer|for|passend\s+f[uü]r|geeignet\s+f[uü]r|kompatibel\s+mit|compatible\s+with|fits)\b.*\b(?:ps5|playstation|konsole|console|slim|pro)\b", title_norm[m_drive.end():]):
+            return True
+        before_drive = title_norm[m_ps.end():m_drive.start()] if m_ps else title_norm[:m_drive.start()]
+        has_connector_before_drive = bool(re.search(r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|plus|ohne|without|no|keine?[mrn]?)\b|[+&]", before_drive))
+        if not has_connector_before_drive and not hw_spec:
+            return True
+        if not has_connector_before_drive and re.search(
+            r"^\s*(?:mit|inkl(?:usive)?|und|with|&|\+)\s+(?:passende[rn]?\s+)?(?:abdeckung\w*|seitenabdeckung\w*|cover\w*|faceplates?|blende\w*)\b",
+            title_norm[m_drive.end():],
+        ):
+            return True
+    return False
+
+
 def _is_accessory_product(title_norm, category):
-    if category == "consoles" and re.search(r"\b(?:ohne|without|no|keine?)\s+(?:konsole|console|ps5|playstation)\b", title_norm):
+    if category == "consoles" and _console_drive_or_cover_only(title_norm):
         return True
     if _decorative_parts_offer(title_norm, category):
         return True
-    if category == "consoles" and re.search(r"\b(?:nur|only)\s+(?:kabel|cables?|controller|gamepad|laufwerk|disc drive)\b", title_norm):
-        return True
     noun_and_part = {
-        "consoles": r"(?:konsole|console|spielkonsole)\s+(?:covers?|case|skin|faceplates?|abdeckung)",
+        "consoles": r"(?:konsole|console|spielkonsole)\s+(?:covers?|case|skin|faceplates?|abdeckung\w*|seitenabdeckung\w*|konsolenabdeckung\w*)",
         "laptops": r"(?:laptop|notebook)\s+(?:tastatur|keyboard|akku|battery|ladegeraet|charger|netzteil)",
         "monitors": r"(?:monitor|bildschirm)\s+(?:[a-z0-9]*\d[a-z0-9]*(?:[ -][a-z])?\s+)?(?:netzteil|halterung|standfuss|staender|stand(?:\s*base)?|adapter)",
         "mice": r"(?:maus|mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|superstrike)\s+(?:receiver|empfaenger|dongle|pcb|shell|switch|taster|skates?|feet|glides?|mausfuesse|mausgleiter|ersatzteil|(?:ersatz|maus|gleit)?kufen?|gleitsohlen?)",
@@ -6926,10 +6977,70 @@ def _is_details_blocked(details, search):
     if _is_category_blocked_title(purpose_title, category, query_norm):
         logger.info("Details blocked due to category/accessory/damage text")
         return True
+    if category == "consoles" and _console_details_blocked(details.get("description") or "", details.get("localizedAspects") or []):
+        logger.info("Details blocked: console listing is standalone drive/cover/accessory or excludes console")
+        return True
     if category == "headphones":
         if re.search(r"\b(?:produktart|type)\s+(?:earmuffs?|ear\s+muffs?|gehoerschuetzer|gehoerschutz)\b", details_norm):
             logger.info("Details blocked: headphone listing is earmuffs/ear protectors")
             return True
+    return False
+
+
+def _console_details_blocked(description, aspects):
+    aspect_types = ("produktart", "produkttyp", "product type", "type", "art", "artikelart")
+    blocked_type_re = re.compile(
+        r"\b(?:laufwerk\w*|disc[- ]?laufwerk\w*|disk[- ]?laufwerk\w*|disclaufwerk\w*|disklaufwerk\w*"
+        r"|optisches\s+laufwerk|blu[- ]?ray\s+laufwerk|disc[- ]?drive|disk[- ]?drive|optical[- ]?drive"
+        r"|abdeckung\w*|seitenabdeckung\w*|konsolenabdeckung\w*|gehaeuseabdeckung\w*|faceplates?|cover(?:\s*plates?)?"
+        r"|wechselcover\w*|gehaeuse|housing|shell|skin|aufkleber|sticker|decal|schutzfolie\w*"
+        r"|standfuss|staender|stand|vertical\s+stand|wandhalterung|halterung|mount|dock|ladestation|charging\s+station"
+        r"|luefter|kuehler|cooling\s+fan|cooler|tasche|tragetasche|case|bag|netzkabel|stromkabel|hdmi\s+kabel"
+        r"|netzteil|power\s+supply|ersatzteil\w*|spare\s+parts?|leerkarton|originalverpackung|verpackung)\b"
+    )
+    console_type_re = re.compile(r"\b(?:konsole|console|spielkonsole|videospielkonsole|heimkonsole)\b")
+    model_names = ("modell", "model", "modellnummer", "model number", "herstellernummer", "mpn", "manufacturer part number")
+    for aspect in aspects or []:
+        if not isinstance(aspect, dict):
+            continue
+        name = _normalize(aspect.get("name") or "")
+        value = _normalize(aspect.get("value") or "")
+        if not value:
+            continue
+        if name in aspect_types and blocked_type_re.search(value) and not console_type_re.search(value):
+            return True
+        if name in model_names and re.search(r"\bcfi[- ]?z[a-z]{2}\d\b", value) and not re.search(r"\bcfi[- ]?[127]\d{3}\b", value):
+            return True
+    own = _normalize(_clean_description(description or ""))
+    if not own:
+        return False
+    if re.search(
+        r"\b(?:(?:die|the)\s+)?(?:konsole|console|spielkonsole|ps5|playstation(?:\s*5)?)\s+"
+        r"(?:(?:ist|sind|is|are|wird|werden|gehoert)\s+)?"
+        r"(?:nicht\s+(?:bestandteil(?:\s+des\s+angebots)?|enthalten|dabei|inklusive|im\s+lieferumfang|mitgeliefert|teil\s+des\s+angebots)"
+        r"|not\s+(?:included|part\s+of\s+the\s+(?:offer|listing|sale)))"
+        r"|\b(?:ohne|without|keine|no)\s+(?:konsole|console|spielkonsole)\b",
+        own,
+    ):
+        return True
+    nur_mod = r"(?:(?:die|das|der|den|the|a|an|ein|eine|einen|1x|original\w*|weisse?\w*|schwarze?\w*|passende?\w*)\s+){0,3}"
+    part_nouns = (
+        r"(?:laufwerk\w*|disc[- ]?laufwerk\w*|disk[- ]?laufwerk\w*|disclaufwerk\w*|disklaufwerk\w*"
+        r"|disc[- ]?drive|disk[- ]?drive|optical[- ]?drive|abdeckung\w*|seitenabdeckung\w*|konsolenabdeckung\w*"
+        r"|faceplates?|cover\s*plates?|standfuss|staender|ovp|originalverpackung|leerverpackung|verpackung|karton|leerkarton)"
+    )
+    if re.search(rf"\b(?:nur|only|lediglich|ausschliesslich)\s+{nur_mod}{part_nouns}\b", own):
+        return True
+    if re.search(
+        rf"\b(?:verkaufe(?:\s+hier)?|verkauft\s+(?:wird|werden)|angeboten\s+(?:wird|werden)|zum\s+verkauf\s+steht|biete(?:\s+hier)?|selling|for\s+sale\s+is)\s+"
+        rf"(?:(?:hier|mein(?:e|en)?|ein(?:e|en)?|das|die|der|my|a|an|the|original\w*|sony|neuwertig\w*|neu\w*|gebraucht\w*)\s+){{0,5}}"
+        rf"{part_nouns}\b[^.!?]{{0,120}}\b(?:f[uü]r|fuer|for|passend\s+f[uü]r|kompatibel\s+mit|compatible\s+with)\s+"
+        rf"(?:(?:die|the|sony)\s+)*(?:playstation\s*5|ps5|ps\s*5)\b",
+        own,
+    ) and not re.search(r"\b(?:konsole|console|spielkonsole)\b[^.!?]{0,40}\b(?:inkl|mit|with|dabei)\b", own):
+        return True
+    if re.search(r"\bbis\s+zum\s+ausbau\b", own) and re.search(rf"\b{part_nouns}\b", own):
+        return True
     return False
 
 
