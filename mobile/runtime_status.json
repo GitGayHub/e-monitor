@@ -4,63 +4,91 @@
   "appliedAt": "2026-11-02T05:01:47+00:00",
   "logicVersion": 1793110534,
   "lastSuccessfulRun": "2026-10-16T10:08:38+00:00",
-  "updatedAt": "2026-11-04T08:03:25+00:00",
+  "updatedAt": "2026-11-04T08:09:44+00:00",
   "state": "partial",
   "error": null,
-  "pendingCount": 18,
+  "pendingCount": 22,
   "pendingChecks": [
-    "iphone_17_pro_max: очередь проверки, переход к следующему товару (121 описаний); очередь продолжится",
-    "iphone_17_pro_max: очередь проверки, переход к следующему товару (11 описаний); очередь продолжится",
-    "iphone_16_pro_max_buy: очередь проверки, переход к следующему товару (61 описаний); очередь продолжится",
-    "pixel_9_pro_xl: очередь проверки, переход к следующему товару (25 описаний); очередь продолжится",
-    "4060_oled_buy: очередь проверки, переход к следующему товару (120 описаний); очередь продолжится",
-    "5070_ti_pc_buy: очередь проверки, переход к следующему товару (74 описаний); очередь продолжится",
-    "redmagic_11s_pro_buy: очередь проверки, переход к следующему товару (2 описаний); очередь продолжится",
+    "iphone_17_pro_max: search_deferred",
+    "iphone_17_pro_max: очередь проверки, переход к следующему товару (208 описаний); очередь продолжится",
+    "redmagic_11_pro_buy: search_deferred",
+    "redmagic_11_pro_buy: очередь проверки, переход к следующему товару (4 описаний); очередь продолжится",
+    "nubia_z80_ultra_buy: очередь проверки, переход к следующему товару (3 описаний); очередь продолжится",
+    "iphone_16_pro_max_buy: search_deferred",
+    "iphone_16_pro_max_buy: очередь проверки, переход к следующему товару (151 описаний); очередь продолжится",
     "ray_ban_meta_gen_2: search_deferred",
-    "ray_ban_meta_gen_2: очередь проверки, переход к следующему товару (74 описаний); очередь продолжится",
-    "iphone_16_pro_max_auc: очередь проверки, переход к следующему товару (46 описаний); очередь продолжится",
-    "iphone_16_pro_max_auc: очередь проверки, переход к следующему товару (12 описаний); очередь продолжится",
-    "4080_pc_buy: search_deferred",
-    "4080_pc_buy: очередь проверки, переход к следующему товару (23 описаний); очередь продолжится",
-    "pixel_5_auc: search_deferred",
-    "logitech_superlight_2_std_buy: очередь проверки, переход к следующему товару (35 описаний); очередь продолжится",
-    "lg_ultragear_oled_480hz_buy: очередь проверки, переход к следующему товару (21 описаний); очередь продолжится",
-    "nubia_z70_ultra_buy: проверка не завершена по времени (6 описаний); очередь продолжится",
+    "ray_ban_meta_gen_2: очередь проверки, переход к следующему товару (56 описаний); очередь продолжится",
+    "ray_ban_meta_gen_2: ending soon search_deferred",
+    "4060_oled_auc: search_deferred",
+    "pixel_9_pro_xl: search_deferred",
+    "pixel_9_pro_xl: очередь проверки, переход к следующему товару (68 описаний); очередь продолжится",
+    "pixel_9_pro_xl: ending soon search_deferred",
+    "ps5_pro_auc: очередь проверки, переход к следующему товару (42 описаний); очередь продолжится",
+    "redmagic_11_pro_auc: search_deferred",
+    "iphone_16_pro_max_auc: search_deferred",
+    "iphone_16_pro_max_auc: очередь проверки, переход к следующему товару (65 описаний); очередь продолжится",
+    "4050_oled_buy: очередь проверки, переход к следующему товару (65 описаний); очередь продолжится",
+    "samsung_galaxy_s25_edge: проверка не завершена по времени (57 описаний); очередь продолжится",
+    "samsung_galaxy_s25_edge: ending soon search_deferred",
     "Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе"
   ],
-  "searchIssueCount": 2,
+  "searchIssueCount": 6,
   "searchIssues": [
     {
-      "searchId": "5070_ti_pc_buy",
-      "searchName": "5070 ti (pc, rechner, computer, desktop, gaming pc)",
+      "searchId": "iphone_17_pro_max",
+      "searchName": "iphone 17 pro max",
+      "code": "site_error",
+      "message": "eBay вернул страницу временной ошибки"
+    },
+    {
+      "searchId": "redmagic_11s_pro_auc",
+      "searchName": "Redmagic 11S Pro",
+      "code": "site_error",
+      "message": "eBay вернул страницу временной ошибки"
+    },
+    {
+      "searchId": "4080_pc_auc",
+      "searchName": "4080 (pc, rechner, computer, desktop, gaming pc)",
+      "code": "blocked",
+      "message": "eBay ограничил доступ к выдаче"
+    },
+    {
+      "searchId": "nubia_z80_ultra_buy",
+      "searchName": "Nubia Z80 Ultra",
       "code": "details_unavailable",
       "message": "Не удалось полностью проверить описание или цену"
     },
     {
-      "searchId": "nubia_z80_ultra_leading_buy",
-      "searchName": "Nubia Z80 Ultra Leading",
-      "code": "site_error",
-      "message": "eBay вернул страницу временной ошибки"
+      "searchId": "4050_oled_auc",
+      "searchName": "4050 oled",
+      "code": "blocked",
+      "message": "eBay ограничил доступ к выдаче"
+    },
+    {
+      "searchId": "4050_oled_buy",
+      "searchName": "4050 oled",
+      "code": "details_unavailable",
+      "message": "Не удалось полностью проверить описание или цену"
     }
   ],
   "lastPass": {
-    "startedAt": "2026-11-04T07:57:23+00:00",
-    "finishedAt": "2026-11-04T08:03:25+00:00",
-    "searchesAttempted": 21,
-    "searchesSucceeded": 16,
-    "candidatesReceived": 1737,
-    "descriptionsVerified": 26,
-    "notificationsConfirmed": 0
+    "startedAt": "2026-11-04T08:03:41+00:00",
+    "finishedAt": "2026-11-04T08:09:44+00:00",
+    "searchesAttempted": 17,
+    "searchesSucceeded": 5,
+    "candidatesReceived": 1286,
+    "descriptionsVerified": 20,
+    "notificationsConfirmed": 1
   },
   "searchCoverage": {
     "activeSearches": 48,
     "attemptedSearches": 48,
-    "within15Minutes": 39,
+    "within15Minutes": 36,
     "neverAttempted": 0,
-    "oldestAttemptAt": "2026-11-04T07:33:54+00:00",
-    "oldestAttemptAgeSeconds": 1771,
+    "oldestAttemptAt": "2026-11-04T07:41:02+00:00",
+    "oldestAttemptAgeSeconds": 1721,
     "successfulSearches": 47,
-    "successfulWithin15Minutes": 21,
+    "successfulWithin15Minutes": 23,
     "withoutRecordedSuccess": 1,
     "withResultsSearches": 41,
     "cleanEmptySearches": 3,
@@ -69,80 +97,80 @@
     "searches": [
       {
         "searchId": "4050_oled_auc",
-        "lastAttemptAgeSeconds": 511,
-        "lastSuccessAgeSeconds": 6345,
-        "lastResultsAgeSeconds": 511,
-        "lastReceived": 1,
-        "lastError": "search_deferred",
-        "lastDurationSeconds": 12.773
+        "lastAttemptAgeSeconds": 82,
+        "lastSuccessAgeSeconds": 6724,
+        "lastResultsAgeSeconds": 890,
+        "lastReceived": 0,
+        "lastError": "blocked",
+        "lastDurationSeconds": 4.941
       },
       {
         "searchId": "4050_oled_buy",
-        "lastAttemptAgeSeconds": 469,
-        "lastSuccessAgeSeconds": 1235,
-        "lastResultsAgeSeconds": 469,
-        "lastReceived": 61,
-        "lastError": "search_deferred",
-        "lastDurationSeconds": 13.797
+        "lastAttemptAgeSeconds": 41,
+        "lastSuccessAgeSeconds": 41,
+        "lastResultsAgeSeconds": 41,
+        "lastReceived": 68,
+        "lastError": null,
+        "lastDurationSeconds": 15.805
       },
       {
         "searchId": "4060_oled_auc",
-        "lastAttemptAgeSeconds": 626,
-        "lastSuccessAgeSeconds": 3278,
-        "lastResultsAgeSeconds": 2419,
-        "lastReceived": 0,
+        "lastAttemptAgeSeconds": 167,
+        "lastSuccessAgeSeconds": 3657,
+        "lastResultsAgeSeconds": 167,
+        "lastReceived": 1,
         "lastError": "search_deferred",
-        "lastDurationSeconds": 6.537
+        "lastDurationSeconds": 11.889
       },
       {
         "searchId": "4060_oled_buy",
-        "lastAttemptAgeSeconds": 251,
-        "lastSuccessAgeSeconds": 251,
-        "lastResultsAgeSeconds": 251,
+        "lastAttemptAgeSeconds": 630,
+        "lastSuccessAgeSeconds": 630,
+        "lastResultsAgeSeconds": 630,
         "lastReceived": 132,
         "lastError": null,
         "lastDurationSeconds": 6.649
       },
       {
         "searchId": "4080_pc_auc",
-        "lastAttemptAgeSeconds": 787,
-        "lastSuccessAgeSeconds": 154823,
-        "lastResultsAgeSeconds": 4461,
-        "lastReceived": 0,
-        "lastError": "site_error",
-        "lastDurationSeconds": 6.581
+        "lastAttemptAgeSeconds": 277,
+        "lastSuccessAgeSeconds": 155202,
+        "lastResultsAgeSeconds": 277,
+        "lastReceived": 11,
+        "lastError": "blocked",
+        "lastDurationSeconds": 8.231
       },
       {
         "searchId": "4080_pc_buy",
-        "lastAttemptAgeSeconds": 108,
-        "lastSuccessAgeSeconds": 6721,
-        "lastResultsAgeSeconds": 108,
+        "lastAttemptAgeSeconds": 486,
+        "lastSuccessAgeSeconds": 7100,
+        "lastResultsAgeSeconds": 486,
         "lastReceived": 92,
         "lastError": "search_deferred",
         "lastDurationSeconds": 17.413
       },
       {
         "searchId": "5070_ti_pc_auc",
-        "lastAttemptAgeSeconds": 613,
-        "lastSuccessAgeSeconds": 1688,
-        "lastResultsAgeSeconds": 613,
+        "lastAttemptAgeSeconds": 992,
+        "lastSuccessAgeSeconds": 2067,
+        "lastResultsAgeSeconds": 992,
         "lastReceived": 1,
         "lastError": "search_deferred",
         "lastDurationSeconds": 12.596
       },
       {
         "searchId": "5070_ti_pc_buy",
-        "lastAttemptAgeSeconds": 236,
-        "lastSuccessAgeSeconds": 236,
-        "lastResultsAgeSeconds": 236,
+        "lastAttemptAgeSeconds": 615,
+        "lastSuccessAgeSeconds": 615,
+        "lastResultsAgeSeconds": 615,
         "lastReceived": 211,
         "lastError": null,
         "lastDurationSeconds": 11.288
       },
       {
         "searchId": "asus_vivobook_14x_oled_auc",
-        "lastAttemptAgeSeconds": 170,
-        "lastSuccessAgeSeconds": 170,
+        "lastAttemptAgeSeconds": 548,
+        "lastSuccessAgeSeconds": 548,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": null,
@@ -150,44 +178,44 @@
       },
       {
         "searchId": "asus_vivobook_14x_oled_buy",
-        "lastAttemptAgeSeconds": 524,
-        "lastSuccessAgeSeconds": 524,
-        "lastResultsAgeSeconds": 524,
-        "lastReceived": 7,
+        "lastAttemptAgeSeconds": 246,
+        "lastSuccessAgeSeconds": 246,
+        "lastResultsAgeSeconds": 246,
+        "lastReceived": 83,
         "lastError": null,
-        "lastDurationSeconds": 18.664
+        "lastDurationSeconds": 9.549
       },
       {
         "searchId": "iphone_16_pro_max_auc",
-        "lastAttemptAgeSeconds": 159,
-        "lastSuccessAgeSeconds": 159,
-        "lastResultsAgeSeconds": 159,
-        "lastReceived": 62,
-        "lastError": null,
-        "lastDurationSeconds": 10.701
+        "lastAttemptAgeSeconds": 68,
+        "lastSuccessAgeSeconds": 538,
+        "lastResultsAgeSeconds": 68,
+        "lastReceived": 84,
+        "lastError": "search_deferred",
+        "lastDurationSeconds": 13.947
       },
       {
         "searchId": "iphone_16_pro_max_buy",
-        "lastAttemptAgeSeconds": 299,
-        "lastSuccessAgeSeconds": 299,
-        "lastResultsAgeSeconds": 299,
-        "lastReceived": 168,
-        "lastError": null,
-        "lastDurationSeconds": 6.897
+        "lastAttemptAgeSeconds": 227,
+        "lastSuccessAgeSeconds": 678,
+        "lastResultsAgeSeconds": 227,
+        "lastReceived": 206,
+        "lastError": "search_deferred",
+        "lastDurationSeconds": 18.456
       },
       {
         "searchId": "iphone_17_pro_max",
         "lastAttemptAgeSeconds": 341,
-        "lastSuccessAgeSeconds": 341,
+        "lastSuccessAgeSeconds": 720,
         "lastResultsAgeSeconds": 341,
-        "lastReceived": 228,
-        "lastError": null,
-        "lastDurationSeconds": 12.141
+        "lastReceived": 278,
+        "lastError": "search_deferred",
+        "lastDurationSeconds": 13.975
       },
       {
         "searchId": "lg_ultragear_oled_480hz_auc",
-        "lastAttemptAgeSeconds": 208,
-        "lastSuccessAgeSeconds": 208,
+        "lastAttemptAgeSeconds": 587,
+        "lastSuccessAgeSeconds": 587,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": null,
@@ -195,71 +223,71 @@
       },
       {
         "searchId": "lg_ultragear_oled_480hz_buy",
-        "lastAttemptAgeSeconds": 44,
-        "lastSuccessAgeSeconds": 44,
-        "lastResultsAgeSeconds": 44,
+        "lastAttemptAgeSeconds": 423,
+        "lastSuccessAgeSeconds": 423,
+        "lastResultsAgeSeconds": 423,
         "lastReceived": 151,
         "lastError": null,
         "lastDurationSeconds": 5.282
       },
       {
         "searchId": "logitech_superlight_2_dex_auc",
-        "lastAttemptAgeSeconds": 414,
-        "lastSuccessAgeSeconds": 5539,
-        "lastResultsAgeSeconds": 414,
+        "lastAttemptAgeSeconds": 793,
+        "lastSuccessAgeSeconds": 5917,
+        "lastResultsAgeSeconds": 793,
         "lastReceived": 1,
         "lastError": "search_deferred",
         "lastDurationSeconds": 13.561
       },
       {
         "searchId": "logitech_superlight_2_dex_buy",
-        "lastAttemptAgeSeconds": 829,
-        "lastSuccessAgeSeconds": 829,
-        "lastResultsAgeSeconds": 829,
+        "lastAttemptAgeSeconds": 1208,
+        "lastSuccessAgeSeconds": 1208,
+        "lastResultsAgeSeconds": 1208,
         "lastReceived": 95,
         "lastError": null,
         "lastDurationSeconds": 2.975
       },
       {
         "searchId": "logitech_superlight_2_std_auc",
-        "lastAttemptAgeSeconds": 61,
-        "lastSuccessAgeSeconds": 61,
-        "lastResultsAgeSeconds": 61,
+        "lastAttemptAgeSeconds": 440,
+        "lastSuccessAgeSeconds": 440,
+        "lastResultsAgeSeconds": 440,
         "lastReceived": 2,
         "lastError": null,
         "lastDurationSeconds": 12.314
       },
       {
         "searchId": "logitech_superlight_2_std_buy",
-        "lastAttemptAgeSeconds": 55,
-        "lastSuccessAgeSeconds": 55,
-        "lastResultsAgeSeconds": 55,
+        "lastAttemptAgeSeconds": 433,
+        "lastSuccessAgeSeconds": 433,
+        "lastResultsAgeSeconds": 433,
         "lastReceived": 74,
         "lastError": null,
         "lastDurationSeconds": 4.922
       },
       {
         "searchId": "logitech_superstrike_auc",
-        "lastAttemptAgeSeconds": 487,
-        "lastSuccessAgeSeconds": 487,
-        "lastResultsAgeSeconds": 487,
+        "lastAttemptAgeSeconds": 866,
+        "lastSuccessAgeSeconds": 866,
+        "lastResultsAgeSeconds": 866,
         "lastReceived": 19,
         "lastError": null,
         "lastDurationSeconds": 5.431
       },
       {
         "searchId": "logitech_superstrike_buy",
-        "lastAttemptAgeSeconds": 805,
-        "lastSuccessAgeSeconds": 2375,
-        "lastResultsAgeSeconds": 805,
+        "lastAttemptAgeSeconds": 1184,
+        "lastSuccessAgeSeconds": 2754,
+        "lastResultsAgeSeconds": 1184,
         "lastReceived": 70,
         "lastError": "search_deferred",
         "lastDurationSeconds": 13.795
       },
       {
         "searchId": "nubia_z70_ultra_auc",
-        "lastAttemptAgeSeconds": 452,
-        "lastSuccessAgeSeconds": 2099,
+        "lastAttemptAgeSeconds": 831,
+        "lastSuccessAgeSeconds": 2478,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": "blocked",
@@ -267,17 +295,17 @@
       },
       {
         "searchId": "nubia_z70_ultra_buy",
-        "lastAttemptAgeSeconds": 7,
-        "lastSuccessAgeSeconds": 7,
-        "lastResultsAgeSeconds": 7,
+        "lastAttemptAgeSeconds": 386,
+        "lastSuccessAgeSeconds": 386,
+        "lastResultsAgeSeconds": 386,
         "lastReceived": 25,
         "lastError": null,
         "lastDurationSeconds": 13.451
       },
       {
         "searchId": "nubia_z70s_ultra_auc",
-        "lastAttemptAgeSeconds": 86,
-        "lastSuccessAgeSeconds": 86,
+        "lastAttemptAgeSeconds": 465,
+        "lastSuccessAgeSeconds": 465,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": null,
@@ -285,35 +313,35 @@
       },
       {
         "searchId": "nubia_z70s_ultra_buy",
-        "lastAttemptAgeSeconds": 93,
-        "lastSuccessAgeSeconds": 93,
-        "lastResultsAgeSeconds": 93,
+        "lastAttemptAgeSeconds": 472,
+        "lastSuccessAgeSeconds": 472,
+        "lastResultsAgeSeconds": 472,
         "lastReceived": 95,
         "lastError": null,
         "lastDurationSeconds": 4.116
       },
       {
         "searchId": "nubia_z80_ultra_auc",
-        "lastAttemptAgeSeconds": 20,
-        "lastSuccessAgeSeconds": 20,
-        "lastResultsAgeSeconds": 20,
+        "lastAttemptAgeSeconds": 399,
+        "lastSuccessAgeSeconds": 399,
+        "lastResultsAgeSeconds": 399,
         "lastReceived": 1,
         "lastError": null,
         "lastDurationSeconds": 12.459
       },
       {
         "searchId": "nubia_z80_ultra_buy",
-        "lastAttemptAgeSeconds": 1303,
-        "lastSuccessAgeSeconds": 1303,
-        "lastResultsAgeSeconds": 1303,
+        "lastAttemptAgeSeconds": 264,
+        "lastSuccessAgeSeconds": 264,
+        "lastResultsAgeSeconds": 264,
         "lastReceived": 31,
         "lastError": null,
-        "lastDurationSeconds": 12.509
+        "lastDurationSeconds": 13.068
       },
       {
         "searchId": "nubia_z80_ultra_leading_auc",
-        "lastAttemptAgeSeconds": 1021,
-        "lastSuccessAgeSeconds": 10938,
+        "lastAttemptAgeSeconds": 1399,
+        "lastSuccessAgeSeconds": 11317,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": "search_deferred",
@@ -321,8 +349,8 @@
       },
       {
         "searchId": "nubia_z80_ultra_leading_buy",
-        "lastAttemptAgeSeconds": 0,
-        "lastSuccessAgeSeconds": 17039,
+        "lastAttemptAgeSeconds": 379,
+        "lastSuccessAgeSeconds": 17417,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": "site_error",
@@ -330,107 +358,107 @@
       },
       {
         "searchId": "pixel_5_auc",
-        "lastAttemptAgeSeconds": 74,
-        "lastSuccessAgeSeconds": 1392,
-        "lastResultsAgeSeconds": 74,
+        "lastAttemptAgeSeconds": 452,
+        "lastSuccessAgeSeconds": 1771,
+        "lastResultsAgeSeconds": 452,
         "lastReceived": 25,
         "lastError": "search_deferred",
         "lastDurationSeconds": 12.496
       },
       {
         "searchId": "pixel_5_buy",
-        "lastAttemptAgeSeconds": 1006,
-        "lastSuccessAgeSeconds": 5110,
-        "lastResultsAgeSeconds": 1006,
+        "lastAttemptAgeSeconds": 1385,
+        "lastSuccessAgeSeconds": 5489,
+        "lastResultsAgeSeconds": 1385,
         "lastReceived": 202,
         "lastError": "search_deferred",
         "lastDurationSeconds": 13.99
       },
       {
         "searchId": "pixel_9_pro_xl",
-        "lastAttemptAgeSeconds": 284,
-        "lastSuccessAgeSeconds": 284,
-        "lastResultsAgeSeconds": 284,
-        "lastReceived": 74,
-        "lastError": null,
-        "lastDurationSeconds": 9.953
+        "lastAttemptAgeSeconds": 148,
+        "lastSuccessAgeSeconds": 663,
+        "lastResultsAgeSeconds": 148,
+        "lastReceived": 143,
+        "lastError": "search_deferred",
+        "lastDurationSeconds": 17.366
       },
       {
         "searchId": "ps5_pro_auc",
-        "lastAttemptAgeSeconds": 1551,
-        "lastSuccessAgeSeconds": 1551,
-        "lastResultsAgeSeconds": 1551,
-        "lastReceived": 51,
+        "lastAttemptAgeSeconds": 112,
+        "lastSuccessAgeSeconds": 112,
+        "lastResultsAgeSeconds": 112,
+        "lastReceived": 52,
         "lastError": null,
-        "lastDurationSeconds": 13.505
+        "lastDurationSeconds": 12.441
       },
       {
         "searchId": "ps5_pro_buy",
-        "lastAttemptAgeSeconds": 992,
-        "lastSuccessAgeSeconds": 992,
-        "lastResultsAgeSeconds": 992,
+        "lastAttemptAgeSeconds": 1371,
+        "lastSuccessAgeSeconds": 1371,
+        "lastResultsAgeSeconds": 1371,
         "lastReceived": 200,
         "lastError": null,
         "lastDurationSeconds": 13.408
       },
       {
         "searchId": "ray_ban_meta_gen_2",
-        "lastAttemptAgeSeconds": 195,
+        "lastAttemptAgeSeconds": 200,
         "lastSuccessAgeSeconds": null,
-        "lastResultsAgeSeconds": 195,
-        "lastReceived": 229,
+        "lastResultsAgeSeconds": 200,
+        "lastReceived": 169,
         "lastError": "search_deferred",
-        "lastDurationSeconds": 13.295
+        "lastDurationSeconds": 16.659
       },
       {
         "searchId": "redmagic_11_pro_auc",
-        "lastAttemptAgeSeconds": 1535,
-        "lastSuccessAgeSeconds": 3334,
-        "lastResultsAgeSeconds": 3334,
-        "lastReceived": 0,
+        "lastAttemptAgeSeconds": 87,
+        "lastSuccessAgeSeconds": 3713,
+        "lastResultsAgeSeconds": 87,
+        "lastReceived": 1,
         "lastError": "search_deferred",
-        "lastDurationSeconds": 6.595
+        "lastDurationSeconds": 13.091
       },
       {
         "searchId": "redmagic_11_pro_buy",
-        "lastAttemptAgeSeconds": 1760,
-        "lastSuccessAgeSeconds": 1760,
-        "lastResultsAgeSeconds": 1760,
-        "lastReceived": 145,
-        "lastError": null,
-        "lastDurationSeconds": 10.478
+        "lastAttemptAgeSeconds": 309,
+        "lastSuccessAgeSeconds": 2139,
+        "lastResultsAgeSeconds": 309,
+        "lastReceived": 31,
+        "lastError": "search_deferred",
+        "lastDurationSeconds": 13.114
       },
       {
         "searchId": "redmagic_11s_pro_auc",
-        "lastAttemptAgeSeconds": 495,
-        "lastSuccessAgeSeconds": 1734,
-        "lastResultsAgeSeconds": 495,
+        "lastAttemptAgeSeconds": 287,
+        "lastSuccessAgeSeconds": 2113,
+        "lastResultsAgeSeconds": 287,
         "lastReceived": 1,
-        "lastError": "search_deferred",
-        "lastDurationSeconds": 14.357
+        "lastError": "site_error",
+        "lastDurationSeconds": 12.938
       },
       {
         "searchId": "redmagic_11s_pro_buy",
-        "lastAttemptAgeSeconds": 221,
-        "lastSuccessAgeSeconds": 221,
-        "lastResultsAgeSeconds": 221,
+        "lastAttemptAgeSeconds": 600,
+        "lastSuccessAgeSeconds": 600,
+        "lastResultsAgeSeconds": 600,
         "lastReceived": 127,
         "lastError": null,
         "lastDurationSeconds": 5.458
       },
       {
         "searchId": "samsung_galaxy_s25_edge",
-        "lastAttemptAgeSeconds": 780,
-        "lastSuccessAgeSeconds": 1790,
-        "lastResultsAgeSeconds": 780,
-        "lastReceived": 133,
-        "lastError": "search_deferred",
-        "lastDurationSeconds": 6.825
+        "lastAttemptAgeSeconds": 10,
+        "lastSuccessAgeSeconds": 10,
+        "lastResultsAgeSeconds": 10,
+        "lastReceived": 126,
+        "lastError": null,
+        "lastDurationSeconds": 12.439
       },
       {
         "searchId": "samsung_odyssey_oled_g6_500hz_auc",
-        "lastAttemptAgeSeconds": 748,
-        "lastSuccessAgeSeconds": 7903,
+        "lastAttemptAgeSeconds": 1127,
+        "lastSuccessAgeSeconds": 8282,
         "lastResultsAgeSeconds": null,
         "lastReceived": 0,
         "lastError": "blocked",
@@ -438,63 +466,63 @@
       },
       {
         "searchId": "samsung_odyssey_oled_g6_500hz_buy",
-        "lastAttemptAgeSeconds": 669,
-        "lastSuccessAgeSeconds": 2490,
-        "lastResultsAgeSeconds": 669,
+        "lastAttemptAgeSeconds": 1048,
+        "lastSuccessAgeSeconds": 2869,
+        "lastResultsAgeSeconds": 1048,
         "lastReceived": 17,
         "lastError": "search_deferred",
         "lastDurationSeconds": 12.907
       },
       {
         "searchId": "samsung_s24_ultra_auc",
-        "lastAttemptAgeSeconds": 439,
-        "lastSuccessAgeSeconds": 2240,
-        "lastResultsAgeSeconds": 439,
+        "lastAttemptAgeSeconds": 817,
+        "lastSuccessAgeSeconds": 2619,
+        "lastResultsAgeSeconds": 817,
         "lastReceived": 26,
         "lastError": "search_deferred",
         "lastDurationSeconds": 13.295
       },
       {
         "searchId": "samsung_s24_ultra_buy",
-        "lastAttemptAgeSeconds": 735,
-        "lastSuccessAgeSeconds": 8001,
-        "lastResultsAgeSeconds": 735,
+        "lastAttemptAgeSeconds": 1114,
+        "lastSuccessAgeSeconds": 8380,
+        "lastResultsAgeSeconds": 1114,
         "lastReceived": 204,
         "lastError": "search_deferred",
         "lastDurationSeconds": 12.869
       },
       {
         "searchId": "sony_ult_wear_auc",
-        "lastAttemptAgeSeconds": 930,
-        "lastSuccessAgeSeconds": 15500,
-        "lastResultsAgeSeconds": 930,
+        "lastAttemptAgeSeconds": 1308,
+        "lastSuccessAgeSeconds": 15879,
+        "lastResultsAgeSeconds": 1308,
         "lastReceived": 3,
         "lastError": "search_deferred",
         "lastDurationSeconds": 10.72
       },
       {
         "searchId": "sony_ult_wear_buy",
-        "lastAttemptAgeSeconds": 1327,
-        "lastSuccessAgeSeconds": 4947,
-        "lastResultsAgeSeconds": 1327,
+        "lastAttemptAgeSeconds": 1706,
+        "lastSuccessAgeSeconds": 5326,
+        "lastResultsAgeSeconds": 1706,
         "lastReceived": 298,
         "lastError": "search_deferred",
         "lastDurationSeconds": 15.612
       },
       {
         "searchId": "sony_wh_1000xm6_auc",
-        "lastAttemptAgeSeconds": 406,
-        "lastSuccessAgeSeconds": 406,
-        "lastResultsAgeSeconds": 406,
+        "lastAttemptAgeSeconds": 784,
+        "lastSuccessAgeSeconds": 784,
+        "lastResultsAgeSeconds": 784,
         "lastReceived": 75,
         "lastError": null,
         "lastDurationSeconds": 6.646
       },
       {
         "searchId": "sony_wh_1000xm6_buy",
-        "lastAttemptAgeSeconds": 651,
-        "lastSuccessAgeSeconds": 651,
-        "lastResultsAgeSeconds": 651,
+        "lastAttemptAgeSeconds": 1030,
+        "lastSuccessAgeSeconds": 1030,
+        "lastResultsAgeSeconds": 1030,
         "lastReceived": 58,
         "lastError": null,
         "lastDurationSeconds": 5.63
@@ -507,58 +535,58 @@
   "activeSearches": 48,
   "configFingerprint": "c6c226afb7b16fb7f6f5db15dc7ee0225465b639dd7cf90ca1e634cd3339f150",
   "schedule": {
-    "searchesPerMinute": 3.21,
+    "searchesPerMinute": 2.6,
     "passMinutes": 6.5,
     "priorityMaxWeight": 8.0,
     "intervalsMinutes": {
-      "pixel_9_pro_xl": 7.7,
-      "ray_ban_meta_gen_2": 6.5,
-      "samsung_galaxy_s25_edge": 15.9,
+      "pixel_9_pro_xl": 9.5,
+      "ray_ban_meta_gen_2": 6.6,
+      "samsung_galaxy_s25_edge": 19.7,
       "iphone_17_pro_max": 6.5,
-      "samsung_odyssey_oled_g6_500hz_buy": 29.9,
-      "samsung_odyssey_oled_g6_500hz_auc": 29.9,
-      "sony_ult_wear_buy": 33.4,
-      "sony_ult_wear_auc": 33.4,
-      "samsung_s24_ultra_buy": 32.3,
-      "samsung_s24_ultra_auc": 32.3,
-      "sony_wh_1000xm6_buy": 31.1,
-      "sony_wh_1000xm6_auc": 31.1,
-      "redmagic_11_pro_buy": 28.8,
-      "redmagic_11_pro_auc": 28.8,
-      "redmagic_11s_pro_buy": 8.9,
-      "redmagic_11s_pro_auc": 8.9,
-      "nubia_z80_ultra_buy": 21.7,
-      "nubia_z80_ultra_auc": 21.7,
-      "nubia_z80_ultra_leading_buy": 26.4,
-      "nubia_z80_ultra_leading_auc": 26.4,
-      "nubia_z70_ultra_buy": 24.1,
-      "nubia_z70_ultra_auc": 24.1,
-      "nubia_z70s_ultra_buy": 25.2,
-      "nubia_z70s_ultra_auc": 25.2,
-      "pixel_5_buy": 19.4,
-      "pixel_5_auc": 19.4,
-      "logitech_superstrike_buy": 22.9,
-      "logitech_superstrike_auc": 22.9,
-      "logitech_superlight_2_std_buy": 17.1,
-      "logitech_superlight_2_std_auc": 17.1,
-      "logitech_superlight_2_dex_buy": 18.2,
-      "logitech_superlight_2_dex_auc": 18.2,
-      "ps5_pro_buy": 27.6,
-      "ps5_pro_auc": 27.6,
-      "iphone_16_pro_max_buy": 6.5,
-      "iphone_16_pro_max_auc": 6.5,
-      "lg_ultragear_oled_480hz_buy": 20.6,
-      "lg_ultragear_oled_480hz_auc": 20.6,
-      "4080_pc_buy": 13.5,
-      "4080_pc_auc": 13.5,
-      "4050_oled_buy": 11.2,
-      "4050_oled_auc": 11.2,
-      "4060_oled_buy": 12.4,
-      "4060_oled_auc": 12.4,
-      "5070_ti_pc_buy": 14.7,
-      "5070_ti_pc_auc": 14.7,
-      "asus_vivobook_14x_oled_buy": 10.0,
-      "asus_vivobook_14x_oled_auc": 10.0
+      "samsung_odyssey_oled_g6_500hz_buy": 37.1,
+      "samsung_odyssey_oled_g6_500hz_auc": 37.1,
+      "sony_ult_wear_buy": 41.4,
+      "sony_ult_wear_auc": 41.4,
+      "samsung_s24_ultra_buy": 40.0,
+      "samsung_s24_ultra_auc": 40.0,
+      "sony_wh_1000xm6_buy": 38.5,
+      "sony_wh_1000xm6_auc": 38.5,
+      "redmagic_11_pro_buy": 35.6,
+      "redmagic_11_pro_auc": 35.6,
+      "redmagic_11s_pro_buy": 11.0,
+      "redmagic_11s_pro_auc": 11.0,
+      "nubia_z80_ultra_buy": 26.9,
+      "nubia_z80_ultra_auc": 26.9,
+      "nubia_z80_ultra_leading_buy": 32.7,
+      "nubia_z80_ultra_leading_auc": 32.7,
+      "nubia_z70_ultra_buy": 29.8,
+      "nubia_z70_ultra_auc": 29.8,
+      "nubia_z70s_ultra_buy": 31.3,
+      "nubia_z70s_ultra_auc": 31.3,
+      "pixel_5_buy": 24.0,
+      "pixel_5_auc": 24.0,
+      "logitech_superstrike_buy": 28.4,
+      "logitech_superstrike_auc": 28.4,
+      "logitech_superlight_2_std_buy": 21.1,
+      "logitech_superlight_2_std_auc": 21.1,
+      "logitech_superlight_2_dex_buy": 22.6,
+      "logitech_superlight_2_dex_auc": 22.6,
+      "ps5_pro_buy": 34.2,
+      "ps5_pro_auc": 34.2,
+      "iphone_16_pro_max_buy": 8.1,
+      "iphone_16_pro_max_auc": 8.1,
+      "lg_ultragear_oled_480hz_buy": 25.5,
+      "lg_ultragear_oled_480hz_auc": 25.5,
+      "4080_pc_buy": 16.8,
+      "4080_pc_auc": 16.8,
+      "4050_oled_buy": 13.9,
+      "4050_oled_auc": 13.9,
+      "4060_oled_buy": 15.3,
+      "4060_oled_auc": 15.3,
+      "5070_ti_pc_buy": 18.2,
+      "5070_ti_pc_auc": 18.2,
+      "asus_vivobook_14x_oled_buy": 12.4,
+      "asus_vivobook_14x_oled_auc": 12.4
     }
   },
   "apiKeys": [
@@ -593,15 +621,15 @@
     {
       "label": "Ключ 3",
       "clientId": "…359a",
-      "used24h": 3130,
+      "used24h": 0,
       "limit": 5000,
-      "percent": 63,
+      "percent": 0,
       "paused": false,
       "usageSource": "ebay_analytics",
-      "usageUpdatedAt": "2026-11-04T07:44:30+00:00",
+      "usageUpdatedAt": "2026-11-04T08:03:47+00:00",
       "usageError": null,
-      "remaining": 1870,
-      "quotaResetAt": "2026-11-04T08:00:00+00:00",
+      "remaining": 5000,
+      "quotaResetAt": "2026-11-05T08:00:00+00:00",
       "windowSeconds": 86400
     }
   ],
@@ -614,9 +642,9 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
-      "median": 629.0,
-      "count": 51,
+      "generatedAt": "2026-11-04T08:09:44+00:00",
+      "median": 637.095,
+      "count": 50,
       "excluded": 1,
       "points": [
         {
@@ -795,8 +823,8 @@
         },
         {
           "day": "2026-11-04",
-          "median": 629.0,
-          "count": 51,
+          "median": 637.095,
+          "count": 50,
           "excluded": 1
         }
       ],
@@ -804,8 +832,8 @@
       "minimum": 5,
       "conditionViews": {
         "all7": {
-          "median": 629.0,
-          "count": 51,
+          "median": 637.095,
+          "count": 50,
           "excluded": 1,
           "items": [
             {
@@ -924,8 +952,8 @@
             },
             {
               "day": "2026-11-04",
-              "median": 629.0,
-              "count": 51,
+              "median": 637.095,
+              "count": 50,
               "excluded": 1
             }
           ],
@@ -1063,7 +1091,7 @@
         },
         "used7": {
           "median": 510.9,
-          "count": 33,
+          "count": 32,
           "excluded": 1,
           "conditionExcludedUnknown": 0,
           "conditionExcludedOther": 18,
@@ -1185,7 +1213,7 @@
             {
               "day": "2026-11-04",
               "median": 510.9,
-              "count": 33,
+              "count": 32,
               "excluded": 1
             }
           ],
@@ -1328,7 +1356,7 @@
           "count": 18,
           "excluded": 0,
           "conditionExcludedUnknown": 0,
-          "conditionExcludedOther": 34,
+          "conditionExcludedOther": 33,
           "items": [
             {
               "itemId": "188830514094",
@@ -1595,7 +1623,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 346.19,
       "count": 49,
       "excluded": 4,
@@ -1790,6 +1818,13 @@
           "excluded": 4,
           "items": [
             {
+              "itemId": "168794501754",
+              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
+              "price": 272.21,
+              "observedAt": "2026-11-04T08:06:33+00:00",
+              "condition": "new"
+            },
+            {
               "itemId": "168833443313",
               "title": "Ray-Ban Meta Wayfarer Gen2 RW4012 6840MF 53 Transitions Grau NEU OVP",
               "price": 467.59,
@@ -1802,13 +1837,6 @@
               "price": 249.99,
               "observedAt": "2026-11-04T07:54:15+00:00",
               "condition": "used"
-            },
-            {
-              "itemId": "168794461975",
-              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - Como nuevo -",
-              "price": 272.21,
-              "observedAt": "2026-11-04T07:47:26+00:00",
-              "condition": "new"
             }
           ],
           "itemsTruncated": true,
@@ -1919,6 +1947,13 @@
           "excluded": 4,
           "items": [
             {
+              "itemId": "168794501754",
+              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
+              "price": 272.21,
+              "observedAt": "2026-11-04T08:06:33+00:00",
+              "condition": "new"
+            },
+            {
               "itemId": "168833443313",
               "title": "Ray-Ban Meta Wayfarer Gen2 RW4012 6840MF 53 Transitions Grau NEU OVP",
               "price": 467.59,
@@ -1931,13 +1966,6 @@
               "price": 249.99,
               "observedAt": "2026-11-04T07:54:15+00:00",
               "condition": "used"
-            },
-            {
-              "itemId": "168794501754",
-              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
-              "price": 272.21,
-              "observedAt": "2026-11-04T07:47:26+00:00",
-              "condition": "new"
             }
           ],
           "itemsTruncated": true,
@@ -2312,6 +2340,13 @@
           "conditionExcludedOther": 18,
           "items": [
             {
+              "itemId": "168794501754",
+              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
+              "price": 272.21,
+              "observedAt": "2026-11-04T08:06:33+00:00",
+              "condition": "new"
+            },
+            {
               "itemId": "168833443313",
               "title": "Ray-Ban Meta Wayfarer Gen2 RW4012 6840MF 53 Transitions Grau NEU OVP",
               "price": 467.59,
@@ -2321,13 +2356,6 @@
             {
               "itemId": "168794461975",
               "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - Como nuevo -",
-              "price": 272.21,
-              "observedAt": "2026-11-04T07:47:26+00:00",
-              "condition": "new"
-            },
-            {
-              "itemId": "168794501754",
-              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
               "price": 272.21,
               "observedAt": "2026-11-04T07:47:26+00:00",
               "condition": "new"
@@ -2443,17 +2471,17 @@
           "conditionExcludedOther": 19,
           "items": [
             {
+              "itemId": "168794501754",
+              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
+              "price": 272.21,
+              "observedAt": "2026-11-04T08:06:33+00:00",
+              "condition": "new"
+            },
+            {
               "itemId": "168833443313",
               "title": "Ray-Ban Meta Wayfarer Gen2 RW4012 6840MF 53 Transitions Grau NEU OVP",
               "price": 467.59,
               "observedAt": "2026-11-04T07:54:15+00:00",
-              "condition": "new"
-            },
-            {
-              "itemId": "168794501754",
-              "title": "Ray-Ban Meta Skyler (Gen 2) RW4014 6700MF 52-20 - neuwertig -",
-              "price": 272.21,
-              "observedAt": "2026-11-04T07:47:26+00:00",
               "condition": "new"
             },
             {
@@ -2576,7 +2604,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 664.19,
       "count": 57,
       "excluded": 0,
@@ -3557,7 +3585,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 1166.19,
       "count": 83,
       "excluded": 3,
@@ -4539,7 +4567,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 763.9,
       "count": 21,
       "excluded": 0,
@@ -5493,7 +5521,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 118.57,
       "count": 43,
       "excluded": 1,
@@ -6475,7 +6503,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 563.95,
       "count": 74,
       "excluded": 0,
@@ -7457,7 +7485,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 315.405,
       "count": 32,
       "excluded": 0,
@@ -8439,7 +8467,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 1,
       "excluded": 0,
@@ -8637,7 +8665,7 @@
               "itemId": "237093350026",
               "title": "Telefon Gamingowy - ZTE Nubia Redmagic 11 pro",
               "price": 1026.55,
-              "observedAt": "2026-11-04T06:03:10+00:00",
+              "observedAt": "2026-11-04T08:04:43+00:00",
               "condition": "used"
             }
           ],
@@ -8752,7 +8780,7 @@
               "itemId": "237093350026",
               "title": "Telefon Gamingowy - ZTE Nubia Redmagic 11 pro",
               "price": 1026.55,
-              "observedAt": "2026-11-04T06:03:10+00:00",
+              "observedAt": "2026-11-04T08:04:43+00:00",
               "condition": "used"
             },
             {
@@ -8876,7 +8904,7 @@
               "itemId": "237093350026",
               "title": "Telefon Gamingowy - ZTE Nubia Redmagic 11 pro",
               "price": 1026.55,
-              "observedAt": "2026-11-04T06:03:10+00:00",
+              "observedAt": "2026-11-04T08:04:43+00:00",
               "condition": "used"
             }
           ],
@@ -8993,7 +9021,7 @@
               "itemId": "237093350026",
               "title": "Telefon Gamingowy - ZTE Nubia Redmagic 11 pro",
               "price": 1026.55,
-              "observedAt": "2026-11-04T06:03:10+00:00",
+              "observedAt": "2026-11-04T08:04:43+00:00",
               "condition": "used"
             }
           ],
@@ -9336,7 +9364,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 0,
       "excluded": 0,
@@ -10186,7 +10214,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 4,
       "excluded": 1,
@@ -10384,7 +10412,7 @@
               "itemId": "336877040714",
               "title": "Nubia Z80 Ultra 1TB - 16GB schwarz OVP",
               "price": 649.0,
-              "observedAt": "2026-11-04T06:50:42+00:00",
+              "observedAt": "2026-11-04T08:05:28+00:00",
               "condition": "used"
             },
             {
@@ -10513,7 +10541,7 @@
               "itemId": "336877040714",
               "title": "Nubia Z80 Ultra 1TB - 16GB schwarz OVP",
               "price": 649.0,
-              "observedAt": "2026-11-04T06:50:42+00:00",
+              "observedAt": "2026-11-04T08:05:28+00:00",
               "condition": "used"
             },
             {
@@ -10644,7 +10672,7 @@
               "itemId": "336877040714",
               "title": "Nubia Z80 Ultra 1TB - 16GB schwarz OVP",
               "price": 649.0,
-              "observedAt": "2026-11-04T06:50:42+00:00",
+              "observedAt": "2026-11-04T08:05:28+00:00",
               "condition": "used"
             },
             {
@@ -10775,7 +10803,7 @@
               "itemId": "336877040714",
               "title": "Nubia Z80 Ultra 1TB - 16GB schwarz OVP",
               "price": 649.0,
-              "observedAt": "2026-11-04T06:50:42+00:00",
+              "observedAt": "2026-11-04T08:05:28+00:00",
               "condition": "used"
             },
             {
@@ -11140,7 +11168,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 0,
       "excluded": 0,
@@ -11990,7 +12018,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 2,
       "excluded": 0,
@@ -12916,7 +12944,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 0,
       "excluded": 0,
@@ -13766,7 +13794,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 2,
       "excluded": 0,
@@ -14676,7 +14704,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 174.59,
       "count": 63,
       "excluded": 4,
@@ -15658,7 +15686,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 112.115,
       "count": 86,
       "excluded": 1,
@@ -16640,7 +16668,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 143.55,
       "count": 45,
       "excluded": 0,
@@ -17622,9 +17650,9 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
-      "median": 1228.7,
-      "count": 246,
+      "generatedAt": "2026-11-04T08:09:44+00:00",
+      "median": 1229.42,
+      "count": 244,
       "excluded": 10,
       "points": [
         {
@@ -17803,8 +17831,8 @@
         },
         {
           "day": "2026-11-04",
-          "median": 1228.7,
-          "count": 246,
+          "median": 1229.42,
+          "count": 244,
           "excluded": 10
         }
       ],
@@ -17812,8 +17840,8 @@
       "minimum": 5,
       "conditionViews": {
         "all7": {
-          "median": 1228.7,
-          "count": 246,
+          "median": 1229.42,
+          "count": 244,
           "excluded": 10,
           "items": [
             {
@@ -17932,8 +17960,8 @@
             },
             {
               "day": "2026-11-04",
-              "median": 1228.7,
-              "count": 246,
+              "median": 1229.42,
+              "count": 244,
               "excluded": 10
             }
           ],
@@ -18074,7 +18102,7 @@
           "count": 74,
           "excluded": 6,
           "conditionExcludedUnknown": 0,
-          "conditionExcludedOther": 176,
+          "conditionExcludedOther": 174,
           "items": [
             {
               "itemId": "227579988625",
@@ -18333,7 +18361,7 @@
         },
         "new7": {
           "median": 1259.49,
-          "count": 168,
+          "count": 166,
           "excluded": 8,
           "conditionExcludedUnknown": 0,
           "conditionExcludedOther": 80,
@@ -18455,7 +18483,7 @@
             {
               "day": "2026-11-04",
               "median": 1259.49,
-              "count": 168,
+              "count": 166,
               "excluded": 8
             }
           ],
@@ -18604,7 +18632,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 756.19,
       "count": 121,
       "excluded": 8,
@@ -18799,17 +18827,17 @@
           "excluded": 8,
           "items": [
             {
+              "itemId": "168829169636",
+              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
+              "price": 786.19,
+              "observedAt": "2026-11-04T08:06:07+00:00",
+              "condition": "used"
+            },
+            {
               "itemId": "227570069594",
               "title": "Apple iPhone 16 Pro Max  256 GB Titan Wüstensand",
               "price": 856.19,
               "observedAt": "2026-11-04T07:49:08+00:00",
-              "condition": "used"
-            },
-            {
-              "itemId": "168829169636",
-              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
-              "price": 786.19,
-              "observedAt": "2026-11-04T07:41:02+00:00",
               "condition": "used"
             },
             {
@@ -18928,17 +18956,17 @@
           "excluded": 7,
           "items": [
             {
+              "itemId": "168829169636",
+              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
+              "price": 786.19,
+              "observedAt": "2026-11-04T08:06:07+00:00",
+              "condition": "used"
+            },
+            {
               "itemId": "227570069594",
               "title": "Apple iPhone 16 Pro Max  256 GB Titan Wüstensand",
               "price": 856.19,
               "observedAt": "2026-11-04T07:49:08+00:00",
-              "condition": "used"
-            },
-            {
-              "itemId": "168829169636",
-              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
-              "price": 786.19,
-              "observedAt": "2026-11-04T07:41:02+00:00",
               "condition": "used"
             },
             {
@@ -19059,17 +19087,17 @@
           "conditionExcludedOther": 12,
           "items": [
             {
+              "itemId": "168829169636",
+              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
+              "price": 786.19,
+              "observedAt": "2026-11-04T08:06:07+00:00",
+              "condition": "used"
+            },
+            {
               "itemId": "227570069594",
               "title": "Apple iPhone 16 Pro Max  256 GB Titan Wüstensand",
               "price": 856.19,
               "observedAt": "2026-11-04T07:49:08+00:00",
-              "condition": "used"
-            },
-            {
-              "itemId": "168829169636",
-              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
-              "price": 786.19,
-              "observedAt": "2026-11-04T07:41:02+00:00",
               "condition": "used"
             },
             {
@@ -19190,17 +19218,17 @@
           "conditionExcludedOther": 16,
           "items": [
             {
+              "itemId": "168829169636",
+              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
+              "price": 786.19,
+              "observedAt": "2026-11-04T08:06:07+00:00",
+              "condition": "used"
+            },
+            {
               "itemId": "227570069594",
               "title": "Apple iPhone 16 Pro Max  256 GB Titan Wüstensand",
               "price": 856.19,
               "observedAt": "2026-11-04T07:49:08+00:00",
-              "condition": "used"
-            },
-            {
-              "itemId": "168829169636",
-              "title": "Apple iPhone 16 Pro Max - 256 GB - White Titanium (Ohne Simlock) mit Kabel & OVP",
-              "price": 786.19,
-              "observedAt": "2026-11-04T07:41:02+00:00",
               "condition": "used"
             },
             {
@@ -19586,7 +19614,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 755.49,
       "count": 22,
       "excluded": 0,
@@ -20568,7 +20596,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 2276.98,
       "count": 17,
       "excluded": 0,
@@ -21550,7 +21578,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 1339.45,
       "count": 8,
       "excluded": 0,
@@ -22504,7 +22532,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 1957.4450000000002,
       "count": 8,
       "excluded": 0,
@@ -23458,7 +23486,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": 2295.73,
       "count": 87,
       "excluded": 0,
@@ -24412,7 +24440,7 @@
       "settingsRevision": "5999629a-fd2e-4d63-bfb2-94bb5d64f94f",
       "logicVersion": 1793110534,
       "historyVersion": 54,
-      "generatedAt": "2026-11-04T08:03:25+00:00",
+      "generatedAt": "2026-11-04T08:09:44+00:00",
       "median": null,
       "count": 0,
       "excluded": 0,
@@ -25260,7 +25288,7 @@
     "held": 0,
     "lastConfirmedAt": null
   },
-  "lastTelegramConfirmedAt": "2026-11-04T07:36:14+00:00",
+  "lastTelegramConfirmedAt": "2026-11-04T08:07:54+00:00",
   "lastTelegramBotUsername": "eBaySearcherBOT",
   "lastTelegramDeliveryRoute": "primary"
 }
