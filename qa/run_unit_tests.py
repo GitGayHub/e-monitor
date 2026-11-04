@@ -109,6 +109,7 @@ def main():
         modules.append("test_html_item_source")
         modules.append("test_browser_shadow_opportunity")
         modules.append("test_rayban_lenses")
+        modules.append("test_ps5_laufwerk")
         def offline_connect(sock, address):
             if isinstance(address, tuple) and address[0] in ("127.0.0.1", "::1", "localhost"):
                 return original_connect(sock, address)
