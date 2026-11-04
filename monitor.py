@@ -874,56 +874,94 @@ def _matches_samsung_odyssey_g6_500hz(text_norm):
 
 def _rayban_meta_gen2_accessory_or_part(t):
     if re.search(
-        r"\b(?:dummy|dummie|mockup)\b"
-        r"|\bohne\s+(?:funktion|elektronik|kamera|technik|brille|sonnenbrille|glasses)\b"
-        r"|\bwithout\s+(?:electronics|camera|glasses|sunglasses)\b"
-        r"|\b(?:keine|no)\s+(?:elektronik|electronics)\b",
+        r"\b(?:dummy|dummie|mockup|attrappe|leerverpackung\w*|leerkarton\w*|empty\s+box|box\s+only)\b"
+        r"|\bohne\s+(?:funktion|elektronik|kamera|technik|brille|sonnenbrille|smart\s*glasses|glasses)\b"
+        r"|\bwithout\s+(?:electronics|camera|glasses|smart\s*glasses|sunglasses)\b"
+        r"|\b(?:keine|no)\s+(?:elektronik|electronics|brille|sonnenbrille|smart\s*glasses|glasses)\b",
         t,
     ):
         return True
-    if re.match(r"^(?:originalverpackung|leerverpackung|verpackung|karton|empty box|box only)\b", t):
+    if re.match(r"^(?:originalverpackung|leerverpackung|verpackung|karton|leerkarton|empty\s+box|box\s+only)\b", t):
         return True
+    nur_mod = (
+        r"(?:(?:die|das|der|den|the|a|an|ein|eine|einen|ein\s+paar|a\s+pair\s+of|paar|pair\s+of|set\s+of|satz|"
+        r"1|2|1x|2x|zwei|two|original\w*|klare?\w*|clear|polarized|polarisierte?\w*|transition(?:s)?|selbsttoenende?\w*|"
+        r"gruene?\w*|green|schwarze?\w*|black|braune?\w*|brown|graue?\w*|grey|gray|blaue?\w*|blue|"
+        r"linke?\w*|rechte?\w*|left|right|ersatz\w*|replacement|spare)\s+){0,3}"
+    )
+    part_nouns = (
+        r"(?:ovp|originalverpackung|leerverpackung|verpackung|karton|leerkarton|box|"
+        r"case|etui\w*|ladeetui\w*|ladecase\w*|ladetasche\w*|brillenetui\w*|lederetui\w*|charging\s+case|"
+        r"gestell\w*|rahmen\w*|fassung\w*|brillengestell\w*|brillenrahmen\w*|brillenfassung\w*|frame|frames|"
+        r"glaeser\w*|glas|brillenglaeser\w*|sonnenglaeser\w*|linsen?\w*|lenses?|"
+        r"buegel\w*|brillenbuegel\w*|temples?|temple\s+arms?|ersatz\w*)"
+    )
     if re.search(
-        r"\b(?:nur|only|lediglich|ausschliesslich)\s+(?:(?:die|das|der|the|a|ein|eine)\s+)?"
-        r"(?:ovp|verpackung|karton|box|case|etui|ladeetui|charging\s+case|gestell|rahmen|brillengestell|brillenrahmen|frame|frames|glaeser|glas|brillenglaeser|linsen?|lenses?|buegel|temples?|ersatz\w*)\b"
-        r"|\b(?:lenses?|frames?|case|etui|ladeetui|gestell|rahmen|brillengestell|brillenrahmen|glaeser|linsen?|buegel|temples?|box)\s+only\b"
-        r"|\b(?:glaeser|linsen)\s+einzeln\b"
-        r"|\b(?:gestell|rahmen|brillengestell|brillenrahmen|frame|frames)\s+ohne\b",
+        r"\b(?:nur|only|lediglich|ausschliesslich)\s+" + nur_mod + part_nouns + r"\b(?!\s+(?:getragen|benutzt|genutzt|bekommen|eingesetzt|verbaut)\b)"
+        r"|\b" + part_nouns + r"\s+(?:only|einzeln|allein)\b"
+        r"|\b(?:gestell\w*|rahmen\w*|fassung\w*|brillengestell\w*|brillenrahmen\w*|brillenfassung\w*|frame|frames)\s+ohne\b",
         t,
     ):
         return True
-    accessory = r"(?:case|etui|ladeetui|charging\s+case|ersatz\w*|replacement|spare|huelle|glaeser|brillenglaeser|linsen?|lenses?|nasenpads?|nose\s*pads?|buegel|temples?)"
+    accessory = (
+        r"(?:case|etui\w*|ladeetui\w*|ladecase\w*|ladetasche\w*|brillenetui\w*|lederetui\w*|charging\s+case|"
+        r"ersatz\w*|wechsel\w*|austausch\w*|replacement|spare|huelle\w*|schutzhuelle\w*|"
+        r"glaeser\w*|glas|brillenglaeser\w*|sonnenglaeser\w*|linsen?\w*|lenses?|"
+        r"nasenpads?|nose\s*pads?|buegel\w*|brillenbuegel\w*|temples?|temple\s+arms?|"
+        r"gestell\w*|rahmen\w*|fassung\w*|brillengestell\w*|brillenrahmen\w*|brillenfassung\w*|frame|frames|"
+        r"ladekabel\w*|charging\s+cable)"
+    )
     if re.match(r"^" + accessory + r"\b", t):
         return True
     if re.search(
-        r"\b(?:case|etui|ladeetui|charging\s+case|ersatz\w*|replacement|spare|hülle|hulle|huelle|gläser|glaser|glaeser|linsen?|lenses?|nasenpads?|nose\s*pads?|bügel|bugel|buegel|temples?|gestell|rahmen|frame|frames)\s+"
-        r"(?:f[uü]r|fuer|for|compatible\s+with|kompatibel\s+mit|passend\s+fuer)\b",
+        r"\b" + accessory + r"\s+(?:(?:\d+\s*mm|links|rechts|left|right|klar\w*|clear|braun\w*|schwarz\w*|black|brown)\s+){0,2}"
+        r"(?:f[uü]r|fuer|for|compatible\s+with|kompatibel\s+mit|passend\s+fuer|geeignet\s+fuer|fits)\b"
+        r"(?!\s*(?:herren|damen|maenner|frauen|men|women|unisex|kinder)\b)",
         t,
     ):
         return True
     part_pattern = (
         r"\b(?:"
-        r"ersatz\s*(?:glaeser\w*|glas|linsen?\w*|teile?\w*|buegel\w*)|"
-        r"(?:wechsel|austausch)\s*(?:glaeser\w*|glas|linsen?\w*)|"
-        r"brillen\s*(?:glaeser\w*|glas|gestell|rahmen|etui)|"
-        r"(?:replacement|spare)\s+(?:[a-z0-9]+\s+){0,3}(?:lenses?|glaeser\w*|linsen?\w*|parts?|arms?|temples?|frames?|case|etui)|"
-        r"(?:glasses|sunglass(?:es)?|eyeglass(?:es)?|prescription)\s+lenses|"
-        r"(?:paar|pair\s+of|set\s+of)\s+(?:[a-z0-9]+\s+){0,4}(?:glaeser\w*|linsen?\w*|lenses)|"
-        r"linsen?\b|"
-        r"nasenpads?|nose\s*pads?|temple\s+arms?|ersatzteile?|spare\s+parts?"
+        r"ersatz\s*(?:(?:sonnen|brillen|korrektions|gleitsicht|uebergangs)?(?:glaeser\w*|glas|linsen?\w*)|(?:lade)?(?:etui\w*|case|tasche\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*|nasenpads?|nose\s*pads?|(?:lade)?kabel\w*)|"
+        r"(?:wechsel|austausch)\s*(?:(?:sonnen|brillen)?(?:glaeser\w*|glas|linsen?\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*)|"
+        r"(?:glaeser\w*|glas|linsen?\w*|lenses?)\s+(?:zum|zur|for)\s+(?:austausch\w*|wechsel\w*|ersetzen|reparatur|replacement)|"
+        r"(?:glaeser|linsen|lens(?:es)?)\s*(?:paar|set|satz)|"
+        r"(?:brillen|sonnen)\s*(?:glaeser\w*|glas|linsen?\w*)|"
+        r"brillen\s*(?:gestell\w*|rahmen\w*|fassung\w*|etui\w*|buegel\w*)|"
+        r"(?:replacement|spare)\s+(?:[a-z0-9]+\s+){0,3}(?:lenses?|glaeser\w*|linsen?\w*|parts?|arms?|temples?|frames?|case|charging\s+case|etui\w*|ladeetui\w*|cable|pads?)|"
+        r"(?:glasses|sunglass(?:es)?|eyeglass(?:es)?|prescription)\s+lenses?|"
+        r"(?:paar|pair\s+of|set\s+of|satz|\d+\s*x|\d+\s*paar|\d+\s*stueck)\s+(?:(?!ray\b|ban\b|meta\b|wayfarer\b|headliner\b|skyler\b|brille\b|sonnenbrille\b|glasses\b|smart\b)[a-z0-9]+\s+){0,4}(?:glaeser\w*|linsen?\w*|lenses?)|"
+        r"brillenbuegel\w*|buegel\w*|temple\s+arms?|temples?|"
+        r"nasenpads?|nose\s*pads?|ersatzteile?\w*|spare\s+parts?|ladekabel\w*|charging\s+cable"
         r")\b"
     )
     bundle_prefix = re.compile(
-        r"\b(?:smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sonnenbrille|brille|glasses)\b"
-        r".*\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|plus|nebst)\b"
+        r"\b(?:ray\s*ban|meta|wayfarer|headliner|skyler|blayzer|scriber|0?rw(?:401[234]f?|700[12])|gen(?:eration)?[.\s]*2|2\s*(?:nd\s*gen|generation)|zweite\s*generation|smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sonnenbrille|sunglasses|brille|glasses)\b"
+        r".*(?:\b(?:mit|inkl(?:usive)?|incl(?:uded|uding|udes)?|with|plus|nebst|samt)\b|\+(?!\d))"
+        r"|\b(?:smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sonnenbrille|sunglasses|brille|glasses)\s*(?:&|\bund\b|\band\b)(?!\s*(?:ovp|originalverpack\w*|neu|new)\b)"
     )
     for m in re.finditer(part_pattern, t):
         if not bundle_prefix.search(t[: m.start()]):
             return True
-    if re.search(r"\blenses\b", t) and not re.search(
-        r"\b(?:smart\s*glasses|smartglasses|ai\s*glasses|sunglasses|sonnenbrille|brille)\b", t
-    ):
-        return True
+    glasses_noun = re.compile(
+        r"\b(?:smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sonnenbrille|sunglasses|brille|glasses)\b"
+    )
+    for m in re.finditer(r"\b(?:ladeetui\w*|ladecase\w*|ladetasche\w*|charging\s+case|brillenetui\w*|lederetui\w*|etui\w*)\b", t):
+        prefix = t[: m.start()]
+        if not bundle_prefix.search(prefix) and not glasses_noun.search(prefix):
+            return True
+    for m in re.finditer(r"\b(?:lenses|linsen?|glaeser)\b", t):
+        if bundle_prefix.search(t[: m.start()]):
+            continue
+        if not re.search(
+            r"\b(?:smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sunglasses|sonnenbrille|brille|glasses|"
+            r"matte\s+black|shiny\s+black|matt\s*schwarz|schwarz\s+matt|glanz\s*schwarz|warm\s+stone|"
+            r"(?:shiny\s+)?caramel|(?:shiny\s+)?cosmic\s+blue|(?:shiny\s+)?jeans|havana|"
+            r"kamera|camera|bluetooth|audio|ovp|originalverpack\w*)\b"
+            r"|\bschwarz\b\s*(?:[/,+&]\s*)?(?=(?:klare?|gruene?|graue?|braune?|blaue?|polarisierte?|selbsttoenende?|transitions?|clear|green|grey|gray|brown|blue|polarized)\s+(?:glaeser|linsen|lenses)\b)",
+            t,
+        ):
+            return True
     return False
 
 
@@ -932,44 +970,65 @@ def _rayban_meta_gen2_details_blocked(raw_description, aspects=None):
         name = _normalize(str((a or {}).get("name") or ""))
         if name in ("produktart", "product type", "type", "art", "artikelart"):
             val = _normalize(str((a or {}).get("value") or ""))
-            if val in ("glaeser", "lenses", "linse", "frame", "frames", "gestell", "rahmen", "case", "etui", "ladeetui", "ersatzteil", "ersatzteile", "spare part", "spare parts") or re.search(
-                r"\b(?:ersatz\s*(?:glaeser\w*|glas|linsen?\w*|teile?\w*|buegel\w*)|(?:wechsel|austausch)\s*(?:glaeser\w*|glas|linsen?\w*)|(?:replacement|spare)\s+(?:[a-z0-9]+\s+){0,2}(?:lenses?|parts?|frames?|case|temples?|arms?)|(?:glasses|sunglass(?:es)?|eyeglass(?:es)?)\s+lenses|brillenglaeser|linsen|lenses\s+only|frame\s+only|nur\s+(?:glaeser|linsen|gestell|rahmen|etui|case)|etui|ladeetui|charging\s+case)\b",
+            if val in (
+                "glaeser", "lenses", "linse", "linsen", "frame", "frames", "gestell", "rahmen", "fassung",
+                "case", "etui", "ladeetui", "ladecase", "brillenetui", "ersatzteil", "ersatzteile",
+                "spare part", "spare parts", "ersatzglaeser", "brillenglaeser", "sonnenglaeser", "buegel", "brillenbuegel", "temples",
+            ) or re.search(
+                r"\b(?:ersatz\s*(?:(?:sonnen|brillen|korrektions|gleitsicht)?(?:glaeser\w*|glas|linsen?\w*)|(?:lade)?(?:etui\w*|case|tasche\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*|nasenpads?|(?:lade)?kabel\w*)|(?:wechsel|austausch)\s*(?:(?:sonnen|brillen)?(?:glaeser\w*|glas|linsen?\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*)|(?:replacement|spare)\s+(?:[a-z0-9]+\s+){0,2}(?:lenses?|parts?|frames?|case|charging\s+case|etui|ladeetui|temples?|arms?|pads?|cable)|(?:glasses|sunglass(?:es)?|eyeglass(?:es)?|prescription)\s+lenses?|(?:brillen|sonnen)\s*(?:glaeser\w*|glas|linsen?\w*)|(?:glaeser|linsen|lens(?:es)?)\s*(?:paar|set|satz)|linsen|lenses\s+only|frame\s+only|case\s+only|nur\s+(?:glaeser|linsen|gestell|rahmen|fassung|etui|ladeetui|case|buegel)|etui|ladeetui|ladecase|brillenetui|charging\s+case)\b",
                 val,
             ):
                 return True
     cleaned = _clean_description(raw_description or "")
     own = _normalize(cleaned)
+    nur_mod = (
+        r"(?:(?:die|das|der|den|the|a|an|ein|eine|einen|ein\s+paar|a\s+pair\s+of|paar|pair\s+of|set\s+of|satz|"
+        r"1|2|1x|2x|zwei|two|original\w*|klare?\w*|clear|polarized|polarisierte?\w*|transition(?:s)?|selbsttoenende?\w*|"
+        r"gruene?\w*|green|schwarze?\w*|black|braune?\w*|brown|graue?\w*|grey|gray|blaue?\w*|blue|"
+        r"linke?\w*|rechte?\w*|left|right|ersatz\w*|replacement|spare)\s+){0,3}"
+    )
+    part_nouns = (
+        r"(?:ovp|originalverpackung|leerverpackung|verpackung|karton|leerkarton|box|"
+        r"etui\w*|ladeetui\w*|ladecase\w*|ladetasche\w*|brillenetui\w*|lederetui\w*|charging\s+case|case|"
+        r"gestell\w*|rahmen\w*|fassung\w*|brillengestell\w*|brillenrahmen\w*|brillenfassung\w*|frame|frames|"
+        r"glaeser\w*|glas|brillenglaeser\w*|sonnenglaeser\w*|linsen?\w*|lenses?|"
+        r"ersatz\s*(?:(?:sonnen|brillen)?(?:glaeser\w*|glas|linsen?\w*)|(?:lade)?(?:etui\w*|case|tasche\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*)|"
+        r"buegel\w*|brillenbuegel\w*|temples?|temple\s+arms?)"
+    )
     if re.search(
-        r"\b(?:nur|only|lediglich|ausschliesslich)\s+(?:(?:die|das|der|the|a|ein|eine|ein\s+paar|a\s+pair\s+of)\s+)?"
-        r"(?:etui|ladeetui|charging\s+case|case|verpackung|karton|box|gestell|rahmen|brillengestell|brillenrahmen|frame|frames|glaeser|glas|brillenglaeser|linsen?|lenses?|ersatz\s*(?:glaeser\w*|glas|linsen?\w*|teile?\w*|buegel\w*)|buegel|temples?)\b"
-        r"|\b(?:lenses?|frames?|case|etui|ladeetui|gestell|rahmen|brillengestell|brillenrahmen|glaeser|linsen?|buegel|temples?)\s+only\b"
-        r"|\b(?:glaeser|linsen)\s+einzeln\b"
+        r"\b(?:nur|only|lediglich|ausschliesslich)\s+" + nur_mod + part_nouns + r"\b(?!\s+(?:getragen|benutzt|genutzt|bekommen|eingesetzt|verbaut)\b)"
+        r"|\b" + part_nouns + r"\s+(?:only|einzeln|allein)\b"
         r"|\bohne\s+(?:brille|sonnenbrille|glasses|smart\s*glasses|elektronik|kamera|technik)\b"
         r"|\bwithout\s+(?:glasses|smart\s*glasses|sunglasses|electronics|camera)\b"
-        r"|\b(?:keine|no)\s+(?:elektronik|electronics)\b"
+        r"|\b(?:keine|no)\s+(?:elektronik|electronics|brille|sonnenbrille|smart\s*glasses|glasses)\b"
         r"|\b(?:brille|sonnenbrille|glasses|smart\s*glasses|elektronik|electronics)\s+(?:ist\s+|sind\s+|is\s+|are\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang)|not\s+included)\b"
-        r"|\b(?:gestell|rahmen|brillengestell|brillenrahmen|frame|frames)\s+ohne\s+(?:elektronik|kamera|technik|glaeser|linsen)\b",
+        r"|\b(?:gestell\w*|rahmen\w*|fassung\w*|brillengestell\w*|brillenrahmen\w*|brillenfassung\w*|frame|frames)\s+ohne\s+(?:elektronik|kamera|technik|glaeser|linsen)\b",
         own,
     ):
         return True
     if re.search(
-        r"\b(?:(?:the\s+)?(?:product|item|listing|offer)|(?:der\s+|dieser\s+)?artikel|(?:das\s+|dieses\s+)?angebot|verkauft\s+wird|verkaufe\s+hier)\s+"
-        r"(?:is\s+|are\s+|ist\s+|sind\s+)?(?:(?:a|ein|eine)\s+)?(?:(?:pair|set)\s+of\s+|paar\s+|satz\s+)?[^.!?]{0,90}"
-        r"\b(?:replacement\s+(?:[a-z0-9]+\s+){0,2}lenses?|spare\s+lenses?|(?:glasses|sunglass(?:es)?|eyeglass(?:es)?)\s+lenses|ersatz\s*(?:glaeser\w*|glas|linsen?\w*|teile?\w*|buegel\w*)|(?:wechsel|austausch)\s*(?:glaeser\w*|glas|linsen?\w*)|brillenglaeser|lenses\s+for|glaeser\s+fuer|linsen\s+fuer)\b"
-        r"|\b(?:these|those|diese)\s+(?:(?:replacement|spare|clear|polarized|transition(?:s)?|ersatz)\s+)?(?:lenses|glaeser|linsen)\s+(?:are|sind)\b[^.!?]{0,120}\b(?:designed\s+for|compatible\s+with|made\s+for|accessory|replace|geeignet\s+fuer|passend\s+fuer|kompatibel\s+mit|zubehoer|ersetzen)\b",
+        r"\b(?:(?:the\s+|this\s+)?(?:product|item|listing|offer)|(?:der\s+|dieser\s+)?artikel|(?:das\s+|dieses\s+)?angebot|verkauft\s+(?:wird|werden)|verkaufe\s+hier|angeboten\s+(?:wird|werden))\s+"
+        r"(?:is\s+|are\s+|ist\s+|sind\s+|hier\s+|nur\s+)?(?:(?:a|an|the|ein|eine|die|das|der)\s+)?(?:(?:pair|set)\s+of\s+|paar\s+|satz\s+)?"
+        r"(?:(?!\b(?:smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sonnenbrille|sunglasses|brille|glasses|mit|inkl(?:usive)?|incl(?:uded|uding|udes)?|with|plus|nebst|samt|zusaetzlich\w*|extra|comes\s+with|kommt\s+mit)\b)[^.!?]){0,90}"
+        r"\b(?:replacement\s+(?:[a-z0-9]+\s+){0,2}(?:lenses?|case|charging\s+case|frames?|temples?|arms?|parts?)|spare\s+(?:lenses?|case|charging\s+case|frames?|temples?|arms?|parts?)|(?:glasses|sunglass(?:es)?|eyeglass(?:es)?|prescription)\s+lenses?|ersatz\s*(?:(?:sonnen|brillen|korrektions|gleitsicht)?(?:glaeser\w*|glas|linsen?\w*)|(?:lade)?(?:etui\w*|case|tasche\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*)|(?:wechsel|austausch)\s*(?:glaeser\w*|glas|linsen?\w*|gestell\w*|rahmen\w*|buegel\w*)|(?:glaeser\w*|glas|linsen?\w*|lenses?)\s+(?:zum|zur|for)\s+(?:austausch\w*|wechsel\w*|ersetzen|reparatur|replacement)|(?:glaeser|linsen|lens(?:es)?)\s*(?:paar|set|satz)|brillenglaeser\w*|sonnenglaeser\w*|(?:lenses?|charging\s+case|case|frames?)\s+for|(?:glaeser\w*|linsen?\w*|ladeetui\w*|etui\w*|gestell\w*|rahmen\w*|buegel\w*)\s+fuer)\b"
+        r"|\b(?:these|those|diese)\s+(?:(?:replacement|spare|clear|polarized|transition(?:s)?|ersatz\w*|klare?\w*|polarisierte?\w*|selbsttoenende?\w*)\s+)*(?:ersatz\s*)?(?:lenses|glaeser\w*|linsen?\w*)\s+(?:are|sind)\b[^.!?]{0,120}\b(?:designed\s+for|compatible\s+with|made\s+for|fit|fits|accessory|replace|geeignet\s+fuer|passend\s+fuer|kompatibel\s+mit|zubehoer|ersetzen|austausch\w*)\b",
         own,
     ):
         return True
     clause_part = re.compile(
         r"\b(?:"
-        r"ersatz\s*(?:glaeser\w*|glas|linsen?\w*|teile?\w*|buegel\w*)|"
-        r"(?:wechsel|austausch)\s*(?:glaeser\w*|glas|linsen?\w*)|"
-        r"(?:replacement|spare)\s+(?:[a-z0-9]+\s+){0,3}(?:lenses?|glaeser\w*|linsen?\w*|parts?|arms?|temples?|frames?)|"
-        r"(?:glasses|sunglass(?:es)?|eyeglass(?:es)?)\s+lenses"
+        r"ersatz\s*(?:(?:sonnen|brillen|korrektions|gleitsicht)?(?:glaeser\w*|glas|linsen?\w*)|(?:lade)?(?:etui\w*|case|tasche\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*)|"
+        r"(?:wechsel|austausch)\s*(?:(?:sonnen|brillen)?(?:glaeser\w*|glas|linsen?\w*)|(?:brillen)?(?:gestell\w*|rahmen\w*|fassung\w*|buegel\w*)|teile?\w*)|"
+        r"(?:glaeser\w*|glas|linsen?\w*|lenses?)\s+(?:zum|zur|for)\s+(?:austausch\w*|wechsel\w*|ersetzen|reparatur|replacement)|"
+        r"(?:glaeser|linsen|lens(?:es)?)\s*(?:paar|set|satz)|"
+        r"(?:replacement|spare)\s+(?:[a-z0-9]+\s+){0,3}(?:lenses?|glaeser\w*|linsen?\w*|parts?|arms?|temples?|frames?|charging\s+case|case|etui\w*|ladeetui\w*)|"
+        r"(?:glasses|sunglass(?:es)?|eyeglass(?:es)?|prescription)\s+lenses?"
         r")\b"
     )
     before_bundle = re.compile(
-        r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding|udes)?|with|plus|nebst|zusaetzlich\w*|extra|comes\s+with|kommt\s+mit)\b"
+        r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding|udes)?|with|plus|nebst|samt|zusaetzlich\w*|extra|comes\s+with|kommt\s+mit)\b"
+        r"|\b(?:lieferumfang|contents|zubehoer|accessories|beinhaltet|enthaelt)\b.*\b(?:ray\s*ban|meta|wayfarer|headliner|skyler|0?rw401[234]f?|smart\s*glasses|smartglasses|sonnenbrille|brille|glasses)\b.*[,+&]"
+        r"|\b(?:smart\s*glasses|smartglasses|ai\s*glasses|ki\s*brille|sonnenbrille|sunglasses|brille|glasses)\b.*\+"
     )
     after_bundle = re.compile(
         r"\b(?:dabei|mit\s+dabei|enthalten|inklusive|included|beigefuegt|mitgeliefert)\b"
