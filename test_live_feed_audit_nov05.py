@@ -43,3 +43,8 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
                         monitor.filter_results([copy.deepcopy(item)], search, Settings(), skip_seen=True, is_statistics=True)
                     ) and monitor._details_match_contract(item, search, details)
                     self.assertEqual(case["expected"], accepted)
+        for repair_id in ("840075295375", "800855961434", "168826607496", "366766338960"):
+            desc = next(c["description"] for c in cases if c["id"] == repair_id)
+            self.assertEqual("замена дисплея в описании", monitor._phone_repair_label(desc), repair_id)
+        desc_880 = next(c["description"] for c in cases if c["id"] == "880059658047")
+        self.assertTrue(monitor._is_description_blocked(desc_880, "phones"))
