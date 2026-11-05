@@ -496,6 +496,10 @@ REFURBISHED_CONDITION_WORDS = (
     "generaluberholt",
     "generalueberholt",
     "generalüberholt",
+    "generalueberarbeitet",
+    "generalüberarbeitet",
+    "neu ueberarbeitet",
+    "neu überarbeitet",
     "renewed",
     "reconditioned",
     "wiederaufbereitet",
@@ -1883,7 +1887,7 @@ def _has_ps5_pro_console_hint(title_norm):
         )
         if not hardware_cue:
             return False
-    if re.search(r"\bcfi\s*[- ]?\s*7[01]\d{2}\b", title_norm):
+    if re.search(r"\bcfi\s*[- ]?\s*7[01]\d{2}[a-z0-9]*\b", title_norm):
         return True
     accessory = r"^(?:\s+|-)(?:wireless\s+|wired\s+|dualsense\s+|edge\s+|concept\s+)*(?:controller|gamepad|pad|lenkrad|wheel|joystick|headset|kopfhoerer|tasche|case|huelle|skin|cover|stick|zubehoer|halterung|mount|stand|staender)\b"
     for match in re.finditer(r"\b(?:ps5|playstation[\s®™]*5|ps\s*5)([^a-z0-9]{0,10})pro\b", title_norm):
@@ -2112,10 +2116,16 @@ def _phone_ambiguous_purpose(description):
 
 
 def _phone_description_declares_fake(description):
-    """Own positive identity/sale declaration, including 820206597250's F A K E."""
+    """Own positive identity/sale declaration, including 820206597250's F A K E and 820299998066's F und S A C K A E M."""
     text = _normalize(_clean_description(description or ""))
     text = re.sub(r"\bf[\s.-]*a[\s.-]*k[\s.-]*e\b", "fake", text)
-    pattern = r"\b(?:als|ist|sind|is|are)\s+(?:(?:ein|eine|a|an)\s+)?fake\b|\bfake\s*(?:[-–—]+\s*)?(?:i\s*phones?|iphones?)\b"
+    text = re.sub(r"\bs[\s.-]*a?[\s.-]*c[\s.-]*k?[\s.-]*a[\s.-]*e?[\s.-]*m\b", "scam", text)
+    pattern = (
+        r"\b(?:als|ist|sind|is|are)\s+(?:(?:ein|eine|a|an)\s+)?(?:fake|scam)\b"
+        r"|\bfake\s*(?:[-–—]+\s*)?(?:i\s*phones?|iphones?|samsung|galaxy|handys?|smartphones?)\b"
+        r"|\bals\s+f(?:\b|\.)\s+(?:und|oder|&|/)\s+scam\b"
+        r"|\b(?:ausdruecklich|ausschliesslich)\s+als\s+f(?:\b|\.)(?:\s+(?:und|oder|&|/)\s+scam\b)?"
+    )
     for match in re.finditer(pattern, text):
         before = text[max(0, match.start() - 25):match.start()]
         if not re.search(r"\b(?:kein\w*|nicht|no|not|never)\s+(?:(?:ein|eine|a|an)\s+)?$", before):
@@ -2133,16 +2143,52 @@ def _description_off_platform_contact(description):
     return bool(re.search(rf"\b{_OFF_PLATFORM_MESSENGER}\b[^\n]{{0,40}}?{_OFF_PLATFORM_NUMBER}|{_OFF_PLATFORM_NUMBER}[^\n]{{0,25}}?\b{_OFF_PLATFORM_MESSENGER}\b", text))
 
 
+def _description_refuses_ebay_checkout(description):
+    """206671293930/206670415084/407332909885/307260914871: seller cancels eBay BIN or demands wire/prepayment only."""
+    norm = _normalize(_clean_description(description or ""))
+    if re.search(
+        r"\b(?:sofort\s*kauf(?:en)?|direkt\s*kauf(?:en)?|kauf\s+ueber\s+(?:das\s+)?(?:ebay\s*)?system)\s+wird\s+(?:(?:sofort|umgehend)\s+)?(?:zurueck\s*erstattet|erstattet|storniert|abgebrochen)\b",
+        norm,
+    ):
+        return True
+    alt_pay = r"(?!(?:\s+moeglich)?(?:\s*[,/]\s*(?:(?:oder|or|und|bzw\.?)\s+)?|\s+(?:oder|or|und|bzw\.?)\s+)(?:paypal|bar\w*|abholung|selbstabholung|ebay|klarna|kreditkarte))"
+    wire_only = (
+        rf"\b(?:ich\s+)?(?:nur|ausschliesslich)\s+(?:per\s+)?(?:vorkasse|bankueberweisung|echtzeitueberweisung)\s+(?:akzeptiere\w*|annehme\w*)\b{alt_pay}"
+        rf"|\b(?:akzeptiere\w*|annehme\w*)\s+(?:ich\s+)?(?:nur|ausschliesslich)\s+(?:per\s+)?(?:vorkasse|bankueberweisung|echtzeitueberweisung|ueberweisung)\b{alt_pay}"
+        rf"|\b(?:(?:die\s+)?(?:zahlung|bezahlung)\s+)?(?:ist\s+)?(?:nur|ausschliesslich)\s+(?:(?:per\s+)?(?:vorkasse|bankueberweisung|echtzeitueberweisung)|per\s+ueberweisung)(?:\s+moeglich)?\b{alt_pay}"
+    )
+    for m in re.finditer(wire_only, norm):
+        if not re.search(r"\b(?:nicht|kein\w*|no|not)\b", norm[max(0, m.start() - 25):m.start()]):
+            return True
+    return False
+
+
+def _has_unnegated_refurbished(text):
+    norm = _normalize(text or "")
+    if not norm:
+        return False
+    terms = "|".join(re.escape(w) for w in dict.fromkeys(_normalize(x) for x in REFURBISHED_CONDITION_WORDS))
+    cleaned = re.sub(rf"\b(?:nicht|nie|kein\w*|ohne|not|never|no|without)\s+(?:{terms})\b", " ", norm)
+    return bool(re.search(rf"\b(?:{terms})\b", cleaned))
+
+
 def _phone_description_refurbished(description):
     own = _normalize(_clean_description(description or ''))
-    restored = r"(?:refurbished|generalueberholt|wiederaufbereitet|renewed|reconditioned)"
-    own = re.sub(r"\b(?:nicht|nie|kein\w*|not|never|no)\s+"+restored+r"\b", " ", own)
+    restored = r"(?:refurbished|generalueberholt|generaluberholt|generalueberarbeitet|neu\s+ueberarbeitet|wiederaufbereitet|renewed|reconditioned)"
+    own = re.sub(r"\b(?:nicht|nie|kein\w*|ohne|not|never|no|without)\s+"+restored+r"\b", " ", own)
     if re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:]?\s*)?"+restored+r"\b", own):
         return True
     # 336839721068: own purchase history, not generic shop advertising.
     # A dot in "28. Mai" must not hide the rest of that same sentence.
     own = re.sub(r"\b(\d{1,2})\.(?=\s+[a-z])", r"\1", own)
     phone = r"(?:geraet|handy|smartphone|iphone|phone|handset|device)"
+    renewed_verb = r"(?:erneuert|ueberholt|ueberarbeitet|aufbereitet)"
+    complete_renewed = re.sub(r"\b(?:nicht|nie|kein\w*|not|never|no)\s+komplett\s+" + renewed_verb + r"\b", " ", own)
+    if re.search(
+        rf"\b(?:es|(?:das|dieses|mein)\s+{phone})\s+(?:ist|wurde)\s+komplett\s+{renewed_verb}(?:\s+worden)?\b|\bkomplett\s+{renewed_verb}(?:es|e|er|en)?\s+{phone}\b",
+        complete_renewed,
+    ):
+        return True
     subject = r"(?:(?:gekauft|erworben)\s+wurde\s+(?:es|(?:das|dieses)\s+"+phone+r")|(?:ich|wir)\s+(?:habe[n]?|hatte[n]?)\s+(?:es|(?:das|dieses|mein)\s+"+phone+r")|(?:i|we)\s+(?:bought|purchased)\s+(?:it|this(?:\s+phone)?|the\s+"+phone+r"))"
     return bool(re.search(r"\b"+subject+r"\b[^.!?\n]{0,100}\b"+restored+r"\b",own))
 
@@ -2960,13 +3006,20 @@ def _console_drive_or_cover_only(title_norm):
         title_norm,
     ):
         return True
-    hw_spec = bool(re.search(r"\b(?:2\s*tb|1\s*tb|825\s*gb|cfi\s*[- ]?\s*[127]\d{3}|digital\s+edition|disc\s+edition|disk\s+edition|firmware|cfw)\b", title_norm))
-    if re.search(r"\bcfi[- ]?z[a-z]{2}\d\b", title_norm) and not hw_spec:
+    hw_spec = bool(re.search(r"\b(?:2\s*tb|1\s*tb|825\s*gb|cfi\s*[- ]?\s*[127]\d{3}[a-z0-9]*|digital\s+edition|disc\s+edition|disk\s+edition|firmware|cfw)\b", title_norm))
+    m_zsku = re.search(r"\bcfi[- ]?z[a-z]{2}\d[a-z0-9]*\b", title_norm)
+    if m_zsku and (
+        not hw_spec
+        or (
+            not re.search(r"\b(?:konsole|console|spielkonsole)\b", title_norm)
+            and not re.search(r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|plus)\b|[+&]", title_norm[:m_zsku.start()])
+        )
+    ):
         return True
     drive_re = (
         r"(?:(?:blu[- ]?ray|blue[- ]?ray|optisches|optical|disc|disk)\s*[- ]?\s*)?"
         r"(?:laufwerk\w*|disc[- ]?drive|disk[- ]?drive|optical[- ]?drive|disc[- ]?player)\b"
-        r"|\b(?:disclaufwerk\w*|disklaufwerk\w*|cfi[- ]?zdd1)\b"
+        r"|\b(?:disclaufwerk\w*|disklaufwerk\w*|cfi[- ]?zdd1[a-z0-9]*)\b"
     )
     cover_re = r"\b(?:abdeckung\w*|seitenabdeckung\w*|konsolenabdeckung\w*|faceplates?|cover\s*plates?|wechselcover\w*)\b"
     if re.search(r"\bslim\b", title_norm) and re.search(r"\bpro\b", title_norm):
@@ -2987,11 +3040,14 @@ def _console_drive_or_cover_only(title_norm):
     if m_drive:
         if m_ps and m_drive.start() < m_ps.start():
             return True
-        if re.search(r"\b(?:f[uü]r|fuer|for|passend\s+f[uü]r|geeignet\s+f[uü]r|kompatibel\s+mit|compatible\s+with|fits)\b.*\b(?:ps5|playstation|konsole|console|slim|pro)\b", title_norm[m_drive.end():]):
+        if re.search(r"\b(?:f[uü]r|fuer|for|passend\s+f[uü]r|geeignet\s+f[uü]r|kompatibel\s+mit|compatible\s+with|fits)\b.*\b(?:ps5|playstation|konsole|console|slim|pro|digital\s+edition)\b", title_norm[m_drive.end():]):
+            return True
+        if re.search(r"\b(?:f[uü]r|fuer|for|passend\s+f[uü]r|geeignet\s+f[uü]r|kompatibel\s+mit|compatible\s+with|fits)\b", title_norm[:m_drive.start()]):
             return True
         before_drive = title_norm[m_ps.end():m_drive.start()] if m_ps else title_norm[:m_drive.start()]
         has_connector_before_drive = bool(re.search(r"\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|plus|ohne|without|no|keine?[mrn]?)\b|[+&]", before_drive))
-        if not has_connector_before_drive and not hw_spec:
+        has_console_context = bool(re.search(r"\b(?:konsole|console|spielkonsole|videospielkonsole|heimkonsole|digital\s+edition|disc\s+edition|disk\s+edition|controller\w*|dualsense|firmware|cfw)\b", title_norm)) and not m_zsku
+        if not has_connector_before_drive and not (hw_spec and has_console_context):
             return True
         if not has_connector_before_drive and re.search(
             r"^\s*(?:mit|inkl(?:usive)?|und|with|&|\+)\s+(?:passende[rn]?\s+)?(?:abdeckung\w*|seitenabdeckung\w*|cover\w*|faceplates?|blende\w*)\b",
@@ -3098,12 +3154,19 @@ def _pro_console_contents(title_norm):
         return False
     if re.search(r"\b(?:ssd|controller|gamepad|laufwerk|standfuss|staender|netzteil|kabel|ersatz\w*|replacement|spare|nur|only)\b", title_norm[:model.start()]):
         return False
-    if re.search(r"\b(?:ersatz\w*|replacement|spare|nur|only)\b|\b(?:ohne|without|no|keine?)\s+(?:konsole|console|ps5|playstation)\b", title_norm):
+    if re.search(r"\b(?:ersatz\w*|replacement|spare|nur|only)\b|\b(?:ohne|without|no|keine?)\s+(?:konsole|console|spielkonsole|ps5|playstation)\b", title_norm):
         return False
     if re.search(r"^\s+(?:controller|gamepad|standfuss|staender|ssd|laufwerk)\b", title_norm[model.end():]):
         return False
-    return bool(re.search(r"\b(?:2\s*tb|cfi\s*[- ]?\s*7[01]\d{2})\b", title_norm)
-                and re.search(r"\b(?:dualsense|controller|aimcontroller|laufwerk|blu\s*ray|blue\s*ray)\b", title_norm))
+    return bool(
+        re.search(r"\b(?:2\s*tb|cfi\s*[- ]?\s*7[01]\d{2}[a-z0-9]*)\b", title_norm)
+        and re.search(
+            r"(?:(?:\b(?:mit|inkl(?:usive)?|incl(?:uded|uding)?|with|plus|ohne|without|no|keine?[mrn]?)\b|[+&]).*\blaufwerk\b"
+            r"|\b(?:konsole|console|spielkonsole)\b.*\blaufwerk\b"
+            r"|\b(?:dualsense|controller|aimcontroller|(?:blu\s*ray|blue\s*ray)(?!\s*(?:laufwerk|disc\s*drive|disk\s*drive|abdeckung|cover|faceplate)))\b)",
+            title_norm,
+        )
+    )
 
 
 def _is_device_bundle(title_norm, category):
@@ -3149,7 +3212,7 @@ def _is_device_bundle(title_norm, category):
     # the console is part of its contents, not the product being sold.
     console_contents = category == "consoles" and bool(
         re.search(r"\b(?:ps5|playstation\s*5)\s+pro\b", title_norm)
-        and re.search(r"\b(?:2\s*tb|cfi\s*[- ]?\s*7[01]\d{2})\b", title_norm)
+        and re.search(r"\b(?:2\s*tb|cfi\s*[- ]?\s*7[01]\d{2}[a-z0-9]*)\b", title_norm)
         and re.search(r"\b(?:dualsense|controller|kabel|cable|netzkabel|stromkabel|power cable)\b", title_norm[device.end():])
         and not re.search(rf"\b(?:nur|only)\s+{component}\b", title_norm)
     )
@@ -6808,6 +6871,14 @@ def _phone_repair_label(description):
         before=before_clause(m.start(),45)
         if not re.search(r"\b(?:nicht(?:\s+mehr)?|nie|not(?:\s+ever)?|never)\s+$",before) and not re.search(r"\b(?:kann|koennen|wird|werden|can|could|will|would)\b[^.!?]{0,30}$",before) and not re.search(previous,before):
             return "ремонт устройства производителем в описании"
+    multi_part_new = (
+        r"(?<!wie\s)\b(?:display|bildschirm)\s+neu\s*(?:,|und|&)\s*(?:akku|batterie|backcover|rueckseite|ladebuchse|kamera)\s+"
+        r"(?:neu\b|(?:und|&)\s*(?:akku|batterie|backcover|rueckseite|ladebuchse|kamera)\s+neu\b)"
+        r"|\b(?:kamera|ladebuchse|akku|batterie|backcover)\s+neu\s*,\s*(?:display|bildschirm)\s+neu\b"
+    )
+    for m in re.finditer(multi_part_new, text):
+        if not re.search(previous, before_clause(m.start(), 80)):
+            return "замена дисплея в описании"
     return None
 
 
@@ -6960,7 +7031,7 @@ def _is_details_blocked(details, search):
         logger.info("Details blocked due to bad condition value")
         return True
     if category == "phones":
-        if any(_has_term(details_norm, w) for w in REFURBISHED_CONDITION_WORDS):
+        if _has_unnegated_refurbished(details_norm):
             logger.info("Phone details blocked due to refurbished condition")
             return True
         phone_title_norm = _normalize(" ".join(
@@ -7009,7 +7080,7 @@ def _console_details_blocked(description, aspects):
             continue
         if name in aspect_types and blocked_type_re.search(value) and not console_type_re.search(value):
             return True
-        if name in model_names and re.search(r"\bcfi[- ]?z[a-z]{2}\d\b", value) and not re.search(r"\bcfi[- ]?[127]\d{3}\b", value):
+        if name in model_names and re.search(r"\bcfi[- ]?z[a-z]{2}\d[a-z0-9]*\b", value) and not re.search(r"\bcfi[- ]?[127]\d{3}[a-z0-9]*\b", value):
             return True
     own = _normalize(_clean_description(description or ""))
     if not own:
@@ -7421,6 +7492,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         return False
     if _description_off_platform_contact(details.get('description') or ''):
         return False
+    if _description_refuses_ebay_checkout(details.get('description') or ''):
+        return False
     if _decorative_parts_offer(_normalize(details.get('title') or item.get('title') or ''), category) or _decorative_parts_offer(_normalize(_clean_description(details.get('description') or '')), category):
         return False
     allowed = ALLOWED_SUBCATEGORIES.get(category)
@@ -7480,7 +7553,7 @@ def _details_match_contract(item, search, details, *, require_description=True, 
             if _normalize(aspect.get("name") or "") in ("modell", "model", "modellnummer", "model number")
         ]
         declared_models += re.findall(
-            r"\b(?:modell(?:nummer)?|model(?:\s+number)?)\s+(?:ist\s+|is\s+)?((?:cuh|cfi)[- ]?\d+[a-z]?)\b",
+            r"\b(?:modell(?:nummer)?|model(?:\s+number)?)\s+(?:ist\s+|is\s+)?((?:cuh|cfi)[- ]?\d+[a-z0-9]*)\b",
             _normalize(_clean_description(details.get("description") or "")),
         )
         if any(re.search(r"\bcuh[- ]?\d|\b(?:ps4|playstation\s*4)\b", model) or
@@ -7739,7 +7812,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
         if cond_norm:
             if cond_norm in BAD_CONDITIONS or any(w in cond_norm for w in ("defekt", "ersatzteil", "parts", "not working", "salvage", "reparatur", "broken")):
                 continue
-            if _effective_category(category, _normalize(query_text)) == "phones" and any(_has_term(cond_norm, w) for w in REFURBISHED_CONDITION_WORDS):
+            if _effective_category(category, _normalize(query_text)) == "phones" and _has_unnegated_refurbished(cond_norm):
                 continue
         model_title = _mouse_title_with_evidence(title_norm, _requested_mouse_model(search),
             {item.get('_model_evidence')}, pending=defer_mouse_model and not item.get('_details_loaded'))
@@ -7759,6 +7832,8 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             if _wrong_controller_generation(title_norm, query_norm):
                 continue
         if effective_category == "phones":
+            if _has_unnegated_refurbished(title_norm):
+                continue
             # Same rule as the bait floor: never drop something the owner said
             # they would buy. A 40€ limit means 40€ finds are the point.
             try:
