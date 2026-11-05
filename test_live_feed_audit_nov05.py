@@ -1,0 +1,45 @@
+import copy
+import json
+import unittest
+from pathlib import Path
+import monitor
+from test_samsung_monitor_sku import Settings
+
+
+class LiveFeedAuditNov05Tests(unittest.TestCase):
+    def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
+        cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
+        for case in cases:
+            cat = case["category"]
+            cat_id = "179" if cat == "computers" else "9355"
+            for listing, offer in [("buy_now", False), ("buy_now", True), ("auction", False), ("auction", True)]:
+                with self.subTest(case=case["id"], listing=listing, offer=offer):
+                    search = dict(
+                        query=case["query"],
+                        filters=dict(category=cat, listing_type=listing, best_offer=offer, limit_price=950, location="worldwide"),
+                    )
+                    item = dict(
+                        item_id=case["id"],
+                        title=case["title"],
+                        price=450,
+                        shipping_cost=0,
+                        currency="EUR",
+                        condition=case.get("condition") or "Gebraucht",
+                        location="DE",
+                        seller_name="fixture",
+                        buy_now=listing == "buy_now",
+                        auction=listing == "auction",
+                        best_offer=offer,
+                        time_left="1h",
+                    )
+                    details = dict(
+                        title=case["title"],
+                        description=case["description"],
+                        categoryId=cat_id,
+                        condition=case.get("condition") or "Gebraucht",
+                        localizedAspects=case.get("aspects") or [],
+                    )
+                    accepted = bool(
+                        monitor.filter_results([copy.deepcopy(item)], search, Settings(), skip_seen=True, is_statistics=True)
+                    ) and monitor._details_match_contract(item, search, details)
+                    self.assertEqual(case["expected"], accepted)
