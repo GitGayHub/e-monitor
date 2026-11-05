@@ -11,7 +11,7 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
         for case in cases:
             cat = case["category"]
-            cat_id = "179" if cat == "computers" else "9355"
+            cat_id = {"computers": "179", "consoles": "139971"}.get(cat, "9355")
             for listing, offer in [("buy_now", False), ("buy_now", True), ("auction", False), ("auction", True)]:
                 with self.subTest(case=case["id"], listing=listing, offer=offer):
                     search = dict(
@@ -57,7 +57,11 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         for pos_id in ("pos_protector_einbauen_lassen", "pos_oled_display_schutzglas_einbauen_lassen", "pos_panzerglas_bekommen_wie_neues_display"):
             desc = next(c["description"] for c in cases if c["id"] == pos_id)
             self.assertIsNone(monitor._phone_repair_label(desc), pos_id)
-        for dmg_id in ("880059658047", "genitive_glases_noch_beschaedigung", "einwandfrei_beschaedigung_rueckseitenglases"):
+        for dmg_id in ("880059658047", "336858997585", "genitive_glases_noch_beschaedigung", "einwandfrei_beschaedigung_rueckseitenglases"):
             desc = next(c["description"] for c in cases if c["id"] == dmg_id)
             self.assertTrue(monitor._is_description_blocked(desc, "phones"), dmg_id)
+        ps5_desc = next(c["description"] for c in cases if c["id"] == "366766647537")
+        self.assertTrue(monitor._console_pro_details_conflict(ps5_desc, []))
+        ps5_pos_desc = next(c["description"] for c in cases if c["id"] == "pos_307249528143_ps5_pro_2tb")
+        self.assertFalse(monitor._console_pro_details_conflict(ps5_pos_desc, []))
 

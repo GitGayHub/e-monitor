@@ -6758,7 +6758,7 @@ def _has_damage_in_description(desc_norm):
         if (not re.search(r"\b(?:if|when|falls|wenn)\b", clause)
                 and re.search(r"\b(?:mouse|maus|headset|headphones|kopfhoerer)\s+(?:is|are|ist|sind)\s+(?:broken|defective|defekt|kaputt)\b", clause)):
             return True
-    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|halterung|scharnier|gelenk|kopfbuegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
+    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
     defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|broken|snapped)\b", re.IGNORECASE)
     neg_re = re.compile(
         r"\b(?:nicht|nichts|nie|niemals|kein\w*|ohne|no|without|free|(?:kratzer|fehler|maengel|mangel|schaden|beschaedigungs|makel|dellen|riss|bruch)?frei\w*|not|unbeschaedig\w*|undamaged)\b",
@@ -7496,6 +7496,38 @@ def _image_only_body(raw):
                 or re.search(r"\b(?:hier\s+)?wird\s+nur\s+(?:ein(?:en)?\s+|das\s+)?(?:bild|foto|ausdruck)\b[^.!?]{0,50}\bverkauft\b", text))
 
 
+def _console_pro_details_conflict(description, aspects):
+    own = _normalize(_clean_description(description or ""))
+    pro_confirmed = bool(re.search(
+        r"\b(?:ps5|playstation[\s®™]*5|ps\s*5)[^a-z0-9]{0,10}pro\b|\bcfi\s*[- ]?\s*7[01]\d{2}[a-z0-9]*\b|\b(?:2\s*tb|2000\s*gb|2048\s*gb)\b",
+        own,
+    ))
+    storage_names = ("speicherkapazitaet", "storage capacity", "festplattenkapazitaet", "hard drive capacity")
+    model_names = ("modell", "model")
+    for aspect in aspects or []:
+        if not isinstance(aspect, dict):
+            continue
+        name = _normalize(aspect.get("name") or "")
+        value = _normalize(aspect.get("value") or "")
+        if not value:
+            continue
+        if name in storage_names and re.search(r"\b(?:825\s*gb|1\s*tb|1000\s*gb|1024\s*gb)\b", value) and not re.search(r"\b(?:2\s*tb|2000\s*gb|2048\s*gb)\b", value) and not pro_confirmed:
+            return True
+        if name in model_names and re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b", value) and not re.search(r"\bpro\b", value):
+            return True
+    if not own or pro_confirmed:
+        return False
+    if re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b|\bcfi\s*[- ]?\s*[12]\d{3}[a-z0-9]*\b", own):
+        return True
+    if re.search(r"\b(?:ps5|playstation\s*5|konsole|console)\b", own):
+        for m in re.finditer(r"\b(?:825\s*gb|1\s*tb|1000\s*gb|1024\s*gb)\b", own):
+            before = own[max(0, m.start() - 35):m.start()]
+            after = own[m.end():min(len(own), m.end() + 25)]
+            if not re.search(r"\b(?:extern\w*|erweiter\w*|extra|zusaetzlich\w*)\b", before + " " + after):
+                return True
+    return False
+
+
 def _details_match_contract(item, search, details, *, require_description=True, now=None):
     """Common checks; only isolated legacy metadata fixtures may omit description."""
     if require_description and (not details or not _clean_description(details.get("description") or "").strip()):
@@ -7591,6 +7623,8 @@ def _details_match_contract(item, search, details, *, require_description=True, 
         if any(re.search(r"\bcuh[- ]?\d|\b(?:ps4|playstation\s*4)\b", model) or
                (re.search(r"\bpro\b", query) and re.search(r"\bcfi[- ]?[12]\d{3}", model))
                for model in declared_models):
+            return False
+        if re.search(r"\bpro\b", query) and _console_pro_details_conflict(details.get("description") or "", details.get("localizedAspects") or []):
             return False
     if _effective_category(category, query) == "phones":
         title = _normalize(details.get("title") or item.get("title") or "")
