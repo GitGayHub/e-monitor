@@ -1,5 +1,5 @@
 {
-  "origin": "Live feed and Telegram history audit (05 Nov 2026): 820299998066 (F und S A C K A E M), 206671293930 / 206670415084 / 407332909885 / 307260914871 (seller refuses eBay checkout / wire-only), 257828567648 (Neu Ueberarbeitet + komplett erneuert + multi-part replacement), 840075295375 / 800855961434 / 800825910804 / 168826607496 / 366766338960 (active/modal screen swap, multi-part repair + neuen Rahmen bekommen + neues Display 120Hz OLED, Ersatzdisplay/Erstazdisplay + nicht Originaldisplay, Soft/Hard/Incell OLED in Herstellerqualitaet), 880059658047 (genitive part damage: hinteren Glases ... kleine Beschaedigung), and legitimate positive controls",
+  "origin": "Live feed and Telegram history audit (05 Nov 2026): 820299998066 (F und S A C K A E M), 206671293930 / 206670415084 / 407332909885 / 307260914871 (seller refuses eBay checkout / wire-only), 257828567648 (Neu Ueberarbeitet + komplett erneuert + multi-part replacement), 840075295375 / 800855961434 / 800825910804 / 168826607496 / 366766338960 (active/modal/subordinate screen swap, multi-part repair + neuen Rahmen bekommen + neues Display 120Hz OLED, Ersatzdisplay/Erstazdisplay/Nachbau-Display + nicht Originaldisplay, Soft/Hard/Incell OLED in Herstellerqualitaet), 880059658047 (genitive part damage: hinteren Glases / Rueckseitenglases with noch/normale/einwandfrei context), and legitimate positive controls (including OLED Display-Schutzglas and wie ein neues Display)",
   "cases": [
     {
       "id": "820299998066",
@@ -217,6 +217,76 @@
       "query": "iphone 16 pro max",
       "title": "Apple iPhone 16 Pro Max 256GB Schwarz",
       "description": "Verkaufe mein iPhone 16 Pro Max 256GB. Am oberen Bereich des hinteren Glases gibt es keinerlei Beschädigung, auch die Ränder des Gehäuses und des Displays sind ohne Schäden.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": true
+    },
+    {
+      "id": "subordinate_neues_display_eingebaut_wurde",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Titan Natur",
+      "description": "Verkaufe mein iPhone 16 Pro Max 256GB, bei dem vor einem Monat ein neues Display in der Werkstatt eingebaut wurde. Funktioniert technisch einwandfrei.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "subordinate_display_einbauen_lassen_habe",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Titan Blau",
+      "description": "Verkaufe mein iPhone 16 Pro Max 256GB, weil ich wegen eines Kratzers ein neues Display im Geschäft einbauen lassen habe. Alles funktioniert problemlos.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "oled_nachbau_display_verbaut",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Schwarz",
+      "description": "Verkaufe mein iPhone 16 Pro Max 256GB. Bei dem Handy ist ein Austausch-Display verbaut, funktioniert einwandfrei.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "genitive_glases_noch_beschaedigung",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Desert Titanium",
+      "description": "Ich verkaufe mein iPhone 16 Pro Max 256GB. Das Handy funktioniert technisch einwandfrei. Am oberen Bereich des hinteren Glases gibt es leider noch eine kleine Beschädigung.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "einwandfrei_beschaedigung_rueckseitenglases",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Weiß",
+      "description": "Verkaufe mein iPhone 16 Pro Max 256GB. Technisch funktioniert es einwandfrei. Kleiner Bruch des Rückseitenglases in einer Ecke.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": false
+    },
+    {
+      "id": "pos_oled_display_schutzglas_einbauen_lassen",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Natur Titan",
+      "description": "Verkaufe mein iPhone 16 Pro Max 256GB. Ich habe direkt beim Kauf ein neues OLED Display-Schutzglas im Geschäft einbauen lassen. Keinerlei Kratzer oder Reparaturen.",
+      "condition": "Gebraucht",
+      "aspects": [],
+      "expected": true
+    },
+    {
+      "id": "pos_panzerglas_bekommen_wie_neues_display",
+      "category": "phones",
+      "query": "iphone 16 pro max",
+      "title": "Apple iPhone 16 Pro Max 256GB Titan Schwarz",
+      "description": "Verkaufe mein iPhone 16 Pro Max 256GB. Das iPhone hat direkt nach dem Kauf ein Panzerglas bekommen, sodass es aussieht wie ein neues Display. Originalzustand ohne Reparaturen.",
       "condition": "Gebraucht",
       "aspects": [],
       "expected": true

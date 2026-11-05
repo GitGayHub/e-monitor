@@ -2963,7 +2963,7 @@ _DAMAGE_DEFECT_RE = (
     r"|crack(?:s|ed)?|absplitter\w*|gesplittert\w*|abplatz\w*|platzer|zerkratzt\w*|zerschrammt\w*)"
 )
 _DAMAGE_PART_RE = (
-    r"(?:backcovers?|back\s*covers?|rueckseite|rueckabdeckung|rueckglas(?:es)?|hinterglas(?:es)?"
+    r"(?:backcovers?|back\s*covers?|rueckseite|rueckabdeckung|rueckseitenglas(?:es)?|rueckglas(?:es)?|hinterglas(?:es)?"
     r"|rear\s*glass|back\s*glass|backglass|gehaeuses?|gehäuses?|housing|rahmens?|frames?"
     r"|displays?|bildschirms?|screens?|oled|glas(?:es)?|glass|scheibe|akkudeckel"
     r"|kamera|kameraglas(?:es)?|camera|linse|linsen|lens|frontglas(?:es)?|frontglass|displayglas(?:es)?|displayglass)"
@@ -6760,9 +6760,9 @@ def _has_damage_in_description(desc_norm):
             return True
     part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|halterung|scharnier|gelenk|kopfbuegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
     defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|broken|snapped)\b", re.IGNORECASE)
-    neg_tokens = (
-        "nicht", "kein", "keine", "keinen", "ohne", "no", "without", "free", "frei", "not",
-        "unbeschaedig", "undamaged",
+    neg_re = re.compile(
+        r"\b(?:nicht|nichts|nie|niemals|kein\w*|ohne|no|without|free|(?:kratzer|fehler|maengel|mangel|schaden|beschaedigungs|makel|dellen|riss|bruch)?frei\w*|not|unbeschaedig\w*|undamaged)\b",
+        re.IGNORECASE,
     )
 
     for m_part in part_pattern.finditer(cleaned):
@@ -6770,25 +6770,25 @@ def _has_damage_in_description(desc_norm):
         after_window = cleaned[part_end : part_end + 70]
         for m_defect in defect_pattern.finditer(after_window):
             between = after_window[: m_defect.start()]
-            if not any(w in between for w in neg_tokens):
+            if not neg_re.search(between):
                 return True
 
         before_window_start = max(0, part_start - 70)
         before_window = cleaned[before_window_start:part_start]
         for m_defect in defect_pattern.finditer(before_window):
             between = before_window[m_defect.end() :]
-            if any(w in between for w in neg_tokens):
+            if neg_re.search(between):
                 continue
             abs_defect_start = before_window_start + m_defect.start()
-            pre_defect = cleaned[max(0, abs_defect_start - 18) : abs_defect_start]
-            if not any(w in pre_defect for w in neg_tokens):
+            pre_defect = re.split(r"[.!?;]", cleaned[max(0, abs_defect_start - 18) : abs_defect_start])[-1]
+            if not neg_re.search(pre_defect):
                 return True
     # Explicit cracked-back phrasing still blocked after cleaning.
     if re.search(
-        r"\b(?:trotz\s+)?beschaedig\w*\s+(?:rueckseite|gehaeuse|back\s*glass|hinterglas)\b",
+        r"\b(?:trotz\s+)?beschaedig\w*\s+(?:rueckseite|rueckseitenglas\w*|rueckglas\w*|gehaeuse|back\s*glass|hinterglas\w*)\b",
         cleaned,
     ) or re.search(
-        r"\b(?:rueckseite|gehaeuse|back\s*glass|hinterglas)\s+(?:ist\s+)?(?:beschaedig\w*|gebrochen\w*|gesprungen\w*)\b",
+        r"\b(?:rueckseite|rueckseitenglas\w*|rueckglas\w*|gehaeuse|back\s*glass|hinterglas\w*)\s+(?:ist\s+)?(?:beschaedig\w*|gebrochen\w*|gesprungen\w*)\b",
         cleaned,
     ):
         return True
@@ -6837,22 +6837,25 @@ def _phone_repair_label(description):
     """Actual completed handset service, not a future warranty or factory fit."""
     text = _normalize(_clean_description(description or ""))
     panel = r"(?:display|bildschirm|screen|oled)"
-    panel_guard = r"(?!\s*(?:schutz\w*|panzerglas\w*|folie\w*|glasfolie\w*|protector\w*|film\b))"
+    protector = r"(?:schutz\w*|panzerglas\w*|folie\w*|glasfolie\w*|protector\w*|film\b)"
+    panel_guard = rf"(?!\s*(?:{protector}|(?:display|bildschirm|screen|oled|glas|glass)\s+{protector}))"
     panel_phrase = rf"(?:(?:original\w*|oled|amoled|lcd|120\s*hz)\s+)*{panel}{panel_guard}"
-    replacement_panel = rf"(?:ersatz|erstaz|austausch|aftermarket|drittanbieter|fremd)[ -]*{panel}{panel_guard}"
-    fresh = r"(?:nagelneu\w*|neu\w*|brand[ -]+new|new)"
+    replacement_panel = rf"(?:ersatz|erstaz|austausch|nachbau|aftermarket|drittanbieter|fremd)[ -]*{panel}{panel_guard}"
+    fresh = r"(?<!wie\s)(?<!wie\sein\s)(?<!wie\seine\s)(?<!wie\seinen\s)(?:nagelneu\w*|neu\w*|brand[ -]+new|new)"
     fitted = r"(?:verbaut|eingebaut|eingesetzt|montiert|installed|fitted)"
     fitted_or_let = rf"(?:{fitted}|(?:einbauen|verbauen|einsetzen|montieren)\s+lassen)"
-    past = r"(?:wurde|wurden|was|were|has\s+been|have\s+been)"
+    past = r"(?:wurde|wurden|ist|sind|war|waren|was|were|has\s+been|have\s+been)"
     patterns = [
         rf"\b{past}\b[^.!?]{{0,30}}\b{fresh}\s+{panel_phrase}[^.!?]{{0,100}}\b{fitted_or_let}\b",
-        rf"\b{fresh}\s+{panel_phrase}[^.!?]{{0,40}}\b{past}\b[^.!?]{{0,30}}\b{fitted_or_let}\b",
+        rf"\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})[^.!?]{{0,100}}\b{fitted_or_let}\b",
         rf"\b{panel}{panel_guard}\b[^.!?]{{0,50}}\bnewly\s+{fitted}\b",
         rf"\b(?:habe|haben|hat|hatte|wurde|wurden)\b[^.!?]{{0,70}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})[^.!?]{{0,60}}\b{fitted_or_let}\b",
         rf"\b{past}\b[^.!?]{{0,40}}\b{replacement_panel}[^.!?]{{0,60}}\b(?:{fitted_or_let}|getauscht|ausgetauscht|gewechselt|ersetzt|erneuert)\b",
-        rf"\b{replacement_panel}[^.!?]{{0,40}}\b{past}\b[^.!?]{{0,30}}\b(?:{fitted_or_let}|getauscht|ausgetauscht|gewechselt|ersetzt|erneuert)\b",
-        rf"\b(?:hat|haben|bekam)\b[^.!?]{{0,90}}\bbekommen\b[^.!?]{{0,80}}\b{fresh}\s+{panel_phrase}\b",
-        rf"\b(?:hat|haben|bekam)\b[^.!?]{{0,60}}\b{fresh}\s+{panel_phrase}[^.!?]{{0,40}}\bbekommen\b",
+        rf"\b{replacement_panel}[^.!?]{{0,60}}\b(?:{fitted_or_let}|getauscht|ausgetauscht|gewechselt|ersetzt|erneuert)\b",
+        rf"\b(?:hat|haben|hatte|hatten|bekam)\b[^.!?]{{0,90}}\bbekommen\b[^.!?]{{0,80}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})\b",
+        rf"\b(?:hat|haben|hatte|hatten|bekam)\b[^.!?]{{0,80}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})[^.!?]{{0,50}}\bbekommen\b",
+        rf"\bbekam(?:en)?\b[^.!?]{{0,80}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})\b",
+        rf"\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})[^.!?]{{0,50}}\bbekommen\s+(?:hat|haben|hatte|hatten)\b",
         rf"\b(?:es|das\s+(?:geraet|handy|smartphone|iphone|phone))\s+hat\s+ein\s+komplett\s+{fresh}\s+{panel_phrase}\b",
         rf"\b(?:es\s+)?wurde\s+(?:viel|mehrfach|bereits\s+viel|schon\s+viel)\s+repariert\s+an\s+(?:diesem|dem)\s+(?:geraet|handy|smartphone|iphone|phone)\b",
     ]
@@ -6877,6 +6880,7 @@ def _phone_repair_label(description):
             val_clean=re.sub(rf"\b(?:nicht|kein\w*)\s+(?:dem\s+|der\s+|ein(?:em)?\s+)?(?:original|orginal)\w*[ -]*{panel}\b","",m.group())
             if (not re.search(r"\b(?:nicht|nie|kein\w*|ohne|not|never|no|without)\b",before_clause(m.start(),25)+" "+val_clean)
                     and not re.search(r"\b(?:can|could|will|would|may|might|kann|koennen|soll)\b",val_clean)
+                    and not re.search(rf"\b{protector}\s+(?:(?:ist|sind|war|waren|wurde|wurden|bereits|schon)\s+)*(?:{fitted_or_let}|bekommen)\b",val_clean)
                     and not re.search(factory,before+val_clean)
                     and not re.search(previous,before)):
                 return "замена дисплея в описании"
