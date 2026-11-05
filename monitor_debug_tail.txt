@@ -1,240 +1,240 @@
-2026-11-05 04:59:51,574 - sony_wh_1000xm6_auc: live alias task 1/5 format=auction query=sony wh-1000xm6
-2026-11-05 04:59:51,574 - Fetching: Sony WH-1000XM6
-2026-11-05 04:59:51,574 - eBay session ready (impersonate=chrome120)
-2026-11-05 04:59:52,147 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 04:59:53,038 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 04:59:53,039 - eBay session ready (impersonate=safari17_0)
-2026-11-05 04:59:53,843 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 04:59:55,636 - Playwright challenge before result wait for 'Sony WH-1000XM6'
-2026-11-05 04:59:57,611 - Playwright HTML fetch failed for 'Sony WH-1000XM6' (try 1/3): Page.goto: Timeout 707ms exceeded.
-Call log:
-  - navigating to "https://m.ebay.de/sch/i.html?_nkw=sony%20wh-1000xm6&_stpos=09648&_fcid=77&_sop=10&_udhi=2500&_ipg=60&LH_ItemCondition=1500%7C1000%7C2010%7C2020%7C2030%7C3000&LH_Auction=1&LH_PrefLoc=2", waiting until "domcontentloaded"
-
-2026-11-05 04:59:58,122 -   Sony WH-1000XM6 -> 11 items via eBay Browse API (EBAY_DE)
-2026-11-05 04:59:58,157 -   Sony WH-1000XM6: fetch error search_deferred
-2026-11-05 04:59:58,279 - Live validation queue search=sony_wh_1000xm6_auc candidates=10 omitted=0 rows=[{"id":"960154758477","ready":false,"gate":"notify","minutes":13896,"tier":3,"source":"api"},{"id":"128173342934","ready":false,"gate":"over_limit","minutes":9361,"tier":3,"source":"api"},{"id":"940064445722","ready":false,"gate":"wait_24h","minutes":6421,"tier":3,"source":"api"},{"id":"147666187168","ready":false,"gate":"over_limit","minutes":9174,"tier":3,"source":"api"},{"id":"920101544340","ready":false,"gate":"wait_24h","minutes":5128,"tier":3,"source":"api"},{"id":"860106293928","ready":false,"gate":"wait_24h","minutes":6404,"tier":3,"source":"api"},{"id":"257824115404","ready":false,"gate":"over_limit","minutes":927,"tier":3,"source":"api"},{"id":"940055105766","ready":false,"gate":"over_limit","minutes":3599,"tier":3,"source":"api"},{"id":"336880182167","ready":false,"gate":"over_limit","minutes":982,"tier":3,"source":"api"},{"id":"147666361111","ready":false,"gate":"over_limit","minutes":3529,"tier":3,"source":"api"}]
-2026-11-05 04:59:58,279 - Live validation fairness search=sony_wh_1000xm6_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=10 oldest_priority_wait_seconds=None
-2026-11-05 04:59:58,327 - eBay session ready (impersonate=chrome131)
-2026-11-05 04:59:58,327 - Scraping item page details for item 960154758477 via HTML
-2026-11-05 04:59:58,924 - _fetch_item_details_html: challenge page hit for item 960154758477
-2026-11-05 04:59:59,496 - Live validation result search=sony_wh_1000xm6_auc item=960154758477 status=verified deadline_expired=False
-2026-11-05 04:59:59,553 - Scraping item page details for item 128173342934 via HTML
-2026-11-05 05:00:00,617 - Fetching own seller description HTML for item 128173342934
-2026-11-05 05:00:01,060 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
-2026-11-05 05:00:01,173 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
-2026-11-05 05:00:07,882 - HTML browser details unavailable for 128173342934: TimeoutError stage=description_iframe_missing elapsed=6.655s
-2026-11-05 05:00:08,565 - Live validation result search=sony_wh_1000xm6_auc item=128173342934 status=verified deadline_expired=False
-2026-11-05 05:00:08,572 - Live validation deferred search=sony_wh_1000xm6_auc reason=fair_slice priority_deferred=0
-2026-11-05 05:00:08,704 -   Sony WH-1000XM6: 12 results, 2 verified in fair live slice
-2026-11-05 05:00:08,734 - Normal search dispatch id=4060_oled_auc priority=8 remaining=38
-2026-11-05 05:00:08,740 - Checking 4060 oled through primary HTML
-2026-11-05 05:00:08,793 - 4060_oled_auc: live alias task 5/5 format=auction query=rtx 4060 (aero,vivobook,spectre,yoga,xps,legion,proart)
-2026-11-05 05:00:08,794 - Fetching: 4060 oled
-2026-11-05 05:00:09,343 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:00:09,962 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:00:12,316 - Playwright challenge before result wait for '4060 oled'
-2026-11-05 05:00:14,460 - Playwright challenge before result wait for '4060 oled'
-2026-11-05 05:00:14,520 - eBay fetch fail #3 (blocked) for '4060 oled' on GH — no cooldown, next product retries
-2026-11-05 05:00:15,094 -   4060 oled -> 1 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:00:15,121 - 4060_oled_auc: live alias task 1/5 format=auction query=rtx 4060 oled laptop
-2026-11-05 05:00:15,121 - Fetching: 4060 oled
-2026-11-05 05:00:15,121 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:00:15,993 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:00:16,850 - eBay challenge on ebay.de for '4060 oled' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:00:16,851 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:00:19,383 - Playwright challenge before result wait for '4060 oled'
-2026-11-05 05:00:21,198 - eBay fetch fail #4 (site_error) for '4060 oled' on GH — no cooldown, next product retries
-2026-11-05 05:00:21,637 -   4060 oled -> 0 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:00:21,665 -   4060 oled: fetch error site_error
-2026-11-05 05:00:21,733 - Live validation queue search=4060_oled_auc candidates=1 omitted=0 rows=[{"id":"168830298181","ready":false,"gate":"over_limit","minutes":8918,"tier":3,"source":"api"}]
-2026-11-05 05:00:21,733 - Live validation fairness search=4060_oled_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=1 oldest_priority_wait_seconds=None
-2026-11-05 05:00:21,782 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:00:21,782 - Scraping item page details for item 168830298181 via HTML
-2026-11-05 05:00:22,585 - _fetch_item_details_html: challenge page hit for item 168830298181
-2026-11-05 05:00:23,177 - Live validation result search=4060_oled_auc item=168830298181 status=rejected deadline_expired=False
-2026-11-05 05:00:23,224 -   4060 oled: 1 results, 0 verified in fair live slice
-2026-11-05 05:00:23,251 - Normal search dispatch id=pixel_9_pro_xl priority=4 remaining=37
-2026-11-05 05:00:23,257 - Checking Pixel 9 pro xl through primary HTML
-2026-11-05 05:00:23,310 - pixel_9_pro_xl: live alias task 6/6 format=auction query=pixel9 pro xl
-2026-11-05 05:00:23,310 - Fetching: Pixel 9 pro xl
-2026-11-05 05:00:24,703 -   Pixel 9 pro xl -> 23 items via m.ebay.de body_len=968674
-2026-11-05 05:00:24,703 -   Pixel 9 pro xl -> 23 items via ebay.de
-2026-11-05 05:00:24,731 - pixel_9_pro_xl: live alias task 1/6 format=buy_now query=google pixel 9 pro xl
-2026-11-05 05:00:24,731 - Fetching: Pixel 9 pro xl
-2026-11-05 05:00:26,095 -   Pixel 9 pro xl -> 60 items via m.ebay.de body_len=1746156
-2026-11-05 05:00:26,095 -   Pixel 9 pro xl -> 60 items via ebay.de
-2026-11-05 05:00:26,123 - pixel_9_pro_xl: live alias task 2/6 format=auction query=google pixel 9 pro xl
-2026-11-05 05:00:26,123 - Fetching: Pixel 9 pro xl
-2026-11-05 05:00:26,663 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:00:27,538 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:00:29,994 - Playwright challenge before result wait for 'Pixel 9 pro xl'
-2026-11-05 05:00:32,205 - eBay fetch fail #1 (site_error) for 'Pixel 9 pro xl' on GH — no cooldown, next product retries
-2026-11-05 05:00:32,826 -   Pixel 9 pro xl -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:00:32,853 - pixel_9_pro_xl: live alias task 3/6 format=buy_now query=pixel 9 pro xl
-2026-11-05 05:00:32,854 - Fetching: Pixel 9 pro xl
-2026-11-05 05:00:32,854 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:00:33,379 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:00:34,069 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:00:39,775 -   Pixel 9 pro xl -> 139 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:00:39,811 -   Pixel 9 pro xl: fetch error search_deferred
-2026-11-05 05:00:40,802 - Live validation queue search=pixel_9_pro_xl candidates=72 omitted=0 rows=[{"id":"900056218042","ready":false,"gate":"auction_time_unknown","minutes":null,"tier":3,"source":"html"},{"id":"336871085988","ready":false,"gate":"auction_time_unknown","minutes":null,"tier":3,"source":"html"},{"id":"336872074373","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"137890243981","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"237157141748","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"237156972379","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"820303885078","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"860100886475","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206661498845","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"267826298006","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"377603607007","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206658433863","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206656143634","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206656143635","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206656143638","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"117486893909","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"960088460453","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"137856724627","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"840030381279","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"257801653410","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"257821655776","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"227571741269","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"920029532107","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287630722393","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"147620169532","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287627889092","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287622081491","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"336820295776","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800735250775","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800735218801","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287614268217","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287614090848","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"188982883233","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287601433129","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178496087006","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227514528159","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407178886013","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237030772701","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188830524747","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188830521801","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188830515766","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188830514094","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188830509690","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227453812484","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287475507962","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"398198676273","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327258323127","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307047565518","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137482442044","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178144798833","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"397689014211","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227226124154","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127671779730","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127651642643","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"358080704283","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"317591023278","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"389223212307","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"286888064017","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127438810006","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198749715729","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"177407229068","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127365617463","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"388878416806","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"388765427631","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287618438015","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"205471754458","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287136000235","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"365363403031","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"205217241887","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"205131096362","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"205121931093","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"387541178484","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
-2026-11-05 05:00:40,802 - Live validation fairness search=pixel_9_pro_xl fresh_ready=0 clock_unknown=0 recheck=0 waiting=72 oldest_priority_wait_seconds=None
-2026-11-05 05:00:40,854 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:00:40,854 - Scraping item page details for item 900056218042 via HTML
-2026-11-05 05:00:41,722 - _fetch_item_details_html: challenge page hit for item 900056218042
-2026-11-05 05:00:42,325 - Description blocked due to bad condition word/phrase: 'flecken'
-2026-11-05 05:00:42,348 - Live validation result search=pixel_9_pro_xl item=900056218042 status=rejected deadline_expired=False
-2026-11-05 05:00:42,401 - Scraping item page details for item 336871085988 via HTML
-2026-11-05 05:00:42,850 - _fetch_item_details_html: HTTP 403 for item 336871085988
-2026-11-05 05:00:49,487 - HTML browser details unavailable for 336871085988: TimeoutError stage=description_iframe_missing elapsed=6.637s
-2026-11-05 05:00:50,046 - Live validation result search=pixel_9_pro_xl item=336871085988 status=verified deadline_expired=False
-2026-11-05 05:00:50,059 - Live validation deferred search=pixel_9_pro_xl reason=fair_slice priority_deferred=0
-2026-11-05 05:00:50,196 -   Pixel 9 pro xl: 162 results, 1 verified in fair live slice
-2026-11-05 05:00:50,223 - Checking Pixel 9 pro xl through primary HTML
-2026-11-05 05:00:50,257 - pixel_9_pro_xl__ending_soon: live alias task 2/3 format=auction query=pixel 9 pro xl
-2026-11-05 05:00:50,258 - Fetching: Pixel 9 pro xl
-2026-11-05 05:00:50,615 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:00:51,803 - eBay challenge on ebay.de for 'Pixel 9 pro xl' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:00:51,805 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:00:56,871 -   Pixel 9 pro xl -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:00:56,898 - pixel_9_pro_xl__ending_soon: live alias task 3/3 format=auction query=pixel9 pro xl
-2026-11-05 05:00:56,898 - Fetching: Pixel 9 pro xl
-2026-11-05 05:00:56,898 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:00:57,722 - eBay challenge on ebay.de for 'Pixel 9 pro xl' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:00:57,723 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:00:58,597 - eBay challenge on ebay.de for 'Pixel 9 pro xl' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:00:58,598 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:00:59,347 - eBay challenge on ebay.de for 'Pixel 9 pro xl' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:01,101 - Playwright challenge before result wait for 'Pixel 9 pro xl'
-2026-11-05 05:01:02,978 - eBay fetch fail #2 (site_error) for 'Pixel 9 pro xl' on GH — no cooldown, next product retries
-2026-11-05 05:01:03,543 -   Pixel 9 pro xl -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:01:03,571 -   Pixel 9 pro xl: ending soon sweep error search_deferred
-2026-11-05 05:01:03,598 - Normal search dispatch id=logitech_superstrike_auc priority=17 remaining=36
-2026-11-05 05:01:03,604 - Checking logitech superstrike through primary HTML
-2026-11-05 05:01:03,657 - logitech_superstrike_auc: live alias task 2/5 format=auction query=logitech g pro x 2 superstrike
-2026-11-05 05:01:03,657 - Fetching: logitech superstrike
-2026-11-05 05:01:03,657 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:01:04,562 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:04,563 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:01:05,100 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:01:07,380 - Playwright challenge before result wait for 'logitech superstrike'
-2026-11-05 05:01:09,373 - Playwright challenge before result wait for 'logitech superstrike'
-2026-11-05 05:01:09,440 - eBay fetch fail #3 (blocked) for 'logitech superstrike' on GH — no cooldown, next product retries
-2026-11-05 05:01:09,990 -   logitech superstrike -> 2 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:01:10,017 - logitech_superstrike_auc: live alias task 3/5 format=auction query=logitech pro x2 superstrike
-2026-11-05 05:01:10,017 - Fetching: logitech superstrike
-2026-11-05 05:01:10,017 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:01:10,851 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:01:11,653 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:11,654 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:01:12,387 - eBay challenge on ebay.de for 'logitech superstrike' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:16,669 -   logitech superstrike -> 2 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:01:16,704 -   logitech superstrike: fetch error search_deferred
-2026-11-05 05:01:16,784 - Live validation queue search=logitech_superstrike_auc candidates=2 omitted=0 rows=[{"id":"227589293091","ready":false,"gate":"over_limit","minutes":1151,"tier":3,"source":"api"},{"id":"377620328166","ready":false,"gate":"over_limit","minutes":8713,"tier":3,"source":"api"}]
-2026-11-05 05:01:16,784 - Live validation fairness search=logitech_superstrike_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=2 oldest_priority_wait_seconds=None
-2026-11-05 05:01:16,833 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:01:16,833 - Scraping item page details for item 227589293091 via HTML
-2026-11-05 05:01:18,020 - _fetch_item_details_html: challenge page hit for item 227589293091
-2026-11-05 05:01:18,717 - Live validation result search=logitech_superstrike_auc item=227589293091 status=verified deadline_expired=False
-2026-11-05 05:01:18,772 - Scraping item page details for item 377620328166 via HTML
-2026-11-05 05:01:20,323 - Fetching own seller description HTML for item 377620328166
-2026-11-05 05:01:20,603 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
-2026-11-05 05:01:20,697 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
-2026-11-05 05:01:27,418 - HTML browser details unavailable for 377620328166: TimeoutError stage=description_iframe_missing elapsed=6.663s
-2026-11-05 05:01:28,052 - Live validation result search=logitech_superstrike_auc item=377620328166 status=verified deadline_expired=False
-2026-11-05 05:01:28,252 -   logitech superstrike: 2 results, 2 verified in fair live slice
-2026-11-05 05:01:28,281 - Normal search dispatch id=4050_oled_buy priority=7 remaining=35
-2026-11-05 05:01:28,288 - Checking 4050 oled through primary HTML
-2026-11-05 05:01:28,341 - 4050_oled_buy: live alias task 2/5 format=buy_now_offer query=rtx 4050 oled notebook
-2026-11-05 05:01:28,341 - Fetching: 4050 oled
-2026-11-05 05:01:29,906 -   4050 oled -> 62 items via m.ebay.de body_len=1569793
-2026-11-05 05:01:29,906 -   4050 oled -> 62 items via ebay.de
-2026-11-05 05:01:29,934 - 4050_oled_buy: live alias task 3/5 format=buy_now_offer query=laptop 4050 oled
-2026-11-05 05:01:29,934 - Fetching: 4050 oled
-2026-11-05 05:01:31,288 -   4050 oled -> 61 items via m.ebay.de body_len=1564965
-2026-11-05 05:01:31,288 -   4050 oled -> 61 items via ebay.de
-2026-11-05 05:01:31,316 - 4050_oled_buy: live alias task 4/5 format=buy_now_offer query=4050 oled
-2026-11-05 05:01:31,316 - Fetching: 4050 oled
-2026-11-05 05:01:32,447 -   4050 oled -> 10 items via m.ebay.de body_len=833554
-2026-11-05 05:01:32,447 -   4050 oled -> 10 items via ebay.de
-2026-11-05 05:01:32,474 - 4050_oled_buy: live alias task 5/5 format=buy_now_offer query=rtx 4050 (aero,vivobook,spectre,yoga,xps,legion,proart)
-2026-11-05 05:01:32,474 - Fetching: 4050 oled
-2026-11-05 05:01:32,823 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:01:33,369 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:01:35,560 - Playwright challenge before result wait for '4050 oled'
-2026-11-05 05:01:38,557 - eBay fetch fail #1 (site_error) for '4050 oled' on GH — no cooldown, next product retries
-2026-11-05 05:01:39,089 -   4050 oled -> 8 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:01:39,116 - 4050_oled_buy: live alias task 1/5 format=buy_now_offer query=rtx 4050 oled laptop
-2026-11-05 05:01:39,116 - Fetching: 4050 oled
-2026-11-05 05:01:39,117 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:01:40,322 - eBay challenge on ebay.de for '4050 oled' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:40,323 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:01:41,023 - eBay challenge on ebay.de for '4050 oled' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:41,023 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:01:41,719 - eBay challenge on ebay.de for '4050 oled' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:01:45,781 -   4050 oled -> 5 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:01:46,270 - Live validation queue search=4050_oled_buy candidates=114 omitted=34 rows=[{"id":"366779229863","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"840092302735","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"940047619356","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"157055941662","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"187899423032","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"377610994373","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"366783969488","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"860053848962","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"227597672200","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"257831819118","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"168828772298","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"377622068174","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"900051760670","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"188911649216","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"158357225681","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"257303880162","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"327394895445","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"287672020850","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"168372421126","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"267833373529","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"920064511128","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"800810805956","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"800878164809","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"880068521618","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"880059193249","ready":true,"gate":"notify","minutes":null,"tier":0,"source":"html"},{"id":"860079568588","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"307247428669","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"336845270491","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206617260836","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"137739595703","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800806462497","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"407340453251","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"267832501627","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"257834254583","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"168836917448","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800863805923","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800862472582","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"178518423864","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"267830349554","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"940005344253","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"257832806588","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"336843015300","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"366784988549","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287699559840","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"147600293161","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206580447607","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206416001145","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"398381051626","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"147566127962","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"147651116467","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"186908991010","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"257813781839","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"327428727663","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"366729404549","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"267833210574","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800657530505","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"820276286489","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287698688191","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"307247160706","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"800875229528","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"840023939386","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"407319833689","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"407296851789","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"920079367266","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"298605093867","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"377099286282","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"157454630930","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"318153285612","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"407316631264","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287703793749","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"327440337271","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"277588267814","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"128164596102","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"198675396103","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"206605774934","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"860076100215","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"298581274191","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"820292487399","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"198486992194","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"287665639601","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"}]
-2026-11-05 05:01:46,270 - Live validation fairness search=4050_oled_buy fresh_ready=25 clock_unknown=0 recheck=0 waiting=89 oldest_priority_wait_seconds=None
-2026-11-05 05:01:46,321 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:01:46,322 - Scraping item page details for item 366779229863 via HTML
-2026-11-05 05:01:47,022 - _fetch_item_details_html: challenge page hit for item 366779229863
-2026-11-05 05:01:47,536 - Live validation result search=4050_oled_buy item=366779229863 status=rejected deadline_expired=False
-2026-11-05 05:01:47,587 - Scraping item page details for item 840092302735 via HTML
-2026-11-05 05:01:48,656 - Fetching own seller description HTML for item 840092302735
-2026-11-05 05:01:48,829 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
-2026-11-05 05:01:48,931 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
-2026-11-05 05:01:55,649 - HTML browser details unavailable for 840092302735: TimeoutError stage=description_iframe_missing elapsed=6.656s
-2026-11-05 05:01:56,118 - Live validation result search=4050_oled_buy item=840092302735 status=rejected deadline_expired=False
-2026-11-05 05:01:56,120 - Live validation deferred search=4050_oled_buy reason=fair_slice priority_deferred=23
-2026-11-05 05:01:56,120 -   4050 oled: 122 results, 0 verified in fair live slice
-2026-11-05 05:01:56,147 - Normal search dispatch id=4050_oled_auc priority=7 remaining=34
-2026-11-05 05:01:56,153 - Checking 4050 oled through primary HTML
-2026-11-05 05:01:56,205 - 4050_oled_auc: live alias task 3/5 format=auction query=laptop 4050 oled
-2026-11-05 05:01:56,205 - Fetching: 4050 oled
-2026-11-05 05:01:56,899 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:01:57,445 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:01:58,301 - eBay challenge on ebay.de for '4050 oled' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:02:00,185 - Playwright challenge before result wait for '4050 oled'
-2026-11-05 05:02:02,283 - eBay fetch fail #2 (site_error) for '4050 oled' on GH — no cooldown, next product retries
-2026-11-05 05:02:02,722 -   4050 oled -> 0 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:02:02,786 -   4050 oled: fetch error site_error
-2026-11-05 05:02:02,813 - Normal search dispatch id=5070_ti_pc_auc priority=10 remaining=33
-2026-11-05 05:02:02,819 - Checking 5070 ti (pc, rechner, computer, desktop, gaming pc) through primary HTML
-2026-11-05 05:02:02,872 - 5070_ti_pc_auc: live alias task 3/8 format=auction query=5070 ti computer
-2026-11-05 05:02:02,872 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-11-05 05:02:02,872 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:02:03,564 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:02:04,032 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:02:06,469 - Playwright challenge before result wait for '5070 ti (pc, rechner, computer, desktop, gaming pc)'
-2026-11-05 05:02:08,955 - eBay fetch fail #3 (site_error) for '5070 ti (pc, rechner, computer, desktop, gaming pc)' on GH — no cooldown, next product retries
-2026-11-05 05:02:09,478 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 1 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:02:09,505 - 5070_ti_pc_auc: live alias task 4/8 format=auction query=5070 ti desktop
-2026-11-05 05:02:09,506 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-11-05 05:02:09,506 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:02:10,127 - eBay session ready (impersonate=chrome120)
-2026-11-05 05:02:11,255 - eBay challenge on ebay.de for '5070 ti (pc, rechner, computer, desktop, gaming pc)' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:02:11,256 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-05 05:02:12,063 - eBay challenge on ebay.de for '5070 ti (pc, rechner, computer, desktop, gaming pc)' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:02:16,093 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 1 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:02:16,127 -   5070 ti (pc, rechner, computer, desktop, gaming pc): fetch error search_deferred
-2026-11-05 05:02:16,214 - Live validation queue search=5070_ti_pc_auc candidates=1 omitted=0 rows=[{"id":"336875772979","ready":false,"gate":"over_limit","minutes":6772,"tier":3,"source":"api"}]
-2026-11-05 05:02:16,214 - Live validation fairness search=5070_ti_pc_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=1 oldest_priority_wait_seconds=None
-2026-11-05 05:02:16,214 - Live validation deferred search=5070_ti_pc_auc reason=deadline priority_deferred=0
-2026-11-05 05:02:16,215 -   5070 ti (pc, rechner, computer, desktop, gaming pc): 2 results, 0 verified in fair live slice
-2026-11-05 05:02:16,242 - Normal search dispatch id=nubia_z80_ultra_leading_auc priority=20 remaining=32
-2026-11-05 05:02:16,248 - Checking Nubia Z80 Ultra Leading through primary HTML
-2026-11-05 05:02:16,301 - nubia_z80_ultra_leading_auc: live alias task 2/4 format=auction query=zte nubia z80 ultra leading
-2026-11-05 05:02:16,301 - Fetching: Nubia Z80 Ultra Leading
-2026-11-05 05:02:16,301 - eBay session ready (impersonate=safari17_0)
-2026-11-05 05:02:16,911 - eBay session ready (impersonate=chrome131)
-2026-11-05 05:02:17,856 - eBay challenge on ebay.de for 'Nubia Z80 Ultra Leading' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
-2026-11-05 05:02:17,857 - eBay session ready (impersonate=chrome124)
-2026-11-05 05:02:20,070 - Playwright challenge before result wait for 'Nubia Z80 Ultra Leading'
-2026-11-05 05:02:22,074 - Playwright challenge before result wait for 'Nubia Z80 Ultra Leading'
-2026-11-05 05:02:22,132 - eBay fetch fail #4 (blocked) for 'Nubia Z80 Ultra Leading' on GH — no cooldown, next product retries
-2026-11-05 05:02:22,646 -   Nubia Z80 Ultra Leading -> 0 items via eBay Browse API (EBAY_DE)
-2026-11-05 05:02:22,673 -   Nubia Z80 Ultra Leading: fetch error blocked
-2026-11-05 05:02:22,700 - Normal search dispatch id=4060_oled_buy priority=8 remaining=31
-2026-11-05 05:02:22,707 - Checking 4060 oled through primary HTML
-2026-11-05 05:02:22,719 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
-2026-11-05 05:02:23,107 - === Done ===
+2026-11-05 05:05:36,521 - eBay ebay.de genuine no-results marker for 'asus vivobook 14x oled'
+2026-11-05 05:05:36,629 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:05:37,215 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:05:42,199 -   asus vivobook 14x oled -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:05:42,225 -   asus vivobook 14x oled: fetch error search_deferred
+2026-11-05 05:05:42,251 - Normal search dispatch id=asus_vivobook_14x_oled_buy priority=6 remaining=39
+2026-11-05 05:05:42,258 - Checking asus vivobook 14x oled through primary HTML
+2026-11-05 05:05:42,310 - asus_vivobook_14x_oled_buy: live alias task 2/3 format=buy_now_offer query=asus vivobook14x oled
+2026-11-05 05:05:42,310 - Fetching: asus vivobook 14x oled
+2026-11-05 05:05:42,310 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:05:42,952 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:05:44,416 - eBay challenge on ebay.de for 'asus vivobook 14x oled' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:05:44,418 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:05:48,992 -   asus vivobook 14x oled -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:05:49,019 - asus_vivobook_14x_oled_buy: live alias task 3/3 format=buy_now_offer query=vivobook 14 x oled
+2026-11-05 05:05:49,019 - Fetching: asus vivobook 14x oled
+2026-11-05 05:05:49,020 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:05:49,585 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:05:50,107 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:05:52,389 - eBay challenge on ebay.de for 'asus vivobook 14x oled' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:05:55,678 -   asus vivobook 14x oled -> 7 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:05:55,711 -   asus vivobook 14x oled: fetch error search_deferred
+2026-11-05 05:05:55,788 - Live validation queue search=asus_vivobook_14x_oled_buy candidates=0 omitted=0 rows=[]
+2026-11-05 05:05:55,788 - Live validation fairness search=asus_vivobook_14x_oled_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=0 oldest_priority_wait_seconds=None
+2026-11-05 05:05:55,794 -   asus vivobook 14x oled: 7 results, 0 verified in fair live slice
+2026-11-05 05:05:55,820 - Normal search dispatch id=nubia_z80_ultra_auc priority=16 remaining=38
+2026-11-05 05:05:55,827 - Checking Nubia Z80 Ultra through primary HTML
+2026-11-05 05:05:55,879 - nubia_z80_ultra_auc: live alias task 2/2 format=auction query=zte nubia z80 ultra
+2026-11-05 05:05:55,879 - Fetching: Nubia Z80 Ultra
+2026-11-05 05:05:55,880 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:05:57,289 - eBay challenge on ebay.de for 'Nubia Z80 Ultra' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:05:57,290 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:05:58,186 - eBay challenge on ebay.de for 'Nubia Z80 Ultra' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:05:58,187 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:06:02,458 -   Nubia Z80 Ultra -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:02,485 - nubia_z80_ultra_auc: live alias task 1/2 format=auction query=nubia z80 ultra
+2026-11-05 05:06:02,485 - Fetching: Nubia Z80 Ultra
+2026-11-05 05:06:02,485 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:06:09,137 -   Nubia Z80 Ultra -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:09,208 - Live validation queue search=nubia_z80_ultra_auc candidates=0 omitted=0 rows=[]
+2026-11-05 05:06:09,209 - Live validation fairness search=nubia_z80_ultra_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=0 oldest_priority_wait_seconds=None
+2026-11-05 05:06:09,215 -   Nubia Z80 Ultra: 1 results, 0 verified in fair live slice
+2026-11-05 05:06:09,261 - Normal search dispatch id=iphone_16_pro_max_auc priority=3 remaining=37
+2026-11-05 05:06:09,268 - Checking iPhone 16 Pro Max through primary HTML
+2026-11-05 05:06:09,320 - iphone_16_pro_max_auc: live alias task 1/4 format=auction query=iphone 16 pro max
+2026-11-05 05:06:09,320 - Fetching: iPhone 16 Pro Max
+2026-11-05 05:06:09,320 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:06:16,174 -   iPhone 16 Pro Max -> 82 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:16,200 - iphone_16_pro_max_auc: live alias task 2/4 format=auction query=apple iphone 16 pro max
+2026-11-05 05:06:16,200 - Fetching: iPhone 16 Pro Max
+2026-11-05 05:06:16,201 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:06:16,740 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:06:23,134 -   iPhone 16 Pro Max -> 82 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:23,169 -   iPhone 16 Pro Max: fetch error search_deferred
+2026-11-05 05:06:24,140 - Live validation queue search=iphone_16_pro_max_auc candidates=65 omitted=0 rows=[{"id":"407326177119","ready":true,"gate":"notify","minutes":1423,"tier":0,"source":"api"},{"id":"366785286560","ready":true,"gate":"notify","minutes":3586,"tier":2,"source":"api"},{"id":"880062425805","ready":true,"gate":"notify","minutes":912,"tier":2,"source":"api"},{"id":"336875844939","ready":false,"gate":"over_limit","minutes":6805,"tier":3,"source":"api"},{"id":"840082599454","ready":false,"gate":"over_limit","minutes":5244,"tier":3,"source":"api"},{"id":"920094533983","ready":false,"gate":"over_limit","minutes":5129,"tier":3,"source":"api"},{"id":"840081723300","ready":false,"gate":"over_limit","minutes":4852,"tier":3,"source":"api"},{"id":"800871639826","ready":false,"gate":"over_limit","minutes":4878,"tier":3,"source":"api"},{"id":"206668022099","ready":false,"gate":"over_limit","minutes":4905,"tier":3,"source":"api"},{"id":"336873856461","ready":false,"gate":"wait_24h","minutes":5249,"tier":3,"source":"api"},{"id":"800855881970","ready":false,"gate":"over_limit","minutes":2020,"tier":3,"source":"api"},{"id":"800872045920","ready":false,"gate":"over_limit","minutes":2110,"tier":3,"source":"api"},{"id":"800872037171","ready":false,"gate":"wait_24h","minutes":2109,"tier":3,"source":"api"},{"id":"366785505761","ready":false,"gate":"wait_24h","minutes":3724,"tier":3,"source":"api"},{"id":"880082987047","ready":false,"gate":"over_limit","minutes":9417,"tier":3,"source":"api"},{"id":"307266571354","ready":false,"gate":"wait_24h","minutes":9390,"tier":3,"source":"api"},{"id":"820315734496","ready":false,"gate":"over_limit","minutes":9287,"tier":3,"source":"api"},{"id":"407339740927","ready":false,"gate":"wait_24h","minutes":9203,"tier":3,"source":"api"},{"id":"960152708239","ready":false,"gate":"notify","minutes":8927,"tier":3,"source":"api"},{"id":"336878573419","ready":false,"gate":"over_limit","minutes":8694,"tier":3,"source":"api"},{"id":"137899738076","ready":false,"gate":"over_limit","minutes":8236,"tier":3,"source":"api"},{"id":"227596324861","ready":false,"gate":"over_limit","minutes":12454,"tier":3,"source":"api"},{"id":"267832327432","ready":false,"gate":"wait_24h","minutes":2271,"tier":3,"source":"api"},{"id":"940062644199","ready":false,"gate":"over_limit","minutes":2035,"tier":3,"source":"api"},{"id":"366781113596","ready":false,"gate":"notify","minutes":7506,"tier":3,"source":"api"},{"id":"840087274523","ready":false,"gate":"over_limit","minutes":7217,"tier":3,"source":"api"},{"id":"168833032087","ready":false,"gate":"wait_24h","minutes":6502,"tier":3,"source":"api"},{"id":"168832322343","ready":false,"gate":"wait_24h","minutes":5979,"tier":3,"source":"api"},{"id":"117498743117","ready":false,"gate":"over_limit","minutes":5226,"tier":3,"source":"api"},{"id":"800864279300","ready":false,"gate":"wait_24h","minutes":2345,"tier":3,"source":"api"},{"id":"198763298002","ready":false,"gate":"over_limit","minutes":5219,"tier":3,"source":"api"},{"id":"168828581571","ready":false,"gate":"wait_24h","minutes":5185,"tier":3,"source":"api"},{"id":"128165994406","ready":false,"gate":"wait_24h","minutes":5169,"tier":3,"source":"api"},{"id":"307260751340","ready":false,"gate":"wait_24h","minutes":5155,"tier":3,"source":"api"},{"id":"117498617957","ready":false,"gate":"wait_24h","minutes":5154,"tier":3,"source":"api"},{"id":"307260741878","ready":false,"gate":"over_limit","minutes":5144,"tier":3,"source":"api"},{"id":"237156117715","ready":false,"gate":"wait_24h","minutes":5124,"tier":3,"source":"api"},{"id":"960141563857","ready":false,"gate":"wait_24h","minutes":2208,"tier":3,"source":"api"},{"id":"237156070769","ready":false,"gate":"wait_24h","minutes":5043,"tier":3,"source":"api"},{"id":"137892361823","ready":false,"gate":"wait_24h","minutes":5034,"tier":3,"source":"api"},{"id":"267828918301","ready":false,"gate":"wait_24h","minutes":5034,"tier":3,"source":"api"},{"id":"880072172264","ready":false,"gate":"wait_24h","minutes":5014,"tier":3,"source":"api"},{"id":"820303441023","ready":false,"gate":"over_limit","minutes":4868,"tier":3,"source":"api"},{"id":"237155686211","ready":false,"gate":"wait_24h","minutes":4695,"tier":3,"source":"api"},{"id":"407330733698","ready":false,"gate":"over_limit","minutes":4570,"tier":3,"source":"api"},{"id":"860102622581","ready":false,"gate":"wait_24h","minutes":4508,"tier":3,"source":"api"},{"id":"327427464501","ready":false,"gate":"wait_24h","minutes":3714,"tier":3,"source":"api"},{"id":"198760018905","ready":false,"gate":"wait_24h","minutes":3415,"tier":3,"source":"api"},{"id":"227597028267","ready":false,"gate":"over_limit","minutes":8737,"tier":3,"source":"api"},{"id":"940052993185","ready":false,"gate":"wait_24h","minutes":2337,"tier":3,"source":"api"},{"id":"900051120476","ready":false,"gate":"wait_24h","minutes":1773,"tier":3,"source":"api"},{"id":"336869352669","ready":false,"gate":"wait_24h","minutes":5184,"tier":3,"source":"api"},{"id":"267825236190","ready":false,"gate":"over_limit","minutes":5154,"tier":3,"source":"api"},{"id":"820291344361","ready":false,"gate":"over_limit","minutes":346,"tier":3,"source":"api"},{"id":"257822051049","ready":false,"gate":"wait_24h","minutes":3531,"tier":3,"source":"api"},{"id":"880083003034","ready":false,"gate":"wait_24h","minutes":3672,"tier":3,"source":"api"},{"id":"880079535014","ready":false,"gate":"wait_24h","minutes":7984,"tier":3,"source":"api"},{"id":"960148390748","ready":false,"gate":"over_limit","minutes":7499,"tier":3,"source":"api"},{"id":"900057111546","ready":false,"gate":"wait_24h","minutes":5153,"tier":3,"source":"api"},{"id":"287700436711","ready":false,"gate":"over_limit","minutes":6929,"tier":3,"source":"api"},{"id":"287699107652","ready":false,"gate":"wait_24h","minutes":6177,"tier":3,"source":"api"},{"id":"860107043210","ready":false,"gate":"over_limit","minutes":1004,"tier":3,"source":"api"},{"id":"900056841457","ready":false,"gate":"wait_24h","minutes":2140,"tier":3,"source":"api"},{"id":"366769386928","ready":false,"gate":"over_limit","minutes":723,"tier":3,"source":"api"},{"id":"227593081515","ready":false,"gate":"over_limit","minutes":5125,"tier":3,"source":"api"}]
+2026-11-05 05:06:24,140 - Live validation fairness search=iphone_16_pro_max_auc fresh_ready=1 clock_unknown=0 recheck=2 waiting=62 oldest_priority_wait_seconds=1059
+2026-11-05 05:06:24,207 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:06:24,207 - Scraping item page details for item 407326177119 via HTML
+2026-11-05 05:06:24,788 - _fetch_item_details_html: challenge page hit for item 407326177119
+2026-11-05 05:06:25,447 - Live validation result search=iphone_16_pro_max_auc item=407326177119 status=verified deadline_expired=False
+2026-11-05 05:06:25,869 - send_notification: 📱 <b>iPhone 16 Pro Max 🇩🇪 ⚙️</b> |  | <a href="https://www.ebay.de/itm/407326177119">🎲</a> Текущая ставка + доставка: <a href="https://www.ebay.de/itm/407326177119">506.19€</a> 🔨 1 Bids ⏳23ч 43мин 🟢 | Товар: 500.00€ · Доставка: 6.19€ |  | 🏷 Тип: Auktion |  | 📌 Описание: Apple iPhone 16 Pro Max 256 GB Schwarz 5G ohne Simlock ohne Vertrag |  | 📦 <code>Состояние     │  </code>Gebraucht | 🌐 <code>Страна        │  </code>🇩🇪 Германия | 👤 <code>Продавец      │  </code>✅ kewitt-3616 (8 отзывов) | 💸 <code>Лимит:        │  </code>🎯 610€ ⬆️ 2500€ ⬇️ ♾️ |  | 🤖 GitHub автомониторинг | ℹ️ Сервер: 04:00 5 ноября | 📱 APK: 0.203 | 🔎 <a href="https://www.ebay.de/sch/i.html?_nkw=iphone+16+pro+max&amp;_stpos=09648&amp;_fcid=77&amp;_sop=10&amp;_udhi=2500&amp;_ipg=60&amp;LH_Auction=1&amp;LH_PrefLoc=1&amp;_sacat=9355">Поиск: eBay Browse API</a> |  | ❌ <a href="https://t.me/eBaySearcherBOT?start=ban_407326177119">Скрыть</a>  │  🚫 <a href="https://t.me/eBaySearcherBOT?start=banseller_a2V3aXR0LTM2MTY">Бан</a>
+2026-11-05 05:06:26,205 - Delivery latency item=407326177119 search=iphone_16_pro_max_auc stage=initial discovered_to_confirmed_seconds=128894.677
+2026-11-05 05:06:26,769 - Scraping item page details for item 366785286560 via HTML
+2026-11-05 05:06:27,949 - Fetching own seller description HTML for item 366785286560
+2026-11-05 05:06:28,085 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-05 05:06:28,189 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
+2026-11-05 05:06:34,945 - HTML browser details unavailable for 366785286560: TimeoutError stage=description_iframe_missing elapsed=6.681s
+2026-11-05 05:06:35,477 - Live validation result search=iphone_16_pro_max_auc item=366785286560 status=rejected deadline_expired=False
+2026-11-05 05:06:35,479 - Live validation deferred search=iphone_16_pro_max_auc reason=fair_slice priority_deferred=0
+2026-11-05 05:06:35,620 -   iPhone 16 Pro Max: 82 results, 1 verified in fair live slice
+2026-11-05 05:06:35,628 - Checking iPhone 16 Pro Max through primary HTML
+2026-11-05 05:06:35,662 - iphone_16_pro_max_auc__ending_soon: live alias task 1/4 format=auction query=iphone 16 pro max
+2026-11-05 05:06:35,662 - Fetching: iPhone 16 Pro Max
+2026-11-05 05:06:37,183 -   iPhone 16 Pro Max -> 60 items via m.ebay.de body_len=1722102
+2026-11-05 05:06:37,183 -   iPhone 16 Pro Max -> 60 items via ebay.de
+2026-11-05 05:06:37,210 - iphone_16_pro_max_auc__ending_soon: live alias task 2/4 format=auction query=apple iphone 16 pro max
+2026-11-05 05:06:37,210 - Fetching: iPhone 16 Pro Max
+2026-11-05 05:06:38,470 -   iPhone 16 Pro Max -> 60 items via m.ebay.de body_len=1730272
+2026-11-05 05:06:38,470 -   iPhone 16 Pro Max -> 60 items via ebay.de
+2026-11-05 05:06:38,499 - iphone_16_pro_max_auc__ending_soon: live alias task 3/4 format=auction query=iphone16 pro max
+2026-11-05 05:06:38,499 - Fetching: iPhone 16 Pro Max
+2026-11-05 05:06:38,871 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:06:39,580 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:06:42,075 - eBay challenge on ebay.de for 'iPhone 16 Pro Max' (impersonate=chrome124, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:06:45,416 -   iPhone 16 Pro Max -> 80 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:45,442 - iphone_16_pro_max_auc__ending_soon: live alias task 4/4 format=auction query=iphone16promax
+2026-11-05 05:06:45,443 - Fetching: iPhone 16 Pro Max
+2026-11-05 05:06:45,443 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:06:46,215 - eBay challenge on ebay.de for 'iPhone 16 Pro Max' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:06:46,216 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:06:46,902 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:06:49,335 - Playwright challenge before result wait for 'iPhone 16 Pro Max'
+2026-11-05 05:06:51,520 - eBay fetch fail #1 (site_error) for 'iPhone 16 Pro Max' on GH — no cooldown, next product retries
+2026-11-05 05:06:51,978 -   iPhone 16 Pro Max -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:52,000 -   iPhone 16 Pro Max: ending soon sweep error site_error
+2026-11-05 05:06:52,028 - Normal search dispatch id=4080_pc_auc priority=9 remaining=36
+2026-11-05 05:06:52,034 - Checking 4080 (pc, rechner, computer, desktop, gaming pc) through primary HTML
+2026-11-05 05:06:52,122 - 4080_pc_auc: live alias task 2/8 format=auction query=4080 rechner
+2026-11-05 05:06:52,122 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-11-05 05:06:52,123 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:06:52,731 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:06:53,243 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:06:58,615 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:06:58,641 -   4080 (pc, rechner, computer, desktop, gaming pc): fetch error search_deferred
+2026-11-05 05:06:58,667 - Normal search dispatch id=logitech_superlight_2_std_auc priority=12 remaining=35
+2026-11-05 05:06:58,674 - Checking logitech superlight 2 through primary HTML
+2026-11-05 05:06:58,727 - logitech_superlight_2_std_auc: live alias task 1/2 format=auction query=logitech g pro x superlight 2
+2026-11-05 05:06:58,727 - Fetching: logitech superlight 2
+2026-11-05 05:06:58,727 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:06:59,222 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:07:05,605 -   logitech superlight 2 -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:07:05,634 -   logitech superlight 2: fetch error search_deferred
+2026-11-05 05:07:05,660 - Normal search dispatch id=logitech_superlight_2_std_buy priority=12 remaining=34
+2026-11-05 05:07:05,667 - Checking logitech superlight 2 through primary HTML
+2026-11-05 05:07:05,739 - logitech_superlight_2_std_buy: live alias task 1/2 format=buy_now_offer query=logitech g pro x superlight 2
+2026-11-05 05:07:05,740 - Fetching: logitech superlight 2
+2026-11-05 05:07:05,740 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:07:06,462 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:07:06,985 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:07:12,702 -   logitech superlight 2 -> 200 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:07:12,730 - logitech_superlight_2_std_buy: live alias task 2/2 format=buy_now_offer query=logitech superlight 2
+2026-11-05 05:07:12,730 - Fetching: logitech superlight 2
+2026-11-05 05:07:12,731 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:07:13,368 - eBay challenge on ebay.de for 'logitech superlight 2' (impersonate=safari17_2_ios, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:07:13,370 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:07:13,929 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:07:19,564 -   logitech superlight 2 -> 200 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:07:20,295 - Live validation queue search=logitech_superlight_2_std_buy candidates=131 omitted=51 rows=[{"id":"840093936158","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"377622118110","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137901753190","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"168836131355","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"920100187214","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800868426275","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147661165180","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"940057567036","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840081050607","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137887523577","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287687669686","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336867583801","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336867583529","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117491724912","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287686770651","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800845544650","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237146995499","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237146991972","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237146984638","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198749679226","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407313429261","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"920070175025","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366757125587","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"168811942259","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137865879943","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267820731886","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227577226197","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267819625942","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960095505490","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960095368794","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307240016558","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287658202375","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117470938870","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267811770295","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278442632743","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278442632737","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278442632001","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278442631984","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278442631741","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278442616173","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128121167338","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278436747933","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137835810963","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960013921943","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278428623616","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117441593935","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128163960120","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307206746101","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267799122949","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287610947549","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"158343860296","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147600823212","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147600823253","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147600823266","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147600823315","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128096417748","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"398420180052","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327368080933","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227532546598","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227532543812","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178510110333","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327362096732","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407216848008","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407216848011","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278374420998","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117408912708","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117408912402","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366662150628","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"158275895513","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257731168691","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257731130844","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366654012307","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178475705785","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"377470586468","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"206656926215","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267772980424","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257715867965","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278329276973","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257710235509","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257710231907","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-05 05:07:20,295 - Live validation fairness search=logitech_superlight_2_std_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=131 oldest_priority_wait_seconds=None
+2026-11-05 05:07:20,345 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:07:20,345 - Scraping item page details for item 840093936158 via HTML
+2026-11-05 05:07:21,040 - _fetch_item_details_html: challenge page hit for item 840093936158
+2026-11-05 05:07:21,727 - Live validation result search=logitech_superlight_2_std_buy item=840093936158 status=rejected deadline_expired=False
+2026-11-05 05:07:21,787 - Scraping item page details for item 377622118110 via HTML
+2026-11-05 05:07:23,597 - Fetching own seller description HTML for item 377622118110
+2026-11-05 05:07:23,786 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-05 05:07:23,899 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
+2026-11-05 05:07:30,680 - HTML browser details unavailable for 377622118110: TimeoutError stage=description_iframe_missing elapsed=6.713s
+2026-11-05 05:07:31,654 - Live validation result search=logitech_superlight_2_std_buy item=377622118110 status=verified deadline_expired=False
+2026-11-05 05:07:31,691 - Live validation deferred search=logitech_superlight_2_std_buy reason=fair_slice priority_deferred=0
+2026-11-05 05:07:31,835 -   logitech superlight 2: 249 results, 1 verified in fair live slice
+2026-11-05 05:07:31,865 - Normal search dispatch id=nubia_z80_ultra_buy priority=16 remaining=33
+2026-11-05 05:07:31,872 - Checking Nubia Z80 Ultra through primary HTML
+2026-11-05 05:07:31,925 - nubia_z80_ultra_buy: live alias task 2/2 format=buy_now_offer query=zte nubia z80 ultra
+2026-11-05 05:07:31,925 - Fetching: Nubia Z80 Ultra
+2026-11-05 05:07:33,499 -   Nubia Z80 Ultra -> 66 items via m.ebay.de body_len=1391562
+2026-11-05 05:07:33,499 -   Nubia Z80 Ultra -> 66 items via ebay.de
+2026-11-05 05:07:33,568 - nubia_z80_ultra_buy: live alias task 1/2 format=buy_now_offer query=nubia z80 ultra
+2026-11-05 05:07:33,568 - Fetching: Nubia Z80 Ultra
+2026-11-05 05:07:34,985 -   Nubia Z80 Ultra -> 63 items via www.ebay.de body_len=1490643
+2026-11-05 05:07:34,985 -   Nubia Z80 Ultra -> 63 items via ebay.de
+2026-11-05 05:07:35,238 - Live validation queue search=nubia_z80_ultra_buy candidates=4 omitted=0 rows=[{"id":"336877040714","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"127706247021","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"306791527178","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"},{"id":"127706197273","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"html"}]
+2026-11-05 05:07:35,239 - Live validation fairness search=nubia_z80_ultra_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=4 oldest_priority_wait_seconds=None
+2026-11-05 05:07:35,285 - Scraping item page details for item 336877040714 via HTML
+2026-11-05 05:07:37,929 - Fetching own seller description HTML for item 336877040714
+2026-11-05 05:07:38,070 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-05 05:07:38,156 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
+2026-11-05 05:07:44,899 - HTML browser details unavailable for 336877040714: TimeoutError stage=description_iframe_missing elapsed=6.689s
+2026-11-05 05:07:45,678 - Live validation result search=nubia_z80_ultra_buy item=336877040714 status=verified deadline_expired=False
+2026-11-05 05:07:45,755 - Scraping item page details for item 127706247021 via HTML
+2026-11-05 05:07:47,138 - Fetching own seller description HTML for item 127706247021
+2026-11-05 05:07:47,293 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-05 05:07:47,853 - Live validation result search=nubia_z80_ultra_buy item=127706247021 status=verified deadline_expired=False
+2026-11-05 05:07:47,907 - Live validation deferred search=nubia_z80_ultra_buy reason=fair_slice priority_deferred=0
+2026-11-05 05:07:48,075 -   Nubia Z80 Ultra: 84 results, 2 verified in fair live slice
+2026-11-05 05:07:48,105 - Normal search dispatch id=redmagic_11s_pro_buy priority=5 remaining=32
+2026-11-05 05:07:48,113 - Checking Redmagic 11S Pro through primary HTML
+2026-11-05 05:07:48,166 - redmagic_11s_pro_buy: live alias task 1/4 format=buy_now_offer query=redmagic 11s pro
+2026-11-05 05:07:48,167 - Fetching: Redmagic 11S Pro
+2026-11-05 05:07:48,643 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:07:49,614 - eBay challenge on ebay.de for 'Redmagic 11S Pro' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:07:49,616 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:07:54,868 -   Redmagic 11S Pro -> 13 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:07:54,896 - redmagic_11s_pro_buy: live alias task 2/4 format=buy_now_offer query=red magic 11s pro
+2026-11-05 05:07:54,897 - Fetching: Redmagic 11S Pro
+2026-11-05 05:07:54,897 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:08:00,200 - eBay challenge on ebay.de for 'Redmagic 11S Pro' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:08:00,201 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:08:01,216 - Playwright HTML fetch failed for 'Redmagic 11S Pro' (try 1/3): BrowserType.launch: Timeout 1ms exceeded.
+2026-11-05 05:08:01,674 -   Redmagic 11S Pro -> 13 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:08:01,710 -   Redmagic 11S Pro: fetch error search_deferred
+2026-11-05 05:08:01,792 - Live validation queue search=redmagic_11s_pro_buy candidates=3 omitted=0 rows=[{"id":"298625775032","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128050238044","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128050237207","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-05 05:08:01,792 - Live validation fairness search=redmagic_11s_pro_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=3 oldest_priority_wait_seconds=None
+2026-11-05 05:08:01,840 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:08:01,840 - Scraping item page details for item 298625775032 via HTML
+2026-11-05 05:08:13,843 - _fetch_item_details_html: mobile retry network error for 298625775032: Failed to perform, curl: (28) Operation timed out after 11773 milliseconds with 0 bytes received. See https://curl.se/libcurl/c/libcurl-errors.html first for more details.
+2026-11-05 05:08:13,843 - _fetch_item_details_html: HTTP 403 for item 298625775032
+2026-11-05 05:08:14,709 - Live validation result search=redmagic_11s_pro_buy item=298625775032 status=verified deadline_expired=False
+2026-11-05 05:08:14,804 - Scraping item page details for item 128050238044 via HTML
+2026-11-05 05:08:16,203 - Fetching own seller description HTML for item 128050238044
+2026-11-05 05:08:16,434 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-05 05:08:17,049 - Live validation result search=redmagic_11s_pro_buy item=128050238044 status=verified deadline_expired=False
+2026-11-05 05:08:17,104 - Live validation deferred search=redmagic_11s_pro_buy reason=fair_slice priority_deferred=0
+2026-11-05 05:08:17,272 -   Redmagic 11S Pro: 13 results, 2 verified in fair live slice
+2026-11-05 05:08:17,308 - Normal search dispatch id=redmagic_11_pro_auc priority=22 remaining=31
+2026-11-05 05:08:17,315 - Checking Redmagic 11 Pro through primary HTML
+2026-11-05 05:08:17,372 - redmagic_11_pro_auc: live alias task 1/3 format=auction query=redmagic 11 pro
+2026-11-05 05:08:17,372 - Fetching: Redmagic 11 Pro
+2026-11-05 05:08:18,704 -   Redmagic 11 Pro -> 5 items via www.ebay.de body_len=550112
+2026-11-05 05:08:18,704 -   Redmagic 11 Pro -> 5 items via ebay.de
+2026-11-05 05:08:18,733 - redmagic_11_pro_auc: live alias task 2/3 format=auction query=red magic 11 pro
+2026-11-05 05:08:18,733 - Fetching: Redmagic 11 Pro
+2026-11-05 05:08:19,151 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:08:19,663 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:08:25,585 -   Redmagic 11 Pro -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:08:25,614 - redmagic_11_pro_auc: live alias task 3/3 format=auction query=nubia redmagic 11 pro
+2026-11-05 05:08:25,615 - Fetching: Redmagic 11 Pro
+2026-11-05 05:08:25,615 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:08:29,420 - eBay challenge on ebay.de for 'Redmagic 11 Pro' (impersonate=safari17_0, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:08:29,422 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:08:30,120 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:08:32,095 -   Redmagic 11 Pro -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:08:32,126 -   Redmagic 11 Pro: fetch error search_deferred
+2026-11-05 05:08:32,169 - Live validation queue search=redmagic_11_pro_auc candidates=0 omitted=0 rows=[]
+2026-11-05 05:08:32,169 - Live validation fairness search=redmagic_11_pro_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=0 oldest_priority_wait_seconds=None
+2026-11-05 05:08:32,175 -   Redmagic 11 Pro: 5 results, 0 verified in fair live slice
+2026-11-05 05:08:32,204 - Normal search dispatch id=sony_wh_1000xm6_buy priority=24 remaining=30
+2026-11-05 05:08:32,211 - Checking Sony WH-1000XM6 through primary HTML
+2026-11-05 05:08:32,267 - sony_wh_1000xm6_buy: live alias task 3/5 format=buy_now_offer query=sony wh 1000 xm6
+2026-11-05 05:08:32,267 - Fetching: Sony WH-1000XM6
+2026-11-05 05:08:32,268 - eBay session ready (impersonate=chrome120)
+2026-11-05 05:08:34,549 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome120, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:08:34,551 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-05 05:08:35,027 - eBay session ready (impersonate=safari17_0)
+2026-11-05 05:08:38,977 -   Sony WH-1000XM6 -> 200 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:08:39,025 - sony_wh_1000xm6_buy: live alias task 4/5 format=buy_now_offer query=sony 1000xm6
+2026-11-05 05:08:39,025 - Fetching: Sony WH-1000XM6
+2026-11-05 05:08:39,026 - eBay session ready (impersonate=chrome131)
+2026-11-05 05:08:42,999 - eBay challenge on ebay.de for 'Sony WH-1000XM6' (impersonate=chrome131, url=https://www.ebay.de/splashui/challenge?ap=1&appName=orch&ru=https%3A%2F%2Fwww.eb)
+2026-11-05 05:08:43,000 - eBay session ready (impersonate=chrome124)
+2026-11-05 05:08:46,462 -   Sony WH-1000XM6 -> 200 items via eBay Browse API (EBAY_DE)
+2026-11-05 05:08:46,500 -   Sony WH-1000XM6: fetch error search_deferred
+2026-11-05 05:08:47,166 - Live validation queue search=sony_wh_1000xm6_buy candidates=188 omitted=108 rows=[{"id":"407340275983","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"920105520572","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128173342934","ready":false,"gate":"over_limit","minutes":9352,"tier":3,"source":"api"},{"id":"880082728398","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800876303706","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"820314565249","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307265653868","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147665558012","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"206673812531","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860107515099","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860107515100","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860107515102","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"880076904276","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198766289575","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860106293928","ready":false,"gate":"over_limit","minutes":6395,"tier":3,"source":"api"},{"id":"940059302088","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"940059296025","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327434848372","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960140629580","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120603","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120609","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120612","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120615","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120616","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120619","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120541","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120542","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120543","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120548","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120550","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120551","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120552","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120554","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120557","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120561","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120565","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120566","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120568","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120574","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860102120575","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"820300032026","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800858622712","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840076256790","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960133482020","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960133479849","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960133476685","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960133442754","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960133442768","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336870249918","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073855878","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073817565","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073722833","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073714835","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073710620","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073696469","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073574357","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840073543076","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198754250060","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588132171","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588131495","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588131044","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588125853","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588125480","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588124918","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327428054113","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307253648759","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860089966837","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336866093122","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"377601708068","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960121677148","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287681877244","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800840259595","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198746658186","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800840258202","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198746657419","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198746653718","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840061101129","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840061101092","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800839939380","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800839939268","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-05 05:08:47,167 - Live validation fairness search=sony_wh_1000xm6_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=188 oldest_priority_wait_seconds=None
+2026-11-05 05:08:47,167 - Live validation deferred search=sony_wh_1000xm6_buy reason=deadline priority_deferred=0
+2026-11-05 05:08:47,202 -   Sony WH-1000XM6: 234 results, 0 verified in fair live slice
+2026-11-05 05:08:47,229 - Normal search dispatch id=lg_ultragear_oled_480hz_buy priority=15 remaining=29
+2026-11-05 05:08:47,236 - Checking lg ultragear oled 480hz through primary HTML
+2026-11-05 05:08:47,248 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
+2026-11-05 05:08:47,627 - === Done ===
