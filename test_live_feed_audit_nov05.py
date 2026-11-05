@@ -43,8 +43,21 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
                         monitor.filter_results([copy.deepcopy(item)], search, Settings(), skip_seen=True, is_statistics=True)
                     ) and monitor._details_match_contract(item, search, details)
                     self.assertEqual(case["expected"], accepted)
-        for repair_id in ("840075295375", "800855961434", "168826607496", "366766338960"):
+        for repair_id in (
+            "840075295375",
+            "800855961434",
+            "168826607496",
+            "366766338960",
+            "subordinate_neues_display_eingebaut_wurde",
+            "subordinate_display_einbauen_lassen_habe",
+            "oled_nachbau_display_verbaut",
+        ):
             desc = next(c["description"] for c in cases if c["id"] == repair_id)
             self.assertEqual("замена дисплея в описании", monitor._phone_repair_label(desc), repair_id)
-        desc_880 = next(c["description"] for c in cases if c["id"] == "880059658047")
-        self.assertTrue(monitor._is_description_blocked(desc_880, "phones"))
+        for pos_id in ("pos_protector_einbauen_lassen", "pos_oled_display_schutzglas_einbauen_lassen", "pos_panzerglas_bekommen_wie_neues_display"):
+            desc = next(c["description"] for c in cases if c["id"] == pos_id)
+            self.assertIsNone(monitor._phone_repair_label(desc), pos_id)
+        for dmg_id in ("880059658047", "genitive_glases_noch_beschaedigung", "einwandfrei_beschaedigung_rueckseitenglases"):
+            desc = next(c["description"] for c in cases if c["id"] == dmg_id)
+            self.assertTrue(monitor._is_description_blocked(desc, "phones"), dmg_id)
+
