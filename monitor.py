@@ -3227,7 +3227,7 @@ def _normalized_bad_condition_words():
 @functools.lru_cache(maxsize=1)
 def _negated_condition_pattern():
     words = set(_normalized_bad_condition_words())
-    words.update(('kratzer','gebrauchsspuren','beschaedigung','beschaedigungen','schaeden','dellen','risse','scratches','signs of wear','dead pixels','burn ins','burnins'))
+    words.update(('kratzer','gebrauchsspuren','beschaedigung','beschaedigungen','schaeden','dellen','risse','riss','abplatzung','abplatzungen','absplitterung','absplitterungen','platzer','bruch','brueche','sprung','spruenge','macke','macken','scratches','signs of wear','dead pixels','burn ins','burnins'))
     atom = '(?:' + '|'.join(re.escape(w) for w in sorted(words,key=len,reverse=True)) + r')\b'
     neg = r'(?:kein|keine|keinen|ohne|nicht|nichts|no|without|not)'
     adjective = r'(?:(?:sichtbar\w*|bekannt\w*|visible|known|sonst|sonstige\w*|andere\w*|any|other)\s+){0,2}'
@@ -3240,7 +3240,7 @@ def _negated_condition_pattern():
 def _strip_negated_condition_terms(text_norm):
     # "not without damage" affirms a defect; its two negators must not
     # suppress the part/damage check that follows coordinated-list removal.
-    text_norm = re.sub(r"\b(?:nicht\s+ohne|not\s+without)\s+(?=(?:beschaedig\w*|schaden|schaeden|kratzer|risse|damage|scratches|cracks)\b)", "", text_norm)
+    text_norm = re.sub(r"\b(?:nicht\s+ohne|not\s+without)\s+(?=(?:beschaedig\w*|schaden|schaeden|kratzer|risse|riss|abplatzung\w*|absplitterung\w*|platzer|bruch|brueche|sprung|spruenge|macke\w*|damage|scratches|cracks)\b)", "", text_norm)
     # 236643373203 offers a working laptop for sale OR an optional swap.
     # Remove just the optional trade word, never faults or trade-only clauses.
     optional = r"\b(?:verkaufen|verkaufe|verkauf)\b[^.!?\n]{0,100}?\b(?:oder|alternativ)\b[^.!?\n]{0,180}?\b(?:tauschen|tausche|tausch)\b|\b(?:tauschen|tausche|tausch)\b[^.!?\n]{0,180}?\b(?:oder|alternativ)\b[^.!?\n]{0,100}?\b(?:verkaufen|verkaufe|verkauf)\b"
@@ -3254,7 +3254,7 @@ def _strip_negated_condition_terms(text_norm):
     text_norm = re.sub(rf"\b(?:no|without)\s+(?:(?:noticeable|visible|obvious|significant)\s+)?{denied}(?:\s*(?:,\s*(?:(?:and|or)\s+)?|(?:and|or)\s+){denied})*\b", " ", text_norm)
     # 800799315029: a German coordinated denial must cover every noun,
     # without swallowing an asserted defect after "aber" or a new sentence.
-    denied_de = r"(?:(?:sonstige[nr]?|sichtbare[nr]?|erkennbare[nr]?|leichte[nr]?|auffaellige[nr]?)\s+)?(?:gebrauchsspuren|kratzer|flecken|dellen|risse|maengel|schaeden|beschaedigungen|displayfehler|bildschirmfehler|pixelfehler)"
+    denied_de = r"(?:(?:sonstige[nr]?|sichtbare[nr]?|erkennbare[nr]?|leichte[nr]?|auffaellige[nr]?)\s+)?(?:gebrauchsspuren|kratzer|flecken|dellen|risse|riss|abplatzungen|abplatzung|absplitterungen|absplitterung|platzer|brueche|bruch|spruenge|sprung|macken|macke|maengel|schaeden|beschaedigungen|displayfehler|bildschirmfehler|pixelfehler)"
     text_norm = re.sub(rf"(?<!nicht )(?<!not )\b(?:kein(?:e|en|er)?|keinerlei|ohne)\s+{denied_de}(?:\s*(?:,\s*(?:(?:und|oder)\s+)?|(?:und|oder)\s+){denied_de})*\b(?!\s*(?:,|und\b|oder\b))", " ", text_norm)
     # A panel type can sit between the denial and the fault ("no OLED burn-in").
     # Consume only this denied phrase; later damage and double negation remain.
@@ -6767,14 +6767,14 @@ def _has_damage_in_description(desc_norm):
 
     for m_part in part_pattern.finditer(cleaned):
         part_start, part_end = m_part.span()
-        after_window = cleaned[part_end : part_end + 70]
+        after_window = re.split(r"[.!?;]", cleaned[part_end : part_end + 70], maxsplit=1)[0]
         for m_defect in defect_pattern.finditer(after_window):
             between = after_window[: m_defect.start()]
             if not neg_re.search(between):
                 return True
 
-        before_window_start = max(0, part_start - 70)
-        before_window = cleaned[before_window_start:part_start]
+        before_window = re.split(r"[.!?;]", cleaned[max(0, part_start - 70) : part_start])[-1]
+        before_window_start = part_start - len(before_window)
         for m_defect in defect_pattern.finditer(before_window):
             between = before_window[m_defect.end() :]
             if neg_re.search(between):
@@ -7498,10 +7498,16 @@ def _image_only_body(raw):
 
 def _console_pro_details_conflict(description, aspects):
     own = _normalize(_clean_description(description or ""))
-    pro_confirmed = bool(re.search(
-        r"\b(?:ps5|playstation[\s®™]*5|ps\s*5)[^a-z0-9]{0,10}pro\b|\bcfi\s*[- ]?\s*7[01]\d{2}[a-z0-9]*\b|\b(?:2\s*tb|2000\s*gb|2048\s*gb)\b",
-        own,
-    ))
+    pro_spec = bool(re.search(r"\bcfi\s*[- ]?\s*7[01]\d{2}[a-z0-9]*\b|\b(?:2\s*tb|2000\s*gb|2048\s*gb)\b", own))
+    pro_token = r"\b(?:ps5|playstation[\s®™]*5|ps\s*5)[^a-z0-9]{0,10}pro\b"
+    non_sold_pro = (
+        rf"\b(?:kein(?:e|en|er|em)?|nicht|no|not|ohne|statt|anstatt)\b(?:\s+\w+){{0,4}}\s+{pro_token}"
+        rf"|\b(?:umstieg|umgestiegen|wechsel|gewechselt|upgrade|upgraded|umsteigen|wechseln|wegen|aufgrund|durch)\b[^.!?\n]{{0,40}}{pro_token}"
+        rf"|\b(?:da|weil|nachdem)\s+ich\b[^.!?\n]{{0,45}}{pro_token}[^.!?\n]{{0,35}}\b(?:gekauft|geholt|bestellt|zugelegt|bekommen|erhalten|umgestiegen|gewechselt|besitze|habe)\b"
+        rf"|{pro_token}[^.!?\n]{{0,35}}\b(?:im\s+titel|laut\s+titel|titel\s+falsch|katalog|vorgegeben)\b"
+    )
+    own_for_pro = re.sub(non_sold_pro, " ", own) if own else ""
+    pro_confirmed = pro_spec or bool(re.search(pro_token, own_for_pro))
     storage_names = ("speicherkapazitaet", "storage capacity", "festplattenkapazitaet", "hard drive capacity")
     model_names = ("modell", "model")
     for aspect in aspects or []:
@@ -7515,15 +7521,19 @@ def _console_pro_details_conflict(description, aspects):
             return True
         if name in model_names and re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b", value) and not re.search(r"\bpro\b", value):
             return True
-    if not own or pro_confirmed:
+    if not own:
         return False
-    if re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b|\bcfi\s*[- ]?\s*[12]\d{3}[a-z0-9]*\b", own):
+    if not pro_spec and re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b|\bcfi\s*[- ]?\s*[12]\d{3}[a-z0-9]*\b|\b(?:normale[nr]?|regulaere[nr]?|standard)\s+(?:sony\s+)?(?:ps5|playstation\s*5)\b", own):
         return True
+    if not pro_spec and re.search(r"\b(?:ps5|playstation\s*5|konsole|console)\b", own) and re.search(r"\b825\s*gb\b", own):
+        return True
+    if pro_confirmed:
+        return False
     if re.search(r"\b(?:ps5|playstation\s*5|konsole|console)\b", own):
-        for m in re.finditer(r"\b(?:825\s*gb|1\s*tb|1000\s*gb|1024\s*gb)\b", own):
-            before = own[max(0, m.start() - 35):m.start()]
-            after = own[m.end():min(len(own), m.end() + 25)]
-            if not re.search(r"\b(?:extern\w*|erweiter\w*|extra|zusaetzlich\w*)\b", before + " " + after):
+        for m in re.finditer(r"\b(?:1\s*tb|1000\s*gb|1024\s*gb)\b", own):
+            before = own[max(0, m.start() - 40):m.start()]
+            after = own[m.end():min(len(own), m.end() + 35)]
+            if not re.search(r"\b(?:extern\w*|erweiter\w*|extra|zusaetzlich\w*|m\.?\s*2|nvme|pcie|sn850\w*|9[89]0\s*pro|firecuda|mp600\w*|heatsink|kuehlkoerper)\b", before + " " + after):
                 return True
     return False
 

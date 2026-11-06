@@ -9,6 +9,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
+        self.assertEqual(42, len(cases))
         for case in cases:
             cat = case["category"]
             cat_id = {"computers": "179", "consoles": "139971"}.get(cat, "9355")
@@ -60,8 +61,24 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         for dmg_id in ("880059658047", "336858997585", "genitive_glases_noch_beschaedigung", "einwandfrei_beschaedigung_rueckseitenglases"):
             desc = next(c["description"] for c in cases if c["id"] == dmg_id)
             self.assertTrue(monitor._is_description_blocked(desc, "phones"), dmg_id)
-        ps5_desc = next(c["description"] for c in cases if c["id"] == "366766647537")
-        self.assertTrue(monitor._console_pro_details_conflict(ps5_desc, []))
-        ps5_pos_desc = next(c["description"] for c in cases if c["id"] == "pos_307249528143_ps5_pro_2tb")
-        self.assertFalse(monitor._console_pro_details_conflict(ps5_pos_desc, []))
+        for clean_id in (
+            "pos_117485140188_gehaeuserand_no_abplatzungen",
+            "pos_gehaeuserand_keine_kratzer_oder_abplatzungen",
+            "pos_gehaeuserand_keine_risse_oder_abplatzungen",
+            "pos_sentence_boundary_karton_beschaedigt_gehaeuserand",
+        ):
+            desc = next(c["description"] for c in cases if c["id"] == clean_id)
+            self.assertFalse(monitor._is_description_blocked(desc, "phones"), clean_id)
+        for ps5_neg_id in (
+            "366766647537",
+            "neg_umstieg_auf_ps5_pro_1tb",
+            "neg_keine_ps5_pro_sondern_1tb",
+            "neg_umstieg_ps5_pro_slim_cfi2016",
+            "neg_aspect_1tb_with_umstieg_ps5_pro",
+        ):
+            case = next(c for c in cases if c["id"] == ps5_neg_id)
+            self.assertTrue(monitor._console_pro_details_conflict(case["description"], case.get("aspects") or []), ps5_neg_id)
+        for ps5_pos_id in ("pos_307249528143_ps5_pro_2tb", "pos_206653329869_ps5_pro_2tb", "pos_ps5_pro_with_1tb_m2_nvme_ssd"):
+            case = next(c for c in cases if c["id"] == ps5_pos_id)
+            self.assertFalse(monitor._console_pro_details_conflict(case["description"], case.get("aspects") or []), ps5_pos_id)
 
