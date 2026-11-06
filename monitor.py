@@ -419,6 +419,7 @@ BAD_CONDITION_WORDS = (
     "banned from psn servers", "nur ersatzteile", "ersatzteile reparatur",
     "als ersatzteile", "fuer ersatzteile",
     "bastelware", "bastlerware", "bastlergeraet", "als bastler", "fuer bastler", "an bastler",
+    "dummy", "dummie", "als attrappe", "attrappe ohne", "aufsteller", "thekenaufsteller", "zu dekozwecken", "ohne funktion", "ohne elektronik",
     "for parts", "parts only", "spares repair", "not working",
     "als ersatzteil", "ersatzteil defekt", "for repair", "needs repair",
     "solo per pezzi", "per parti di ricambio", "non funzionante",
@@ -844,7 +845,7 @@ def _search_intent(search_or_query):
             "gpu": "5070ti",
             "category": "computers",
         }
-    if "superstrike" in ident:
+    if re.search(r"\bsuper\s*strike\b", ident):
         return {
             "kind": "superstrike",
             "query": "logitech superstrike",
@@ -1476,7 +1477,7 @@ def _matches_superstrike_mouse(title_norm):
         return False
     if re.search(r"\bmouse\s+plush|\bplush\s+mouse|\bmaus\s+plusch|\bplusch\s+maus\b", t):
         return False
-    if "superstrike" not in t:
+    if not re.search(r"\bsuper\s*strike\b", t):
         return False
     if not ("logitech" in t or "pro x" in t):
         return False
@@ -3067,7 +3068,7 @@ def _is_accessory_product(title_norm, category):
         "consoles": r"(?:konsole|console|spielkonsole)\s+(?:covers?|case|skin|faceplates?|abdeckung\w*|seitenabdeckung\w*|konsolenabdeckung\w*)",
         "laptops": r"(?:laptop|notebook)\s+(?:tastatur|keyboard|akku|battery|ladegeraet|charger|netzteil)",
         "monitors": r"(?:monitor|bildschirm)\s+(?:[a-z0-9]*\d[a-z0-9]*(?:[ -][a-z])?\s+)?(?:netzteil|halterung|standfuss|staender|stand(?:\s*base)?|adapter)",
-        "mice": r"(?:maus|mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|superstrike)\s+(?:receiver|empfaenger|dongle|pcb|shell|switch|taster|skates?|feet|glides?|mausfuesse|mausgleiter|ersatzteil|(?:ersatz|maus|gleit)?kufen?|gleitsohlen?)",
+        "mice": r"(?:maus|mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|super\s*strike)\s+(?:receiver|empfaenger|dongle|pcb|shell|switch|taster|skates?|feet|glides?|mausfuesse|mausgleiter|ersatzteil|(?:ersatz|maus|gleit)?kufen?|gleitsohlen?)",
         "headphones": r"(?:kopfhoerer|headphones|headset)\s+(?:ohrpolster|earpads?|ersatzbuegel|scharnier|hinge)",
         "vr": r"(?:vr\s+headset|vr\s+brille)\s+(?:headstrap|strap|kopfband|linsenschutz)",
         "vr_headsets": r"(?:vr\s+headset|vr\s+brille)\s+(?:headstrap|strap|kopfband|linsenschutz)",
@@ -3181,7 +3182,7 @@ def _is_device_bundle(title_norm, category):
         "headphones": r"kopfhoerer|headphones|headset|(?:sony\s+)?wh[\s-]*1000[\s-]*xm\d+",
         "consoles": "konsole|spielkonsole|console|digital edition|disc edition",
         "laptops": "laptop|notebook|macbook|vivobook|zenbook",
-        "mice": r"maus|mouse|gaming mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|superstrike",
+        "mice": r"maus|mouse|gaming mouse|superlight\s*(?:2c?|ii)(?:\s+(?:dex|se))?|super\s*strike",
         "vr_headsets": "headset|vr brille", "vr": "headset|vr brille",
         "monitors": "monitor|bildschirm",
     }.get(category)
@@ -6759,7 +6760,7 @@ def _has_damage_in_description(desc_norm):
         if (not re.search(r"\b(?:if|when|falls|wenn)\b", clause)
                 and re.search(r"\b(?:mouse|maus|headset|headphones|kopfhoerer)\s+(?:is|are|ist|sind)\s+(?:broken|defective|defekt|kaputt)\b", clause)):
             return True
-    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
+    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
     defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|broken|snapped)\b", re.IGNORECASE)
     neg_re = re.compile(
         r"\b(?:nicht|nichts|nie|niemals|kein\w*|ohne|no|without|free|(?:kratzer|fehler|maengel|mangel|schaden|beschaedigungs|makel|dellen|riss|bruch)?frei\w*|not|unbeschaedig\w*|undamaged)\b",
@@ -10434,7 +10435,7 @@ async def _fetch_normal_slice(search, force=False):
     filters = search.get("filters") if isinstance(search, dict) else None
     formats_count = 2 if isinstance(filters, dict) and filters.get("listing_type", "all") == "all" else 1
     tasks_count = len(_search_query_variants(search) or [_intent_query(search)]) * formats_count if isinstance(filters, dict) else 1
-    slice_seconds = min(35, 10 + tasks_count * 3) if tasks_count >= 5 else 20
+    slice_seconds = min(35, 10 + tasks_count * 4) if tasks_count >= 3 else 20
     with MonitorPassBudget.slice(slice_seconds,reserve=30) as search_budget:
         rows, error = await asyncio.to_thread(fetch_ebay_ex,search,force=force)
     # HTML can decline its first task when the tail cannot fit HTML+reserve.

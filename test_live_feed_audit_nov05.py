@@ -12,13 +12,14 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(54, len(cases))
+        self.assertEqual(60, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
             "laptops": "177",
             "glasses": "179247",
             "headphones": "112529",
+            "mice": "23160",
         }
         for case in cases:
             cat = case["category"]
@@ -97,6 +98,14 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         for ps5_pos_id in ("pos_307249528143_ps5_pro_2tb", "pos_206653329869_ps5_pro_2tb", "pos_ps5_pro_with_1tb_m2_nvme_ssd"):
             case = next(c for c in cases if c["id"] == ps5_pos_id)
             self.assertFalse(monitor._console_pro_details_conflict(case["description"], case.get("aspects") or []), ps5_pos_id)
+        dummy_desc = next(c["description"] for c in cases if c["id"] == "168767384103")
+        self.assertTrue(monitor._is_description_blocked(dummy_desc, "glasses"))
+        clean_dummy_desc = next(c["description"] for c in cases if c["id"] == "pos_kein_dummy_keine_attrappe_control")
+        self.assertFalse(monitor._is_description_blocked(clean_dummy_desc, "glasses"))
+        buegel_desc = next(c["description"] for c in cases if c["id"] == "358980147281")
+        self.assertTrue(monitor._is_description_blocked(buegel_desc, "headphones"))
+        clean_buegel_desc = next(c["description"] for c in cases if c["id"] == "pos_buegel_nicht_gebrochen_control")
+        self.assertFalse(monitor._is_description_blocked(clean_buegel_desc, "headphones"))
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []
@@ -107,21 +116,27 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             yield mock.MagicMock(exhausted=lambda margin=0: True, html_task_started=False)
 
         with mock.patch.object(monitor.MonitorPassBudget, "slice", side_effect=fake_slice), \
-             mock.patch.object(monitor, "fetch_ebay_ex", return_value=([], None)):
-            # 6 aliases x 2 formats = 12 tasks -> min(35, 10 + 12*3) = 35s
+             mock.patch.object(monitor, "fetch_ebay_ex", return_value=([], None)), \
+             mock.patch.object(monitor.browse_access, "note_normal_outcome"):
+            # 6 aliases x 2 formats = 12 tasks -> min(35, 10 + 12*4) = 35s
             asyncio.run(monitor._fetch_normal_slice(
                 {"id": "ray_ban_meta_gen_2", "query": "Ray-Ban Meta Gen 2", "filters": {"category": "all", "listing_type": "all"}},
                 force=True,
             ))
-            # 8 aliases x 1 format = 8 tasks -> min(35, 10 + 8*3) = 34s
+            # 8 aliases x 1 format = 8 tasks -> min(35, 10 + 8*4) = 35s
             asyncio.run(monitor._fetch_normal_slice(
                 {"id": "4080_pc_auc", "query": "4080 (pc, rechner, computer, desktop, gaming pc)", "filters": {"category": "computers", "listing_type": "auction"}},
                 force=True,
             ))
-            # 2 aliases x 1 format = 2 tasks (< 5) -> 20s default
+            # 4 aliases x 1 format = 4 tasks (>= 3) -> min(35, 10 + 4*4) = 26s
             asyncio.run(monitor._fetch_normal_slice(
                 {"id": "iphone_17_pro_buy", "query": "iphone 17 pro", "filters": {"category": "phones", "listing_type": "buy_now"}},
                 force=True,
             ))
+            # 1 alias x 1 format = 1 task (< 3) -> 20s default
+            asyncio.run(monitor._fetch_normal_slice(
+                {"id": "meta_quest_3_buy", "query": "meta quest 3", "filters": {"category": "vr_headsets", "listing_type": "buy_now"}},
+                force=True,
+            ))
 
-        self.assertEqual([(35, 30), (34, 30), (20, 30)], recorded_slices)
+        self.assertEqual([(35, 30), (35, 30), (26, 30), (20, 30)], recorded_slices)
