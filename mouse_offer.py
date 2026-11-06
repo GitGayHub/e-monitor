@@ -1,7 +1,7 @@
 """Purpose and explicit seller model declarations for whole mice, not compatibility."""
 import re
 
-MODEL = re.compile(r'\b(?:superstrike|(?:superlight|gpx)\s*(?:2|ii)c?\b(?:[\s-]+(?:dex|se)\b)?|(?:g\s*)?pro\s*2\s+lightspeed)\b')
+MODEL = re.compile(r'\b(?:super\s*strike|(?:superlight|gpx)\s*(?:2|ii)c?\b(?:[\s-]+(?:dex|se)\b)?|(?:g\s*)?pro\s*2\s+lightspeed)\b')
 CONNECTOR = re.compile(r'\b(?:mit|and|inkl|with|bundle)\b|(?<=\s)\+(?=\s)|(?<=\s)&(?=\s)')
 COMPATIBLE = re.compile(r'\b(?:fuer|for|voor|para|pour|per|kompatibel|compatible|fits)\b|\bf\s*\.\s*')
 PACKAGING = {'ovp','verpackung','karton','box','originalverpackung'}
@@ -9,7 +9,7 @@ BUNDLED = {'skates','skate','glides','glide','feet','mouse feet','mausfuesse','m
 
 
 def _key(value):
-    if 'superstrike' in value:
+    if 'superstrike' in value or 'super strike' in value:
         return 'superstrike'
     if 'lightspeed' in value:
         return 'pro 2 lightspeed'
