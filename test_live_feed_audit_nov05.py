@@ -1,7 +1,10 @@
+import asyncio
+import contextlib
 import copy
 import json
 import unittest
 from pathlib import Path
+from unittest import mock
 import monitor
 from test_samsung_monitor_sku import Settings
 
@@ -9,10 +12,17 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(42, len(cases))
+        self.assertEqual(54, len(cases))
+        cat_map = {
+            "computers": "179",
+            "consoles": "139971",
+            "laptops": "177",
+            "glasses": "179247",
+            "headphones": "112529",
+        }
         for case in cases:
             cat = case["category"]
-            cat_id = {"computers": "179", "consoles": "139971"}.get(cat, "9355")
+            cat_id = cat_map.get(cat, "9355")
             for listing, offer in [("buy_now", False), ("buy_now", True), ("auction", False), ("auction", True)]:
                 with self.subTest(case=case["id"], listing=listing, offer=offer):
                     search = dict(
@@ -49,6 +59,7 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             "800855961434",
             "168826607496",
             "366766338960",
+            "168815326073",
             "subordinate_neues_display_eingebaut_wurde",
             "subordinate_display_einbauen_lassen_habe",
             "oled_nachbau_display_verbaut",
@@ -58,9 +69,14 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         for pos_id in ("pos_protector_einbauen_lassen", "pos_oled_display_schutzglas_einbauen_lassen", "pos_panzerglas_bekommen_wie_neues_display"):
             desc = next(c["description"] for c in cases if c["id"] == pos_id)
             self.assertIsNone(monitor._phone_repair_label(desc), pos_id)
-        for dmg_id in ("880059658047", "336858997585", "genitive_glases_noch_beschaedigung", "einwandfrei_beschaedigung_rueckseitenglases"):
+        for dmg_id in ("880059658047", "336858997585", "366636708868", "genitive_glases_noch_beschaedigung", "einwandfrei_beschaedigung_rueckseitenglases"):
             desc = next(c["description"] for c in cases if c["id"] == dmg_id)
             self.assertTrue(monitor._is_description_blocked(desc, "phones"), dmg_id)
+        for bastel_id in ("920032562655", "neg_bastelware_als_bastler"):
+            desc = next(c["description"] for c in cases if c["id"] == bastel_id)
+            self.assertTrue(monitor._is_description_blocked(desc, "laptops"), bastel_id)
+        clean_bastel_desc = next(c["description"] for c in cases if c["id"] == "pos_keine_bastelware_control")
+        self.assertFalse(monitor._is_description_blocked(clean_bastel_desc, "laptops"))
         for clean_id in (
             "pos_117485140188_gehaeuserand_no_abplatzungen",
             "pos_gehaeuserand_keine_kratzer_oder_abplatzungen",
@@ -82,3 +98,30 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             case = next(c for c in cases if c["id"] == ps5_pos_id)
             self.assertFalse(monitor._console_pro_details_conflict(case["description"], case.get("aspects") or []), ps5_pos_id)
 
+    def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
+        recorded_slices = []
+
+        @contextlib.contextmanager
+        def fake_slice(seconds, reserve=0):
+            recorded_slices.append((seconds, reserve))
+            yield mock.MagicMock(exhausted=lambda margin=0: True, html_task_started=False)
+
+        with mock.patch.object(monitor.MonitorPassBudget, "slice", side_effect=fake_slice), \
+             mock.patch.object(monitor, "fetch_ebay_ex", return_value=([], None)):
+            # 6 aliases x 2 formats = 12 tasks -> min(35, 10 + 12*3) = 35s
+            asyncio.run(monitor._fetch_normal_slice(
+                {"id": "ray_ban_meta_gen_2", "query": "Ray-Ban Meta Gen 2", "filters": {"category": "all", "listing_type": "all"}},
+                force=True,
+            ))
+            # 8 aliases x 1 format = 8 tasks -> min(35, 10 + 8*3) = 34s
+            asyncio.run(monitor._fetch_normal_slice(
+                {"id": "4080_pc_auc", "query": "4080 (pc, rechner, computer, desktop, gaming pc)", "filters": {"category": "computers", "listing_type": "auction"}},
+                force=True,
+            ))
+            # 2 aliases x 1 format = 2 tasks (< 5) -> 20s default
+            asyncio.run(monitor._fetch_normal_slice(
+                {"id": "iphone_17_pro_buy", "query": "iphone 17 pro", "filters": {"category": "phones", "listing_type": "buy_now"}},
+                force=True,
+            ))
+
+        self.assertEqual([(35, 30), (34, 30), (20, 30)], recorded_slices)

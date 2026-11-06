@@ -418,6 +418,7 @@ BAD_CONDITION_WORDS = (
     "psn servern ausgeschlossen", "von psn servern ausgeschlossen",
     "banned from psn servers", "nur ersatzteile", "ersatzteile reparatur",
     "als ersatzteile", "fuer ersatzteile",
+    "bastelware", "bastlerware", "bastlergeraet", "als bastler", "fuer bastler", "an bastler",
     "for parts", "parts only", "spares repair", "not working",
     "als ersatzteil", "ersatzteil defekt", "for repair", "needs repair",
     "solo per pezzi", "per parti di ricambio", "non funzionante",
@@ -6852,6 +6853,8 @@ def _phone_repair_label(description):
         rf"\b(?:habe|haben|hat|hatte|wurde|wurden)\b[^.!?]{{0,70}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})[^.!?]{{0,60}}\b{fitted_or_let}\b",
         rf"\b{past}\b[^.!?]{{0,40}}\b{replacement_panel}[^.!?]{{0,60}}\b(?:{fitted_or_let}|getauscht|ausgetauscht|gewechselt|ersetzt|erneuert)\b",
         rf"\b{replacement_panel}[^.!?]{{0,60}}\b(?:{fitted_or_let}|getauscht|ausgetauscht|gewechselt|ersetzt|erneuert)\b",
+        rf"\b(?:das|der)\s+{panel_phrase}\s+{past}\b[^.!?]{{0,50}}\b(?:getauscht|ausgetauscht|gewechselt|ersetzt|erneuert)\b",
+        rf"\bmit\s+(?:einem\s+)?nagelneu(?:em|en)\s+{panel_phrase}\b",
         rf"\b(?:hat|haben|hatte|hatten|bekam)\b[^.!?]{{0,90}}\bbekommen\b[^.!?]{{0,80}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})\b",
         rf"\b(?:hat|haben|hatte|hatten|bekam)\b[^.!?]{{0,80}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})[^.!?]{{0,50}}\bbekommen\b",
         rf"\bbekam(?:en)?\b[^.!?]{{0,80}}\b(?:{fresh}\s+{panel_phrase}|{replacement_panel})\b",
@@ -10428,7 +10431,11 @@ async def process_searches(bot, once=False):
 async def _fetch_normal_slice(search, force=False):
     """A slow query yields to other products without consuming their deadline."""
     started = time.monotonic()
-    with MonitorPassBudget.slice(20,reserve=30) as search_budget:
+    filters = search.get("filters") if isinstance(search, dict) else None
+    formats_count = 2 if isinstance(filters, dict) and filters.get("listing_type", "all") == "all" else 1
+    tasks_count = len(_search_query_variants(search) or [_intent_query(search)]) * formats_count if isinstance(filters, dict) else 1
+    slice_seconds = min(35, 10 + tasks_count * 3) if tasks_count >= 5 else 20
+    with MonitorPassBudget.slice(slice_seconds,reserve=30) as search_budget:
         rows, error = await asyncio.to_thread(fetch_ebay_ex,search,force=force)
     # HTML can decline its first task when the tail cannot fit HTML+reserve.
     # Keep that distinct from a real timed-out request. Do not impose a new
