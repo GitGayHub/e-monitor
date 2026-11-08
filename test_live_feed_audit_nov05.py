@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(80, len(cases))
+        self.assertEqual(90, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -128,6 +128,22 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             self.assertTrue(monitor._is_description_blocked(case["description"], "mice"), it_neg_id)
         it_pos = next(c for c in cases if c["id"] == "pos_mouse_italian_funziona_perfettamente_non_ha_difetti")
         self.assertFalse(monitor._is_description_blocked(it_pos["description"], "mice"))
+        for gap_neg_id in ("237153823130", "neg_phone_spalt_zwischen_backcover_und_gehaeuse"):
+            case = next(c for c in cases if c["id"] == gap_neg_id)
+            self.assertTrue(monitor._is_description_blocked(case["description"], "phones"), gap_neg_id)
+        for gap_pos_id in ("pos_237153442701_iphone17pm_same_seller_no_gap", "pos_phone_kein_spalt_zwischen_display_und_rahmen"):
+            case = next(c for c in cases if c["id"] == gap_pos_id)
+            self.assertFalse(monitor._is_description_blocked(case["description"], "phones"), gap_pos_id)
+        for px_neg_id in ("128166358435", "neg_phone_french_pixel_mort_sur_ecran"):
+            case = next(c for c in cases if c["id"] == px_neg_id)
+            self.assertTrue(monitor._is_description_blocked(case["description"], "phones"), px_neg_id)
+        px_pos = next(c for c in cases if c["id"] == "pos_phone_no_dead_pixels_aucun_pixel_mort")
+        self.assertFalse(monitor._is_description_blocked(px_pos["description"], "phones"))
+        for app_neg_id in ("198752283128", "198751852883"):
+            case = next(c for c in cases if c["id"] == app_neg_id)
+            self.assertTrue(monitor._is_description_blocked(case["description"], "headphones"), app_neg_id)
+        app_pos = next(c for c in cases if c["id"] == "pos_headphone_sony_app_verbindet_sich_problemlos")
+        self.assertFalse(monitor._is_description_blocked(app_pos["description"], "headphones"))
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []

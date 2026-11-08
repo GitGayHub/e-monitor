@@ -6980,6 +6980,21 @@ def _is_description_blocked(desc_html, category):
             return True
     if re.search(r"\bsim(?:\s*(?:karten?|cards?))?\b[^.!?]{0,80}\b(?:nicht(?:\s+mehr)?\s+(?:erkannt|gelesen)|(?:not|no longer)\s+(?:recognized|recognised|detected|working))\b", desc_norm) or re.search(r"\b(?:erkennt|erkennen)\s+(?:keine|keinen|nicht)\s+.{0,20}\bsim\b", desc_norm):
         return True
+    part_a = r"(?:screen|display|bildschirm|backcover|back\s*cover|glass|glas|rueckseite)"
+    part_b = r"(?:rahmen|gehaeuse|frame|housing)"
+    gap_pair = rf"(?:{part_a}\b[^.!?\n]{{0,25}}\b(?:und|and)\b[^.!?\n]{{0,25}}\b{part_b}|{part_b}\b[^.!?\n]{{0,25}}\b(?:und|and)\b[^.!?\n]{{0,25}}\b{part_a})"
+    gap_pat = rf"\b(?:(?P<g1>spalt|spalte|gap)\b[^.!?\n]{{0,40}}\b(?:zwischen|between)\b[^.!?\n]{{0,40}}\b{gap_pair}|\b(?:zwischen|between)\b[^.!?\n]{{0,40}}\b{gap_pair}\b[^.!?\n]{{0,40}}\b(?P<g2>spalt|spalte|gap))\b"
+    for m in re.finditer(gap_pat, desc_norm):
+        g_start = m.start("g1") if m.group("g1") else m.start("g2")
+        before = re.split(r"[.!?,;:\n]", desc_norm[:g_start])[-1][-35:]
+        if not re.search(r"\b(?:kein\w*|ohne|nicht|no|without)\b", before):
+            return True
+    for m in re.finditer(r"\b(?:pixels?\s+(?:color[eé]s?|morts?|d[eé]fectueux)|(?:dead|stuck)\s+pixels?)\b", desc_norm):
+        before = re.split(r"[.!?,;:\n]", desc_norm[:m.start()])[-1][-35:]
+        if not re.search(r"\b(?:kein\w*|ohne|nicht|no|without|not|zero|0|aucun\w*|sans|pas\s+de|ni)\b", before):
+            return True
+    if re.search(r"\b(?:verbinde[nt]\s+sich\b[^.!?\n]{0,60}\bnicht\s+mit\s+der\s+(?:[a-z0-9]+\s+)?app|(?:does\s+not|doesn['’]t|cannot|can['’]t)\s+(?:connect|pair)\s+(?:to|with)\s+the\s+(?:[a-z0-9]+\s+)?app)\b", desc_norm):
+        return True
 
     # Mclean-Surplus return-policy promise is hypothetical, not a device fault.
     desc_norm = re.sub(r"\bif the item is not working as described,\s*we will work with you on the issue,\s*please contact us to resolve[.!?]?", " ", desc_norm)
