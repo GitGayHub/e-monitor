@@ -7087,10 +7087,80 @@ def _is_details_blocked(details, search):
     if category == "consoles" and _console_details_blocked(details.get("description") or "", details.get("localizedAspects") or []):
         logger.info("Details blocked: console listing is standalone drive/cover/accessory or excludes console")
         return True
+    if category == "computers" and _pc_details_blocked(purpose_title, details.get("description") or "", details.get("localizedAspects") or []):
+        logger.info("Details blocked: computer listing lacks RAM or storage drive")
+        return True
     if category == "headphones":
         if re.search(r"\b(?:produktart|type)\s+(?:earmuffs?|ear\s+muffs?|gehoerschuetzer|gehoerschutz)\b", details_norm):
             logger.info("Details blocked: headphone listing is earmuffs/ear protectors")
             return True
+    return False
+
+
+def _pc_details_blocked(title, description, aspects):
+    title_norm = _normalize(title or "")
+    own = _normalize(_clean_description(description or ""))
+    combined = f"{title_norm} {own}".strip()
+    ram_names = ("arbeitsspeichergroesse", "arbeitsspeicher", "ram", "ram groesse", "memory", "ram size", "hauptspeicher")
+    storage_cap_names = (
+        "festplattenkapazitaet", "ssd festplattenkapazitaet", "ssd kapazitaet",
+        "speicherkapazitaet", "hard drive capacity", "ssd capacity", "datentraegerkapazitaet",
+    )
+    cap_re = re.compile(r"\b(?:(?:120|128|240|250|256|480|500|512|960|1000|1024|2000|2048|3000|4000|4096|8000)\s*gb|[1-9]\d?\s*tb)(?!\s*/)")
+    has_aspect_storage = False
+    aspect_says_no_storage = False
+    for aspect in aspects or []:
+        if not isinstance(aspect, dict):
+            continue
+        name = _normalize(aspect.get("name") or "")
+        value = _normalize(aspect.get("value") or "")
+        if not value:
+            continue
+        if name in ram_names and re.search(
+            r"\b(?:ohne|kein(?:e|en)?|none|no\s+ram|nicht\s+(?:enthalten|verbaut|inklusive|vorhanden))\b|(?<![.,\d])0\s*gb\b",
+            value,
+        ):
+            return True
+        if name in storage_cap_names:
+            if cap_re.search(value):
+                has_aspect_storage = True
+            elif re.search(r"\b(?:ohne|kein(?:e|en)?|none|nicht\s+(?:enthalten|verbaut|inklusive|vorhanden))\b|(?<![.,\d])0\s*gb\b", value):
+                aspect_says_no_storage = True
+    no_ram_re = re.compile(
+        r"\b(?:ohne|kein|keine|keinen|no|without)\s+(?:(?:verbaut\w*|installiert\w*|integriert\w*)\s+)?(?:ddr\s*[345]\s*)?(?:ram|arbeitsspeicher|hauptspeicher)\b"
+        r"(?!\s+(?:kuehler\w*|heatsink\w*|beleuchtung|rgb|led|oc|overclock\w*|fehler\w*|mangel|maengel|probleme?)\b)"
+        r"|\b(?:arbeitsspeicher|hauptspeicher|ram)\s*:\s*(?:(?:ohne|kein(?:e|en)?|none|nicht\s+(?:enthalten|verbaut|inklusive|vorhanden))\b|(?<![.,\d])0\s*gb\b)"
+        r"|\b(?:ddr\s*[345]\s*)?(?:ram|arbeitsspeicher|hauptspeicher)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?"
+        r"(?:nicht\s+(?:enthalten|verbaut|inklusive|vorhanden|dabei|im\s+lieferumfang|mitgeliefert)|not\s+included)\b"
+    )
+    if no_ram_re.search(title_norm) or no_ram_re.search(own):
+        return True
+    drive_mod = (
+        r"(?:(?:1x|2x|m\.?\s*2|nvme|pcie|pci\s+express|gen\s*[345]|4\.0|5\.0|3\.0|x4|sata\s*[23]?|tlc|qlc|"
+        r"crucial|samsung|wd|kingston|lexar|corsair|seagate|toshiba|kioxia|western\s+digital|interne?\w*|verbaute?\w*)\s+){0,7}"
+    )
+    drive_noun = r"(?:ssds?|nvmes?|hdds?|festplatten?|massenspeicher|datentraeger)"
+    installed_drive_re = re.compile(
+        rf"(?:{cap_re.pattern}\s+{drive_mod}{drive_noun}\b|\b{drive_noun}\s+(?:mit\s+)?{drive_mod}{cap_re.pattern})"
+    )
+    opt_guard_re = re.compile(r"\b(?:optional\w*|aufpreis|nachruest\w*|moeglich|bis\s+zu|up\s+to|max\.?|maximal|unterstuetzt|supports)\b")
+
+    def _has_installed_drive(text):
+        for m in installed_drive_re.finditer(text):
+            clause_prefix = re.split(r"[.!?\n;]", text[max(0, m.start() - 60):m.start()])[-1]
+            if not opt_guard_re.search(clause_prefix):
+                return True
+        return False
+
+    has_storage = has_aspect_storage or _has_installed_drive(title_norm) or _has_installed_drive(own)
+    missing_storage_re = re.compile(
+        r"\b(?:festplatte|massenspeicher|datentraeger|speicher|ssd)\s*:?\s*ohne(?:\s+(?:hdd|ssd|festplatte|datentraeger|massenspeicher|nvme))?\b"
+        r"|\b(?:ohne|kein|keine|keinen|no|without)\s+(?:ssd|hdd|festplatte|datentraeger|massenspeicher)\b"
+        r"|\b(?:ssd|festplatte|datentraeger|massenspeicher)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?"
+        r"(?:nicht\s+(?:enthalten|verbaut|inklusive|vorhanden|dabei|im\s+lieferumfang|mitgeliefert)|not\s+included)\b"
+    )
+    if (aspect_says_no_storage or missing_storage_re.search(combined)) and not has_storage:
+        return True
     return False
 
 
@@ -10435,7 +10505,7 @@ async def _fetch_normal_slice(search, force=False):
     filters = search.get("filters") if isinstance(search, dict) else None
     formats_count = 2 if isinstance(filters, dict) and filters.get("listing_type", "all") == "all" else 1
     tasks_count = len(_search_query_variants(search) or [_intent_query(search)]) * formats_count if isinstance(filters, dict) else 1
-    slice_seconds = min(35, 10 + tasks_count * 4) if tasks_count >= 3 else 20
+    slice_seconds = min(35, tasks_count * 8) if tasks_count >= 3 else 20
     with MonitorPassBudget.slice(slice_seconds,reserve=30) as search_budget:
         rows, error = await asyncio.to_thread(fetch_ebay_ex,search,force=force)
     # HTML can decline its first task when the tail cannot fit HTML+reserve.
