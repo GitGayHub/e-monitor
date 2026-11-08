@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(60, len(cases))
+        self.assertEqual(70, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -20,6 +20,7 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             "glasses": "179247",
             "headphones": "112529",
             "mice": "23160",
+            "monitors": "80053",
         }
         for case in cases:
             cat = case["category"]
@@ -106,6 +107,12 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         self.assertTrue(monitor._is_description_blocked(buegel_desc, "headphones"))
         clean_buegel_desc = next(c["description"] for c in cases if c["id"] == "pos_buegel_nicht_gebrochen_control")
         self.assertFalse(monitor._is_description_blocked(clean_buegel_desc, "headphones"))
+        for pc_neg_id in ("820297407765", "820289201652", "314609424430", "314313513318", "197189667857", "neg_pc_ohne_ssd_optional_aufpreis"):
+            case = next(c for c in cases if c["id"] == pc_neg_id)
+            self.assertTrue(monitor._pc_details_blocked(case["title"], case["description"], case.get("aspects") or []), pc_neg_id)
+        for pc_pos_id in ("pos_pc_1tb_nvme_ssd_ohne_hdd_with_32gb_ram", "pos_pc_ryzen_7500f_ohne_igpu_with_1tb_ssd"):
+            case = next(c for c in cases if c["id"] == pc_pos_id)
+            self.assertFalse(monitor._pc_details_blocked(case["title"], case["description"], case.get("aspects") or []), pc_pos_id)
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []
@@ -118,17 +125,17 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         with mock.patch.object(monitor.MonitorPassBudget, "slice", side_effect=fake_slice), \
              mock.patch.object(monitor, "fetch_ebay_ex", return_value=([], None)), \
              mock.patch.object(monitor.browse_access, "note_normal_outcome"):
-            # 6 aliases x 2 formats = 12 tasks -> min(35, 10 + 12*4) = 35s
+            # 6 aliases x 2 formats = 12 tasks -> min(35, 12*8) = 35s
             asyncio.run(monitor._fetch_normal_slice(
                 {"id": "ray_ban_meta_gen_2", "query": "Ray-Ban Meta Gen 2", "filters": {"category": "all", "listing_type": "all"}},
                 force=True,
             ))
-            # 8 aliases x 1 format = 8 tasks -> min(35, 10 + 8*4) = 35s
+            # 8 aliases x 1 format = 8 tasks -> min(35, 8*8) = 35s
             asyncio.run(monitor._fetch_normal_slice(
                 {"id": "4080_pc_auc", "query": "4080 (pc, rechner, computer, desktop, gaming pc)", "filters": {"category": "computers", "listing_type": "auction"}},
                 force=True,
             ))
-            # 4 aliases x 1 format = 4 tasks (>= 3) -> min(35, 10 + 4*4) = 26s
+            # 4 aliases x 1 format = 4 tasks (>= 3) -> min(35, 4*8) = 32s (fits all 4 tasks + reserve=8)
             asyncio.run(monitor._fetch_normal_slice(
                 {"id": "iphone_17_pro_buy", "query": "iphone 17 pro", "filters": {"category": "phones", "listing_type": "buy_now"}},
                 force=True,
@@ -139,4 +146,4 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
                 force=True,
             ))
 
-        self.assertEqual([(35, 30), (35, 30), (26, 30), (20, 30)], recorded_slices)
+        self.assertEqual([(35, 30), (35, 30), (32, 30), (20, 30)], recorded_slices)
