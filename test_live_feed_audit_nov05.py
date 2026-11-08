@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(70, len(cases))
+        self.assertEqual(80, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -113,6 +113,21 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         for pc_pos_id in ("pos_pc_1tb_nvme_ssd_ohne_hdd_with_32gb_ram", "pos_pc_ryzen_7500f_ohne_igpu_with_1tb_ssd"):
             case = next(c for c in cases if c["id"] == pc_pos_id)
             self.assertFalse(monitor._pc_details_blocked(case["title"], case["description"], case.get("aspects") or []), pc_pos_id)
+        for ref_neg_id in ("287601433129", "287614268217", "neg_iphone_heading_generalueberholtes_smartphone"):
+            case = next(c for c in cases if c["id"] == ref_neg_id)
+            self.assertTrue(monitor._phone_description_refurbished(case["description"]), ref_neg_id)
+        for ref_pos_id in ("pos_168834686569_s25_edge_used_clean", "pos_phone_heading_nicht_refurbished_control"):
+            case = next(c for c in cases if c["id"] == ref_pos_id)
+            self.assertFalse(monitor._phone_description_refurbished(case["description"]), ref_pos_id)
+        sony_pos = next(c for c in cases if c["id"] == "146970168537")
+        self.assertFalse(monitor._is_category_blocked_title(monitor._normalize(sony_pos["title"]), "headphones"))
+        sony_neg = next(c for c in cases if c["id"] == "neg_sony_ersatz_kopf_hoerer_kopfbuegel_over_ear")
+        self.assertTrue(monitor._is_category_blocked_title(monitor._normalize(sony_neg["title"]), "headphones"))
+        for it_neg_id in ("880046283886", "neg_mouse_plural_non_funzionano_tasti_laterali"):
+            case = next(c for c in cases if c["id"] == it_neg_id)
+            self.assertTrue(monitor._is_description_blocked(case["description"], "mice"), it_neg_id)
+        it_pos = next(c for c in cases if c["id"] == "pos_mouse_italian_funziona_perfettamente_non_ha_difetti")
+        self.assertFalse(monitor._is_description_blocked(it_pos["description"], "mice"))
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []

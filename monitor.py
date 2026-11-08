@@ -422,9 +422,9 @@ BAD_CONDITION_WORDS = (
     "dummy", "dummie", "als attrappe", "attrappe ohne", "aufsteller", "thekenaufsteller", "zu dekozwecken", "ohne funktion", "ohne elektronik",
     "for parts", "parts only", "spares repair", "not working",
     "als ersatzteil", "ersatzteil defekt", "for repair", "needs repair",
-    "solo per pezzi", "per parti di ricambio", "non funzionante",
-    "pour pieces", "pour pieces detachees", "ne fonctionne pas",
-    "para piezas", "no funciona", "piezas recambio",
+    "solo per pezzi", "per parti di ricambio", "non funzionante", "non funziona", "non funzionano",
+    "pour pieces", "pour pieces detachees", "ne fonctionne pas", "ne fonctionnent pas",
+    "para piezas", "no funciona", "no funcionan", "piezas recambio",
     "icloud lock", "icloud locked", "icloud bypass", "activation lock",
     "activationlock", "aktivierungssperre", "icloudsperre",
     # Broken / cracked screen
@@ -2177,13 +2177,15 @@ def _has_unnegated_refurbished(text):
 def _phone_description_refurbished(description):
     own = _normalize(_clean_description(description or ''))
     restored = r"(?:refurbished|generalueberholt|generaluberholt|generalueberarbeitet|neu\s+ueberarbeitet|wiederaufbereitet|renewed|reconditioned)"
-    own = re.sub(r"\b(?:nicht|nie|kein\w*|ohne|not|never|no|without)\s+"+restored+r"\b", " ", own)
+    own = re.sub(r"\b(?:nicht|nie|kein\w*|ohne|not|never|no|without)\s+"+restored+r"(?:es|e|er|en)?\b", " ", own)
     if re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:]?\s*)?"+restored+r"\b", own):
         return True
     # 336839721068: own purchase history, not generic shop advertising.
     # A dot in "28. Mai" must not hide the rest of that same sentence.
     own = re.sub(r"\b(\d{1,2})\.(?=\s+[a-z])", r"\1", own)
     phone = r"(?:geraet|handy|smartphone|iphone|phone|handset|device)"
+    if re.search(r"\b(?:iphone|galaxy|pixel|oneplus|nubia|red\s*magic|redmagic)\b[^.!?\n:]{0,60}:\s*"+restored+r"(?:(?:es|e|er|en)?\s+"+phone+r")?\b", own):
+        return True
     renewed_verb = r"(?:erneuert|ueberholt|ueberarbeitet|aufbereitet)"
     complete_renewed = re.sub(r"\b(?:nicht|nie|kein\w*|not|never|no)\s+komplett\s+" + renewed_verb + r"\b", " ", own)
     if re.search(
@@ -3353,7 +3355,9 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
         # A declared health percentage describes the laptop's own battery.
         # Replacement batteries, compatibility and actual defects stay blocked.
         title_norm = re.sub(r"\b(?:akku|battery)(?:\s*(?:zustand|health|kapazitaet))?\s*(?:ca\.?|approx\.?|about|:)?\s*\d{1,3}\s*%", " ", title_norm)
-    if category == "headphones" and re.search(r"\b(?:kopfhoerer|headphones|headset)\b.*\bkopfbuegel\b.*\b(?:over[- ]ear|on[- ]ear|bluetooth|faltbar|anc)\b", title_norm):
+    if (category == "headphones"
+            and not re.search(r"\b(?:ersatz\w*|replacement|spare|reparatur\w*|fuer|for|fits|kompatibel|compatible|nur|only)\b", title_norm)
+            and re.search(r"\b(?:kopf\s*hoerer|headphones|(?:[a-z]+)?headset)\b.*\bkopfbuegel\b.*\b(?:over[- ]ear|on[- ]ear|bluetooth|faltbar|anc)\b", title_norm)):
         title_norm = re.sub(r"\bkopfbuegel\b", " ", title_norm)
     if category == "mice" and re.search(r"\b(?:mouse|maus)\b", title_norm) and not re.search(r"\b(?:fuer|for|fits|replacement|spare|ersatz\w*|repair|reparatur\w*|set|only|nur)\b", title_norm):
         # Own complete mouse 318767580494: 5-Button is a feature count.
