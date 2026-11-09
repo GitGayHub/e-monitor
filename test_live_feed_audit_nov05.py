@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(96, len(cases))
+        self.assertEqual(104, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",

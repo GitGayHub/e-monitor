@@ -1199,7 +1199,7 @@ def _search_query_variants(search):
     if re.search(r"\b(?:donkey|donky)\s+kong\s+bananza\b", q_norm):
         return ['donkey kong bananza', 'donky kong bananza']
     if re.search(r"\b(?:zelda\s+)?ocarina\s+of\s+time\b", q_norm):
-        return ['zelda ocarina of time 3d', 'zelda ocarina of time']
+        return ['zelda ocarina of time switch', 'zelda ocarina of time']
     if re.search(r"\b(?:zelda\s+)?breath\s+of\s+the\s+wild\b", q_norm):
         return ['zelda breath of the wild switch', 'zelda breath of the wild']
     if re.search(r"\b(?:zelda\s+)?tears\s+of\s+the\s+kingdom\b", q_norm):
@@ -1597,11 +1597,11 @@ def _query_matches_title(title_norm, query):
             return False
     if "ocarina" in query_norm:
         no_parens = re.sub(r"\([^)]*\)|\([^)]*$", " ", title_norm)
-        if "ocarina" not in no_parens or re.search(r"\bmajora(?:'?s|\s+s)?\s+mask\b|\blink(?:'?s|\s+s)?\s+awakening\b|\ba\s+link\s+between\s+worlds\b|\btri\s*force\s+heroes\b", no_parens):
+        if "ocarina" not in no_parens or re.search(r"\bmajora(?:'?s|\s+s)?\s+mask\b|\blink(?:'?s|\s+s)?\s+awakening\b|\ba\s+link\s+between\s+worlds\b|\btri\s*force\s+heroes\b", no_parens) or re.search(r"\b(?:3d|3ds|2ds|nintendo\s*ds|nds|dsi|nintendo\s*64|n64|game\s*cube|gamecube|ngc|gcn|wii(?:\s*u)?|wiiu|game\s*boy|gameboy|gbc|gba|snes|nes)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b", title_norm):
             return False
     if "breath" in query_norm and "wild" in query_norm:
         no_parens = re.sub(r"\([^)]*\)|\([^)]*$", " ", title_norm)
-        if "breath" not in no_parens or re.search(r"\bzeit\s+der\s+verheerung\b|\bage\s+of\s+calamity\b", no_parens):
+        if "breath" not in no_parens or re.search(r"\bzeit\s+der\s+verheerung\b|\bage\s+of\s+calamity\b", no_parens) or re.search(r"\bwii\s*u\b|\bwiiu\b|\bwup[\s-]+(?:p|[0-9a-z]{3,6})\b", title_norm):
             return False
     if "tears" in query_norm and "kingdom" in query_norm:
         no_parens = re.sub(r"\([^)]*\)|\([^)]*$", " ", title_norm)
@@ -1630,8 +1630,8 @@ def _has_query_word(title_norm, word, query_norm=""):
         return _has_term(title_norm, "redmagic") or "red magic" in title_norm
     if word == "donkey" and "bananza" in title_norm:
         return _has_term(title_norm, "donkey") or _has_term(title_norm, "donky")
-    if word in ("3d", "remake") and "ocarina" in query_norm:
-        return bool(re.search(r"\b(?:3d|3ds|2ds|remake|switch)\b", title_norm))
+    if word in ("3d", "3ds", "remake") and "ocarina" in query_norm:
+        return bool(re.search(r"\b(?:3d|3ds|2ds|remake)\b", title_norm))
     if word == "mario" and "kart" in query_norm:
         return bool(re.search(r"\bmario(?:\s*kart)?\b", title_norm))
     if word == "kart" and "mario" in query_norm:
@@ -3112,7 +3112,7 @@ def _video_game_non_game_offer(title_norm):
         return True
     if re.search(
         r"\b(?:dlc|dk[\s-]*insel|smaragdrausch|isla\s+de\s+dk|caza\s+de\s+esmeraldas|season\s+pass|erweiterungspass\w*|zusatzinhalt\w*"
-        r"|download\s*code\w*|digital\s+code\w*|digital\s+download\w*|code\s+in\s+a\s+box)\b",
+        r"|download\s*code\w*|digital\s+code\w*|digital\s+download\w*|code\s+in\s+a\s+box|spiele\w*\s+digital|digitale?\s+spiele\w*|digital\s+games?|vorinstalliert\w*|account\s+mit\s+spiele\w*|3ds|2ds|nintendo\s*ds|nds|dsi|nintendo\s*64|n64|game\s*cube|gamecube|ngc|gcn|wii\s*u|wiiu|nintendo\s+wii|wii|game\s*boy|gameboy|gbc|gba|super\s+nintendo|snes|nes|famicom|playstation|ps[1-5]|psp|ps\s*vita|xbox|ocarina\s+of\s+time\s+3d)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s*(?:[|+&/\u2013\u2014]|\b(?:mit|inkl\w*|und|with|plus)\b)?\s*(?:[2-9]\d*\s*(?:x\s*)?(?:spiele\w*|games?)|spiele\s*(?:paket\w*|bundle\w*|set\w*))\b",
         t,
     ):
         return True
@@ -7294,6 +7294,14 @@ def _video_game_details_blocked(description, aspects):
         value = _normalize(aspect.get("value") or "")
         if name in aspect_types and value and _video_game_non_game_offer(value):
             return True
+        if name in ("plattform", "platform", "system", "konsolen plattform") and re.search(r"\b(?:3ds|2ds|nintendo\s*ds|nds|dsi|nintendo\s*64|n64|game\s*cube|gamecube|ngc|gcn|wii\s*u|wiiu|nintendo\s+wii|\bwii\b|super\s+nintendo|snes|nes|famicom|game\s*boy|gameboy|gbc|gba|playstation|ps[1-5]|psp|ps\s*vita|xbox)\b", value) and not re.search(r"\bswitch\b", value):
+            return True
+        if (name in ("herstellernummer", "mpn", "modellnummer", "model number") and re.search(r"\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b", value)) or (name in ("spielname", "game name") and re.search(r"\bocarina\s+of\s+time\s+3d\b|\b(?:3ds|2ds|nintendo\s*64|n64|wii\s*u|wiiu|game\s*cube|gamecube)\b", value)):
+            return True
+        if name in ("speicherkapazitaet", "storage capacity", "festplattenkapazitaet", "hard drive capacity") and re.search(r"\b(?:32|64|128|256|512|1000|1024)\s*gb\b|\b[12]\s*tb\b", value):
+            return True
+        if name in ("inklusive ladegeraet", "charger included") and value in ("ja", "yes", "true"):
+            return True
     own = _normalize(_clean_description(description or ""))
     if not own:
         return False
@@ -7301,10 +7309,12 @@ def _video_game_details_blocked(description, aspects):
     return bool(
         re.search(
             rf"\b(?:nur|only|lediglich|ausschliesslich)\s+{nur_mod}"
-            r"(?:huelle\w*|leerhuelle\w*|verpackung\w*|ovp|originalverpackung\w*|box|case|steelbook\w*|schuber\w*|pappschuber\w*|anleitung\w*|manual|code|download\s*code)\b"
-            r"|\b(?:leerhuelle\w*|ersatzhuelle\w*|leere\s+huelle\w*|huelle\s+leer|case\s+only|box\s+only|empty\s+case|empty\s+box|steelbook\s+only|nur\s+steelbook|sammlerstueck\s+ohne\s+wert)\b"
+            r"(?:huelle\w*|leerhuelle\w*|verpackung\w*|ovp|originalverpackung\w*|karton\w*|leerkarton\w*|box|case|steelbook\w*|schuber\w*|pappschuber\w*|anleitung\w*|handbuch\w*|manual|code|download\s*code\w*)\b"
+            r"|\b(?:leerhuelle\w*|ersatzhuelle\w*|leere\s+huelle\w*|huelle\s+leer|leerbox\w*|leerkarton\w*|leerverpackung\w*|case\s+only|box\s+only|empty\s+case|empty\s+box|steelbook\s+only|nur\s+steelbook|sammlerstueck\s+ohne\s+wert|ohne\s+inhalt)\b"
             r"|\b(?:ohne|without|no|kein(?:e|en)?)\s+(?:(?:das|the|ein|a|wert\s+oder)\s+)*(?:spiel|spiele|game|videospiel|spielmodul|modul|cartridge|card|karte|software|disc|disk|cd)\b"
-            r"|\b(?:spiel|game|videospiel|spielmodul|modul|cartridge|software)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang|mitgeliefert)|not\s+included)\b",
+            r"|\b(?:spiel|game|videospiel|spielmodul|modul|cartridge|software)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang|mitgeliefert)|not\s+included)\b"
+            r"|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s+(?:mit|inkl\w*|und|plus)\s+[1-9]\d*\s*(?:x\s*)?(?:spiele\w*|games?)\b"
+            r"|\b(?:[1-9]\d*\s+spiele\w*\s+digital|spiele\w*\s+digital\s+vorinstalliert|digitale?\s+spiele\w*\s+auf\s+(?:der\s+)?konsole|download\s*code\w*|digital\s+code\w*|code\s+in\s+a\s+box|ocarina\s+of\s+time\s+3d)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b",
             own,
         )
     )
