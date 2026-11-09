@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(110, len(cases))
+        self.assertEqual(116, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -157,10 +157,18 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             case = next(c for c in cases if c["id"] == bundle_id)
             self.assertTrue(monitor._video_game_non_game_offer(monitor._normalize(case["title"])), bundle_id)
             self.assertTrue(monitor._video_game_details_blocked(case["description"], case.get("aspects") or []), bundle_id)
-        for game_pos_id in ("940070438253", "128155699540"):
+        for game_pos_id in ("940070438253", "128155699540", "860082772004"):
             case = next(c for c in cases if c["id"] == game_pos_id)
             self.assertFalse(monitor._video_game_non_game_offer(monitor._normalize(case["title"])), game_pos_id)
             self.assertFalse(monitor._video_game_details_blocked(case["description"], case.get("aspects") or []), game_pos_id)
+        for neg215_id in ("237162625648", "407335200004"):
+            case = next(c for c in cases if c["id"] == neg215_id)
+            self.assertTrue(monitor._is_description_blocked(case["description"], case["category"]), neg215_id)
+        for pos215_id in ("407333817491", "pos_ecke_halt_ohne_beschaedigung"):
+            case = next(c for c in cases if c["id"] == pos215_id)
+            self.assertFalse(monitor._is_description_blocked(case["description"], case["category"]), pos215_id)
+        kl_case = next(c for c in cases if c["id"] == "336850577615")
+        self.assertTrue(monitor._description_refuses_ebay_checkout(kl_case["description"]))
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []

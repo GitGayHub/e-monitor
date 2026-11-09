@@ -1722,7 +1722,7 @@ def _host_chain_for_search(search):
 
 def _has_term(title_norm, term):
     term_norm = _normalize(term)
-    if " " in term_norm or not re.fullmatch(r"[a-z0-9]+", term_norm):
+    if (" " in term_norm and term_norm != "ohne funktion") or not re.fullmatch(r"[a-z0-9 ]+", term_norm):
         return term_norm in title_norm
     return re.search(rf"\b{re.escape(term_norm)}\b", title_norm) is not None
 
@@ -2186,7 +2186,7 @@ def _description_refuses_ebay_checkout(description):
     """206671293930/206670415084/407332909885/307260914871: seller cancels eBay BIN or demands wire/prepayment only."""
     norm = _normalize(_clean_description(description or ""))
     if re.search(
-        r"\b(?:sofort\s*kauf(?:en)?|direkt\s*kauf(?:en)?|kauf\s+ueber\s+(?:das\s+)?(?:ebay\s*)?system)\s+wird\s+(?:(?:sofort|umgehend)\s+)?(?:zurueck\s*erstattet|erstattet|storniert|abgebrochen)\b",
+        r"\b(?:sofort\s*kauf(?:en)?|direkt\s*kauf(?:en)?|kauf\s+ueber\s+(?:das\s+)?(?:ebay\s*)?system)\s+wird\s+(?:(?:sofort|umgehend)\s+)?(?:zurueck\s*erstattet|erstattet|storniert|abgebrochen)\b|\b(?:versand|kauf|verkauf|zahlung|bezahlung|abwicklung)\s+(?:ist\s+)?(?:nur|ausschliesslich)\s+ueber\s+(?:ebay\s+)?kleinanzeigen?\b",
         norm,
     ):
         return True
@@ -6861,8 +6861,8 @@ def _has_damage_in_description(desc_norm):
         if (not re.search(r"\b(?:if|when|falls|wenn)\b", clause)
                 and re.search(r"\b(?:mouse|maus|headset|headphones|kopfhoerer)\s+(?:is|are|ist|sind)\s+(?:broken|defective|defekt|kaputt)\b", clause)):
             return True
-    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
-    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|broken|snapped)\b", re.IGNORECASE)
+    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|(?:(?:untere[rn]?|obere[rn]?|linke[rn]?|rechte[rn]?|vordere[rn]?|hintere[rn]?)\s+)+ecken?|(?:an|auf)\s+(?:der|den)\s+ecken?|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
+    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|abgebrochen\w*|broken|snapped)\b", re.IGNORECASE)
     neg_re = re.compile(
         r"\b(?:nicht|nichts|nie|niemals|kein\w*|ohne|no|without|free|(?:kratzer|fehler|maengel|mangel|schaden|beschaedigungs|makel|dellen|riss|bruch)?frei\w*|not|unbeschaedig\w*|undamaged)\b",
         re.IGNORECASE,
@@ -6870,7 +6870,7 @@ def _has_damage_in_description(desc_norm):
 
     for m_part in part_pattern.finditer(cleaned):
         part_start, part_end = m_part.span()
-        after_window = re.split(r"[.!?;]", cleaned[part_end : part_end + 70], maxsplit=1)[0]
+        after_window = re.split(r"[.!?;]", cleaned[part_end : part_end + 80], maxsplit=1)[0]
         for m_defect in defect_pattern.finditer(after_window):
             between = after_window[: m_defect.start()]
             if not neg_re.search(between):
