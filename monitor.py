@@ -881,9 +881,10 @@ def _matches_samsung_odyssey_g6_500hz(text_norm):
 def _rayban_meta_gen2_accessory_or_part(t):
     if re.search(
         r"\b(?:dummy|dummie|mockup|attrappe|leerverpackung\w*|leerkarton\w*|empty\s+box|box\s+only)\b"
-        r"|\bohne\s+(?:funktion|elektronik|kamera|technik|brille|sonnenbrille|smart\s*glasses|glasses)\b"
-        r"|\bwithout\s+(?:electronics|camera|glasses|smart\s*glasses|sunglasses)\b"
-        r"|\b(?:keine|no)\s+(?:elektronik|electronics|brille|sonnenbrille|smart\s*glasses|glasses)\b",
+        r"|\bohne\s+(?:funktion|elektronik|kamera|technik|brille|sonnenbrille|smart\s*glasses|glasses|(?:(?:die|original\w*)\s+)*(?:glaeser|brillenglaeser|sonnenglaeser|linsen))\b"
+        r"|\bwithout\s+(?:electronics|camera|glasses|smart\s*glasses|sunglasses|(?:(?:the|original)\s+)*lenses)\b"
+        r"|\b(?:keine|no)\s+(?:elektronik|electronics|brille|sonnenbrille|smart\s*glasses|glasses)\b"
+        r"|\b(?:glaeser|brillenglaeser|sonnenglaeser|linsen|lenses)\s+(?:ist\s+|sind\s+|is\s+|are\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang)|not\s+included)\b",
         t,
     ):
         return True
@@ -1004,10 +1005,10 @@ def _rayban_meta_gen2_details_blocked(raw_description, aspects=None):
     if re.search(
         r"\b(?:nur|only|lediglich|ausschliesslich)\s+" + nur_mod + part_nouns + r"\b(?!\s+(?:getragen|benutzt|genutzt|bekommen|eingesetzt|verbaut)\b)"
         r"|\b" + part_nouns + r"\s+(?:only|einzeln|allein)\b"
-        r"|\bohne\s+(?:brille|sonnenbrille|glasses|smart\s*glasses|elektronik|kamera|technik)\b"
-        r"|\bwithout\s+(?:glasses|smart\s*glasses|sunglasses|electronics|camera)\b"
+        r"|\bohne\s+(?:brille|sonnenbrille|glasses|smart\s*glasses|elektronik|kamera|technik|(?:(?:die|original\w*)\s+)*(?:glaeser|brillenglaeser|sonnenglaeser|linsen))\b"
+        r"|\bwithout\s+(?:glasses|smart\s*glasses|sunglasses|electronics|camera|(?:(?:the|original)\s+)*lenses)\b"
         r"|\b(?:keine|no)\s+(?:elektronik|electronics|brille|sonnenbrille|smart\s*glasses|glasses)\b"
-        r"|\b(?:brille|sonnenbrille|glasses|smart\s*glasses|elektronik|electronics)\s+(?:ist\s+|sind\s+|is\s+|are\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang)|not\s+included)\b"
+        r"|\b(?:brille|sonnenbrille|glasses|smart\s*glasses|elektronik|electronics|glaeser|brillenglaeser|sonnenglaeser|linsen|lenses)\s+(?:ist\s+|sind\s+|is\s+|are\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang)|not\s+included)\b"
         r"|\b(?:gestell\w*|rahmen\w*|fassung\w*|brillengestell\w*|brillenrahmen\w*|brillenfassung\w*|frame|frames)\s+ohne\s+(?:elektronik|kamera|technik|glaeser|linsen)\b",
         own,
     ):
@@ -1194,6 +1195,17 @@ def _search_query_variants(search):
     raw=search.get('query','') if isinstance(search,dict) else str(search)
     if (_search_intent(search) or {}).get('kind') == 'rayban_meta_gen2':
         return ['ray ban meta gen 2', 'rayban meta gen2', 'ray ban meta zweite generation', 'ray ban meta RW4012', 'ray ban meta RW4013', 'ray ban meta RW4014']
+    q_norm = _normalize(raw)
+    if re.search(r"\b(?:donkey|donky)\s+kong\s+bananza\b", q_norm):
+        return ['donkey kong bananza', 'donky kong bananza']
+    if re.search(r"\b(?:zelda\s+)?ocarina\s+of\s+time\b", q_norm):
+        return ['zelda ocarina of time 3d', 'zelda ocarina of time']
+    if re.search(r"\b(?:zelda\s+)?breath\s+of\s+the\s+wild\b", q_norm):
+        return ['zelda breath of the wild switch', 'zelda breath of the wild']
+    if re.search(r"\b(?:zelda\s+)?tears\s+of\s+the\s+kingdom\b", q_norm):
+        return ['zelda tears of the kingdom', 'tears of the kingdom switch']
+    if re.search(r"\bmario\s*kart\s+world\b", q_norm):
+        return ['mario kart world switch 2', 'mario kart world']
     pc_aliases = gpu_pc_aliases(raw)
     if pc_aliases:
         return pc_aliases
@@ -1578,6 +1590,23 @@ def _query_matches_title(title_norm, query):
     # (compat list / chipset) is not a match for "Redmagic 11 Pro".
     if "redmagic" in query_norm or "red magic" in query_norm:
         return _matches_redmagic_query(title_norm, query_norm)
+    if "mario" in query_norm and "kart" in query_norm and "world" in query_norm:
+        if not re.search(r"\bmario\s*kart(?:\s+tm)?\s+world\b", title_norm):
+            return False
+        if re.search(r"\bmario\s*kart\s+world\s+tour\b|\bsuper\s+mario\s+kart\s+world\s+land\b", title_norm):
+            return False
+    if "ocarina" in query_norm:
+        no_parens = re.sub(r"\([^)]*\)|\([^)]*$", " ", title_norm)
+        if "ocarina" not in no_parens or re.search(r"\bmajora(?:'?s|\s+s)?\s+mask\b|\blink(?:'?s|\s+s)?\s+awakening\b|\ba\s+link\s+between\s+worlds\b|\btri\s*force\s+heroes\b", no_parens):
+            return False
+    if "breath" in query_norm and "wild" in query_norm:
+        no_parens = re.sub(r"\([^)]*\)|\([^)]*$", " ", title_norm)
+        if "breath" not in no_parens or re.search(r"\bzeit\s+der\s+verheerung\b|\bage\s+of\s+calamity\b", no_parens):
+            return False
+    if "tears" in query_norm and "kingdom" in query_norm:
+        no_parens = re.sub(r"\([^)]*\)|\([^)]*$", " ", title_norm)
+        if "tears" not in no_parens or re.search(r"\bchronik\s+der\s+versiegelung\b", no_parens):
+            return False
     required_words, alternative_groups = _query_match_plan(query)
     if required_words and not all(_has_query_word(title_norm, w, query_norm) for w in required_words):
         return False
@@ -1599,6 +1628,14 @@ def _has_query_word(title_norm, word, query_norm=""):
             return True
     if word == "redmagic":
         return _has_term(title_norm, "redmagic") or "red magic" in title_norm
+    if word == "donkey" and "bananza" in title_norm:
+        return _has_term(title_norm, "donkey") or _has_term(title_norm, "donky")
+    if word in ("3d", "remake") and "ocarina" in query_norm:
+        return bool(re.search(r"\b(?:3d|3ds|2ds|remake|switch)\b", title_norm))
+    if word == "mario" and "kart" in query_norm:
+        return bool(re.search(r"\bmario(?:\s*kart)?\b", title_norm))
+    if word == "kart" and "mario" in query_norm:
+        return bool(re.search(r"\b(?:mario\s*)?kart\b", title_norm))
     # DualSense Gamepad is the pad, not a miss for query «dualsense controller».
     if word == "controller" and _has_term(title_norm, "gamepad"):
         return True
@@ -3061,8 +3098,51 @@ def _console_drive_or_cover_only(title_norm):
     return False
 
 
+def _video_game_non_game_offer(title_norm):
+    t = re.sub(r"\bamiibo\s*(?:[-\s]+)?(?:kompatibel|compatible|2017)\b", " ", title_norm or "")
+    nur_mod = r"(?:(?:die|das|der|den|the|a|an|ein|eine|einen|1x|original\w*|leere?\w*)\s+){0,3}"
+    if re.search(
+        rf"\b(?:nur|only|lediglich|ausschliesslich)\s+{nur_mod}"
+        r"(?:huelle\w*|leerhuelle\w*|verpackung\w*|ovp|originalverpackung\w*|karton\w*|leerkarton\w*|box|case|steelbook\w*|schuber\w*|pappschuber\w*|cover|anleitung\w*|handbuch\w*|manual|code|download\s*code\w*)\b"
+        r"|\b(?:leerhuelle\w*|ersatzhuelle\w*|leere\s+huelle\w*|huelle\s+leer|leerbox\w*|leerkarton\w*|leerverpackung\w*|verpackung\s+karton|deko\s*box\w*|dekobox\w*|case\s+only|box\s+only|empty\s+case|empty\s+box|steelbook\s+only|nur\s+steelbook|pappschuber\w*|schuber\w*|sammlerstueck\s+ohne\s+wert|ohne\s+inhalt)\b"
+        r"|\b(?:ohne|without|no|kein(?:e|en)?)\s+(?:(?:das|the|ein|a|wert\s+oder)\s+)*(?:spiel|spiele|game|videospiel|spielmodul|modul|cartridge|card|karte|software|disc|disk|cd)\b"
+        r"|\b(?:spiel|game|videospiel|spielmodul|modul|cartridge|software)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang|mitgeliefert)|not\s+included)\b",
+        t,
+    ):
+        return True
+    if re.search(
+        r"\b(?:dlc|dk[\s-]*insel|smaragdrausch|isla\s+de\s+dk|caza\s+de\s+esmeraldas|season\s+pass|erweiterungspass\w*|zusatzinhalt\w*"
+        r"|download\s*code\w*|digital\s+code\w*|digital\s+download\w*|code\s+in\s+a\s+box)\b",
+        t,
+    ):
+        return True
+    return bool(
+        re.search(
+            r"\b(?:amiibo\w*|figur|figuren|figurine\w*|actionfigur\w*|sammelfigur\w*|statue\w*|pluesch\w*|plusch\w*|plush\w*|kuscheltier\w*|stofftier\w*"
+            r"|pins?|anstecker\w*|anstecknadel\w*|badges?|patches?|aufnaeher\w*|schluesselanhaenger\w*|schluesselband\w*|gepaeckanhaenger\w*|kofferanhaenger\w*|anhaenger\w*|luggage\s+tags?|keychains?|keyrings?|lanyards?|stickers?|aufkleber\w*|decals?"
+            r"|magnet\w*|kuehlschrankmagnet\w*|gashapon\w*|muenze\w*|muenz\w*|coins?|medaille\w*|pen\s+topper\w*|stylo\w*|kugelschreiber\w*|bueroklammer\w*"
+            r"|posters?|3d\s+bild\w*|wandbild\w*|kunstdruck\w*|leinwand\w*|gerahmt\w*|lentikular\w*|canvas|banners?|flagge\w*|fahne\w*|blechschild\w*|wandschild\w*"
+            r"|aufsteller\w*|pappaufsteller\w*|werbeaufsteller\w*|standees?|flyers?|prospekt\w*|werbemittel\w*|merchandise|merch"
+            r"|handtuch\w*|strandtuch\w*|badetuch\w*|towels?|bandanas?|halstuch\w*|tagesdecke\w*|kuscheldecke\w*|blankets?|kissen|pillows?"
+            r"|t[\s-]*shirts?|shirts?|hoodies?|pullover|kappe\w*|muetze\w*|socken"
+            r"|tasche\w*|tragetasche\w*|schutztasche\w*|aufbewahrungstasche\w*|etui\w*|schutzhuelle\w*|silikonhuelle\w*|schutzfolie\w*|panzerglas\w*"
+            r"|screen\s+protectors?|carrying\s+cases?|travel\s+cases?|slim\s+cases?|protective\s+cases?|hardcases?|card\s+holders?|kartenhalter\w*"
+            r"|controllers?|kontroller\w*|gamepads?|joy[\s-]*cons?|ladestation\w*|charging\s+(?:station|dock)|playstand\w*|staender|wandhalterung\w*|halterung\w*|faceplates?|schale\w*|skins?"
+            r"|konsole|console|spielkonsole|spiele\s*auswahl|spieleauswahl|spiele\s+wahl|zum\s+auswaehlen|nach\s+wahl|spielesammlung\s+ausw\w*|multirabatt|wootbox"
+            r"|spielkarten\w*|sammelkarte\w*|trading\s+cards?|pokerkarte\w*|nfc|brettspiel\w*|board\s+games?|puzzles?"
+            r"|das\s+offizielle\s+buch|offizielles?\s+buch|buch|buecher|books?|artbooks?|loesungsbuch\w*|spieleberater\w*|strategy\s+guides?|guidebooks?"
+            r"|spielanleitung\w*|anleitungen|gebundene\s+ausgabe|taschenbuch|sonderausgabe\w*|katalog\w*|club\s+nintendo|heft|zeitschrift\w*|magazin\w*|famitsu|notizbuch\w*|soundtracks?|vinyls?"
+            r"|fan[\s-]*set|vorbesteller\s*bonus|pre[\s-]*order\s*bonus|heilige\s+steine"
+            r"|becher|tasse\w*|mugs?|geschirr\w*|luftballon\w*|ballons?|tortendeko\w*|bananenbaum\w*|obstkorb\w*)\b",
+            t,
+        )
+    )
+
+
 def _is_accessory_product(title_norm, category):
     if category == "consoles" and _console_drive_or_cover_only(title_norm):
+        return True
+    if category == "video_games" and _video_game_non_game_offer(title_norm):
         return True
     if _decorative_parts_offer(title_norm, category):
         return True
@@ -3351,6 +3431,8 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     # Kopfbügel followed by the form factor describes a complete over-ear headset,
     # as independently confirmed on 366021140413. Damage checks use the original title.
     title_norm = re.sub(r"\b(?:kein|keine|keinen|ohne|no|without)\s+(?:box|ovp|verpackung|karton|originalverpackung)\b", " ", title_norm)
+    if category == "video_games":
+        title_norm = re.sub(r"\b(?:kein|keine|keinen|ohne|no|without)\s+(?:huelle\w*|case|cover|schachtel|anleitung\w*|handbuch\w*)\b", " ", title_norm)
     if category == "laptops" and re.search(r"\brtx\s*\d{4}\b", title_norm) and not re.match(r"^(?:akku|battery)\b", title_norm):
         # A declared health percentage describes the laptop's own battery.
         # Replacement batteries, compatibility and actual defects stay blocked.
@@ -3418,6 +3500,19 @@ def _is_category_blocked_title(title_norm, category, query_norm=None):
     return False
 
 
+def _is_video_game_search_query(query_norm):
+    q = query_norm or ""
+    return bool(
+        re.search(
+            r"\b(?:(?:donkey|donky)\s+kong\s+bananza|bananza|zelda\s+ocarina\s+of\s+time|ocarina\s+of\s+time|"
+            r"zelda\s+breath\s+of\s+the\s+wild|breath\s+of\s+the\s+wild|"
+            r"zelda\s+tears\s+of\s+the\s+kingdom|tears\s+of\s+the\s+kingdom|"
+            r"mario\s*kart\s+world)\b",
+            q,
+        )
+    )
+
+
 def _effective_category(category, query_norm):
     if _is_controller_pad_query(query_norm):
         return "all"
@@ -3432,6 +3527,8 @@ def _effective_category(category, query_norm):
         return "headphones"
     if any(w in query_norm for w in ("quest", "pico", "vive", "slimevr", "slime tracker", "full body tracking")):
         return "vr_headsets"
+    if _is_video_game_search_query(query_norm):
+        return "video_games"
     if _is_console_search_query(query_norm):
         return "consoles"
     if _is_laptop_search_query(query_norm):
@@ -3667,7 +3764,7 @@ def _build_url_with_host(host, search, sub="www"):
         elif cond == "used":
             params["LH_ItemCondition"] = "3000"
         elif cond == "any":
-            params["LH_ItemCondition"] = "1500|1000|2010|2020|2030|3000"
+            params["LH_ItemCondition"] = "1500|1000|2010|2020|2030|2750|3000|4000|5000|6000"
     lt = filters.get("listing_type", "all")
     if lt in ("buy_now", "buy_now_offer"):
         params["LH_BIN"] = "1"
@@ -4544,7 +4641,7 @@ def build_ebay_url(search):
         elif cond == "used":
             params["LH_ItemCondition"] = "3000"
         elif cond == "any":
-            params["LH_ItemCondition"] = "1500|1000|2010|2020|2030|3000"
+            params["LH_ItemCondition"] = "1500|1000|2010|2020|2030|2750|3000|4000|5000|6000"
     lt = filters.get("listing_type", "all")
     if lt in ("buy_now", "buy_now_offer"):
         params["LH_BIN"] = "1"
@@ -4922,7 +5019,7 @@ def parse_ebay_results(html):
                     txt_clean = txt_lower.replace("·", "").strip()
                     txt_norm = _normalize(txt_clean)
                     is_condition = False
-                    for cond_word in ("gebraucht", "neu", "new", "used", "refurbished", "generaluberholt", "pre owned"):
+                    for cond_word in ("gebraucht", "neu", "new", "used", "refurbished", "generaluberholt", "pre owned", "neuwertig", "sehr gut", "gut", "akzeptabel", "like new", "very good", "good", "acceptable"):
                         if cond_word in txt_norm:
                             is_condition = True
                             break
@@ -6932,6 +7029,8 @@ def _is_description_blocked(desc_html, category):
     desc_norm = mouse_offer.strip_previous_fault(desc_norm)
     if category == "phones" and _phone_repair_label(clean_desc):
         return True
+    if category == "video_games" and _video_game_details_blocked(clean_desc, []):
+        return True
     # 198304841229: clear lines describe the PC case's minimalist design,
     # not screen artefacts. Remove only this exact positive design clause.
     desc_norm = re.sub(r"\bminimalistisches\s+design\s*[-–—:]\s*hochwertige\s+materialien,?\s*klare\s+linien\b", " ", desc_norm)
@@ -7106,6 +7205,9 @@ def _is_details_blocked(details, search):
     if category == "consoles" and _console_details_blocked(details.get("description") or "", details.get("localizedAspects") or []):
         logger.info("Details blocked: console listing is standalone drive/cover/accessory or excludes console")
         return True
+    if category == "video_games" and _video_game_details_blocked(details.get("description") or "", details.get("localizedAspects") or []):
+        logger.info("Details blocked: video game listing is empty case, DLC, figure or excludes game")
+        return True
     if category == "computers" and _pc_details_blocked(purpose_title, details.get("description") or "", details.get("localizedAspects") or []):
         logger.info("Details blocked: computer listing lacks RAM or storage drive")
         return True
@@ -7181,6 +7283,31 @@ def _pc_details_blocked(title, description, aspects):
     if (aspect_says_no_storage or missing_storage_re.search(combined)) and not has_storage:
         return True
     return False
+
+
+def _video_game_details_blocked(description, aspects):
+    aspect_types = ("produktart", "produkttyp", "product type", "type", "art", "artikelart")
+    for aspect in aspects or []:
+        if not isinstance(aspect, dict):
+            continue
+        name = _normalize(aspect.get("name") or "")
+        value = _normalize(aspect.get("value") or "")
+        if name in aspect_types and value and _video_game_non_game_offer(value):
+            return True
+    own = _normalize(_clean_description(description or ""))
+    if not own:
+        return False
+    nur_mod = r"(?:(?:die|das|der|den|the|a|an|ein|eine|einen|1x|original\w*|leere?\w*)\s+){0,3}"
+    return bool(
+        re.search(
+            rf"\b(?:nur|only|lediglich|ausschliesslich)\s+{nur_mod}"
+            r"(?:huelle\w*|leerhuelle\w*|verpackung\w*|ovp|originalverpackung\w*|box|case|steelbook\w*|schuber\w*|pappschuber\w*|anleitung\w*|manual|code|download\s*code)\b"
+            r"|\b(?:leerhuelle\w*|ersatzhuelle\w*|leere\s+huelle\w*|huelle\s+leer|case\s+only|box\s+only|empty\s+case|empty\s+box|steelbook\s+only|nur\s+steelbook|sammlerstueck\s+ohne\s+wert)\b"
+            r"|\b(?:ohne|without|no|kein(?:e|en)?)\s+(?:(?:das|the|ein|a|wert\s+oder)\s+)*(?:spiel|spiele|game|videospiel|spielmodul|modul|cartridge|card|karte|software|disc|disk|cd)\b"
+            r"|\b(?:spiel|game|videospiel|spielmodul|modul|cartridge|software)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang|mitgeliefert)|not\s+included)\b",
+            own,
+        )
+    )
 
 
 def _console_details_blocked(description, aspects):
@@ -7891,7 +8018,7 @@ def filter_results(items, search, config_obj, skip_seen=False, is_statistics=Fal
             continue
         wanted_condition = filters.get("condition", "any")
         condition_text = _normalize(item.get("condition", ""))
-        conditions = {"used": ("used", "gebraucht"), "new": ("new", "neu"),
+        conditions = {"used": ("used", "gebraucht", "neuwertig", "sehr gut", "gut", "akzeptabel", "like new", "very good", "good", "acceptable"), "new": ("new", "neu"),
                       "refurbished": ("refurbished", "erneuert", "generaluberholt", "generalueberholt")}
         if wanted_condition != "any" and not any(_has_term(condition_text, word) for word in conditions.get(wanted_condition, (_normalize(wanted_condition),))):
             continue
