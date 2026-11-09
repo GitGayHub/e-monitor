@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(104, len(cases))
+        self.assertEqual(110, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -153,6 +153,14 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
         self.assertTrue(monitor._rayban_meta_gen2_details_blocked(rb_desc_only["description"], rb_desc_only.get("aspects") or []))
         rb_pos = next(c for c in cases if c["id"] == "pos_rayban_glaeser_ohne_sehstaerke")
         self.assertFalse(monitor._rayban_meta_gen2_details_blocked(rb_pos["description"], rb_pos.get("aspects") or []))
+        for bundle_id in ("357484647399", "376498257654", "306479551007", "146823873503"):
+            case = next(c for c in cases if c["id"] == bundle_id)
+            self.assertTrue(monitor._video_game_non_game_offer(monitor._normalize(case["title"])), bundle_id)
+            self.assertTrue(monitor._video_game_details_blocked(case["description"], case.get("aspects") or []), bundle_id)
+        for game_pos_id in ("940070438253", "128155699540"):
+            case = next(c for c in cases if c["id"] == game_pos_id)
+            self.assertFalse(monitor._video_game_non_game_offer(monitor._normalize(case["title"])), game_pos_id)
+            self.assertFalse(monitor._video_game_details_blocked(case["description"], case.get("aspects") or []), game_pos_id)
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []
