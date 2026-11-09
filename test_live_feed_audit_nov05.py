@@ -12,10 +12,11 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(90, len(cases))
+        self.assertEqual(96, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
+            "video_games": "139973",
             "laptops": "177",
             "glasses": "179247",
             "headphones": "112529",
@@ -144,6 +145,14 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             self.assertTrue(monitor._is_description_blocked(case["description"], "headphones"), app_neg_id)
         app_pos = next(c for c in cases if c["id"] == "pos_headphone_sony_app_verbindet_sich_problemlos")
         self.assertFalse(monitor._is_description_blocked(app_pos["description"], "headphones"))
+        rb_117 = next(c for c in cases if c["id"] == "117510764552")
+        self.assertTrue(monitor._rayban_meta_gen2_accessory_or_part(monitor._normalize(rb_117["title"])))
+        self.assertTrue(monitor._rayban_meta_gen2_details_blocked(rb_117["description"], rb_117.get("aspects") or []))
+        rb_desc_only = next(c for c in cases if c["id"] == "neg_rayban_desc_ohne_glaeser_only")
+        self.assertFalse(monitor._rayban_meta_gen2_accessory_or_part(monitor._normalize(rb_desc_only["title"])))
+        self.assertTrue(monitor._rayban_meta_gen2_details_blocked(rb_desc_only["description"], rb_desc_only.get("aspects") or []))
+        rb_pos = next(c for c in cases if c["id"] == "pos_rayban_glaeser_ohne_sehstaerke")
+        self.assertFalse(monitor._rayban_meta_gen2_details_blocked(rb_pos["description"], rb_pos.get("aspects") or []))
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []
