@@ -352,5 +352,44 @@ class MedianReportsTest(unittest.TestCase):
         self.assertEqual(1,status['confirmed']);self.assertEqual(2,status['held'])
         self.assertNotIn('entries',status);self.assertIsNotNone(status['lastConfirmedAt'])
 
+    def test_title_filter_excludes_reclassified_bundles_and_non_switch_cartridges_from_snapshots_and_reports(self):
+        import config_manager
+        with patch.object(config_manager,'CONFIG_PATH',str(Path(self.temp.name)/'config.json')):
+            import monitor
+        cfg=dict(searches=[
+            dict(id='mario_kart_world_buy',query='mario kart world',display_name='Mario Kart World',enabled=True,filters=dict(category='video_games')),
+            dict(id='zelda_ocarina_of_time_buy',query='zelda ocarina of time',display_name='Zelda: Ocarina of Time',enabled=True,filters=dict(category='video_games')),
+        ],settings=dict(median_products=['mario_kart_world_buy'],median_interval_days=7))
+        m.record_verified('mario_kart_world_buy','sig_mk',[
+            dict(self.row('357484647399',568.65),condition='Neu',title='Nintendo Switch 2 + Mario Kart World'),
+            dict(self.row('376498257654',553.14),condition='Neu',title='Nintendo Switch 2 + Mario Kart World | Neu & OVP | '),
+            dict(self.row('306479551007',554.08),condition='Neu',title='Nintendo Switch 2 Mario Kart World Bundle'),
+            dict(self.row('146823873503',547.54),condition='Neu',title='Nintendo Switch 2 Mario Kart World-Set, Deutsche Version'),
+            dict(self.row('940073369699',557.69),condition='Gebraucht',title='Nintendo Switch 2 | 4 Spiele | Mario Kart World | Super Mario Party Jamboree TV'),
+            dict(self.row('880089781102',69.99),condition='Neu',title='Mario Kart World (Nintendo Switch 2) Rennspiel'),
+            dict(self.row('940070438253',69.99),condition='Neu',title='Mario Kart World (Nintendo Switch 2) Rennspiel'),
+            dict(self.row('376476583189',98.44),condition='Neu',title='Nintendo Mario Kart World-Spiel (Nintendo Switch 2 Edition) 10016189'),
+            dict(self.row('147670534771',210.0),condition='Neu',title='mario kart world switch 2'),
+        ],self.now)
+        m.record_verified('zelda_ocarina_of_time_buy','sig_oot',[
+            dict(self.row('800620518744',41.48),condition='Gebraucht',title='Nintendo 3DS The Legend of Zelda: Ocarina of Time 3D Nintendo Selects PAL'),
+            dict(self.row('227521273923',31.79),condition='Gebraucht',title='Nintendo Zelda: Ocarina of Time 3D 3DS PAL USK 6 Handbuch'),
+            dict(self.row('377632301027',99.95),condition='Neu',title='Zelda: Ocarina of Time (Foil Cover) - Nintendo Switch 2 - 8/16 - NEU & OVP'),
+            dict(self.row('860126068947',93.99),condition='Neu',title='Nintendo The Legend of Zelda Ocarina of Time für Switch Limited Edition Foil NEU'),
+            dict(self.row('legacy_empty',85.0),condition='Gebraucht',title=''),
+        ],self.now)
+        with patch.object(monitor,'config',Mock(raw=cfg)):
+            snaps={s['title']:s for s in m.app_snapshots(cfg,lambda s:'sig_mk' if 'mario' in s['id'] else 'sig_oot',self.now,title_filter=monitor._median_observation_title_ok)}
+            self.assertEqual(4,snaps['Mario Kart World']['count'])
+            self.assertIsNone(snaps['Mario Kart World']['median'])
+            self.assertEqual({'880089781102','940070438253','376476583189','147670534771'},
+                             {x['itemId'] for x in snaps['Mario Kart World']['conditionViews']['all7']['items']})
+            self.assertEqual(3,snaps['Zelda: Ocarina of Time']['count'])
+            self.assertEqual({'377632301027','860126068947','legacy_empty'},
+                             {x['itemId'] for x in snaps['Zelda: Ocarina of Time']['conditionViews']['all7']['items']})
+            sent=asyncio.run(m.send_due(self.bot,'test-chat',cfg,lambda s:'sig_mk',self.store,self.now,title_filter=monitor._median_observation_title_ok))
+            self.assertEqual(4,sent['count'])
+            self.assertIsNone(sent['median'])
+
 
 if __name__=='__main__':unittest.main()
