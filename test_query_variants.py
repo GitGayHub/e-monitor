@@ -73,6 +73,7 @@ class QueryVariantsTests(unittest.TestCase):
         self.assertEqual(phone_aliases('iPhone 17 Pro Max'),phone_aliases('iPhone 17 Pro-Max'))
         self.assertEqual(3,len(phone_aliases('asus vivobook 14x oled')))
         self.assertEqual(['ps5 pro','playstation 5 pro'],stored_aliases('(ps5 pro, playstation 5 pro)'))
+        self.assertEqual(['zelda ocarina of time switch','zelda ocarina of time'],monitor._search_query_variants({'query':'zelda ocarina of time'}))
     def test_api_fetch_uses_all_aliases_and_merges_duplicates(self):
         requests=[]
         def fetch(search,force=False):
