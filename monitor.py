@@ -10088,6 +10088,15 @@ def _history_price_sides(candidate, search):
     return sides
 
 
+def _median_observation_title_ok(search_id, title):
+    if not (title or "").strip():
+        return True
+    search = next((s for s in config.raw.get("searches", []) if s.get("id") == search_id), None)
+    if not search or (search.get("filters") or {}).get("category") != "video_games":
+        return True
+    return not _video_game_non_game_offer(_normalize(title))
+
+
 def _live_validation_tier(row, search, ready, fact, now):
     """Order live descriptions; never changes a notification rule.
 
@@ -12222,7 +12231,7 @@ def _publish_runtime(state, error=None):
     if state != 'running':
         try:
             from mobile.median_reports import app_snapshots
-            median_prices = app_snapshots(config.raw, _history_filter_signature, logic_version=_read_logic_version_timestamp())
+            median_prices = app_snapshots(config.raw, _history_filter_signature, logic_version=_read_logic_version_timestamp(), title_filter=_median_observation_title_ok)
         except Exception as error_median:
             logger.error('App median unavailable: %s', type(error_median).__name__)
             median_error = 'Не удалось обновить медиану; показаны сохранённые данные'
@@ -12309,7 +12318,7 @@ async def run_once():
         if not _is_statistics_mode(config):
             try:
                 from mobile import median_reports
-                result = await median_reports.send_due(bot, TELEGRAM_CHAT_ID, config.raw, _history_filter_signature)
+                result = await median_reports.send_due(bot, TELEGRAM_CHAT_ID, config.raw, _history_filter_signature, title_filter=_median_observation_title_ok)
                 if result:
                     logger.info('Median report confirmed: message=%s listings=%s', result['messageId'], result['count'])
             except Exception as report_error:

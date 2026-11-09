@@ -157,21 +157,24 @@ def robust_median(values):
                 count=len(kept), excluded=len(values) - len(kept))
 
 
-def _trend_rows(signatures, now):
+def _trend_rows(signatures, now, title_filter=None):
     init_db()
     rows = []
     with price_history._DB_LOCK, price_history._connect() as db:
         for search_id, signature in signatures.items():
-            rows.extend(db.execute('''SELECT item_id, observed_at, total, condition_group, title FROM median_observations
+            fetched = db.execute('''SELECT item_id, observed_at, total, condition_group, title FROM median_observations
                 WHERE search_id=? AND signature=? AND history_version=? AND median_version=?
                   AND observed_at>=? AND observed_at<=?''',
-                (search_id, signature, price_history.HISTORY_VERSION, MEDIAN_VERSION, now-60*DAY, now)).fetchall())
+                (search_id, signature, price_history.HISTORY_VERSION, MEDIAN_VERSION, now-60*DAY, now)).fetchall()
+            if title_filter is not None:
+                fetched = [row for row in fetched if not (row['title'] or '').strip() or title_filter(search_id, row['title'])]
+            rows.extend(fetched)
     return sorted(rows, key=lambda row: row['observed_at'])
 
 
-def trend(signatures, now=None, condition=None, window_days=7, include_items=False, _rows=None):
+def trend(signatures, now=None, condition=None, window_days=7, include_items=False, _rows=None, title_filter=None):
     now = time.time() if now is None else now
-    rows = _trend_rows(signatures, now) if _rows is None else _rows
+    rows = _trend_rows(signatures, now, title_filter=title_filter) if _rows is None else _rows
     def window(end, with_items=False):
         # The same listing in several aliases/formats and 200 repeated sweeps
         # still gets one vote, using its most recent verified quote in the window.
@@ -251,12 +254,12 @@ def _compact_points(points):
     return reduced
 
 
-def app_snapshots(config, signature_for, now=None, logic_version=None):
+def app_snapshots(config, signature_for, now=None, logic_version=None, title_filter=None):
     """The APK consumes the exact same deduplicated/MAD-filtered data as Telegram."""
     now = time.time() if now is None else now
     result = []
     for group in groups(config, signature_for, all_products=True):
-        rows = _trend_rows(group['signatures'], now)
+        rows = _trend_rows(group['signatures'], now, title_filter=title_filter)
         result.append(dict(searchIds=list(group['signatures']), title=group['title'],
             settingsRevision=config.get('mobile_settings_revision'), logicVersion=logic_version,
             historyVersion=price_history.HISTORY_VERSION,
@@ -406,7 +409,7 @@ def chart(title, data):
     return buffer
 
 
-async def send_due(bot, chat_id, config, signature_for, store=None, now=None):
+async def send_due(bot, chat_id, config, signature_for, store=None, now=None, title_filter=None):
     """At most one report per pass; never adds eBay traffic or delays a fresh alert."""
     now=time.time() if now is None else now
     subscriptions=groups(config,signature_for)
@@ -420,7 +423,7 @@ async def send_due(bot, chat_id, config, signature_for, store=None, now=None):
         previous=ledger['entries'].get(key,{})
         if now < previous.get('notBefore',0) or (previous and now-previous.get('at',0) < group['interval']*DAY):
             continue
-        data=trend(group['signatures'],now)
+        data=trend(group['signatures'],now,title_filter=title_filter)
         text=caption(group['title'],data,group['interval'])
         photo=chart(group['title'],data) if data['median'] is not None else None
         # CAS claim is durable before any Telegram request. A crashed/ambiguous
