@@ -6861,8 +6861,17 @@ def _has_damage_in_description(desc_norm):
         if (not re.search(r"\b(?:if|when|falls|wenn)\b", clause)
                 and re.search(r"\b(?:mouse|maus|headset|headphones|kopfhoerer)\s+(?:is|are|ist|sind)\s+(?:broken|defective|defekt|kaputt)\b", clause)):
             return True
-    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|(?:(?:untere[rn]?|obere[rn]?|linke[rn]?|rechte[rn]?|vordere[rn]?|hintere[rn]?)\s+)+ecken?|(?:an|auf)\s+(?:der|den)\s+ecken?|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcup)\b", re.IGNORECASE)
-    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|abgebrochen\w*|broken|snapped)\b", re.IGNORECASE)
+    repair_damage_re = re.compile(
+        r"\b(?:(?:can\s+be\s+)?(?:repaired|fixed)\s+(?:easily\s+)?with\s+(?:a\s+(?:bit|piece)\s+of\s+)?(?:tape|glue|superglue)"
+        r"|mit\s+(?:etwas\s+)?(?:klebeband|tesafilm|sekundenkleber|kleber)\s+(?:repariert\w*|geklebt\w*|befestigt\w*|fixiert\w*)"
+        r"|(?:slightly|minor(?:ly)?|lightly|somewhat)\s+damaged\s+(?:but|and)\s+(?:this\s+is\s+|that\s+is\s+|it\s+is\s+)?reflected\s+in\s+(?:the\s+)?price)\b"
+    )
+    for m_rep in repair_damage_re.finditer(cleaned):
+        before_rep = re.split(r"[.!?,;:\n]", cleaned[max(0, m_rep.start() - 40) : m_rep.start()])[-1]
+        if not re.search(r"\b(?:no|not|never|without|kein\w*|nicht|nie|niemals|ohne|if|when|falls|wenn)\b", before_rep):
+            return True
+    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|(?:(?:untere[rn]?|obere[rn]?|linke[rn]?|rechte[rn]?|vordere[rn]?|hintere[rn]?)\s+)+ecken?|(?:an|auf)\s+(?:der|den)\s+ecken?|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcups?|earhooks?|ear\s*hooks?|ohrmuscheln?|ohrbuegel)\b", re.IGNORECASE)
+    defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|defekt(?:e[rnms]?)?|abgebrochen\w*|broken|snapped)\b", re.IGNORECASE)
     neg_re = re.compile(
         r"\b(?:nicht|nichts|nie|niemals|kein\w*|ohne|no|without|free|(?:kratzer|fehler|maengel|mangel|schaden|beschaedigungs|makel|dellen|riss|bruch)?frei\w*|not|unbeschaedig\w*|undamaged)\b",
         re.IGNORECASE,

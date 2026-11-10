@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(128, len(cases))
+        self.assertEqual(134, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -183,6 +183,12 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             case = next(c for c in cases if c["id"] == vg216_id)
             self.assertTrue(monitor._video_game_non_game_offer(monitor._normalize(case["title"])), vg216_id)
             self.assertTrue(monitor._video_game_details_blocked(case["description"], case.get("aspects") or []), vg216_id)
+        for neg217_id in ("377606114372", "960171651627", "127729371223"):
+            case = next(c for c in cases if c["id"] == neg217_id)
+            self.assertTrue(monitor._is_description_blocked(case["description"], case["category"]), neg217_id)
+        for pos217_id in ("860119053980", "377622118110", "128146320345"):
+            case = next(c for c in cases if c["id"] == pos217_id)
+            self.assertFalse(monitor._is_description_blocked(case["description"], case["category"]), pos217_id)
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []
