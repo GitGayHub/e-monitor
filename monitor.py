@@ -7103,6 +7103,8 @@ def _is_description_blocked(desc_html, category):
             return True
     if re.search(r"\b(?:verbinde[nt]\s+sich\b[^.!?\n]{0,60}\bnicht\s+mit\s+der\s+(?:[a-z0-9]+\s+)?app|(?:does\s+not|doesn['’]t|cannot|can['’]t)\s+(?:connect|pair)\s+(?:to|with)\s+the\s+(?:[a-z0-9]+\s+)?app)\b", desc_norm):
         return True
+    if re.search(r"\b(?:funktionalitaet\s+(?:wurde\s+)?nicht\s+(?:bestaetigt|ueberprueft|geprueft)|(?<!kabelgebundener\s)(?<!kabelgebundene\s)(?:aktueller\s+)?betrieb\s+(?:ist\s+|wurde\s+)?(?:ungetestet|nicht\s+(?:bestaetigt|ueberprueft|geprueft|getestet))|(?<!kabelgebundene\s)(?:teststatus|funktionalitaet|betrieb)\s*:\s*ungetestet|(?:kopfhoerer|geraet|artikel|konsole|handy|smartphone|maus|monitor|laptop)\s+(?:sind|ist|werden|wird)\s+(?:als\s+)?(?:ungetestet|nicht\s+getestet))\b", desc_norm):
+        return True
 
     # Mclean-Surplus return-policy promise is hypothetical, not a device fault.
     desc_norm = re.sub(r"\bif the item is not working as described,\s*we will work with you on the issue,\s*please contact us to resolve[.!?]?", " ", desc_norm)
