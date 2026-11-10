@@ -2223,10 +2223,10 @@ def _phone_description_refurbished(description):
     phone = r"(?:geraet|handy|smartphone|iphone|phone|handset|device)"
     if re.search(r"\b(?:iphone|galaxy|pixel|oneplus|nubia|red\s*magic|redmagic)\b[^.!?\n:]{0,60}:\s*"+restored+r"(?:(?:es|e|er|en)?\s+"+phone+r")?\b", own):
         return True
-    renewed_verb = r"(?:erneuert|ueberholt|ueberarbeitet|aufbereitet)"
-    complete_renewed = re.sub(r"\b(?:nicht|nie|kein\w*|not|never|no)\s+komplett\s+" + renewed_verb + r"\b", " ", own)
+    renewed_verb, renewed_adv = r"(?:erneuert|ueberholt|ueberarbeitet|aufbereitet)", r"(?:komplett|vollstaendig|professionell|100\s*%)"
+    complete_renewed = re.sub(rf"\b(?:nicht|nie|kein\w*|not|never|no)\s+{renewed_adv}\s+{renewed_verb}\b", " ", own)
     if re.search(
-        rf"\b(?:es|(?:das|dieses|mein)\s+{phone})\s+(?:ist|wurde)\s+komplett\s+{renewed_verb}(?:\s+worden)?\b|\bkomplett\s+{renewed_verb}(?:es|e|er|en)?\s+{phone}\b",
+        rf"\b(?:es|(?:das|dieses|mein)\s+{phone}|(?:unsere|alle)\s+(?:produkte|geraete|handys|smartphones))\s+(?:ist|wurde|sind|wurden)\s+(?:alle\s+)?{renewed_adv}\s+{renewed_verb}(?:\s+worden)?\b|\b(?:{renewed_adv}\s+{renewed_verb}(?:es|e|er|en)?|gebraucht(?:es|e|er|en)\s+und\s+aufbereitet(?:es|e|er|en))\s+{phone}\b|\bprofessionell\s+aufbereitet\b",
         complete_renewed,
     ):
         return True
@@ -6870,7 +6870,7 @@ def _has_damage_in_description(desc_norm):
         before_rep = re.split(r"[.!?,;:\n]", cleaned[max(0, m_rep.start() - 40) : m_rep.start()])[-1]
         if not re.search(r"\b(?:no|not|never|without|kein\w*|nicht|nie|niemals|ohne|if|when|falls|wenn)\b", before_rep):
             return True
-    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|(?:(?:untere[rn]?|obere[rn]?|linke[rn]?|rechte[rn]?|vordere[rn]?|hintere[rn]?)\s+)+ecken?|(?:an|auf)\s+(?:der|den)\s+ecken?|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcups?|earhooks?|ear\s*hooks?|ohrmuscheln?|ohrbuegel)\b", re.IGNORECASE)
+    part_pattern = re.compile(rf"\b(?:{_DAMAGE_PART_RE}|(?:(?:untere[rn]?|obere[rn]?|linke[rn]?|rechte[rn]?|vordere[rn]?|hintere[rn]?)\s+)+(?:ecken?|rand|raendern?)|(?:an|auf|am)\s+(?:der|den|dem)\s+(?:ecken?|rand|raendern?)|gehaeuserand\w*|gehaeuseecke\w*|gehaeuserahmen\w*|rahmenrand\w*|rahmenecke\w*|displayrand\w*|displayecke\w*|(?:kamera|seiten|lautstaerke|power|action)tasten?|halterung|scharnier|gelenk|kopfbuegel|buegel|kopfband|hinge|headband|earcups?|earhooks?|ear\s*hooks?|ohrmuscheln?|ohrbuegel)\b", re.IGNORECASE)
     defect_pattern = re.compile(rf"\b(?:{_DAMAGE_DEFECT_RE}|defekt(?:e[rnms]?)?|abgebrochen\w*|broken|snapped)\b", re.IGNORECASE)
     neg_re = re.compile(
         r"\b(?:nicht|nichts|nie|niemals|kein\w*|ohne|no|without|free|(?:kratzer|fehler|maengel|mangel|schaden|beschaedigungs|makel|dellen|riss|bruch)?frei\w*|not|unbeschaedig\w*|undamaged)\b",
