@@ -2215,7 +2215,7 @@ def _phone_description_refurbished(description):
     own = _normalize(_clean_description(description or ''))
     restored = r"(?:refurbished|generalueberholt|generaluberholt|generalueberarbeitet|neu\s+ueberarbeitet|wiederaufbereitet|renewed|reconditioned)"
     own = re.sub(r"\b(?:nicht|nie|kein\w*|ohne|not|never|no|without)\s+"+restored+r"(?:es|e|er|en)?\b", " ", own)
-    if re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:]?\s*)?"+restored+r"\b", own):
+    if re.search(r"\b(?:zustand|artikelzustand|condition)\s*[:\-]?\s*(?:(?:hervorragend|sehr\s+gut|gut|excellent|very\s+good|good)\s*[-:(]?\s*)?"+restored+r"\b", own):
         return True
     # 336839721068: own purchase history, not generic shop advertising.
     # A dot in "28. Mai" must not hide the rest of that same sentence.
@@ -2231,7 +2231,7 @@ def _phone_description_refurbished(description):
     ):
         return True
     subject = r"(?:(?:gekauft|erworben)\s+wurde\s+(?:es|(?:das|dieses)\s+"+phone+r")|(?:ich|wir)\s+(?:habe[n]?|hatte[n]?)\s+(?:es|(?:das|dieses|mein)\s+"+phone+r")|(?:i|we)\s+(?:bought|purchased)\s+(?:it|this(?:\s+phone)?|the\s+"+phone+r"))"
-    return bool(re.search(r"\b"+subject+r"\b[^.!?\n]{0,100}\b"+restored+r"\b",own))
+    return bool(re.search(r"\b"+subject+r"\b[^.!?\n]{0,100}\b"+restored+r"\b|\b(?:es|(?:das|dieses|mein)\s+"+phone+r")\s+wurde\s+als\s+"+restored+r"\b|\b(?:professionell\s+)?(?:geprueft|tested)\s+(?:und|&|and)\s+"+restored+r"\b|\b"+restored+r"\s+premium\s+(?:apple\s+|samsung\s+|google\s+)?(?:iphone|galaxy|pixel|smartphone|handy)\b",own))
 
 
 def _phone_packaging_only(text):
@@ -2386,7 +2386,7 @@ def _phone_own_model_claim(before, after):
     brand = r'(?:(?:apple|samsung|google|galaxy)\s+)*'
     sale = (r'\b(?:(?:(?:ich|wir)\s+)?(?:verkaufe[n]?|biete[n]?)(?:\s+ich)?|'
             r'(?:i(?:\s+am)?|we)\s+(?:selling|sell|offer)|zum\s+verkauf\s+steht|angeboten\s+wird|verkauft\s+wird|'
-            r'(?:das|dieses|mein|the|this|my)\s+(?:angebotene\s+)?(?:smartphone|telefon|handy|geraet|phone|device|handset)\s+(?:ist|is))\s+')
+            r'(?:das|dieses|mein|the|this|my)\s+(?:angebotene\s+)?(?:smartphone|telefon|handy|geraet|phone|device|handset)\s+(?:ist|is)|tauchen\s+sie\s+(?:ein\s+)?in\s+die\s+welt\s+[^.!?;]{0,60}?\bmit\s+dem)\s+')
     clause = re.search(r'[^.!?;]*$', before).group()
     if re.search(r'\b(?:beispiel|example|angenommen|hypothetisch|falls|wenn|suppose|if)\b', clause):
         return False
@@ -3112,7 +3112,7 @@ def _video_game_non_game_offer(title_norm):
         return True
     if re.search(
         r"\b(?:dlc|dk[\s-]*insel|smaragdrausch|isla\s+de\s+dk|caza\s+de\s+esmeraldas|season\s+pass|erweiterungspass\w*|zusatzinhalt\w*"
-        r"|download\s*code\w*|digital\s+code\w*|digital\s+download\w*|code\s+in\s+a\s+box|spiele\w*\s+digital|digitale?\s+spiele\w*|digital\s+games?|vorinstalliert\w*|account\s+mit\s+spiele\w*|3ds|2ds|nintendo\s*ds|nds|dsi|nintendo\s*64|n64|game\s*cube|gamecube|ngc|gcn|wii\s*u|wiiu|nintendo\s+wii|wii|game\s*boy|gameboy|gbc|gba|super\s+nintendo|snes|nes|famicom|playstation|ps[1-5]|psp|ps\s*vita|xbox|ocarina\s+of\s+time\s+3d)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s*(?:[|+&/\u2013\u2014]|\b(?:mit|inkl\w*|und|with|plus)\b)?\s*(?:[2-9]\d*\s*(?:x\s*)?(?:spiele\w*|games?)|spiele\s*(?:paket\w*|bundle\w*|set\w*))\b|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s*(?:[+&]|\b(?:mit|inkl\w*|with|plus)\b)\s*(?:(?:the\s+legend\s+of\s+)?zelda|mario\s*kart\s+world|(?:donkey|donky)\s+kong\s+bananza|breath\s+of\s+the\s+wild|tears\s+of\s+the\s+kingdom|ocarina\s+of\s+time)\b|\b(?:(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?[\s-]+(?:bundle\w*|set|konsolen[\s-]*(?:bundle\w*|set))|(?:mario\s*kart\s+world|(?:donkey|donky)\s+kong\s+bananza|breath\s+of\s+the\s+wild|tears\s+of\s+the\s+kingdom|ocarina\s+of\s+time)[\s-]+(?:bundle\w*|set|konsolen[\s-]*(?:bundle\w*|set)|edition\s+konsole))\b",
+        r"|download\s*code\w*|digital\s+code\w*|digital\s+download\w*|code\s+in\s+a\s+box|spiele\w*\s+digital|digitale?\s+spiele\w*|digital\s+games?|vorinstalliert\w*|account\s+mit\s+spiele\w*|3ds|2ds|nintendo\s*ds|nds|dsi|nintendo\s*64|n64|game\s*cube|gamecube|ngc|gcn|wii\s*u|wiiu|nintendo\s+wii|wii|game\s*boy|gameboy|gbc|gba|super\s+nintendo|snes|nes|famicom|playstation|ps[1-5]|psp|ps\s*vita|xbox|ocarina\s+of\s+time\s+3d)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?(?:[\s-]+\d+\s*(?:gb|tb))?\s*(?:[|+&/\u2013\u2014]|\b(?:mit|inkl\w*|und|with|plus)\b\.?)?\s*(?:[2-9]\d*\s*(?:x\s*)?(?:spiele\w*|games?)|spiele\s*(?:paket\w*|bundle\w*|set\w*))\b|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?(?:[\s-]+\d+\s*(?:gb|tb))?\s*(?:[+&]|\b(?:mit|inkl\w*|with|plus)\b\.?)\s*(?:(?:the\s+legend\s+of\s+)?zelda|mario\s*kart\s+world|(?:donkey|donky)\s+kong\s+bananza|breath\s+of\s+the\s+wild|tears\s+of\s+the\s+kingdom|ocarina\s+of\s+time)\b|\b(?:(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?[\s-]+(?:bundle\w*|set|konsolen[\s-]*(?:bundle\w*|set))|(?:mario\s*kart\s+world|(?:donkey|donky)\s+kong\s+bananza|breath\s+of\s+the\s+wild|tears\s+of\s+the\s+kingdom|ocarina\s+of\s+time)[\s-]+(?:bundle\w*|set|konsolen[\s-]*(?:bundle\w*|set)|edition\s+konsole)|(?:nintendo\s+)?switch\s+(?:oled|lite)\s+(?:(?:the\s+legend\s+of\s+)?zelda|mario|donkey\s+kong)[^.!?;]*?\bedition)\b",
         t,
     ):
         return True
@@ -3121,16 +3121,16 @@ def _video_game_non_game_offer(title_norm):
             r"\b(?:amiibo\w*|figur|figuren|figurine\w*|actionfigur\w*|sammelfigur\w*|statue\w*|pluesch\w*|plusch\w*|plush\w*|kuscheltier\w*|stofftier\w*"
             r"|pins?|anstecker\w*|anstecknadel\w*|badges?|patches?|aufnaeher\w*|schluesselanhaenger\w*|schluesselband\w*|gepaeckanhaenger\w*|kofferanhaenger\w*|anhaenger\w*|luggage\s+tags?|keychains?|keyrings?|lanyards?|stickers?|aufkleber\w*|decals?"
             r"|magnet\w*|kuehlschrankmagnet\w*|gashapon\w*|muenze\w*|muenz\w*|coins?|medaille\w*|pen\s+topper\w*|stylo\w*|kugelschreiber\w*|bueroklammer\w*"
-            r"|posters?|3d\s+bild\w*|wandbild\w*|kunstdruck\w*|leinwand\w*|gerahmt\w*|lentikular\w*|canvas|banners?|flagge\w*|fahne\w*|blechschild\w*|wandschild\w*"
+            r"|posters?|3d\s+bild\w*|wandbild\w*|kunstdruck\w*|art\s*prints?|lithograph\w*|leinwand\w*|gerahmt\w*|lentikular\w*|canvas|banners?|flagge\w*|fahne\w*|blechschild\w*|wandschild\w*"
             r"|aufsteller\w*|pappaufsteller\w*|werbeaufsteller\w*|standees?|flyers?|prospekt\w*|werbemittel\w*|merchandise|merch"
             r"|handtuch\w*|strandtuch\w*|badetuch\w*|towels?|bandanas?|halstuch\w*|tagesdecke\w*|kuscheldecke\w*|blankets?|kissen|pillows?"
             r"|t[\s-]*shirts?|shirts?|hoodies?|pullover|kappe\w*|muetze\w*|socken"
             r"|tasche\w*|tragetasche\w*|schutztasche\w*|aufbewahrungstasche\w*|etui\w*|schutzhuelle\w*|silikonhuelle\w*|schutzfolie\w*|panzerglas\w*"
-            r"|screen\s+protectors?|carrying\s+cases?|travel\s+cases?|slim\s+cases?|protective\s+cases?|hardcases?|card\s+holders?|kartenhalter\w*"
+            r"|screen\s+protectors?|carrying\s+cases?|travel\s+cases?|slim\s+cases?|protective\s+cases?|hardcases?|card\s+holders?|kartenhalter\w*|geldboerse\w*|portemonnaie\w*|brieftasche\w*|wallets?"
             r"|controllers?|kontroller\w*|gamepads?|joy[\s-]*cons?|ladestation\w*|charging\s+(?:station|dock)|playstand\w*|staender|wandhalterung\w*|halterung\w*|faceplates?|schale\w*|skins?"
             r"|konsole|console|spielkonsole|spiele\s*auswahl|spieleauswahl|spiele\s+wahl|zum\s+auswaehlen|nach\s+wahl|spielesammlung\s+ausw\w*|multirabatt|wootbox"
             r"|spielkarten\w*|sammelkarte\w*|trading\s+cards?|pokerkarte\w*|nfc|brettspiel\w*|board\s+games?|puzzles?"
-            r"|das\s+offizielle\s+buch|offizielles?\s+buch|buch|buecher|books?|artbooks?|loesungsbuch\w*|spieleberater\w*|strategy\s+guides?|guidebooks?"
+            r"|das\s+offizielle\s+buch|offizielles?\s+buch|buch|buecher|books?|artbooks?|loesungsbuch\w*|spieleberater\w*|strategiefuehr\w*|loebu|piggyback|strategy\s+guides?|guidebooks?"
             r"|spielanleitung\w*|anleitungen|gebundene\s+ausgabe|taschenbuch|sonderausgabe\w*|katalog\w*|club\s+nintendo|heft|zeitschrift\w*|magazin\w*|famitsu|notizbuch\w*|soundtracks?|vinyls?"
             r"|fan[\s-]*set|vorbesteller\s*bonus|pre[\s-]*order\s*bonus|heilige\s+steine"
             r"|becher|tasse\w*|mugs?|geschirr\w*|luftballon\w*|ballons?|tortendeko\w*|bananenbaum\w*|obstkorb\w*)\b",
@@ -3342,7 +3342,7 @@ def _strip_negated_condition_terms(text_norm):
     text_norm = re.sub(rf"(?<!nicht )(?<!not )\b(?:kein(?:e|en|er)?|keinerlei|ohne)\s+{denied_de}(?:\s*(?:,\s*(?:(?:und|oder)\s+)?|(?:und|oder)\s+){denied_de})*\b(?!\s*(?:,|und\b|oder\b))", " ", text_norm)
     # A panel type can sit between the denial and the fault ("no OLED burn-in").
     # Consume only this denied phrase; later damage and double negation remain.
-    text_norm = re.sub(r'(?<!not )(?<!no )(?<!nicht )\b(?:no|without|kein(?:e|en|er)?|ohne)\s+(?:oled|amoled)\s+burn\s*ins?\b', ' ', text_norm)
+    text_norm = re.sub(r'(?<!not )(?<!no )(?<!nicht )\b(?:no|without|kein(?:e|en|er)?|ohne)\s+(?:oled|amoled)\s+burn\s*ins?\b|\b(?<=kfz\s)fuer\s+bastler(?=\s+posten\s+sale\b)|\b(?<!nicht\s)(?:nicht\s+(?:unbedingt|zwingend)\s+)als\s+ersatzteile(?=\s+benoetigt\b)', ' ', text_norm)
     text = _negated_condition_pattern().sub(' ',text_norm)
     # Samsung's cooling feature prevents burn-in; it does not admit an existing
     # fault. Remove only that exact prevention statement, keeping later defects.
@@ -7314,7 +7314,7 @@ def _video_game_details_blocked(description, aspects):
             r"|\b(?:ohne|without|no|kein(?:e|en)?)\s+(?:(?:das|the|ein|a|wert\s+oder)\s+)*(?:spiel|spiele|game|videospiel|spielmodul|modul|cartridge|card|karte|software|disc|disk|cd)\b"
             r"|\b(?:spiel|game|videospiel|spielmodul|modul|cartridge|software)\s+(?:(?:ist|sind|is|are|wird|werden)\s+)?(?:nicht\s+(?:enthalten|dabei|inklusive|im\s+lieferumfang|mitgeliefert)|not\s+included)\b"
             r"|\b(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s+(?:mit|inkl\w*|und|plus)\s+[1-9]\d*\s*(?:x\s*)?(?:spiele\w*|games?)\b"
-            r"|\b(?:[1-9]\d*\s+spiele\w*\s+digital|spiele\w*\s+digital\s+vorinstalliert|digitale?\s+spiele\w*\s+auf\s+(?:der\s+)?konsole|download\s*code\w*|digital\s+code\w*|code\s+in\s+a\s+box|ocarina\s+of\s+time\s+3d)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b|\b(?:diese\s+(?:hochwertige\s+)?(?:heim)?konsole|heimkonsole\s+in\b|(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?[\s-]+(?:bundle\w*|set)\b|(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s*(?:[+&]|\b(?:mit|inkl\w*|with|plus)\b)\s*(?:(?:the\s+legend\s+of\s+)?zelda|mario\s*kart\s+world|(?:donkey|donky)\s+kong\s+bananza|breath\s+of\s+the\s+wild|tears\s+of\s+the\s+kingdom|ocarina\s+of\s+time)\b)",
+            r"|\b(?:[1-9]\d*\s+spiele\w*\s+digital|spiele\w*\s+digital\s+vorinstalliert|digitale?\s+spiele\w*\s+auf\s+(?:der\s+)?konsole|download\s*code\w*|digital\s+code\w*|code\s+in\s+a\s+box|ocarina\s+of\s+time\s+3d)\b|\b(?:lna[\s-]+ctr|ctr|ntr|twl|nus|wup|rvl|dol)[\s-]+(?:006|nzlp|eur|p|[a-z0-9]{3,6})\b|\b(?:diese\s+(?:hochwertige\s+)?(?:heim)?konsole|heimkonsole\s+in\b|(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?[\s-]+(?:bundle\w*|set)\b|(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?(?:[\s-]+\d+\s*(?:gb|tb))?\s*(?:[+&]|\b(?:mit|inkl\w*|with|plus)\b\.?)\s*(?:(?:the\s+legend\s+of\s+)?zelda|mario\s*kart\s+world|(?:donkey|donky)\s+kong\s+bananza|breath\s+of\s+the\s+wild|tears\s+of\s+the\s+kingdom|ocarina\s+of\s+time)\b|(?:32|64|128|256|512)\s*gb\s+interner\s+speicher\b|modell\s*:\s*(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\b|(?:nintendo\s+)?switch(?:\s*(?:2|oled|lite))?\s+zu\s+verkaufen\b|die\s+konsole\s+befindet\s+sich\b|geldboerse\w*|portemonnaie\w*|brieftasche\w*|wallets?|vorbesteller\s*bonus|pre[\s-]*order\s*bonus|art\s*prints?|kunstdruck\w*|lithograph\w*|piggyback|loesungsbuch\w*|spieleberater\w*|strategiefuehr\w*|loebu|hardcover[\s-]*buch\w*|edition\s+des\s+buches\b)",
             own,
         )
     )
@@ -7753,7 +7753,7 @@ def _console_pro_details_conflict(description, aspects):
             return True
     if not own:
         return False
-    if not pro_spec and re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b|\bcfi\s*[- ]?\s*[12]\d{3}[a-z0-9]*\b|\b(?:normale[nr]?|regulaere[nr]?|standard)\s+(?:sony\s+)?(?:ps5|playstation\s*5)\b", own):
+    if not pro_spec and re.search(r"\b(?:ps5|playstation\s*5)\s+slim\b|\bcfi\s*[- ]?\s*[12]\d{3}[a-z0-9]*\b|\b(?:normale[nr]?|regulaere[nr]?|standard)\s+(?:sony\s+)?(?:ps5|playstation\s*5)\b", re.sub(r"\b(?:(?:ich\s+habe|habe\s+ich|besitze(?:\s+ich)?)\s+(?:die|eine|meine)\s+(?:normale[nr]?|regulaere[nr]?|standard)\s+(?:sony\s+)?(?:ps5|playstation\s*5)|(?:die|meine)\s+(?:normale[nr]?|regulaere[nr]?|standard)\s+(?:sony\s+)?(?:ps5|playstation\s*5)\s+(?:weiter(?:hin)?\s+)?(?:zu\s+)?behalten|(?:als|gegenueber|vergleich\s+zu)\s+(?:der|die)\s+(?:normale[nr]?|regulaere[nr]?|standard)\s+(?:sony\s+)?(?:ps5|playstation\s*5))\b", " ", own) if pro_confirmed else own):
         return True
     if not pro_spec and re.search(r"\b(?:ps5|playstation\s*5|konsole|console)\b", own) and re.search(r"\b825\s*gb\b", own):
         return True
