@@ -12,7 +12,7 @@ from test_samsung_monitor_sku import Settings
 class LiveFeedAuditNov05Tests(unittest.TestCase):
     def test_live_feed_audit_nov05_rejects_fake_checkout_refusal_and_refurbished_phone_across_four_formats(self):
         cases = json.loads((Path(__file__).parent / "qa/fixtures/live_feed_audit_nov05.json").read_text(encoding="utf-8"))["cases"]
-        self.assertEqual(116, len(cases))
+        self.assertEqual(128, len(cases))
         cat_map = {
             "computers": "179",
             "consoles": "139971",
@@ -169,6 +169,20 @@ class LiveFeedAuditNov05Tests(unittest.TestCase):
             self.assertFalse(monitor._is_description_blocked(case["description"], case["category"]), pos215_id)
         kl_case = next(c for c in cases if c["id"] == "336850577615")
         self.assertTrue(monitor._description_refuses_ebay_checkout(kl_case["description"]))
+        for pos216_id in ("358558680434", "256971342221"):
+            case = next(c for c in cases if c["id"] == pos216_id)
+            self.assertFalse(monitor._is_description_blocked(case["description"], case["category"]), pos216_id)
+        ps5_216 = next(c for c in cases if c["id"] == "206675450703")
+        self.assertFalse(monitor._console_pro_details_conflict(ps5_216["description"], ps5_216.get("aspects") or []))
+        ip18_216 = next(c for c in cases if c["id"] == "168824673638")
+        self.assertEqual("iphone 18 pro max", monitor._phone_own_model_conflict(ip18_216["description"], ip18_216["query"]).lower())
+        for ref216_id in ("267838922767", "920122113328"):
+            case = next(c for c in cases if c["id"] == ref216_id)
+            self.assertTrue(monitor._phone_description_refurbished(case["description"]), ref216_id)
+        for vg216_id in ("237163470643", "820327184874", "206648509779", "336870494368", "257843973687", "137878827413"):
+            case = next(c for c in cases if c["id"] == vg216_id)
+            self.assertTrue(monitor._video_game_non_game_offer(monitor._normalize(case["title"])), vg216_id)
+            self.assertTrue(monitor._video_game_details_blocked(case["description"], case.get("aspects") or []), vg216_id)
 
     def test_fetch_normal_slice_scales_budget_for_multi_alias_searches(self):
         recorded_slices = []
