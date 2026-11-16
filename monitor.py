@@ -2128,24 +2128,38 @@ def _samsung_phone_code_matches(value, query):
     return all(code == expected for code in codes)
 
 
+def _phone_pattern_groups_match(index, actual, wanted, allow_blank_actual=False):
+    """Compare matched model groups uniformly; Redmagic 12 includes 12 and 12 Pro."""
+    if not actual or not wanted:
+        return False
+    if index == 5:
+        a_num, a_s, a_tier = ((g or "").replace(" ", "") for g in actual.groups())
+        w_num, w_s, w_tier = ((g or "").replace(" ", "") for g in wanted.groups())
+        if a_num != w_num or a_s != w_s:
+            return False
+        if not w_tier:
+            return a_tier in ("", "pro")
+        if allow_blank_actual:
+            return not a_tier or a_tier == w_tier
+        return a_tier == w_tier
+    if allow_blank_actual:
+        return all(
+            not a or a.replace(" ", "") == (b or "").replace(" ", "")
+            for a, b in zip(actual.groups(), wanted.groups())
+        )
+    signature = lambda m: tuple((v or "").replace(" ", "") for v in m.groups())
+    return signature(wanted) == signature(actual)
+
+
 def _phone_model_number_matches(value, query):
     """Code fields can abbreviate a family (S25); explicit conflicts still fail."""
     value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
     if not _samsung_phone_code_matches(value, query):
         return False
     for index, pattern in enumerate(_PHONE_MODEL_PATTERNS):
-        actual, wanted = re.search(pattern,value), re.search(pattern,query)
+        actual, wanted = re.search(pattern, value), re.search(pattern, query)
         if actual and wanted:
-            if index == 5:
-                a_num, a_s, a_tier = (g or '' for g in actual.groups())
-                w_num, w_s, w_tier = (g or '' for g in wanted.groups())
-                if a_num != w_num or a_s != w_s:
-                    return False
-                if not w_tier:
-                    return a_tier in ('', 'pro')
-                return not a_tier or a_tier == w_tier
-            return all(not a or a.replace(' ','') == (b or '').replace(' ','')
-                       for a,b in zip(actual.groups(),wanted.groups()))
+            return _phone_pattern_groups_match(index, actual, wanted, allow_blank_actual=True)
     return _phone_model_aspect_matches(value,query)
 
 
@@ -2391,7 +2405,7 @@ def _phone_storage_mismatch(value, query):
 
 def _phone_own_model_claim(before, after):
     glue = r'(?:(?:hier|hiermit|nun|jetzt|euch|ihnen|an|mein\w*|ein\w*|das|dieses|gebraucht\w*|neu\w*|alt\w*|my|a|an|the|this|complete|working)\s+)*'
-    brand = r'(?:(?:apple|samsung|google|galaxy)\s+)*'
+    brand = r'(?:(?:apple|samsung|google|galaxy|zte|nubia|oneplus)\s+)*'
     sale = (r'\b(?:(?:(?:ich|wir)\s+)?(?:verkaufe[n]?|biete[n]?)(?:\s+ich)?|'
             r'(?:i(?:\s+am)?|we)\s+(?:selling|sell|offer)|zum\s+verkauf\s+steht|angeboten\s+wird|verkauft\s+wird|'
             r'(?:das|dieses|mein|the|this|my)\s+(?:angebotene\s+)?(?:smartphone|telefon|handy|geraet|phone|device|handset)\s+(?:ist|is)|tauchen\s+sie\s+(?:ein\s+)?in\s+die\s+welt\s+[^.!?;]{0,60}?\bmit\s+dem)\s+')
@@ -2429,7 +2443,7 @@ def _phone_own_model_conflict(description, query):
             before, after = text[:actual.start()], text[actual.end():]
             if not _phone_own_model_claim(before, after):
                 continue
-            compatible = i == wanted[0] and all(not a or a.replace(' ','') == (b or '').replace(' ','') for a,b in zip(actual.groups(), wanted[1].groups()))
+            compatible = i == wanted[0] and _phone_pattern_groups_match(i, actual, wanted[1], allow_blank_actual=True)
             if not compatible:
                 return actual.group()
     # Explicit model-number fields can contain a recognized manufacturer code.
@@ -2511,13 +2525,12 @@ def _matches_phone_query_model(title_norm, query_norm):
     # 198671049337 is an XS conversion; 407252002537 explicitly sells a replica.
     if "iphone" in q and re.search(r"\b(?:android|nachbau|replica|replika|clone|klon|umbau|conversion|converter)\b", t):
         return False
-    for pattern in _PHONE_MODEL_PATTERNS:
+    for index, pattern in enumerate(_PHONE_MODEL_PATTERNS):
         wanted = re.search(pattern, q)
         if not wanted:
             continue
         actual = re.search(pattern, t)
-        signature = lambda m: tuple((v or "").replace(" ", "") for v in m.groups())
-        if not actual or signature(wanted) != signature(actual):
+        if not _phone_pattern_groups_match(index, actual, wanted, allow_blank_actual=False):
             return False
         break
     # Google Play names the app service, not a competing Google handset.

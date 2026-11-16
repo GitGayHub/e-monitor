@@ -978,6 +978,72 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertFalse(monitor._phone_model_number_matches("Nubia RedMagic 12S 512GB", "Redmagic 12"))
         self.assertFalse(monitor._phone_model_number_matches("Nubia RedMagic 11 Pro 512GB", "Redmagic 12"))
 
+    def test_redmagic_11_11s_and_12_live_browser_contracts(self):
+        cfg = DummyConfig()
+
+        def check_case(query, item_id, title, desc, *, auction=False, category_id="9355", expected=True):
+            search = {
+                "id": f"qa-{item_id}",
+                "query": query,
+                "filters": {
+                    "category": "all",
+                    "listing_type": "auction" if auction else "buy_now_offer",
+                    "min_price": 1,
+                    "max_price": 2500,
+                    "limit_price": 2500,
+                    "location": "worldwide",
+                },
+                "include_words": [],
+                "exclude_words": ["11s", "11 s", "11spro", "11s pro", "11 s pro"] if query == "Redmagic 11 Pro" else [],
+                "exclude_sellers": [],
+            }
+            it = {
+                "item_id": item_id,
+                "title": title,
+                "price": 350.0,
+                "shipping_cost": 0.0,
+                "total_price": 350.0,
+                "seller_name": "seller",
+                "location": "DE",
+                "condition": "Gebraucht",
+                "auction": auction,
+                "buy_now": not auction,
+                "best_offer": False,
+                "time_left": "1h 0m" if auction else "",
+                "bids": 1 if auction else 0,
+                "seller_rating_count": 50,
+                "seller_rating_percent": 100.0,
+                "top_rated": False,
+            }
+            details = {
+                "title": title,
+                "description": desc,
+                "condition": "Gebraucht",
+                "categoryId": category_id,
+                "price": {"value": "350.0", "currency": "EUR"},
+                "buyingOptions": ["AUCTION"] if auction else ["FIXED_PRICE"],
+            }
+            title_ok = len(monitor.filter_results([it], search, cfg)) == 1
+            details_ok = monitor._details_match_contract(it, search, details) and not monitor._is_description_blocked(desc, "phones")
+            self.assertEqual(expected, title_ok and details_ok, (query, item_id, title_ok, details_ok))
+
+        check_case("Redmagic 11 Pro", "147674369747", "Nubia REDMAGIC 11 Pro 5G - 256 GB / 12 GB RAM - Cryo - inkl. OVP + Zubehörpaket", "Official EU version NX809J with CE mark. 12GB RAM, 256GB ROM.", auction=True, expected=True)
+        check_case("Redmagic 11 Pro", "287678176214", "REDMAGIC 11 PRO-1 TB-24 GB Ram. Rückseite beschädigt, sichtbare Gebrauchsspuren", "Lediglich die Rückseite ist beschädigt; der Rest des Handys ist in einwandfreiem Zustand.", expected=False)
+        check_case("Redmagic 11 Pro", "366764011109", "Brand New ZTE nubia Redmagic 11 Pro Plus Golden Saga 24GB+1TB 50MP 8K Smartphone", "Special edition Golden Saga 24GB+1TB, 7500mAh battery + 120W wired.", expected=True)
+        check_case("Redmagic 11 Pro", "237093350026", "Telefon Gamingowy - ZTE Nubia Redmagic 11 pro", "ZTE Nubia Redmagic 11 Pro 256GB 12GB RAM, w pełni sprawny.", expected=True)
+        check_case("Redmagic 11S Pro", "298625775032", "Nubia Redmagic 11S Pro 5G Nightfreeze 256GB + 12GB Dual-SIM Factory Unlocked NEU-", "Nightfreeze colorway, 256GB ROM / 12GB RAM, REDMAGIC OS 11.5.", expected=True)
+        check_case("Redmagic 11S Pro", "377247047492", "NEW Nubia Red Magic 11S Pro+ 5G Smartphone144Hz 7500mAh 120W Liquid cooling", "Nubia Red Magic 11S Pro+ 5G Smartphone 16GB 512GB.", expected=True)
+        check_case("Redmagic 11S Pro", "syn_11_vs_11s", "Nubia REDMAGIC 11 Pro 5G - 256 GB / 12 GB RAM", "Official EU version Redmagic 11 Pro.", auction=True, expected=False)
+        check_case("Redmagic 12", "336842945825", "REDMAGIC 12 Pro 5G Global International Version Gaming Phone NEU Vorbestellung-", "Global International version pre-order for REDMAGIC 12 Pro (Global launch 3 Nov 2026).", expected=True)
+        check_case("Redmagic 12", "407291921829_9355", "NEW Nubia Red Magic 12 Pro+ 5G Smartphone 185Hz 8400mAh 120W Liquid cooling", "Chinese version Red Magic 12 Pro+ 5G.", expected=True)
+        check_case("Redmagic 12", "407291921829_1500", "NEW Nubia Red Magic 12 Pro+ 5G Smartphone 185Hz 8400mAh 120W Liquid cooling", "Chinese version Red Magic 12 Pro+ 5G.", category_id="1500", expected=False)
+        check_case("Redmagic 12", "syn_12_ram_trap", "ZTE Nubia Redmagic 9S Pro 12GB RAM 256GB Smartphone", "Redmagic 9S Pro with 12GB RAM.", auction=True, expected=False)
+        check_case("Redmagic 12", "377250028289", "ZTE Nubia Redmagic 11 Air 12GB+256GB Smartphone", "Redmagic 11 Air 12GB RAM 256GB.", auction=True, expected=False)
+        check_case("Redmagic 12", "syn_12_s", "Nubia RedMagic 12S Pro 5G 512GB 16GB RAM", "RedMagic 12S Pro 512GB.", expected=False)
+        self.assertIsNone(monitor._phone_own_model_conflict("Verkaufe mein neues Nubia RedMagic 12 Pro 5G 512GB.", "Redmagic 12"))
+        self.assertIsNotNone(monitor._phone_own_model_conflict("Verkaufe mein neues Nubia RedMagic 12S Pro 5G 512GB.", "Redmagic 12"))
+        self.assertIsNotNone(monitor._phone_own_model_conflict("Verkaufe mein neues Nubia RedMagic 11 Pro 5G 512GB.", "Redmagic 11S Pro"))
+
 
 if __name__ == "__main__":
     unittest.main()
