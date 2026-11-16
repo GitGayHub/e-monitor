@@ -90,3 +90,15 @@ class CheckpointIntegrationTests(unittest.TestCase):
 
         pending_android = dict(remote, writer="android")
         self.assertIs(checkpoint_push.merge_app_sync(base, local, pending_android), pending_android)
+
+    def test_merge_base_deepens_shallow_checkout_before_resolving(self):
+        calls = []
+        ok = subprocess.CompletedProcess([], 0, b"abc123\n", b"")
+        err = subprocess.CompletedProcess([], 1, b"", b"")
+        responses = iter([err, subprocess.CompletedProcess([], 0, b"", b""), ok])
+        def fake_git(*args, check=True):
+            calls.append(args)
+            return next(responses)
+        with patch.object(checkpoint_push, "git", side_effect=fake_git):
+            self.assertEqual("abc123", checkpoint_push._merge_base())
+        self.assertEqual([("merge-base", "HEAD", "origin/main"), ("fetch", "--deepen=25", "origin", "main"), ("merge-base", "HEAD", "origin/main")], calls)

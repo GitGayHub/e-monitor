@@ -108,6 +108,17 @@ def git(*args, check=True):
                           env={**os.environ, "GIT_EDITOR": "true", "GIT_TERMINAL_PROMPT": "0"})
 
 
+def _merge_base():
+    res = git("merge-base", "HEAD", "origin/main", check=False)
+    if res.returncode != 0:
+        git("fetch", "--deepen=25", "origin", "main", check=False)
+        res = git("merge-base", "HEAD", "origin/main", check=False)
+        if res.returncode != 0:
+            git("fetch", "--unshallow", "origin", check=False)
+            res = git("merge-base", "HEAD", "origin/main")
+    return res.stdout.decode().strip()
+
+
 def push():
     rebased_once = False
     for attempt in range(5):
@@ -116,7 +127,7 @@ def push():
                 _refresh_local_decrypted_config()
             return
         git("fetch", "origin", "main")
-        base = git("merge-base", "HEAD", "origin/main").stdout.decode().strip()
+        base = _merge_base()
         snapshots = {}
         for name in ("config.json.enc", "mobile/app_sync.json"):
             snapshots[name] = [git("show", f"{ref}:{name}").stdout for ref in (base, "HEAD", "origin/main")]
