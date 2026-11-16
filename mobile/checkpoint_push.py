@@ -46,14 +46,74 @@ def merge_config(base, local, remote, path="config"):
     raise ValueError(f"Conflicting concurrent change: {path}; checkpoint retained locally")
 
 
+def merge_app_sync(base, local, remote):
+    if remote.get("writer") == "android":
+        return remote
+    merged = dict(local)
+    if all(isinstance(d.get("searches"), list) and all(isinstance(r, dict) and "id" in r for r in d["searches"]) for d in (base, local, remote)):
+        merged["searches"] = _merge_search_lists(base["searches"], local["searches"], remote["searches"], "app_sync.searches")
+    elif local.get("searches") == base.get("searches") and "searches" in remote:
+        merged["searches"] = remote["searches"]
+    for key in ("bannedSellers", "hiddenItems", "config"):
+        if key in local or key in remote:
+            missing = object()
+            b_val = base.get(key, missing)
+            l_val = local.get(key, missing)
+            r_val = remote.get(key, missing)
+            if l_val == b_val:
+                if r_val is not missing:
+                    merged[key] = r_val
+                else:
+                    merged.pop(key, None)
+            elif r_val == b_val or l_val == r_val:
+                if l_val is not missing:
+                    merged[key] = l_val
+            elif isinstance(l_val, dict) and isinstance(r_val, dict) and isinstance(b_val, dict):
+                try:
+                    merged[key] = merge_config(b_val, l_val, r_val, f"app_sync.{key}")
+                except ValueError:
+                    merged[key] = r_val
+            elif isinstance(l_val, list) and isinstance(r_val, list):
+                merged[key] = sorted(set(l_val) | set(r_val))
+    remote_searches_changed = remote.get("searches") != base.get("searches")
+    merged["logicVersion"] = max(
+        (v for v in (base.get("logicVersion"), local.get("logicVersion"), remote.get("logicVersion")) if isinstance(v, (int, float))),
+        default=local.get("logicVersion"),
+    )
+    updated_values = [str(v) for v in (local.get("updatedAt"), remote.get("updatedAt")) if v]
+    if updated_values:
+        merged["updatedAt"] = max(updated_values)
+    if remote.get("settingsRevision") != base.get("settingsRevision") and (local.get("settingsRevision") == base.get("settingsRevision") or remote_searches_changed):
+        merged["settingsRevision"] = remote.get("settingsRevision")
+    if remote_searches_changed and remote.get("commit"):
+        merged["commit"] = remote["commit"]
+    for key in ("items", "medianPrices", "medianReports"):
+        if local.get(key) == base.get(key) and key in remote:
+            merged[key] = remote[key]
+    merged["writer"] = "server"
+    return merged
+
+
+def _refresh_local_decrypted_config():
+    cfg_path = ROOT / "config.json"
+    enc_path = ROOT / "config.json.enc"
+    passphrase = os.environ.get("CONFIG_PASSPHRASE")
+    if passphrase and cfg_path.is_file() and enc_path.is_file():
+        decrypted = decrypt_config(enc_path.read_bytes(), passphrase)
+        cfg_path.write_bytes(decrypted if decrypted.endswith(b"\n") else decrypted + b"\n")
+
+
 def git(*args, check=True):
     return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, check=check,
                           env={**os.environ, "GIT_EDITOR": "true", "GIT_TERMINAL_PROMPT": "0"})
 
 
 def push():
+    rebased_once = False
     for attempt in range(5):
         if git("push", check=False).returncode == 0:
+            if rebased_once:
+                _refresh_local_decrypted_config()
             return
         git("fetch", "origin", "main")
         base = git("merge-base", "HEAD", "origin/main").stdout.decode().strip()
@@ -61,6 +121,7 @@ def push():
         for name in ("config.json.enc", "mobile/app_sync.json"):
             snapshots[name] = [git("show", f"{ref}:{name}").stdout for ref in (base, "HEAD", "origin/main")]
         rebased = git("rebase", "origin/main", check=False)
+        rebased_once = True
         if rebased.returncode:
             conflicts = git("diff", "--name-only", "--diff-filter=U").stdout.decode().splitlines()
             if not conflicts or set(conflicts) - set(snapshots):
@@ -75,9 +136,8 @@ def push():
                         merged = merge_config(*documents)
                         content = encrypt_config(json.dumps(merged, ensure_ascii=False, indent=2).encode(), passphrase, previous=versions)
                     else:
-                        _, local, remote = [json.loads(value) for value in versions]
-                        # An unconsumed phone snapshot is authoritative until next sweep.
-                        merged = remote if remote.get("writer") == "android" else local
+                        base_sync, local_sync, remote_sync = [json.loads(value) for value in versions]
+                        merged = merge_app_sync(base_sync, local_sync, remote_sync)
                         content = (json.dumps(merged, ensure_ascii=False, indent=2) + "\n").encode()
                     (ROOT / name).write_bytes(content)
                     git("add", name)

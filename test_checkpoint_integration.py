@@ -61,3 +61,32 @@ class CheckpointIntegrationTests(unittest.TestCase):
             merged,
             {"searches": [{"id": "a", "enabled": False}, {"id": "b", "enabled": True, "priority": 2}], "item_hashes": ["h1"]},
         )
+
+    def test_merge_app_sync_preserves_remote_consumed_server_edits_over_stale_checkpoint(self):
+        base = {
+            "writer": "server", "logicVersion": 100, "settingsRevision": "rev-1",
+            "updatedAt": "2026-11-16T22:13:08+00:00",
+            "searches": [{"id": "s1", "enabled": True}, {"id": "s2", "enabled": True}],
+            "items": [{"itemId": "old"}],
+        }
+        local = {
+            "writer": "server", "logicVersion": 100, "settingsRevision": "rev-1",
+            "updatedAt": "2026-11-16T22:26:11+00:00",
+            "searches": [{"id": "s1", "enabled": True}, {"id": "s2", "enabled": True}],
+            "items": [{"itemId": "new-item"}],
+        }
+        remote = {
+            "writer": "server", "logicVersion": 200, "settingsRevision": "rev-2",
+            "updatedAt": "2026-11-16T22:23:51+00:00",
+            "searches": [{"id": "s1", "enabled": False}, {"id": "s2", "enabled": True}, {"id": "redmagic_12_buy", "enabled": True}],
+            "items": [{"itemId": "old"}],
+        }
+        merged = checkpoint_push.merge_app_sync(base, local, remote)
+        self.assertEqual([s["id"] for s in merged["searches"]], ["s1", "s2", "redmagic_12_buy"])
+        self.assertFalse(merged["searches"][0]["enabled"])
+        self.assertEqual(merged["logicVersion"], 200)
+        self.assertEqual(merged["settingsRevision"], "rev-2")
+        self.assertEqual(merged["items"], [{"itemId": "new-item"}])
+
+        pending_android = dict(remote, writer="android")
+        self.assertIs(checkpoint_push.merge_app_sync(base, local, pending_android), pending_android)
