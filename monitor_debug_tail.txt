@@ -1,240 +1,240 @@
-2026-11-16 06:43:11,643 - Live validation queue search=samsung_s24_ultra_auc candidates=24 omitted=0 rows=[{"id":"168850589452","ready":false,"gate":"over_limit","minutes":581,"tier":3,"source":"api"},{"id":"940080948769","ready":false,"gate":"over_limit","minutes":1878,"tier":3,"source":"api"},{"id":"227609681655","ready":false,"gate":"over_limit","minutes":3424,"tier":3,"source":"api"},{"id":"168863740154","ready":false,"gate":"wait_24h","minutes":9378,"tier":3,"source":"api"},{"id":"257852703711","ready":false,"gate":"wait_24h","minutes":9348,"tier":3,"source":"api"},{"id":"198797727278","ready":false,"gate":"wait_24h","minutes":9332,"tier":3,"source":"api"},{"id":"840131776024","ready":false,"gate":"wait_24h","minutes":9265,"tier":3,"source":"api"},{"id":"267844329741","ready":false,"gate":"wait_24h","minutes":9153,"tier":3,"source":"api"},{"id":"257853329392","ready":false,"gate":"wait_24h","minutes":8742,"tier":3,"source":"api"},{"id":"800921375737","ready":false,"gate":"over_limit","minutes":9346,"tier":3,"source":"api"},{"id":"237182989825","ready":false,"gate":"over_limit","minutes":7873,"tier":3,"source":"api"},{"id":"227609594108","ready":false,"gate":"wait_24h","minutes":7818,"tier":3,"source":"api"},{"id":"227614008519","ready":false,"gate":"wait_24h","minutes":7561,"tier":3,"source":"api"},{"id":"267842821503","ready":false,"gate":"wait_24h","minutes":6613,"tier":3,"source":"api"},{"id":"267842403292","ready":false,"gate":"wait_24h","minutes":6383,"tier":3,"source":"api"},{"id":"128191276497","ready":false,"gate":"over_limit","minutes":5146,"tier":3,"source":"api"},{"id":"820346449960","ready":false,"gate":"wait_24h","minutes":4625,"tier":3,"source":"api"},{"id":"257847720920","ready":false,"gate":"wait_24h","minutes":3613,"tier":3,"source":"api"},{"id":"198787775821","ready":false,"gate":"wait_24h","minutes":3360,"tier":3,"source":"api"},{"id":"198786051190","ready":false,"gate":"over_limit","minutes":2104,"tier":3,"source":"api"},{"id":"327449304475","ready":false,"gate":"over_limit","minutes":1682,"tier":3,"source":"api"},{"id":"307274305698","ready":false,"gate":"over_limit","minutes":351,"tier":3,"source":"api"},{"id":"840127980947","ready":false,"gate":"over_limit","minutes":1886,"tier":3,"source":"api"},{"id":"267842475377","ready":false,"gate":"wait_24h","minutes":3223,"tier":3,"source":"api"}]
-2026-11-16 06:43:11,643 - Live validation fairness search=samsung_s24_ultra_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=24 oldest_priority_wait_seconds=None
-2026-11-16 06:43:11,723 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:43:11,723 - Scraping item page details for item 168850589452 via HTML
-2026-11-16 06:43:12,122 - _fetch_item_details_html: HTTP 403 for item 168850589452
-2026-11-16 06:43:18,579 - HTML browser details unavailable for 168850589452: TimeoutError stage=description_iframe_missing elapsed=6.457s
-2026-11-16 06:43:19,188 - Live validation result search=samsung_s24_ultra_auc item=168850589452 status=verified deadline_expired=False
-2026-11-16 06:43:19,262 - Scraping item page details for item 940080948769 via HTML
-2026-11-16 06:43:19,762 - _fetch_item_details_html: HTTP 403 for item 940080948769
-2026-11-16 06:43:26,253 - HTML browser details unavailable for 940080948769: TimeoutError stage=description_iframe_missing elapsed=6.491s
-2026-11-16 06:43:26,898 - Live validation result search=samsung_s24_ultra_auc item=940080948769 status=verified deadline_expired=False
-2026-11-16 06:43:26,911 - Live validation deferred search=samsung_s24_ultra_auc reason=fair_slice priority_deferred=0
-2026-11-16 06:43:27,221 -   samsung s24 ultra: 29 results, 2 verified in fair live slice
-2026-11-16 06:43:27,259 - Normal search dispatch id=samsung_galaxy_s25_edge priority=11 remaining=47
-2026-11-16 06:43:27,266 - Checking samsung galaxy s25 edge through primary HTML
-2026-11-16 06:43:27,327 - samsung_galaxy_s25_edge: live alias task 5/8 format=buy_now query=galaxy s25 edge
-2026-11-16 06:43:27,327 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:43:27,679 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:43:27,966 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:43:33,915 -   samsung galaxy s25 edge -> 121 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:43:33,949 - samsung_galaxy_s25_edge: live alias task 6/8 format=auction query=galaxy s25 edge
-2026-11-16 06:43:33,950 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:43:33,950 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:43:34,245 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:43:34,802 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:43:40,489 -   samsung galaxy s25 edge -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:43:40,523 - samsung_galaxy_s25_edge: live alias task 7/8 format=buy_now query=s25edge
-2026-11-16 06:43:40,523 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:43:40,523 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:43:40,843 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:43:41,102 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:43:47,269 -   samsung galaxy s25 edge -> 123 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:43:47,305 - samsung_galaxy_s25_edge: live alias task 8/8 format=auction query=s25edge
-2026-11-16 06:43:47,306 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:43:47,306 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:43:47,550 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:43:47,844 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:43:53,949 -   samsung galaxy s25 edge -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:43:53,978 - samsung_galaxy_s25_edge: live alias task 1/8 format=buy_now query=samsung galaxy s25 edge
-2026-11-16 06:43:53,978 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:43:53,979 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:43:54,226 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:43:54,511 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:44:00,632 -   samsung galaxy s25 edge -> 123 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:00,675 -   samsung galaxy s25 edge: fetch error search_deferred
-2026-11-16 06:44:01,698 - Live validation queue search=samsung_galaxy_s25_edge candidates=110 omitted=30 rows=[{"id":"327452457976","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800905082504","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307273962814","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128182829934","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147665878166","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"168834686569","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336872035764","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307255264185","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960122524263","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"960122454431","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137877395202","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117484671356","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860078863395","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267820625779","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128150063503","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128150061559","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"900017981066","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"900017979562","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327404764003","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237118666758","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227559667513","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227553260306","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407262033173","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"820195088196","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257776336914","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257766917187","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"377520015930","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257760933013","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117417303085","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128084451843","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227525915837","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178501944948","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178501923461","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267785008987","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267784352347","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198627271688","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198797446348","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198615636215","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227504023818","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"298641835961","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128049196243","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198597145474","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227481228217","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237172795595","ready":false,"gate":"over_limit","minutes":137,"tier":3,"source":"api"},{"id":"188807343253","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267747372794","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128010227952","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128010223496","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407107934423","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267742080150","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147460195587","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178337729967","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327272637957","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327272637573","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127986884810","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188670638295","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188670588333","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267728563094","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"117301218649","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"236927273399","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127963672500","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800304729129","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307047585656","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307047567871","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"178290897491","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407048110471","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287435395266","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287435392934","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327243605443","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127953676183","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"278140834851","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287429120595","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"287429093526","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366510961932","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800261520347","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188567300980","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366502797232","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"206371560731","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"920038228164","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267698061361","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
-2026-11-16 06:44:01,698 - Live validation fairness search=samsung_galaxy_s25_edge fresh_ready=0 clock_unknown=0 recheck=0 waiting=110 oldest_priority_wait_seconds=None
-2026-11-16 06:44:01,765 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:44:01,765 - Scraping item page details for item 327452457976 via HTML
-2026-11-16 06:44:02,184 - _fetch_item_details_html: HTTP 403 for item 327452457976
-2026-11-16 06:44:08,667 - HTML browser details unavailable for 327452457976: TimeoutError stage=description_iframe_missing elapsed=6.483s
-2026-11-16 06:44:09,171 - Live validation result search=samsung_galaxy_s25_edge item=327452457976 status=verified deadline_expired=False
-2026-11-16 06:44:09,243 - Scraping item page details for item 800905082504 via HTML
-2026-11-16 06:44:09,779 - _fetch_item_details_html: HTTP 403 for item 800905082504
-2026-11-16 06:44:16,248 - HTML browser details unavailable for 800905082504: TimeoutError stage=description_iframe_missing elapsed=6.469s
-2026-11-16 06:44:16,780 - Live validation result search=samsung_galaxy_s25_edge item=800905082504 status=verified deadline_expired=False
-2026-11-16 06:44:16,790 - Live validation deferred search=samsung_galaxy_s25_edge reason=fair_slice priority_deferred=0
-2026-11-16 06:44:17,241 -   samsung galaxy s25 edge: 127 results, 2 verified in fair live slice
-2026-11-16 06:44:17,248 - Checking samsung galaxy s25 edge through primary HTML
-2026-11-16 06:44:17,286 - samsung_galaxy_s25_edge__ending_soon: live alias task 3/4 format=auction query=galaxy s25 edge
-2026-11-16 06:44:17,286 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:44:17,447 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:44:17,815 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:44:23,900 -   samsung galaxy s25 edge -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:23,931 - samsung_galaxy_s25_edge__ending_soon: live alias task 4/4 format=auction query=s25edge
-2026-11-16 06:44:23,931 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:44:23,932 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:44:24,240 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:44:24,505 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:44:30,385 -   samsung galaxy s25 edge -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:30,414 - samsung_galaxy_s25_edge__ending_soon: live alias task 1/4 format=auction query=samsung galaxy s25 edge
-2026-11-16 06:44:30,414 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:44:30,414 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:44:30,801 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:44:31,179 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:44:36,887 -   samsung galaxy s25 edge -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:36,947 - samsung_galaxy_s25_edge__ending_soon: live alias task 2/4 format=auction query=samsung s25 edge
-2026-11-16 06:44:36,947 - Fetching: samsung galaxy s25 edge
-2026-11-16 06:44:36,947 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:44:37,260 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:44:37,457 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:44:43,451 -   samsung galaxy s25 edge -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:43,585 - Normal search dispatch id=logitech_superstrike_auc priority=17 remaining=46
-2026-11-16 06:44:43,592 - Checking logitech superstrike through primary HTML
-2026-11-16 06:44:43,729 - logitech_superstrike_auc: live alias task 5/5 format=auction query=pro x 2 superstrike lunar eclipse
-2026-11-16 06:44:43,729 - Fetching: logitech superstrike
-2026-11-16 06:44:43,729 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:44:44,146 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:44:44,458 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:44:50,306 -   logitech superstrike -> 1 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:50,362 - logitech_superstrike_auc: live alias task 1/5 format=auction query=logitech superstrike
-2026-11-16 06:44:50,362 - Fetching: logitech superstrike
-2026-11-16 06:44:50,362 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:44:51,081 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:44:51,446 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:44:56,845 -   logitech superstrike -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:44:56,875 - logitech_superstrike_auc: live alias task 2/5 format=auction query=logitech g pro x 2 superstrike
-2026-11-16 06:44:56,875 - Fetching: logitech superstrike
-2026-11-16 06:44:56,875 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:44:57,112 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:44:57,449 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:45:03,372 -   logitech superstrike -> 2 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:45:03,405 - logitech_superstrike_auc: live alias task 3/5 format=auction query=logitech pro x2 superstrike
-2026-11-16 06:45:03,406 - Fetching: logitech superstrike
-2026-11-16 06:45:03,406 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:45:03,736 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:45:04,318 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:45:09,969 -   logitech superstrike -> 4 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:45:10,001 - logitech_superstrike_auc: live alias task 4/5 format=auction query=superstrike lunar eclipse
-2026-11-16 06:45:10,001 - Fetching: logitech superstrike
-2026-11-16 06:45:10,001 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:45:10,425 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:45:10,663 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:45:16,671 -   logitech superstrike -> 1 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:45:16,799 - Live validation queue search=logitech_superstrike_auc candidates=4 omitted=0 rows=[{"id":"307280633773","ready":false,"gate":"over_limit","minutes":6073,"tier":3,"source":"api"},{"id":"227611831978","ready":false,"gate":"over_limit","minutes":5367,"tier":3,"source":"api"},{"id":"377645732634","ready":false,"gate":"over_limit","minutes":2059,"tier":3,"source":"api"},{"id":"860147029888","ready":false,"gate":"over_limit","minutes":9636,"tier":3,"source":"api"}]
-2026-11-16 06:45:16,799 - Live validation fairness search=logitech_superstrike_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=4 oldest_priority_wait_seconds=None
-2026-11-16 06:45:16,857 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:45:16,858 - Scraping item page details for item 307280633773 via HTML
-2026-11-16 06:45:17,526 - _fetch_item_details_html: HTTP 403 for item 307280633773
-2026-11-16 06:45:23,984 - HTML browser details unavailable for 307280633773: TimeoutError stage=description_iframe_missing elapsed=6.457s
-2026-11-16 06:45:24,543 - Live validation result search=logitech_superstrike_auc item=307280633773 status=verified deadline_expired=False
-2026-11-16 06:45:24,607 - Scraping item page details for item 227611831978 via HTML
-2026-11-16 06:45:24,976 - _fetch_item_details_html: HTTP 403 for item 227611831978
-2026-11-16 06:45:31,481 - HTML browser details unavailable for 227611831978: TimeoutError stage=description_iframe_missing elapsed=6.504s
-2026-11-16 06:45:32,096 - Live validation result search=logitech_superstrike_auc item=227611831978 status=verified deadline_expired=False
-2026-11-16 06:45:32,101 - Live validation deferred search=logitech_superstrike_auc reason=fair_slice priority_deferred=0
-2026-11-16 06:45:32,397 -   logitech superstrike: 4 results, 2 verified in fair live slice
-2026-11-16 06:45:32,432 - Normal search dispatch id=redmagic_11_pro_buy priority=22 remaining=45
-2026-11-16 06:45:32,438 - Checking Redmagic 11 Pro through primary HTML
-2026-11-16 06:45:32,501 - redmagic_11_pro_buy: live alias task 2/3 format=buy_now_offer query=red magic 11 pro
-2026-11-16 06:45:32,501 - Fetching: Redmagic 11 Pro
-2026-11-16 06:45:32,766 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:45:33,161 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:45:39,014 -   Redmagic 11 Pro -> 31 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:45:39,047 - redmagic_11_pro_buy: live alias task 3/3 format=buy_now_offer query=nubia redmagic 11 pro
-2026-11-16 06:45:39,047 - Fetching: Redmagic 11 Pro
-2026-11-16 06:45:39,047 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:45:39,880 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:45:40,698 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:45:45,680 -   Redmagic 11 Pro -> 29 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:45:45,710 - redmagic_11_pro_buy: live alias task 1/3 format=buy_now_offer query=redmagic 11 pro
-2026-11-16 06:45:45,710 - Fetching: Redmagic 11 Pro
-2026-11-16 06:45:45,710 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:45:46,545 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:45:46,977 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:45:52,203 -   Redmagic 11 Pro -> 31 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:45:52,325 - Live validation queue search=redmagic_11_pro_buy candidates=4 omitted=0 rows=[{"id":"237093350026","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307246072754","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128150225776","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307243817551","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
-2026-11-16 06:45:52,325 - Live validation fairness search=redmagic_11_pro_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=4 oldest_priority_wait_seconds=None
-2026-11-16 06:45:52,407 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:45:52,407 - Scraping item page details for item 237093350026 via HTML
-2026-11-16 06:45:52,852 - _fetch_item_details_html: challenge page hit for item 237093350026
-2026-11-16 06:45:53,470 - Live validation result search=redmagic_11_pro_buy item=237093350026 status=verified deadline_expired=False
-2026-11-16 06:45:53,536 - Scraping item page details for item 307246072754 via HTML
-2026-11-16 06:45:55,149 - Fetching own seller description HTML for item 307246072754
-2026-11-16 06:45:55,615 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
-2026-11-16 06:45:55,688 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
-2026-11-16 06:46:02,266 - HTML browser details unavailable for 307246072754: TimeoutError stage=description_iframe_missing elapsed=6.541s
-2026-11-16 06:46:03,012 - Live validation result search=redmagic_11_pro_buy item=307246072754 status=verified deadline_expired=False
-2026-11-16 06:46:03,043 - Live validation deferred search=redmagic_11_pro_buy reason=fair_slice priority_deferred=0
-2026-11-16 06:46:03,415 -   Redmagic 11 Pro: 31 results, 2 verified in fair live slice
-2026-11-16 06:46:03,445 - Normal search dispatch id=sony_wh_1000xm6_auc priority=24 remaining=44
-2026-11-16 06:46:03,451 - Checking Sony WH-1000XM6 through primary HTML
-2026-11-16 06:46:03,504 - sony_wh_1000xm6_auc: live alias task 5/5 format=auction query=1000xm6
-2026-11-16 06:46:03,505 - Fetching: Sony WH-1000XM6
-2026-11-16 06:46:03,776 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:46:04,100 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:46:10,022 -   Sony WH-1000XM6 -> 8 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:10,089 - sony_wh_1000xm6_auc: live alias task 1/5 format=auction query=sony wh-1000xm6
-2026-11-16 06:46:10,089 - Fetching: Sony WH-1000XM6
-2026-11-16 06:46:10,089 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:46:10,395 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:46:10,823 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:46:16,595 -   Sony WH-1000XM6 -> 6 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:16,639 - sony_wh_1000xm6_auc: live alias task 2/5 format=auction query=sony wh1000xm6
-2026-11-16 06:46:16,640 - Fetching: Sony WH-1000XM6
-2026-11-16 06:46:16,640 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:46:17,173 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:46:17,705 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:46:23,245 -   Sony WH-1000XM6 -> 6 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:23,275 - sony_wh_1000xm6_auc: live alias task 3/5 format=auction query=sony wh 1000 xm6
-2026-11-16 06:46:23,276 - Fetching: Sony WH-1000XM6
-2026-11-16 06:46:23,276 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:46:23,721 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:46:24,081 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:46:29,839 -   Sony WH-1000XM6 -> 6 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:29,869 - sony_wh_1000xm6_auc: live alias task 4/5 format=auction query=sony 1000xm6
-2026-11-16 06:46:29,869 - Fetching: Sony WH-1000XM6
-2026-11-16 06:46:29,869 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:46:30,404 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:46:30,836 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:46:36,437 -   Sony WH-1000XM6 -> 8 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:36,548 - Live validation queue search=sony_wh_1000xm6_auc candidates=6 omitted=0 rows=[{"id":"147679246868","ready":false,"gate":"over_limit","minutes":633,"tier":3,"source":"api"},{"id":"327457906529","ready":false,"gate":"wait_24h","minutes":9122,"tier":3,"source":"api"},{"id":"307283557472","ready":false,"gate":"wait_24h","minutes":13187,"tier":3,"source":"api"},{"id":"168860058214","ready":false,"gate":"wait_24h","minutes":6408,"tier":3,"source":"api"},{"id":"960182252412","ready":false,"gate":"over_limit","minutes":3089,"tier":3,"source":"api"},{"id":"960183406373","ready":false,"gate":"wait_24h","minutes":7771,"tier":3,"source":"api"}]
-2026-11-16 06:46:36,548 - Live validation fairness search=sony_wh_1000xm6_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=6 oldest_priority_wait_seconds=None
-2026-11-16 06:46:36,796 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:46:36,796 - Scraping item page details for item 147679246868 via HTML
-2026-11-16 06:46:37,271 - _fetch_item_details_html: challenge page hit for item 147679246868
-2026-11-16 06:46:38,082 - Live validation result search=sony_wh_1000xm6_auc item=147679246868 status=verified deadline_expired=False
-2026-11-16 06:46:38,154 - Scraping item page details for item 327457906529 via HTML
-2026-11-16 06:46:38,627 - _fetch_item_details_html: HTTP 403 for item 327457906529
-2026-11-16 06:46:45,078 - HTML browser details unavailable for 327457906529: TimeoutError stage=description_iframe_missing elapsed=6.450s
-2026-11-16 06:46:45,548 - Live validation result search=sony_wh_1000xm6_auc item=327457906529 status=verified deadline_expired=False
-2026-11-16 06:46:45,551 - Live validation deferred search=sony_wh_1000xm6_auc reason=fair_slice priority_deferred=0
-2026-11-16 06:46:45,843 -   Sony WH-1000XM6: 8 results, 2 verified in fair live slice
-2026-11-16 06:46:45,877 - Normal search dispatch id=5070_ti_pc_auc priority=10 remaining=43
-2026-11-16 06:46:45,884 - Checking 5070 ti (pc, rechner, computer, desktop, gaming pc) through primary HTML
-2026-11-16 06:46:45,939 - 5070_ti_pc_auc: live alias task 7/8 format=auction query=rtx 5070 ti gaming pc
-2026-11-16 06:46:45,939 - Fetching: 5070 ti (pc, rechner, computer, desktop, gaming pc)
-2026-11-16 06:46:46,288 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:46:46,782 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:46:52,490 -   5070 ti (pc, rechner, computer, desktop, gaming pc) -> 0 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:52,518 -   5070 ti (pc, rechner, computer, desktop, gaming pc): fetch error search_deferred
-2026-11-16 06:46:52,570 - Normal search dispatch id=4050_oled_buy priority=7 remaining=42
-2026-11-16 06:46:52,576 - Checking 4050 oled through primary HTML
-2026-11-16 06:46:52,641 - 4050_oled_buy: live alias task 5/5 format=buy_now_offer query=rtx 4050 (aero,vivobook,spectre,yoga,xps,legion,proart)
-2026-11-16 06:46:52,641 - Fetching: 4050 oled
-2026-11-16 06:46:52,641 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:46:53,202 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:46:53,554 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:46:59,242 -   4050 oled -> 10 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:46:59,276 - 4050_oled_buy: live alias task 1/5 format=buy_now_offer query=rtx 4050 oled laptop
-2026-11-16 06:46:59,276 - Fetching: 4050 oled
-2026-11-16 06:46:59,276 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:46:59,824 - eBay session ready (impersonate=chrome120)
-2026-11-16 06:47:00,135 - eBay session ready (impersonate=safari17_2_ios)
-2026-11-16 06:47:05,818 -   4050 oled -> 8 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:47:05,880 - 4050_oled_buy: live alias task 2/5 format=buy_now_offer query=rtx 4050 oled notebook
-2026-11-16 06:47:05,880 - Fetching: 4050 oled
-2026-11-16 06:47:05,880 - eBay session ready (impersonate=safari17_0)
-2026-11-16 06:47:06,174 - eBay session ready (impersonate=chrome131)
-2026-11-16 06:47:06,464 - eBay session ready (impersonate=chrome124)
-2026-11-16 06:47:12,384 -   4050 oled -> 8 items via eBay Browse API (EBAY_DE)
-2026-11-16 06:47:12,448 -   4050 oled: fetch error search_deferred
-2026-11-16 06:47:12,530 - Live validation queue search=4050_oled_buy candidates=12 omitted=0 rows=[{"id":"336845270491","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257845850655","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267833996021","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"840050683784","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407355200336","ready":false,"gate":"over_limit","minutes":3117,"tier":3,"source":"api"},{"id":"206617260836","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137739595703","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336855772355","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"237033725827","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257839441590","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860079568588","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307247428669","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
-2026-11-16 06:47:12,530 - Live validation fairness search=4050_oled_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=12 oldest_priority_wait_seconds=None
-2026-11-16 06:47:12,530 - Live validation deferred search=4050_oled_buy reason=deadline priority_deferred=0
-2026-11-16 06:47:12,532 -   4050 oled: 14 results, 0 verified in fair live slice
-2026-11-16 06:47:12,561 - Normal search dispatch id=ray_ban_meta_gen_2 priority=2 remaining=41
-2026-11-16 06:47:12,567 - Checking Ray-Ban Meta Gen 2 through primary HTML
-2026-11-16 06:47:12,578 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
-2026-11-16 06:47:13,127 - === Done ===
+2026-11-16 06:50:09,159 - _fetch_item_details_html: challenge page hit for item 407355200336
+2026-11-16 06:50:09,760 - Live validation result search=4050_oled_auc item=407355200336 status=rejected deadline_expired=False
+2026-11-16 06:50:09,789 -   4050 oled: 1 results, 0 verified in fair live slice
+2026-11-16 06:50:09,819 - Normal search dispatch id=samsung_odyssey_oled_g6_500hz_auc priority=23 remaining=45
+2026-11-16 06:50:09,825 - Checking samsung odyssey oled g6 500hz through primary HTML
+2026-11-16 06:50:09,899 - samsung_odyssey_oled_g6_500hz_auc: live alias task 3/3 format=auction query=LS27FG604 500Hz
+2026-11-16 06:50:09,899 - Fetching: samsung odyssey oled g6 500hz
+2026-11-16 06:50:10,182 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:50:10,581 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:50:16,281 -   samsung odyssey oled g6 500hz -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:50:16,309 -   samsung odyssey oled g6 500hz: fetch error search_deferred
+2026-11-16 06:50:16,342 - Normal search dispatch id=samsung_odyssey_oled_g6_500hz_buy priority=23 remaining=44
+2026-11-16 06:50:16,348 - Checking samsung odyssey oled g6 500hz through primary HTML
+2026-11-16 06:50:16,402 - samsung_odyssey_oled_g6_500hz_buy: live alias task 1/3 format=buy_now_offer query=samsung odyssey oled g6 500hz
+2026-11-16 06:50:16,402 - Fetching: samsung odyssey oled g6 500hz
+2026-11-16 06:50:16,403 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:50:16,740 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:50:17,167 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:50:22,960 -   samsung odyssey oled g6 500hz -> 5 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:50:22,987 - samsung_odyssey_oled_g6_500hz_buy: live alias task 2/3 format=buy_now_offer query=G60SF LS27FG602
+2026-11-16 06:50:22,987 - Fetching: samsung odyssey oled g6 500hz
+2026-11-16 06:50:22,988 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:50:23,274 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:50:23,518 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:50:29,520 -   samsung odyssey oled g6 500hz -> 16 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:50:29,551 - samsung_odyssey_oled_g6_500hz_buy: live alias task 3/3 format=buy_now_offer query=LS27FG604 500Hz
+2026-11-16 06:50:29,551 - Fetching: samsung odyssey oled g6 500hz
+2026-11-16 06:50:29,551 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:50:29,963 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:50:30,269 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:50:35,974 -   samsung odyssey oled g6 500hz -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:50:36,010 -   samsung odyssey oled g6 500hz: fetch error search_deferred
+2026-11-16 06:50:36,100 - Live validation queue search=samsung_odyssey_oled_g6_500hz_buy candidates=19 omitted=0 rows=[{"id":"326729817624","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407360538022","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366787160324","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"366782413581","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307260695768","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336635401817","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407360057609","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"940083267599","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307270743236","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227596989079","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"860067864009","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188670742649","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"188670693644","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"307052593665","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"206403655849","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"206605307527","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"377167350824","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227319448387","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"146958361732","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-16 06:50:36,100 - Live validation fairness search=samsung_odyssey_oled_g6_500hz_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=19 oldest_priority_wait_seconds=None
+2026-11-16 06:50:36,151 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:50:36,152 - Scraping item page details for item 326729817624 via HTML
+2026-11-16 06:50:36,718 - _fetch_item_details_html: challenge page hit for item 326729817624
+2026-11-16 06:50:37,428 - Live validation result search=samsung_odyssey_oled_g6_500hz_buy item=326729817624 status=verified deadline_expired=False
+2026-11-16 06:50:37,557 - Scraping item page details for item 407360538022 via HTML
+2026-11-16 06:50:37,800 - _fetch_item_details_html: HTTP 403 for item 407360538022
+2026-11-16 06:50:44,248 - HTML browser details unavailable for 407360538022: TimeoutError stage=description_iframe_missing elapsed=6.448s
+2026-11-16 06:50:45,009 - Live validation result search=samsung_odyssey_oled_g6_500hz_buy item=407360538022 status=verified deadline_expired=False
+2026-11-16 06:50:45,051 - Live validation deferred search=samsung_odyssey_oled_g6_500hz_buy reason=fair_slice priority_deferred=0
+2026-11-16 06:50:45,353 -   samsung odyssey oled g6 500hz: 19 results, 2 verified in fair live slice
+2026-11-16 06:50:45,392 - Normal search dispatch id=nubia_z80_ultra_auc priority=16 remaining=43
+2026-11-16 06:50:45,398 - Checking Nubia Z80 Ultra through primary HTML
+2026-11-16 06:50:45,492 - nubia_z80_ultra_auc: live alias task 1/2 format=auction query=nubia z80 ultra
+2026-11-16 06:50:45,492 - Fetching: Nubia Z80 Ultra
+2026-11-16 06:50:45,882 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:50:46,167 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:50:52,080 -   Nubia Z80 Ultra -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:50:52,115 - nubia_z80_ultra_auc: live alias task 2/2 format=auction query=zte nubia z80 ultra
+2026-11-16 06:50:52,115 - Fetching: Nubia Z80 Ultra
+2026-11-16 06:50:52,115 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:50:52,590 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:50:52,974 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:50:58,806 -   Nubia Z80 Ultra -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:50:59,066 - Live validation queue search=nubia_z80_ultra_auc candidates=0 omitted=0 rows=[]
+2026-11-16 06:50:59,066 - Live validation fairness search=nubia_z80_ultra_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=0 oldest_priority_wait_seconds=None
+2026-11-16 06:50:59,071 -   Nubia Z80 Ultra: 1 results, 0 verified in fair live slice
+2026-11-16 06:50:59,270 - Normal search dispatch id=nubia_z80_ultra_buy priority=16 remaining=42
+2026-11-16 06:50:59,276 - Checking Nubia Z80 Ultra through primary HTML
+2026-11-16 06:50:59,327 - nubia_z80_ultra_buy: live alias task 2/2 format=buy_now_offer query=zte nubia z80 ultra
+2026-11-16 06:50:59,328 - Fetching: Nubia Z80 Ultra
+2026-11-16 06:50:59,328 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:50:59,632 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:51:00,002 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:51:05,831 -   Nubia Z80 Ultra -> 19 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:05,861 - nubia_z80_ultra_buy: live alias task 1/2 format=buy_now_offer query=nubia z80 ultra
+2026-11-16 06:51:05,861 - Fetching: Nubia Z80 Ultra
+2026-11-16 06:51:05,862 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:51:06,293 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:51:06,668 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:51:12,397 -   Nubia Z80 Ultra -> 32 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:12,561 - Live validation queue search=nubia_z80_ultra_buy candidates=5 omitted=0 rows=[{"id":"336877040714","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127706247021","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"306791527178","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"127706197273","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"198794781427","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-16 06:51:12,561 - Live validation fairness search=nubia_z80_ultra_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=5 oldest_priority_wait_seconds=None
+2026-11-16 06:51:12,620 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:51:12,620 - Scraping item page details for item 336877040714 via HTML
+2026-11-16 06:51:13,134 - _fetch_item_details_html: challenge page hit for item 336877040714
+2026-11-16 06:51:13,705 - Live validation result search=nubia_z80_ultra_buy item=336877040714 status=verified deadline_expired=False
+2026-11-16 06:51:13,769 - Scraping item page details for item 127706247021 via HTML
+2026-11-16 06:51:15,262 - Fetching own seller description HTML for item 127706247021
+2026-11-16 06:51:15,353 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-16 06:51:15,767 - Live validation result search=nubia_z80_ultra_buy item=127706247021 status=verified deadline_expired=False
+2026-11-16 06:51:15,803 - Live validation deferred search=nubia_z80_ultra_buy reason=fair_slice priority_deferred=0
+2026-11-16 06:51:16,117 -   Nubia Z80 Ultra: 32 results, 2 verified in fair live slice
+2026-11-16 06:51:16,195 - Normal search dispatch id=sony_ult_wear_auc priority=26 remaining=41
+2026-11-16 06:51:16,202 - Checking sony ult wear through primary HTML
+2026-11-16 06:51:16,256 - sony_ult_wear_auc: live alias task 3/5 format=auction query=WH-ULT900N
+2026-11-16 06:51:16,256 - Fetching: sony ult wear
+2026-11-16 06:51:16,565 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:51:16,979 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:51:22,762 -   sony ult wear -> 3 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:22,790 - sony_ult_wear_auc: live alias task 4/5 format=auction query=WHULT900N
+2026-11-16 06:51:22,790 - Fetching: sony ult wear
+2026-11-16 06:51:22,790 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:51:23,125 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:51:23,537 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:51:29,207 -   sony ult wear -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:29,239 -   sony ult wear: fetch error search_deferred
+2026-11-16 06:51:29,339 - Live validation queue search=sony_ult_wear_auc candidates=3 omitted=0 rows=[{"id":"237181339569","ready":false,"gate":"over_limit","minutes":3584,"tier":3,"source":"api"},{"id":"168864741131","ready":false,"gate":"over_limit","minutes":9331,"tier":3,"source":"api"},{"id":"168857128211","ready":false,"gate":"over_limit","minutes":4636,"tier":3,"source":"api"}]
+2026-11-16 06:51:29,340 - Live validation fairness search=sony_ult_wear_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=3 oldest_priority_wait_seconds=None
+2026-11-16 06:51:29,390 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:51:29,390 - Scraping item page details for item 237181339569 via HTML
+2026-11-16 06:51:29,894 - _fetch_item_details_html: challenge page hit for item 237181339569
+2026-11-16 06:51:30,420 - Live validation result search=sony_ult_wear_auc item=237181339569 status=rejected deadline_expired=False
+2026-11-16 06:51:30,506 - Scraping item page details for item 168864741131 via HTML
+2026-11-16 06:51:31,854 - Fetching own seller description HTML for item 168864741131
+2026-11-16 06:51:31,951 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-16 06:51:32,006 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
+2026-11-16 06:51:38,512 - HTML browser details unavailable for 168864741131: TimeoutError stage=description_iframe_missing elapsed=6.472s
+2026-11-16 06:51:39,029 - Live validation result search=sony_ult_wear_auc item=168864741131 status=verified deadline_expired=False
+2026-11-16 06:51:39,032 - Live validation deferred search=sony_ult_wear_auc reason=fair_slice priority_deferred=0
+2026-11-16 06:51:39,331 -   sony ult wear: 3 results, 1 verified in fair live slice
+2026-11-16 06:51:39,358 - Normal search dispatch id=4080_pc_auc priority=9 remaining=40
+2026-11-16 06:51:39,365 - Checking 4080 (pc, rechner, computer, desktop, gaming pc) through primary HTML
+2026-11-16 06:51:39,458 - 4080_pc_auc: live alias task 4/8 format=auction query=4080 desktop
+2026-11-16 06:51:39,458 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-11-16 06:51:39,839 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:51:40,259 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:51:45,970 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:46,001 - 4080_pc_auc: live alias task 5/8 format=auction query=4080 gaming pc
+2026-11-16 06:51:46,002 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-11-16 06:51:46,002 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:51:46,278 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:51:46,616 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:51:52,445 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:52,475 - 4080_pc_auc: live alias task 6/8 format=auction query=gaming pc 4080
+2026-11-16 06:51:52,475 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-11-16 06:51:52,475 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:51:52,856 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:51:53,394 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:51:58,932 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:51:58,967 - 4080_pc_auc: live alias task 7/8 format=auction query=rtx 4080 gaming pc
+2026-11-16 06:51:58,968 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-11-16 06:51:58,968 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:51:59,459 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:51:59,960 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:52:05,519 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 1 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:52:05,581 - 4080_pc_auc: live alias task 8/8 format=auction query=RTX4080
+2026-11-16 06:52:05,581 - Fetching: 4080 (pc, rechner, computer, desktop, gaming pc)
+2026-11-16 06:52:05,582 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:52:05,864 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:52:06,220 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:52:12,159 -   4080 (pc, rechner, computer, desktop, gaming pc) -> 13 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:52:12,201 -   4080 (pc, rechner, computer, desktop, gaming pc): fetch error search_deferred
+2026-11-16 06:52:12,279 - Live validation queue search=4080_pc_auc candidates=3 omitted=0 rows=[{"id":"407362530995","ready":false,"gate":"over_limit","minutes":7544,"tier":3,"source":"api"},{"id":"198782017197","ready":false,"gate":"wait_24h","minutes":3780,"tier":3,"source":"api"},{"id":"336895431628","ready":false,"gate":"over_limit","minutes":5960,"tier":3,"source":"api"}]
+2026-11-16 06:52:12,279 - Live validation fairness search=4080_pc_auc fresh_ready=0 clock_unknown=0 recheck=0 waiting=3 oldest_priority_wait_seconds=None
+2026-11-16 06:52:12,331 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:52:12,331 - Scraping item page details for item 407362530995 via HTML
+2026-11-16 06:52:13,061 - _fetch_item_details_html: challenge page hit for item 407362530995
+2026-11-16 06:52:13,620 - Details blocked: computer listing lacks RAM or storage drive
+2026-11-16 06:52:13,650 - Live validation result search=4080_pc_auc item=407362530995 status=rejected deadline_expired=False
+2026-11-16 06:52:13,708 - Scraping item page details for item 198782017197 via HTML
+2026-11-16 06:52:14,263 - _fetch_item_details_html: HTTP 403 for item 198782017197
+2026-11-16 06:52:20,731 - HTML browser details unavailable for 198782017197: TimeoutError stage=description_iframe_missing elapsed=6.468s
+2026-11-16 06:52:21,213 - Live validation result search=4080_pc_auc item=198782017197 status=rejected deadline_expired=False
+2026-11-16 06:52:21,217 - Live validation deferred search=4080_pc_auc reason=fair_slice priority_deferred=0
+2026-11-16 06:52:21,217 -   4080 (pc, rechner, computer, desktop, gaming pc): 13 results, 0 verified in fair live slice
+2026-11-16 06:52:21,252 - Normal search dispatch id=nubia_z70s_ultra_buy priority=19 remaining=39
+2026-11-16 06:52:21,258 - Checking Nubia Z70S Ultra through primary HTML
+2026-11-16 06:52:21,342 - nubia_z70s_ultra_buy: live alias task 3/3 format=buy_now_offer query=nubia z70 s ultra
+2026-11-16 06:52:21,342 - Fetching: Nubia Z70S Ultra
+2026-11-16 06:52:21,615 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:52:21,987 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:52:27,936 -   Nubia Z70S Ultra -> 6 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:52:27,965 - nubia_z70s_ultra_buy: live alias task 1/3 format=buy_now_offer query=nubia z70s ultra
+2026-11-16 06:52:27,966 - Fetching: Nubia Z70S Ultra
+2026-11-16 06:52:27,966 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:52:28,326 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:52:28,579 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:52:34,523 -   Nubia Z70S Ultra -> 6 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:52:34,557 - nubia_z70s_ultra_buy: live alias task 2/3 format=buy_now_offer query=zte nubia z70s ultra
+2026-11-16 06:52:34,557 - Fetching: Nubia Z70S Ultra
+2026-11-16 06:52:34,557 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:52:34,882 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:52:35,287 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:52:41,053 -   Nubia Z70S Ultra -> 4 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:52:41,180 - Live validation queue search=nubia_z70s_ultra_buy candidates=2 omitted=0 rows=[{"id":"880105250847","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"920110147074","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-16 06:52:41,180 - Live validation fairness search=nubia_z70s_ultra_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=2 oldest_priority_wait_seconds=None
+2026-11-16 06:52:41,245 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:52:41,245 - Scraping item page details for item 880105250847 via HTML
+2026-11-16 06:52:41,782 - _fetch_item_details_html: challenge page hit for item 880105250847
+2026-11-16 06:52:42,258 - Live validation result search=nubia_z70s_ultra_buy item=880105250847 status=verified deadline_expired=False
+2026-11-16 06:52:42,322 - Scraping item page details for item 920110147074 via HTML
+2026-11-16 06:52:43,445 - Fetching own seller description HTML for item 920110147074
+2026-11-16 06:52:43,725 - DESCRIPTION_SOURCE_GUARD outcome=http_source_verified
+2026-11-16 06:52:43,791 - DESCRIPTION_SOURCE_GUARD outcome=live_price_missing
+2026-11-16 06:52:50,357 - HTML browser details unavailable for 920110147074: TimeoutError stage=description_iframe_missing elapsed=6.529s
+2026-11-16 06:52:50,837 - Live validation result search=nubia_z70s_ultra_buy item=920110147074 status=verified deadline_expired=False
+2026-11-16 06:52:51,206 -   Nubia Z70S Ultra: 6 results, 2 verified in fair live slice
+2026-11-16 06:52:51,419 - Normal search dispatch id=mario_kart_world_buy priority=6 remaining=38
+2026-11-16 06:52:51,426 - Checking mario kart world through primary HTML
+2026-11-16 06:52:51,721 - mario_kart_world_buy: live alias task 2/2 format=buy_now_offer query=mario kart world
+2026-11-16 06:52:51,721 - Fetching: mario kart world
+2026-11-16 06:52:51,868 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:52:52,556 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:52:58,547 -   mario kart world -> 200 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:52:58,577 - mario_kart_world_buy: live alias task 1/2 format=buy_now_offer query=mario kart world switch 2
+2026-11-16 06:52:58,577 - Fetching: mario kart world
+2026-11-16 06:52:58,577 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:52:59,428 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:52:59,765 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:53:05,229 -   mario kart world -> 102 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:53:05,426 - Live validation queue search=mario_kart_world_buy candidates=39 omitted=0 rows=[{"id":"307253811170","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"206621434325","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"800775689729","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227529305369","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327336181544","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327278842504","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"358845341180","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267683555757","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336552248128","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257461198365","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"336821094855","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"327035167726","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"137920761649","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"157553489192","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"397356675115","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"376476583189","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"197596899014","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"286746092877","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"146734400949","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"297459443392","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"317016905898","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"256971342221","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"286547287246","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"356809406258","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267843413272","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"407363884984","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"128192458058","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"880111939972","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147678874205","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257847402900","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"900077866646","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"147680442662","ready":false,"gate":"over_limit","minutes":7644,"tier":3,"source":"api"},{"id":"880089781102","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"940070438253","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"880078340408","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"267831611370","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"257829892971","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"920145942356","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"},{"id":"227588919535","ready":false,"gate":"over_limit","minutes":null,"tier":3,"source":"api"}]
+2026-11-16 06:53:05,426 - Live validation fairness search=mario_kart_world_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=39 oldest_priority_wait_seconds=None
+2026-11-16 06:53:05,482 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:53:05,482 - Scraping item page details for item 307253811170 via HTML
+2026-11-16 06:53:06,054 - _fetch_item_details_html: challenge page hit for item 307253811170
+2026-11-16 06:53:06,558 - Live validation result search=mario_kart_world_buy item=307253811170 status=verified deadline_expired=False
+2026-11-16 06:53:06,676 - Scraping item page details for item 206621434325 via HTML
+2026-11-16 06:53:07,475 - _fetch_item_details_html: HTTP 403 for item 206621434325
+2026-11-16 06:53:13,924 - HTML browser details unavailable for 206621434325: TimeoutError stage=description_iframe_missing elapsed=6.450s
+2026-11-16 06:53:14,381 - Live validation result search=mario_kart_world_buy item=206621434325 status=verified deadline_expired=False
+2026-11-16 06:53:14,386 - Live validation deferred search=mario_kart_world_buy reason=fair_slice priority_deferred=0
+2026-11-16 06:53:14,722 -   mario kart world: 201 results, 2 verified in fair live slice
+2026-11-16 06:53:14,761 - Normal search dispatch id=logitech_superlight_2_dex_auc priority=13 remaining=37
+2026-11-16 06:53:14,768 - Checking logitech superlight 2 dex through primary HTML
+2026-11-16 06:53:14,901 - logitech_superlight_2_dex_auc: live alias task 2/2 format=auction query=g pro x superlight 2 dex
+2026-11-16 06:53:14,901 - Fetching: logitech superlight 2 dex
+2026-11-16 06:53:15,062 - eBay session ready (impersonate=safari17_2_ios)
+2026-11-16 06:53:15,406 - eBay session ready (impersonate=safari17_0)
+2026-11-16 06:53:21,431 -   logitech superlight 2 dex -> 0 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:53:21,462 -   logitech superlight 2 dex: fetch error search_deferred
+2026-11-16 06:53:21,495 - Normal search dispatch id=asus_vivobook_14x_oled_buy priority=6 remaining=36
+2026-11-16 06:53:21,501 - Checking asus vivobook 14x oled through primary HTML
+2026-11-16 06:53:21,585 - asus_vivobook_14x_oled_buy: live alias task 1/3 format=buy_now_offer query=asus vivobook 14x oled
+2026-11-16 06:53:21,585 - Fetching: asus vivobook 14x oled
+2026-11-16 06:53:21,585 - eBay session ready (impersonate=chrome131)
+2026-11-16 06:53:21,998 - eBay session ready (impersonate=chrome124)
+2026-11-16 06:53:22,525 - eBay session ready (impersonate=chrome120)
+2026-11-16 06:53:28,025 -   asus vivobook 14x oled -> 4 items via eBay Browse API (EBAY_DE)
+2026-11-16 06:53:28,064 -   asus vivobook 14x oled: fetch error search_deferred
+2026-11-16 06:53:28,139 - Live validation queue search=asus_vivobook_14x_oled_buy candidates=0 omitted=0 rows=[]
+2026-11-16 06:53:28,139 - Live validation fairness search=asus_vivobook_14x_oled_buy fresh_ready=0 clock_unknown=0 recheck=0 waiting=0 oldest_priority_wait_seconds=None
+2026-11-16 06:53:28,145 -   asus vivobook 14x oled: 4 results, 0 verified in fair live slice
+2026-11-16 06:53:28,178 - Normal search dispatch id=nubia_z70s_ultra_auc priority=19 remaining=35
+2026-11-16 06:53:28,184 - Checking Nubia Z70S Ultra through primary HTML
+2026-11-16 06:53:28,195 - Проверка не завершена по времени; сохранённая очередь продолжится в следующем проходе
+2026-11-16 06:53:28,708 - === Done ===
