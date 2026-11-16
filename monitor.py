@@ -2033,7 +2033,7 @@ _PHONE_MODEL_PATTERNS = (
     r"\bpixel\s*(\d+[a-z]?)(?:\s*(pro\s*xl|pro|xl|fold))?\b",
     r"\boneplus\s*(\d{1,2}[a-z]?|ace)(?:\s*(pro|ultra))?\b",
     r"\b(?:nubia\s+)?z\s*(\d{2})\s*([a-z]?)(?:\s*(ultra|pro|mini|lite))?(?:\s*(leading))?\b",
-    r"\b(?:red\s*magic|redmagic)\s*(\d{1,2})\s*(s)?(?:\s*(pro|air))?\b",
+    r"\b(?:red\s*magic|redmagic)\s*(\d{1,2})\s*(s)?(?:\s*|-)?(pro|air)?\b",
 )
 
 
@@ -2133,9 +2133,17 @@ def _phone_model_number_matches(value, query):
     value, query = _phone_model_spacing(_normalize(value)), _phone_model_spacing(_normalize(query))
     if not _samsung_phone_code_matches(value, query):
         return False
-    for pattern in _PHONE_MODEL_PATTERNS:
+    for index, pattern in enumerate(_PHONE_MODEL_PATTERNS):
         actual, wanted = re.search(pattern,value), re.search(pattern,query)
         if actual and wanted:
+            if index == 5:
+                a_num, a_s, a_tier = (g or '' for g in actual.groups())
+                w_num, w_s, w_tier = (g or '' for g in wanted.groups())
+                if a_num != w_num or a_s != w_s:
+                    return False
+                if not w_tier:
+                    return a_tier in ('', 'pro')
+                return not a_tier or a_tier == w_tier
             return all(not a or a.replace(' ','') == (b or '').replace(' ','')
                        for a,b in zip(actual.groups(),wanted.groups()))
     return _phone_model_aspect_matches(value,query)
@@ -10550,6 +10558,52 @@ def _notify_candidates_from_filtered(filtered):
     return candidates
 
 
+_LIVE_REMOTE_SYNC_STATE = {"checked_at": 0.0, "head": None, "searches": {}}
+
+
+def _live_remote_search_override(search_id):
+    """Respect mid-run Android disables before dispatching or sending Telegram."""
+    if os.environ.get("GITHUB_ACTIONS") != "true" or not isinstance(getattr(config, "raw", None), dict):
+        return None
+    if not config.raw.get("mobile_managed") or not search_id:
+        return None
+    now = time.monotonic()
+    if now - _LIVE_REMOTE_SYNC_STATE["checked_at"] >= 15.0:
+        _LIVE_REMOTE_SYNC_STATE["checked_at"] = now
+        try:
+            ls = subprocess.run(
+                ["git", "ls-remote", "origin", "refs/heads/main"],
+                cwd=os.path.dirname(__file__) or ".",
+                capture_output=True, text=True, timeout=5,
+                env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+            )
+            head = (ls.stdout or "").split()[0] if ls.returncode == 0 and (ls.stdout or "").strip() else None
+            if head and head != _LIVE_REMOTE_SYNC_STATE["head"]:
+                subprocess.run(
+                    ["git", "fetch", "--depth=1", "origin", "main"],
+                    cwd=os.path.dirname(__file__) or ".",
+                    capture_output=True, timeout=10,
+                    env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+                )
+                show = subprocess.run(
+                    ["git", "show", "origin/main:mobile/app_sync.json"],
+                    cwd=os.path.dirname(__file__) or ".",
+                    capture_output=True, text=True, timeout=5,
+                    env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+                )
+                if show.returncode == 0 and show.stdout.strip():
+                    doc = json.loads(show.stdout)
+                    _LIVE_REMOTE_SYNC_STATE["searches"] = {
+                        str(row.get("id")): row
+                        for row in (doc.get("searches") or [])
+                        if isinstance(row, dict) and row.get("id")
+                    }
+                    _LIVE_REMOTE_SYNC_STATE["head"] = head
+        except Exception:
+            pass
+    return _LIVE_REMOTE_SYNC_STATE["searches"].get(str(search_id))
+
+
 async def _process_notify_candidate(bot, item, search, stats_7d, stage):
     if seen_state.get(str(item.get('item_id')),{}).get('deliveryUncertain'):
         return False
@@ -10619,6 +10673,13 @@ async def _process_notify_candidate(bot, item, search, stats_7d, stage):
                 item["item_id"],
             )
             return False
+
+    live_remote = _live_remote_search_override(search.get("id"))
+    if live_remote is not None and (live_remote.get("enabled") is False or live_remote.get("notify") is False):
+        if live_remote.get("enabled") is False:
+            search["enabled"] = False
+        logger.info("Skipping notification for %s: search %s disabled on GitHub", item["item_id"], search.get("id"))
+        return False
 
     # Reserve stage before send to prevent double-notify across overlapping runs
     item['_details_verified_at'] = time.time()
@@ -11764,6 +11825,11 @@ async def _process_searches_in_pass(bot, once=False):
                 break
             search = normal_queue[0]
             remaining_search_ids.remove(search['id'])
+            live_remote = _live_remote_search_override(search.get('id'))
+            if live_remote is not None and live_remote.get('enabled') is False:
+                search['enabled'] = False
+                logger.info("Skipping normal search id=%s: disabled on GitHub", search['id'])
+                continue
             next_search = normal_queue[1] if len(normal_queue) > 1 else full_queue[(full_queue.index(search) + 1) % len(full_queue)]
             browse_access.start_normal_search(search.get('id'), next_search.get('id'), EBAY_MARKETPLACE_ID)
             logger.info("Normal search dispatch id=%s priority=%s remaining=%d", search['id'], search.get('priority', 0), len(remaining_search_ids))

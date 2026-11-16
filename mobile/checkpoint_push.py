@@ -11,11 +11,30 @@ sys.path.insert(0, str(ROOT))
 from config_crypt import decrypt_config, encrypt_config
 
 
+def _merge_search_lists(base, local, remote, path):
+    missing = object()
+    by_b = {row["id"]: row for row in base}
+    by_l = {row["id"]: row for row in local}
+    by_r = {row["id"]: row for row in remote}
+    order = list(dict.fromkeys([row["id"] for row in remote] + [row["id"] for row in local]))
+    merged = []
+    for sid in order:
+        val = merge_config(by_b.get(sid, missing), by_l.get(sid, missing), by_r.get(sid, missing), f"{path}.{sid}")
+        if val is not missing:
+            merged.append(val)
+    return merged
+
+
 def merge_config(base, local, remote, path="config"):
     if local == base:
         return remote
     if remote == base or local == remote:
         return local
+    if path == "config.searches" and all(
+        isinstance(x, list) and all(isinstance(row, dict) and "id" in row for row in x)
+        for x in (base, local, remote)
+    ):
+        return _merge_search_lists(base, local, remote, path)
     if all(isinstance(x, dict) for x in (base, local, remote)):
         missing = object()
         result = {}

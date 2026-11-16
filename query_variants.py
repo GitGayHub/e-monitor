@@ -61,10 +61,15 @@ def phone_aliases(query):
         n=m[1];letter=m[2] or '';mod=m[3] or '';leading=' leading' if m[4] or re.search(r'\b(?:lv|leading)\b',q) else '';suffix=(' '+mod) if mod else ''
         if leading:return [f'nubia z{n}{letter}{suffix}{leading}',f'zte nubia z{n}{letter}{suffix}{leading}',f'nubia z{n}{letter}{suffix}{leading} version',f'nubia z{n}{letter}{suffix} lv leading version']
         return [f'nubia z{n}{letter}{suffix}{leading}',f'zte nubia z{n}{letter}{suffix}{leading}',f'nubia z{n} {letter}{suffix}{leading}'.replace('  ',' ')]
-    m=re.search(r'\b(?:red\s*magic)\s*(\d{1,2})\s*(s)?(?:\s*(pro|air))?\b',q)
+    m=re.search(r'\b(?:red\s*magic|redmagic)\s*(\d{1,2})\s*(s)?(?:\s*|-)?(pro|air)?\b',q)
     if m:
         n=m[1];s=m[2] or '';mod=m[3] or '';suffix=(' '+mod) if mod else ''
-        return [f'redmagic {n}{s}{suffix}',f'red magic {n}{s}{suffix}',f'nubia redmagic {n}{s}{suffix}',f'redmagic {n} {s}{suffix}'.replace('  ',' ')]
+        return list(dict.fromkeys(v.strip() for v in (
+            f'redmagic {n}{s}{suffix}',
+            f'red magic {n}{s}{suffix}',
+            f'nubia redmagic {n}{s}{suffix}',
+            f'redmagic {n} {s}{suffix}'.replace('  ', ' '),
+        ) if v.strip()))
     m=re.search(r'\b(?:(wh|wf)[\s-]*1000[\s-]*)?xm(\d+)\b',q)
     # eBay sellers also omit WH entirely: "Sony 1000XM6".
     unprefixed = re.search(r'\b1000\s*xm(\d+)\b',q) if not m else None

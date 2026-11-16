@@ -309,5 +309,19 @@ class MobileContractTests(unittest.TestCase):
             sender.assert_not_awaited()
 
 
+    def test_mid_run_disabled_remote_search_skips_telegram_before_reserve(self):
+        item={"item_id":"midrun-dis","title":"Sony DualSense Controller","price":30,"shipping_cost":0,"total_price":30,"seller_name":"seller","condition":"Gebraucht","location":"DE","buy_now":True,"auction":False,"best_offer":False}
+        search={"id":"ds-id","query":"DualSense","enabled":True,"filters":{"category":"all","listing_type":"buy_now","limit_price":40}}
+        details={"title":item["title"],"description":"Sony DualSense Controller, voll funktionsfähig.","price":{"value":"30"}}
+        with patch.object(monitor,"seen_state",{}),patch.object(monitor,"save_seen_ids"), \
+             patch.object(monitor,"_fetch_item_details",return_value=details), \
+             patch.object(monitor,"_live_remote_search_override",return_value={"id":"ds-id","enabled":False,"notify":True}), \
+             patch.object(monitor,"send_notification",new=AsyncMock()) as sender:
+            self.assertFalse(asyncio.run(monitor._process_notify_candidate(Mock(),item,search,None,"initial")))
+            self.assertFalse(search["enabled"])
+            self.assertEqual({}, monitor.seen_state)
+            sender.assert_not_awaited()
+
+
 if __name__ == "__main__":
     unittest.main()

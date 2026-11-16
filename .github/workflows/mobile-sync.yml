@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: e-monitor-v2
+  group: android-app-sync
   cancel-in-progress: false
 
 jobs:
@@ -60,6 +60,8 @@ jobs:
           EBAY_SOURCE: auto
         run: |
           WRITER="$(python -c 'import json; print(json.load(open("mobile/app_sync.json")).get("writer", "server"))')"
+          echo "$WRITER" > /tmp/incoming_writer
+          cp mobile/app_sync.json /tmp/incoming_app_sync.json
           if [ -f config.json ] && [ "$WRITER" = "android" ]; then
             python mobile/merge_app_sync_to_config.py
           fi
@@ -68,6 +70,10 @@ jobs:
       - name: Commit config and manifest
         env:
           CONFIG_PASSPHRASE: ${{ secrets.CONFIG_PASSPHRASE }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          EBAY_MARKETPLACE_ID: EBAY_DE
+          EBAY_SOURCE: auto
         run: |
           git config --global user.name "E Bot"
           git config --global user.email "bot@noreply.github.com"
@@ -80,4 +86,38 @@ jobs:
             exit 0
           fi
           git commit -m "Update Android sync manifest"
-          git push
+          for attempt in 1 2 3 4 5; do
+            if git push; then
+              exit 0
+            fi
+            git fetch origin main
+            if ! git pull --rebase origin main; then
+              git rebase --abort || true
+              git reset --hard origin/main
+              if [ -n "$CONFIG_PASSPHRASE" ] && [ -f config.json.enc ]; then
+                python config_crypt.py decrypt config.json.enc config.json || exit 1
+                INCOMING_WRITER="$(cat /tmp/incoming_writer 2>/dev/null || echo server)"
+                REMOTE_WRITER="$(python -c 'import json; print(json.load(open("mobile/app_sync.json")).get("writer", "server"))')"
+                if [ "$REMOTE_WRITER" != "android" ] && [ "$INCOMING_WRITER" = "android" ] && [ -f /tmp/incoming_app_sync.json ]; then
+                  cp /tmp/incoming_app_sync.json mobile/app_sync.json
+                  REMOTE_WRITER="android"
+                fi
+                if [ "$REMOTE_WRITER" = "android" ] && [ -f config.json ]; then
+                  python mobile/merge_app_sync_to_config.py || exit 1
+                fi
+                python mobile/build_app_sync.py || exit 1
+                python config_crypt.py encrypt config.json config.json.enc || exit 1
+                git add config.json.enc mobile/app_sync.json
+                if git diff --cached --quiet; then
+                  echo "Remote already reflects Android manifest"
+                  exit 0
+                fi
+                git commit -m "Update Android sync manifest"
+              else
+                exit 1
+              fi
+            fi
+            sleep 2
+          done
+          exit 1
+

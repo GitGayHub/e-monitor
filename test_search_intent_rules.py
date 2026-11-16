@@ -969,5 +969,15 @@ class SearchIntentRuleTests(unittest.TestCase):
         self.assertEqual([x["item_id"] for x in result], ["real246"])
 
 
+    def test_redmagic_12_and_hyphenated_11_models_match_strictly(self):
+        self.assertTrue(monitor._phone_model_number_matches("RedMagic 11S-Pro 512GB", "Redmagic 11S Pro"))
+        self.assertTrue(monitor._phone_model_number_matches("RedMagic 11-Pro 512GB", "Redmagic 11 Pro"))
+        self.assertTrue(monitor._phone_model_number_matches("Nubia RedMagic 12 512GB", "Redmagic 12"))
+        self.assertTrue(monitor._phone_model_number_matches("Nubia RedMagic 12 Pro 512GB", "Redmagic 12"))
+        self.assertFalse(monitor._phone_model_number_matches("Nubia RedMagic 12 Air 256GB", "Redmagic 12"))
+        self.assertFalse(monitor._phone_model_number_matches("Nubia RedMagic 12S 512GB", "Redmagic 12"))
+        self.assertFalse(monitor._phone_model_number_matches("Nubia RedMagic 11 Pro 512GB", "Redmagic 12"))
+
+
 if __name__ == "__main__":
     unittest.main()

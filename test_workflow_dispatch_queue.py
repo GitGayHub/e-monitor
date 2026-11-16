@@ -23,5 +23,5 @@ class WorkflowQueueTests(unittest.TestCase):
         self.assertIn("if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'",text)
         self.assertIn('cancel-in-progress: false',text)
         other=(Path(__file__).parent/'.github/workflows/mobile-sync.yml').read_text(encoding='utf8')
-        self.assertIn('group: e-monitor-v2',other)
+        self.assertIn('group: android-app-sync',other)
         self.assertIn('cancel-in-progress: false',other)

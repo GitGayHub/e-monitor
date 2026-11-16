@@ -110,3 +110,8 @@ class QueryVariantsTests(unittest.TestCase):
             items,error=monitor.fetch_ebay_ex(search)
         self.assertEqual('api_deferred',error)
         request.assert_not_called()
+
+    def test_redmagic_11_11s_and_12_aliases_are_clean_and_deduped(self):
+        self.assertEqual(['redmagic 11 pro', 'red magic 11 pro', 'nubia redmagic 11 pro'], phone_aliases('Redmagic 11 Pro'))
+        self.assertEqual(['redmagic 11s pro', 'red magic 11s pro', 'nubia redmagic 11s pro', 'redmagic 11 s pro'], phone_aliases('Redmagic 11S Pro'))
+        self.assertEqual(['redmagic 12', 'red magic 12', 'nubia redmagic 12'], phone_aliases('Redmagic 12'))

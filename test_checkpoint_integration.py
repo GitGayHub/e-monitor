@@ -51,3 +51,13 @@ class CheckpointIntegrationTests(unittest.TestCase):
     def test_independent_phone_edit_and_delivery_checkpoint_survive(self):self.scenario()
     def test_same_field_conflict_keeps_unpublished_checkpoint(self):self.scenario(conflicting=True)
     def test_unknown_state_conflict_keeps_unpublished_checkpoint(self):self.scenario(unknown=True)
+
+    def test_concurrent_disable_on_one_search_and_local_update_on_another_merge_cleanly(self):
+        base = {"searches": [{"id": "a", "enabled": True}, {"id": "b", "enabled": True}], "item_hashes": []}
+        local = {"searches": [{"id": "a", "enabled": True}, {"id": "b", "enabled": True, "priority": 2}], "item_hashes": ["h1"]}
+        remote = {"searches": [{"id": "a", "enabled": False}, {"id": "b", "enabled": True}], "item_hashes": []}
+        merged = checkpoint_push.merge_config(base, local, remote)
+        self.assertEqual(
+            merged,
+            {"searches": [{"id": "a", "enabled": False}, {"id": "b", "enabled": True, "priority": 2}], "item_hashes": ["h1"]},
+        )
